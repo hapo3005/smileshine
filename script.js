@@ -108,3 +108,4 @@ if(waitlistToggle&&waitlistForm){
 }
 updateSummary();
 import('./checkout-enhancements.js');
+import('./booking-admin-sync.js');
