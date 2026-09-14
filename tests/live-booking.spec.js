@@ -82,7 +82,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await page.locator('#serviceForm input[name="price"]').fill('79');
   await page.locator('#serviceForm input[name="deposit"]').fill('10');
   await page.locator('#serviceForm button[type="submit"]').click();
-  await expect(page.locator('.service-card-admin').filter({ hasText: 'QA Testleistung' })).toBeVisible();
+  await expect(page.locator('.service-card-admin').filter({ has: page.locator('input[name="serviceName"][value="QA Testleistung"]') })).toBeVisible();
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
   await choose('QA Testleistung', 45);
