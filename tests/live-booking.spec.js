@@ -15,6 +15,18 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
+  await page.evaluate(() => {
+    const key = 'smileshine_studio_v1';
+    const db = JSON.parse(localStorage.getItem(key));
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    const iso = date.toISOString().slice(0, 10);
+    db.appointments.push({ id: 'qa_occupied', date: iso, time: '09:00', duration: 90, service: 'Augenbrauen', status: 'confirmed' });
+    db.blocked.push({ id: 'qa_blocked', date: iso, start: '11:00', end: '12:00', label: 'QA Sperrzeit' });
+    localStorage.setItem(key, JSON.stringify(db));
+  });
+  await page.reload({ waitUntil: 'networkidle' });
 
   const choose = async (name, duration) => {
     await page.getByRole('button', { name: new RegExp(name) }).click();
