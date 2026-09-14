@@ -1,0 +1,106 @@
+(() => {
+  const A=window.SSAdmin;if(!A)return;
+  const {$,$$,isoDate,addDays,escapeHTML,DAY_NAMES,SHORT_DAYS}=A;
+  const monthName=date=>new Intl.DateTimeFormat('de-DE',{month:'long',year:'numeric'}).format(date);
+  const dayMonth=date=>new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'short'}).format(date);
+  const dayMonthLong=date=>new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'long'}).format(date);
+  const sameDate=(a,b)=>isoDate(a)===isoDate(b);
+  const startOfWeek=date=>{const d=new Date(date);const offset=(d.getDay()+6)%7;d.setDate(d.getDate()-offset);d.setHours(12,0,0,0);return d};
+
+  function ensureStyles(){
+    if(document.querySelector('link[data-admin-calendar-views]'))return;
+    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-calendar-views.css';link.dataset.adminCalendarViews='true';document.head.appendChild(link);
+  }
+
+  function ensureUI(){
+    ensureStyles();
+    const view=$('.view[data-view-panel="calendar"]');if(!view)return;
+    const heading=$('.view-heading',view),dateControls=$('.date-controls',heading);if(!heading||!dateControls)return;
+    const copy=$('.muted',heading);if(copy)copy.textContent='Buchungen, Pausen und Sperrzeiten in Tages-, Wochen- oder Monatsansicht.';
+    if($('.calendar-view-switch',heading))return;
+    const stack=document.createElement('div');stack.className='calendar-control-stack';
+    const modes=document.createElement('div');modes.className='calendar-view-switch';modes.setAttribute('aria-label','Kalenderansicht');
+    modes.innerHTML='<button type="button" data-calendar-mode="day">Tag</button><button type="button" data-calendar-mode="week">Woche</button><button type="button" data-calendar-mode="month">Monat</button>';
+    dateControls.replaceWith(stack);stack.append(modes,dateControls);
+  }
+
+  function updateModeButtons(){
+    $$('[data-calendar-mode]').forEach(btn=>{const active=btn.dataset.calendarMode===A.calendarMode;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active))});
+    const prev=$('#prevDay'),next=$('#nextDay');
+    if(prev)prev.setAttribute('aria-label',A.calendarMode==='day'?'Vorheriger Tag':A.calendarMode==='week'?'Vorherige Woche':'Vorheriger Monat');
+    if(next)next.setAttribute('aria-label',A.calendarMode==='day'?'Nächster Tag':A.calendarMode==='week'?'Nächste Woche':'Nächster Monat');
+  }
+
+  function appointmentChip(a){return `<div class="calendar-chip appointment-chip"><strong>${escapeHTML(a.time)}</strong><span>${escapeHTML(a.customerName)}</span><small>${escapeHTML(a.service)}</small></div>`}
+  function blockChip(b){return `<div class="calendar-chip block-chip"><strong>${escapeHTML(b.start)}</strong><span>${escapeHTML(b.label)}</span></div>`}
+
+  function renderDay(){
+    A.baseCalendarRender?.();
+    const root=$('#daySchedule');if(root){root.className='day-schedule';root.removeAttribute('data-calendar-layout')}
+  }
+
+  function renderWeek(){
+    const root=$('#daySchedule');if(!root)return;
+    const monday=startOfWeek(A.calendarCursor),sunday=addDays(monday,6),today=new Date();
+    if($('#calendarWeekday'))$('#calendarWeekday').textContent='Woche';
+    if($('#calendarDate'))$('#calendarDate').textContent=`${dayMonthLong(monday)} – ${dayMonthLong(sunday)} ${sunday.getFullYear()}`;
+    root.className='calendar-week-view';root.dataset.calendarLayout='week';
+    root.innerHTML=Array.from({length:7},(_,i)=>{
+      const d=addDays(monday,i),date=isoDate(d),apps=A.activeAppointments().filter(a=>a.date===date).sort((a,b)=>a.time.localeCompare(b.time)),blocks=A.db.blocked.filter(b=>b.date===date).sort((a,b)=>a.start.localeCompare(b.start)),hours=A.db.workingHours[d.getDay()],closed=!hours?.enabled;
+      const content=[...apps.map(appointmentChip),...blocks.map(blockChip)].join('');
+      return `<button class="week-day-column ${sameDate(d,today)?'is-today':''} ${closed?'is-closed':''}" type="button" data-calendar-date="${date}"><div class="week-day-head"><span>${SHORT_DAYS[d.getDay()]}</span><strong>${String(d.getDate()).padStart(2,'0')}</strong><small>${closed?'geschlossen':`${apps.length} Termin${apps.length===1?'':'e'}`}</small></div><div class="week-day-events">${content||`<div class="calendar-empty-mini">${closed?'Keine Öffnungszeit':'Frei'}</div>`}</div></button>`;
+    }).join('');
+  }
+
+  function renderMonth(){
+    const root=$('#daySchedule');if(!root)return;
+    const cursor=new Date(A.calendarCursor),first=new Date(cursor.getFullYear(),cursor.getMonth(),1,12),gridStart=startOfWeek(first),today=new Date(),month=cursor.getMonth();
+    if($('#calendarWeekday'))$('#calendarWeekday').textContent='Monatsansicht';
+    if($('#calendarDate'))$('#calendarDate').textContent=monthName(cursor);
+    root.className='calendar-month-view';root.dataset.calendarLayout='month';
+    const headers=['Mo','Di','Mi','Do','Fr','Sa','So'].map(d=>`<div class="month-weekday">${d}</div>`).join('');
+    const cells=Array.from({length:42},(_,i)=>{
+      const d=addDays(gridStart,i),date=isoDate(d),apps=A.activeAppointments().filter(a=>a.date===date).sort((a,b)=>a.time.localeCompare(b.time)),blocks=A.db.blocked.filter(b=>b.date===date),outside=d.getMonth()!==month,hours=A.db.workingHours[d.getDay()],closed=!hours?.enabled;
+      const visible=apps.slice(0,3).map(a=>`<div class="month-event"><strong>${escapeHTML(a.time)}</strong> ${escapeHTML(a.customerName)}</div>`).join('');
+      const more=apps.length>3?`<div class="month-more">+${apps.length-3} weitere</div>`:'';
+      const block=blocks.length?`<div class="month-block">${blocks.length} gesperrt</div>`:'';
+      return `<button type="button" class="month-day ${outside?'outside-month':''} ${sameDate(d,today)?'is-today':''} ${closed?'is-closed':''}" data-calendar-date="${date}"><div class="month-day-number"><span>${d.getDate()}</span>${apps.length?`<small>${apps.length}</small>`:''}</div><div class="month-events">${visible}${more}${block}${!visible&&!block?`<div class="month-free">${closed?'geschlossen':'frei'}</div>`:''}</div></button>`;
+    }).join('');
+    root.innerHTML=`<div class="month-grid">${headers}${cells}</div>`;
+  }
+
+  function renderCalendarAdvanced(){
+    ensureUI();updateModeButtons();
+    if(A.calendarMode==='week')renderWeek();else if(A.calendarMode==='month')renderMonth();else renderDay();
+  }
+
+  function move(direction){
+    const d=new Date(A.calendarCursor);
+    if(A.calendarMode==='week')d.setDate(d.getDate()+direction*7);
+    else if(A.calendarMode==='month')d.setMonth(d.getMonth()+direction);
+    else d.setDate(d.getDate()+direction);
+    A.calendarCursor=d;renderCalendarAdvanced();
+  }
+
+  function bindFreshNavigation(){
+    ['prevDay','calendarToday','nextDay'].forEach(id=>{const old=document.getElementById(id);if(!old)return;const fresh=old.cloneNode(true);old.replaceWith(fresh)});
+    $('#prevDay')?.addEventListener('click',()=>move(-1));
+    $('#nextDay')?.addEventListener('click',()=>move(1));
+    $('#calendarToday')?.addEventListener('click',()=>{A.calendarCursor=new Date();renderCalendarAdvanced()});
+    $$('[data-calendar-mode]').forEach(btn=>btn.addEventListener('click',()=>{A.calendarMode=btn.dataset.calendarMode;renderCalendarAdvanced()}));
+    $('#daySchedule')?.addEventListener('click',event=>{const target=event.target.closest('[data-calendar-date]');if(!target)return;A.calendarCursor=new Date(`${target.dataset.calendarDate}T12:00:00`);A.calendarMode='day';renderCalendarAdvanced()});
+  }
+
+  function initCalendarViews(){
+    A.calendarMode=A.calendarMode||'day';
+    ensureUI();
+    A.baseCalendarRender=A.renderCalendar;
+    const baseRenderAll=A.renderAll,baseShowView=A.showView;
+    A.renderCalendar=renderCalendarAdvanced;
+    A.renderAll=()=>{baseRenderAll();if($('.view[data-view-panel="calendar"]')?.classList.contains('active'))renderCalendarAdvanced()};
+    A.showView=name=>{baseShowView(name);if(name==='calendar')renderCalendarAdvanced()};
+    bindFreshNavigation();renderCalendarAdvanced();
+  }
+
+  Object.assign(A,{initCalendarViews,renderCalendarAdvanced});
+})();
