@@ -13,7 +13,7 @@
   const currency=value=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(value||0));
   const dateShort=value=>new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'}).format(new Date(`${value}T12:00:00`));
   const uid=prefix=>`${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
-  const escapeHTML=value=>String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt',"'":'&#039;','"':'&quot;'}[c]));
+  const escapeHTML=value=>String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
 
   function seed(){
     const t=isoDate(new Date()),d1=isoDate(addDays(new Date(),1)),d2=isoDate(addDays(new Date(),2)),d3=isoDate(addDays(new Date(),3)),d5=isoDate(addDays(new Date(),5));
