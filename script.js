@@ -21,6 +21,40 @@ const precheckService=document.querySelector('#precheckService');
 const waitlistToggle=document.querySelector('#waitlistToggle');
 const waitlistForm=document.querySelector('#waitlistForm');
 
+const serviceCatalog=[
+  {group:'Direkt öffentlich belegt',name:'Permanent Make-up',duration:90,serviceId:'Augenbrauen',note:'Schwerpunkt laut öffentlichem Unternehmensgegenstand'},
+  {group:'Direkt öffentlich belegt',name:'Kosmetische Behandlung',duration:60,serviceId:'Beratung',note:'Kosmetische Behandlungen öffentlich belegt'},
+  {group:'Augenbrauen',name:'Augenbrauen Permanent Make-up',duration:90,serviceId:'Augenbrauen',note:'PMU · Leistungsdetail noch mit Studio abzugleichen'},
+  {group:'Augenbrauen',name:'Härchenzeichnung Augenbrauen',duration:120,serviceId:'Augenbrauen',note:'PMU · regional marktüblich'},
+  {group:'Augenbrauen',name:'Powder Brows',duration:120,serviceId:'Augenbrauen',note:'PMU · regional marktüblich'},
+  {group:'Augenbrauen',name:'Augenbrauen-Auffrischung',duration:75,serviceId:'Augenbrauen',note:'Auffrischung bestehender Pigmentierung'},
+  {group:'Augen & Lid',name:'Lidstrich',duration:90,serviceId:'Lid & Wimpernkranz',note:'PMU · regional marktüblich'},
+  {group:'Augen & Lid',name:'Wimpernkranzverdichtung',duration:75,serviceId:'Lid & Wimpernkranz',note:'PMU · regional marktüblich'},
+  {group:'Augen & Lid',name:'Modellierter Lidstrich / Eyeliner',duration:120,serviceId:'Lid & Wimpernkranz',note:'PMU · Leistungsdetail noch zu bestätigen'},
+  {group:'Lippen',name:'Lippenpigmentierung',duration:120,serviceId:'Lippen',note:'PMU · regional marktüblich'},
+  {group:'Lippen',name:'Lippenkontur',duration:90,serviceId:'Lippen',note:'PMU · Leistungsdetail noch zu bestätigen'},
+  {group:'Lippen',name:'Lippen-Vollzeichnung',duration:150,serviceId:'Lippen',note:'PMU · Leistungsdetail noch zu bestätigen'},
+  {group:'Service & Bestand',name:'PMU-Auffrischung allgemein',duration:90,serviceId:'Augenbrauen',note:'Für bestehendes Permanent Make-up'},
+  {group:'Service & Bestand',name:'PMU-Nachbehandlung',duration:60,serviceId:'Beratung',note:'Kontroll- und Nachbehandlung'},
+  {group:'Service & Bestand',name:'Beratung / Vorbesprechung',duration:30,serviceId:'Beratung',note:'Persönliches Vorgespräch'}
+];
+
+function renderServiceCatalog(){
+  if(!serviceOptionsRoot)return;
+  let index=0;
+  let html='';
+  let currentGroup='';
+  serviceCatalog.forEach(item=>{
+    if(item.group!==currentGroup){
+      currentGroup=item.group;
+      html+=`<div class="service-group-title"><span>${currentGroup}</span></div>`;
+    }
+    index+=1;
+    html+=`<button class="service-option" type="button" data-service="${item.name}" data-service-id="${item.serviceId}" data-duration="${item.duration}"><span class="service-index">${String(index).padStart(2,'0')}</span><span class="service-info"><strong>${item.name}</strong><small>${item.note} · ca. ${item.duration} Min. (Demo)</small></span><span class="service-arrow">→</span></button>`;
+  });
+  serviceOptionsRoot.innerHTML=html;
+}
+
 function setStep(step){
   panels.forEach(p=>p.classList.toggle('active',Number(p.dataset.panel)===step));
   progress.forEach((p,i)=>{p.classList.toggle('active',i+1===step);p.classList.toggle('done',i+1<step)});
@@ -90,7 +124,7 @@ function buildTimes(){
   if(!timeSlots)return;
   const d=bookingState.date?new Date(`${bookingState.date}T12:00:00`):new Date();
   const availability=window.SmileShineBookingData;
-  const slots=availability?.availableSlots?availability.availableSlots(bookingState.date,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)):slotProfile(d,bookingState.service);
+  const slots=availability?.availableSlots?availability.availableSlots(bookingState.date,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)):slotProfile(d,bookingState.serviceId||bookingState.service);
   timeSlots.innerHTML='';
   if(!slots.length){timeSlots.innerHTML='<div class="time-placeholder">An diesem Tag ist aktuell keine passende Zeit frei.</div>';return;}
   slots.forEach(time=>{
@@ -107,7 +141,7 @@ function buildTimes(){
 function buildPrecheck(){
   if(!precheckQuestions)return;
   if(precheckService)precheckService.textContent=bookingState.service;
-  const isConsult=bookingState.service==='Beratung';
+  const isConsult=bookingState.service.toLowerCase().includes('beratung');
   if(isConsult){
     precheckQuestions.innerHTML=`<label><span>Was möchtest du besprechen?</span><textarea name="goal" rows="3" required placeholder="Kurze Beschreibung deines Wunsches"></textarea></label><label class="choice-block"><span>Gab es bereits eine frühere Behandlung in diesem Bereich?</span><div class="choice-row"><label><input type="radio" name="previous" value="Ja" required> Ja</label><label><input type="radio" name="previous" value="Nein"> Nein</label></div></label>`;
     return;
@@ -130,6 +164,8 @@ function selectServiceButton(btn){
   buildDates();
   setTimeout(()=>setStep(2),120);
 }
+
+renderServiceCatalog();
 
 if(serviceOptionsRoot){
   serviceOptionsRoot.addEventListener('click',event=>{
