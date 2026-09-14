@@ -44,7 +44,7 @@
   }
 
   function load(){try{const raw=localStorage.getItem(STORE_KEY);if(!raw){const s=seed();localStorage.setItem(STORE_KEY,JSON.stringify(s));return s}const parsed=JSON.parse(raw);if(!parsed||!Array.isArray(parsed.appointments)||!Array.isArray(parsed.services))throw new Error('invalid');return parsed}catch(e){const s=seed();localStorage.setItem(STORE_KEY,JSON.stringify(s));return s}}
-  const api={STORE_KEY,DAY_NAMES,SHORT_DAYS,STATUS_LABELS,$,$$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,uid,escapeHTML,seed,db:load(),calendarCursor:new Date()};
+  const api={STORE_KEY,DAY_NAMES,SHORT_DAYS,STATUS_LABELS,$,$$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,uid,escapeHTML,seed,db:load(),calendarCursor:new Date(),calendarMode:'day'};
   api.activeAppointments=()=>api.db.appointments.filter(a=>a.status!=='cancelled');
   api.overlaps=(sa,ea,sb,eb)=>sa<eb&&ea>sb;
   api.isSlotFree=(date,time,duration)=>{const start=minutesOf(time),end=start+Number(duration||30)+Number(api.db.buffer||0);if(api.activeAppointments().filter(a=>a.date===date).some(a=>api.overlaps(start,end,minutesOf(a.time),minutesOf(a.time)+Number(a.duration||30)+Number(api.db.buffer||0))))return false;return !api.db.blocked.filter(b=>b.date===date).some(b=>api.overlaps(start,end,minutesOf(b.start),minutesOf(b.end)))};
@@ -54,5 +54,5 @@
   api.save=message=>{localStorage.setItem(STORE_KEY,JSON.stringify(api.db));if(message)api.toast(message);api.renderAll?.()};
   api.relativeTime=value=>{const diff=Math.max(0,Date.now()-new Date(value).getTime()),h=Math.floor(diff/3600000);if(h<1)return'Gerade eben';if(h<24)return`Vor ${h} Std.`;const d=Math.floor(h/24);return d===1?'Gestern':`Vor ${d} Tagen`};
   window.SSAdmin=api;
-  Promise.all([import('./admin-render.js'),import('./admin-actions.js')]).then(()=>{api.bindActions();api.renderAll();api.showView(location.hash.replace('#','')||'dashboard')}).catch(()=>api.toast('Demo konnte nicht vollständig geladen werden.'));
+  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js')]).then(()=>{api.bindActions();api.initCalendarViews();api.renderAll();api.showView(location.hash.replace('#','')||'dashboard')}).catch(()=>api.toast('Demo konnte nicht vollständig geladen werden.'));
 })();
