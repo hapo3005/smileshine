@@ -107,3 +107,4 @@ if(waitlistToggle&&waitlistForm){
   waitlistForm.addEventListener('submit',e=>{e.preventDefault();bookingState.waitlist=true;waitlistForm.hidden=true;waitlistToggle.textContent='✓ Vorgemerkt';waitlistToggle.classList.add('active');document.getElementById('confirmWaitlist')?.textContent='Vorgemerkt'})
 }
 updateSummary();
+import('./checkout-enhancements.js');
