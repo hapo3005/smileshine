@@ -56,6 +56,8 @@
     btn.dataset.service=s.name;
     btn.dataset.duration=String(Number(s.duration||30));
     btn.hidden=s.active===false;
+    btn.disabled=s.active===false;
+    btn.setAttribute('aria-hidden',String(s.active===false));
     const idx=$('.service-index',btn);if(idx)idx.textContent=String(index+1).padStart(2,'0');
     const title=$('.service-info strong',btn);if(title)title.textContent=s.name;
     const info=$('.service-info small',btn);if(info)info.textContent=`${s.description||'Beauty-Behandlung'} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}`;
