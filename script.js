@@ -170,5 +170,5 @@ if(waitlistToggle&&waitlistForm){
 
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
 updateSummary();
-import('./checkout-enhancements.js?v=20260914-1408');
-import('./booking-admin-sync.js?v=20260914-1408');
+import('./checkout-enhancements.js?v=20260914-1415');
+import('./booking-admin-sync.js?v=20260914-1415');
