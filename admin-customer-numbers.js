@@ -50,10 +50,14 @@
     A.bindCustomerDetailRows?.();
   }
 
+  function currentDetailCustomer(){
+    const byId=A.customerNumberActiveId&&A.db.customers.find(c=>c.id===A.customerNumberActiveId);if(byId)return byId;
+    const title=$('#customerDetailTitle')?.textContent?.trim();return A.db.customers.find(c=>c.name===title);
+  }
+
   function decorateCustomerDetail(){
     const body=$('#customerDetailBody');if(!body||!body.innerHTML)return;
-    const title=$('#customerDetailTitle')?.textContent?.trim();
-    const customer=A.db.customers.find(c=>c.name===title);if(!customer)return;
+    const customer=currentDetailCustomer();if(!customer)return;
     const heroSmall=$('.customer-profile-hero small',body);
     if(heroSmall&&!heroSmall.dataset.customerNumberReady){heroSmall.textContent=`${customer.customerNumber} · ${heroSmall.textContent}`;heroSmall.dataset.customerNumberReady='true'}
     const lines=$('.customer-contact-lines',body);
@@ -62,15 +66,25 @@
     }
   }
 
+  function bindExactCustomerOpen(){
+    const root=$('#customersList');if(!root||root.dataset.customerNumberOpenReady)return;root.dataset.customerNumberOpenReady='true';
+    const open=event=>{
+      const card=event.target.closest?.('.customer-card[data-customer-id]');if(!card||!root.contains(card))return false;
+      const id=card.dataset.customerId;if(!id)return false;A.customerNumberActiveId=id;event.preventDefault();event.stopImmediatePropagation();A.renderCustomerDetail?.(id);return true;
+    };
+    root.addEventListener('click',open,true);
+    root.addEventListener('keydown',event=>{if(event.key!=='Enter'&&event.key!==' ')return;open(event)},true);
+  }
+
   function initCustomerNumbers(){
     if(A.customerNumbersReady)return;A.customerNumbersReady=true;
     ensureCustomerNumbers(A.db);localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));
     const baseSeed=A.seed;A.seed=()=>ensureCustomerNumbers(baseSeed());
     const baseSave=A.save;A.save=message=>{ensureCustomerNumbers(A.db);return baseSave(message)};
-    const baseRenderAll=A.renderAll;A.renderAll=()=>{baseRenderAll?.();renderCustomersWithNumbers()};
+    const baseRenderAll=A.renderAll;A.renderAll=()=>{baseRenderAll?.();renderCustomersWithNumbers();bindExactCustomerOpen()};
     A.renderCustomers=renderCustomersWithNumbers;
     const detail=$('#customerDetailBody');if(detail)new MutationObserver(()=>queueMicrotask(decorateCustomerDetail)).observe(detail,{childList:true,subtree:true});
-    renderCustomersWithNumbers();
+    renderCustomersWithNumbers();bindExactCustomerOpen();
   }
 
   Object.assign(A,{initCustomerNumbers,ensureCustomerNumbers,nextCustomerNumber,formatCustomerNumber,renderCustomersWithNumbers});
