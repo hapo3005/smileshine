@@ -10,9 +10,26 @@
   const today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
   const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
   const money=v=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(v||0));
+  const customerNumber=n=>`K-${String(Number(n)||0).padStart(5,'0')}`;
+  const customerNumberValue=value=>{const match=String(value||'').match(/^K-(\d+)$/i);return match?Number(match[1]):0};
+
+  function ensureCustomerNumbers(db){
+    db.customers=Array.isArray(db.customers)?db.customers:[];
+    const used=new Set();let max=0;
+    db.customers.forEach(c=>{const n=customerNumberValue(c.customerNumber);if(n>0&&!used.has(n)){used.add(n);max=Math.max(max,n)}else if(c.customerNumber)c.customerNumber=''});
+    let next=Math.max(Number(db.nextCustomerNumber)||1,max+1);
+    db.customers.forEach(c=>{if(customerNumberValue(c.customerNumber)>0)return;while(used.has(next))next++;c.customerNumber=customerNumber(next);used.add(next);next++});
+    db.nextCustomerNumber=Math.max(next,Number(db.nextCustomerNumber)||1);return db;
+  }
+
+  function takeCustomerNumber(db){
+    ensureCustomerNumbers(db);let next=Math.max(1,Number(db.nextCustomerNumber)||1);
+    const used=new Set((db.customers||[]).map(c=>customerNumberValue(c.customerNumber)).filter(Boolean));
+    while(used.has(next))next++;const value=customerNumber(next);db.nextCustomerNumber=next+1;return value;
+  }
 
   function fallback(){
-    return {version:1,slotInterval:30,buffer:15,services:[
+    return {version:1,slotInterval:30,buffer:15,nextCustomerNumber:1,services:[
       {id:'brows',name:'Augenbrauen',description:'Form, Balance und Ausdruck mit natürlicher Wirkung.',duration:90,price:289,deposit:50,active:true},
       {id:'eyes',name:'Lid & Wimpernkranz',description:'Dezente Betonung für einen klaren und wachen Blick.',duration:75,price:249,deposit:40,active:true},
       {id:'lips',name:'Lippen',description:'Kontur, Farbe und Frische mit natürlichem Ergebnis.',duration:120,price:329,deposit:60,active:true},
@@ -21,10 +38,10 @@
   }
 
   function load(){
-    try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x)return x}catch(e){}
-    const x=fallback();localStorage.setItem(KEY,JSON.stringify(x));return x;
+    try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x){ensureCustomerNumbers(x);localStorage.setItem(KEY,JSON.stringify(x));return x}}catch(e){}
+    const x=ensureCustomerNumbers(fallback());localStorage.setItem(KEY,JSON.stringify(x));return x;
   }
-  function save(db){localStorage.setItem(KEY,JSON.stringify(db))}
+  function save(db){ensureCustomerNumbers(db);localStorage.setItem(KEY,JSON.stringify(db))}
   function service(db,key){return db.services?.find(s=>String(s.id)===String(key)||s.name===key)}
 
   function free(db,date,time,name){
@@ -82,7 +99,7 @@
       if(!btn)btn=makeButton(s,index);
       else updateButton(btn,s,index);
       used.add(btn);
-      if(s.active!==false)root.appendChild(btn); // reorders without destroying existing listeners
+      if(s.active!==false)root.appendChild(btn);
       else btn.hidden=true;
     });
 
@@ -135,7 +152,7 @@
     if(!free(db,date,time,serviceName)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
     const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),note=String(data.get('note')||'').trim();
     let customer=(db.customers||[]).find(c=>(email&&c.email===email)||(phone&&c.phone===phone));
-    if(!customer){customer={id:uid('customer'),name,firstName:first,lastName:last,email,phone,created:today()};db.customers=db.customers||[];db.customers.push(customer)}
+    if(!customer){customer={id:uid('customer'),customerNumber:takeCustomerNumber(db),name,firstName:first,lastName:last,email,phone,created:today()};db.customers=db.customers||[];db.customers.push(customer)}
     const payment=$('#summaryPayment')?.textContent?.trim()||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
     db.appointments=db.appointments||[];
     db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,status:'confirmed',payment,paymentPreference:payment,source:'online-demo',note,listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
