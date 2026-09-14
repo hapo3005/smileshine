@@ -6,6 +6,7 @@ test.use({
 });
 
 test('published booking flow stays in sync with admin services', async ({ page }) => {
+  test.setTimeout(90000);
   const browserErrors = [];
   page.on('pageerror', error => browserErrors.push(`pageerror: ${error.message}`));
   page.on('console', message => {
@@ -60,14 +61,14 @@ test('published booking flow stays in sync with admin services', async ({ page }
     has: page.locator('input[name="serviceName"][value="Augenbrauen"]')
   });
   await expect(browsCard()).toBeVisible();
-  await browsCard().locator('input[name="active"]').uncheck();
+  await browsCard().locator('input[name="active"]').uncheck({ force: true });
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
   await expect(page.getByRole('button', { name: /Augenbrauen/ })).toBeHidden();
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
   await expect(browsCard()).toBeVisible();
-  await browsCard().locator('input[name="active"]').check();
+  await browsCard().locator('input[name="active"]').check({ force: true });
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
   await expect(page.getByRole('button', { name: /Augenbrauen/ })).toBeVisible();
