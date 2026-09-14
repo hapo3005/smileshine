@@ -40,4 +40,4 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Test published booking in Chromium
-        run: npx playwright test tests/live-booking.spec.js --project=chromium --reporter=line
+        run: npx playwright test tests/live-booking.spec.js --reporter=line
