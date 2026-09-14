@@ -1,0 +1,43 @@
+name: Live booking E2E
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "index.html"
+      - "script.js"
+      - "booking-admin-sync.js"
+      - "checkout-enhancements.js"
+      - "tests/live-booking.spec.js"
+      - ".github/workflows/live-booking-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-booking:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for GitHub Pages version
+        run: |
+          for attempt in {1..30}; do
+            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "script.js?v=20260914-1630"; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Published page did not reach expected version in time."
+          exit 1
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+
+      - name: Test published booking in Chromium
+        run: npx playwright test tests/live-booking.spec.js --project=chromium --reporter=line
