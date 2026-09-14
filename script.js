@@ -9,8 +9,8 @@ const year=document.querySelector('#year');if(year)year.textContent=new Date().g
 const bookingState={service:'',duration:'',date:'',dateLabel:'',time:'',customer:null,payment:'Im Studio',waitlist:false,precheck:{}};
 const panels=[...document.querySelectorAll('.booking-panel')];
 const progress=[...document.querySelectorAll('.progress-step')];
-let serviceButtons=[...document.querySelectorAll('.service-option')];
 const paymentButtons=[...document.querySelectorAll('.payment-option')];
+const serviceOptionsRoot=document.querySelector('.service-options');
 const dateScroller=document.querySelector('#dateScroller');
 const timeSlots=document.querySelector('#timeSlots');
 const selectedDateLabel=document.querySelector('#selectedDateLabel');
@@ -89,14 +89,20 @@ function buildPrecheck(){
   precheckQuestions.innerHTML=`<label class="choice-block"><span>Wurde der Bereich bereits früher pigmentiert?</span><div class="choice-row"><label><input type="radio" name="previous" value="Ja" required> Ja</label><label><input type="radio" name="previous" value="Nein"> Nein</label></div></label><label class="choice-block"><span>Bestehen Allergien oder bekannte Unverträglichkeiten, die für die Behandlung relevant sein könnten?</span><div class="choice-row"><label><input type="radio" name="allergy" value="Ja" required> Ja</label><label><input type="radio" name="allergy" value="Nein"> Nein</label></div></label><label class="choice-block"><span>Nimmst du Medikamente ein, die für eine kosmetische Behandlung relevant sein könnten?</span><div class="choice-row"><label><input type="radio" name="medication" value="Ja" required> Ja</label><label><input type="radio" name="medication" value="Nein"> Nein</label></div></label><label><span>Zusätzliche Information <small>optional</small></span><textarea name="precheckNote" rows="3" placeholder="Falls du etwas vorab mitteilen möchtest"></textarea></label>`;
 }
 function selectServiceButton(btn){
-  serviceButtons=[...document.querySelectorAll('.service-option')];
-  serviceButtons.forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');bookingState.service=btn.dataset.service;bookingState.duration=btn.dataset.duration;bookingState.date='';bookingState.dateLabel='';bookingState.time='';bookingState.precheck={};updateSummary();buildDates();setTimeout(()=>setStep(2),180);
+  document.querySelectorAll('.service-option').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  bookingState.service=btn.dataset.service||'';
+  bookingState.duration=btn.dataset.duration||'';
+  bookingState.date='';bookingState.dateLabel='';bookingState.time='';bookingState.precheck={};
+  updateSummary();buildDates();setTimeout(()=>setStep(2),180);
 }
-function bindServiceButtons(){
-  serviceButtons=[...document.querySelectorAll('.service-option')];
-  serviceButtons.forEach(btn=>{if(btn.dataset.bookingBound==='1')return;btn.dataset.bookingBound='1';btn.addEventListener('click',()=>selectServiceButton(btn))});
+if(serviceOptionsRoot){
+  serviceOptionsRoot.addEventListener('click',event=>{
+    const btn=event.target.closest('.service-option');
+    if(!btn||!serviceOptionsRoot.contains(btn)||btn.disabled||btn.hidden)return;
+    selectServiceButton(btn);
+  });
 }
-bindServiceButtons();
 document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>setStep(Number(btn.dataset.back))));
 if(precheckForm){precheckForm.addEventListener('submit',e=>{e.preventDefault();if(!precheckForm.reportValidity())return;const data=new FormData(precheckForm);bookingState.precheck=Object.fromEntries(data.entries());setStep(4)})}
 if(bookingForm){bookingForm.addEventListener('submit',e=>{e.preventDefault();if(!bookingForm.reportValidity())return;const data=new FormData(bookingForm);bookingState.customer={firstName:data.get('firstName'),lastName:data.get('lastName'),email:data.get('email'),phone:data.get('phone'),note:data.get('note')};setStep(5)})}
@@ -112,7 +118,7 @@ if(waitlistToggle&&waitlistForm){
   waitlistToggle.addEventListener('click',()=>{waitlistForm.hidden=!waitlistForm.hidden;waitlistToggle.textContent=waitlistForm.hidden?'Warteliste':'Schließen'});
   waitlistForm.addEventListener('submit',e=>{e.preventDefault();bookingState.waitlist=true;waitlistForm.hidden=true;waitlistToggle.textContent='✓ Vorgemerkt';waitlistToggle.classList.add('active');document.getElementById('confirmWaitlist')?.textContent='Vorgemerkt'})
 }
-window.SmileShineBooking={refreshServiceButtons:bindServiceButtons,state:bookingState,updateSummary,buildDates,buildTimes,setStep};
+window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
 updateSummary();
 import('./checkout-enhancements.js');
 import('./booking-admin-sync.js');
