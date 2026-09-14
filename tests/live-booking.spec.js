@@ -110,5 +110,34 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await page.locator('.booking-panel[data-panel="6"] .button.primary').click();
   await expect(page.locator('.sync-booking-message')).toContainText('Demo-Buchung gespeichert');
 
+  await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
+  const qaCard = () => page.locator('.service-card-admin').filter({
+    has: page.locator('input[name="serviceName"][value="QA Testleistung"]')
+  });
+  await qaCard().locator('input[name="serviceName"]').fill('QA Testleistung Neu');
+  await qaCard().locator('.service-save').click();
+  await expect(page.locator('input[name="serviceName"][value="QA Testleistung Neu"]')).toBeVisible();
+
+  await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
+  await choose('QA Testleistung Neu', 45);
+
+  await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
+  const renamedCard = page.locator('.service-card-admin').filter({
+    has: page.locator('input[name="serviceName"][value="QA Testleistung Neu"]')
+  });
+  page.once('dialog', dialog => dialog.accept());
+  await renamedCard.locator('[data-delete-service]').click();
+  const preservation = await page.evaluate(() => {
+    const db = JSON.parse(localStorage.getItem('smileshine_studio_v1'));
+    return {
+      oldAppointmentKept: db.appointments.some(item => item.service === 'QA Testleistung'),
+      renamedServiceDeleted: !db.services.some(item => item.name === 'QA Testleistung Neu')
+    };
+  });
+  expect(preservation).toEqual({ oldAppointmentKept: true, renamedServiceDeleted: true });
+
+  await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
+  await expect(page.getByRole('button', { name: /QA Testleistung Neu/ })).toBeHidden();
+
   expect(browserErrors, browserErrors.join('\n')).toEqual([]);
 });
