@@ -90,3 +90,4 @@
   Object.assign(A,{initCustomerNumbers,ensureCustomerNumbers,nextCustomerNumber,formatCustomerNumber,renderCustomersWithNumbers});
 })();
 import('./admin-demo-profiles.js?v=20260914-1455').then(()=>window.SSAdmin?.initDemoProfiles?.());
+import('./admin-whatsapp.js?v=20260914-1626').then(()=>window.SSAdmin?.initWhatsApp?.());
