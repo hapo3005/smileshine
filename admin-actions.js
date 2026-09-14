@@ -13,6 +13,38 @@
   }
   function closeModal(){const modal=$('#appointmentModal');if(modal?.open)modal.close()}
 
+  function ensureCustomerUI(){
+    const customerView=$('.view[data-view-panel="customers"]');if(!customerView)return;
+    const heading=$('.view-heading',customerView);
+    if(heading&&!$('[data-action="newCustomer"]',heading)){
+      const button=document.createElement('button');button.className='primary-action';button.type='button';button.dataset.action='newCustomer';button.textContent='＋ Neuer Kunde';heading.appendChild(button);
+    }
+    const toolbar=$('.list-toolbar',customerView);
+    if(toolbar&&!$('.customer-create-button',toolbar)){
+      const button=document.createElement('button');button.className='primary-action customer-create-button';button.type='button';button.dataset.action='newCustomer';button.textContent='＋ Kunde anlegen';toolbar.appendChild(button);
+    }
+    if(!$('#customerModal')){
+      const dialog=document.createElement('dialog');dialog.className='modal';dialog.id='customerModal';
+      dialog.innerHTML=`<form method="dialog" class="modal-card" id="customerForm"><div class="modal-head"><div><span class="panel-kicker">Kundenkartei</span><h3>Neuer Kunde</h3></div><button type="button" class="modal-close" data-close-customer aria-label="Schließen">×</button></div><div class="modal-body"><div class="form-row"><label><span>Vorname</span><input name="firstName" autocomplete="given-name" required placeholder="Vorname"></label><label><span>Nachname</span><input name="lastName" autocomplete="family-name" required placeholder="Nachname"></label></div><div class="form-row"><label><span>Telefon</span><input name="phone" type="tel" autocomplete="tel" placeholder="z. B. 0176 12345678"></label><label><span>E-Mail</span><input name="email" type="email" autocomplete="email" placeholder="name@beispiel.de"></label></div><label><span>Geburtsdatum <small>optional</small></span><input name="birthday" type="date"></label><label><span>Interne Notiz <small>optional</small></span><textarea name="notes" rows="4" placeholder="z. B. Wünsche, Hinweise oder Besonderheiten"></textarea></label><div class="privacy-card"><div><strong>Kundenkartei im Demo-Modus</strong><small>Die Angaben werden derzeit ausschließlich lokal in diesem Browser gespeichert. Für die Live-Version folgen Login, Datenbank und Datenschutzkonzept.</small></div><span>Demo</span></div></div><div class="modal-actions"><button type="button" class="soft-button" data-close-customer>Abbrechen</button><button type="submit" class="primary-action">Kunde speichern</button></div></form>`;
+      document.body.appendChild(dialog);
+    }
+  }
+
+  function openCustomerModal(){
+    ensureCustomerUI();const modal=$('#customerModal'),form=$('#customerForm');if(!modal||!form)return;form.reset();modal.showModal();setTimeout(()=>form.elements.firstName?.focus(),40);
+  }
+  function closeCustomerModal(){const modal=$('#customerModal');if(modal?.open)modal.close()}
+
+  function saveCustomer(form){
+    const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),birthday=String(data.get('birthday')||'').trim(),notes=String(data.get('notes')||'').trim();
+    if(!name)return A.toast('Bitte Vor- und Nachname eingeben.');
+    if(!phone&&!email)return A.toast('Bitte Telefon oder E-Mail angeben.');
+    const duplicate=A.db.customers.find(c=>(email&&String(c.email||'').toLowerCase()===email.toLowerCase())||(phone&&String(c.phone||'').replace(/\s/g,'')===phone.replace(/\s/g,'')));
+    if(duplicate)return A.toast(`${duplicate.name} ist bereits in der Kundenkartei.`);
+    A.db.customers.push({id:uid('customer'),name,firstName:first,lastName:last,phone,email,birthday,notes,created:isoDate(new Date())});
+    A.addActivity('customer',`Neuer Kunde angelegt: ${name}.`);closeCustomerModal();A.save(`${name} wurde gespeichert.`);A.showView('customers');
+  }
+
   function saveAppointment(form){
     const data=new FormData(form),service=A.db.services.find(s=>s.name===data.get('service'));if(!service)return A.toast('Bitte eine Leistung wählen.');
     const date=data.get('date'),time=data.get('time');if(!A.isSlotFree(date,time,service.duration))return A.toast('Diese Zeit ist bereits belegt oder gesperrt.');
@@ -40,7 +72,16 @@
     $$('[data-remove-block]').forEach(btn=>btn.onclick=()=>{A.db.blocked=A.db.blocked.filter(b=>b.id!==btn.dataset.removeBlock);A.save('Sperrzeit entfernt.')});
   }
 
+  function bindCustomerActions(){
+    ensureCustomerUI();
+    $$('[data-action="newCustomer"]').forEach(btn=>btn.onclick=openCustomerModal);
+    $$('[data-close-customer]').forEach(btn=>btn.onclick=closeCustomerModal);
+    $('#customerModal')?.addEventListener('click',event=>{if(event.target.id==='customerModal')closeCustomerModal()});
+    $('#customerForm')?.addEventListener('submit',event=>{event.preventDefault();if(event.currentTarget.reportValidity())saveCustomer(event.currentTarget)});
+  }
+
   function bindActions(){
+    ensureCustomerUI();
     $$('[data-view]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.view)));
     $$('[data-jump]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.jump)));
     $$('[data-action="newAppointment"]').forEach(btn=>btn.addEventListener('click',()=>openModal()));
@@ -56,7 +97,8 @@
     const blockForm=$('#blockForm');if(blockForm){blockForm.elements.date.value=isoDate(addDays(new Date(),1));blockForm.addEventListener('submit',event=>{event.preventDefault();if(!blockForm.reportValidity())return;const data=new FormData(blockForm);if(minutesOf(data.get('end'))<=minutesOf(data.get('start')))return A.toast('„Bis“ muss nach „Von“ liegen.');A.db.blocked.push({id:uid('block'),date:data.get('date'),start:data.get('start'),end:data.get('end'),label:String(data.get('label')||'Gesperrt')});A.addActivity('setting',`${data.get('label')}: Zeit am ${dateShort(data.get('date'))} blockiert.`);blockForm.reset();blockForm.elements.date.value=isoDate(addDays(new Date(),1));blockForm.elements.start.value='12:00';blockForm.elements.end.value='13:00';A.save('Zeit wurde blockiert.')})}
     $('#resetDemo')?.addEventListener('click',()=>{if(!confirm('Demo-Daten wirklich zurücksetzen? Eigene lokale Änderungen gehen verloren.'))return;A.db=A.seed();localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));A.calendarCursor=new Date();A.renderAll();A.toast('Demo wurde zurückgesetzt.');A.showView('dashboard')});
     window.addEventListener('storage',event=>{if(event.key===A.STORE_KEY){try{A.db=JSON.parse(event.newValue);A.renderAll();A.toast('Daten aus einem anderen Tab aktualisiert.')}catch(e){}}});
+    bindCustomerActions();
   }
 
-  Object.assign(A,{openModal,bindActions,bindDynamicAppointmentActions,bindServiceActions,bindHourToggles,bindBlockActions});
+  Object.assign(A,{openModal,openCustomerModal,bindActions,bindCustomerActions,bindDynamicAppointmentActions,bindServiceActions,bindHourToggles,bindBlockActions});
 })();
