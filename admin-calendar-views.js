@@ -20,4 +20,4 @@
   Object.assign(A,{initCalendarViews,renderCalendarAdvanced});
 })();
 import('./admin-customer-detail.js');
-import('./admin-recurring-blocks.js?v=20260914-1430').then(()=>window.SSAdmin?.initRecurringBlocks?.());
+import('./admin-recurring-blocks.js?v=20260914-1436').then(()=>window.SSAdmin?.initRecurringBlocks?.());
