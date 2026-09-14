@@ -1,6 +1,14 @@
 (() => {
   'use strict';
 
+  if(!document.querySelector('link[data-service-carousel-style]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='service-carousel.css?v=20260914-1643';
+    link.dataset.serviceCarouselStyle='1';
+    document.head.appendChild(link);
+  }
+
   const root=document.querySelector('#behandlungen');
   if(!root)return;
 
