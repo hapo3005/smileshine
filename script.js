@@ -6,7 +6,7 @@ if(toggle&&nav){
 }
 const year=document.querySelector('#year');if(year)year.textContent=new Date().getFullYear();
 
-const bookingState={service:'',duration:'',date:'',dateLabel:'',time:'',customer:null,payment:'Im Studio',waitlist:false,precheck:{}};
+const bookingState={serviceId:'',service:'',duration:'',date:'',dateLabel:'',time:'',customer:null,payment:'Im Studio',waitlist:false,precheck:{}};
 const panels=[...document.querySelectorAll('.booking-panel')];
 const progress=[...document.querySelectorAll('.progress-step')];
 const paymentButtons=[...document.querySelectorAll('.payment-option')];
@@ -63,15 +63,20 @@ function buildDates(){
   const weekdays=['So','Mo','Di','Mi','Do','Fr','Sa'];
   const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   const start=new Date();
-  for(let offset=1;offset<=14;offset++){
+  const availability=window.SmileShineBookingData;
+  for(let offset=1;offset<=30;offset++){
     const d=new Date(start);d.setHours(12,0,0,0);d.setDate(start.getDate()+offset);
-    if(d.getDay()===0)continue;
-    const btn=document.createElement('button');btn.type='button';btn.className='date-option';btn.dataset.iso=d.toISOString().slice(0,10);btn.dataset.label=formatDate(d);
+    const iso=d.toISOString().slice(0,10);
+    if(availability?.availableSlots&&!availability.availableSlots(iso,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)).length)continue;
+    if(!availability?.availableSlots&&d.getDay()===0)continue;
+    const btn=document.createElement('button');btn.type='button';btn.className='date-option';btn.dataset.iso=iso;btn.dataset.label=formatDate(d);
     btn.innerHTML=`<small>${weekdays[d.getDay()]}</small><strong>${String(d.getDate()).padStart(2,'0')}</strong><span>${months[d.getMonth()]}</span>`;
     btn.addEventListener('click',()=>selectDate(btn));dateScroller.appendChild(btn);
     if(dateScroller.children.length>=7)break;
   }
-  const first=dateScroller.querySelector('.date-option');if(first)selectDate(first);
+  const first=dateScroller.querySelector('.date-option');
+  if(first)selectDate(first);
+  else if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">In den nächsten 30 Tagen ist aktuell kein passender Termin frei.</div>';
 }
 
 function selectDate(btn){
@@ -84,7 +89,10 @@ function selectDate(btn){
 function buildTimes(){
   if(!timeSlots)return;
   const d=bookingState.date?new Date(`${bookingState.date}T12:00:00`):new Date();
-  const slots=slotProfile(d,bookingState.service);timeSlots.innerHTML='';
+  const availability=window.SmileShineBookingData;
+  const slots=availability?.availableSlots?availability.availableSlots(bookingState.date,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)):slotProfile(d,bookingState.service);
+  timeSlots.innerHTML='';
+  if(!slots.length){timeSlots.innerHTML='<div class="time-placeholder">An diesem Tag ist aktuell keine passende Zeit frei.</div>';return;}
   slots.forEach(time=>{
     const btn=document.createElement('button');btn.type='button';btn.className='time-slot';btn.textContent=time;
     btn.addEventListener('click',()=>{
@@ -114,6 +122,7 @@ function selectServiceButton(btn){
   if(!service)return;
   document.querySelectorAll('.service-option').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
+  bookingState.serviceId=String(btn.dataset.serviceId||service).trim();
   bookingState.service=service;
   bookingState.duration=duration;
   bookingState.date='';bookingState.dateLabel='';bookingState.time='';bookingState.precheck={};
@@ -165,10 +174,10 @@ document.getElementById('paymentContinue')?.addEventListener('click',()=>{
 
 if(waitlistToggle&&waitlistForm){
   waitlistToggle.addEventListener('click',()=>{waitlistForm.hidden=!waitlistForm.hidden;waitlistToggle.textContent=waitlistForm.hidden?'Warteliste':'Schließen'});
-  waitlistForm.addEventListener('submit',e=>{e.preventDefault();bookingState.waitlist=true;waitlistForm.hidden=true;waitlistToggle.textContent='✓ Vorgemerkt';waitlistToggle.classList.add('active');document.getElementById('confirmWaitlist')?.textContent='Vorgemerkt'});
+  waitlistForm.addEventListener('submit',e=>{e.preventDefault();bookingState.waitlist=true;waitlistForm.hidden=true;waitlistToggle.textContent='✓ Vorgemerkt';waitlistToggle.classList.add('active');(()=>{const confirmWaitlist=document.getElementById('confirmWaitlist');if(confirmWaitlist)confirmWaitlist.textContent='Vorgemerkt'})()});
 }
 
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
 updateSummary();
-import('./checkout-enhancements.js?v=20260914-1415');
-import('./booking-admin-sync.js?v=20260914-1415');
+import('./checkout-enhancements.js?v=20260914-1630');
+import('./booking-admin-sync.js?v=20260914-1630');

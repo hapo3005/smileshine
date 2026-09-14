@@ -69,12 +69,13 @@
     }
   }
 
-  const deposits={'Augenbrauen':50,'Lid & Wimpernkranz':40,'Lippen':60,'Beratung':0};
   function refreshCheckout(){
     const service=document.getElementById('summaryService')?.textContent?.trim()||'';
     const date=document.getElementById('summaryDate')?.textContent?.trim()||'–';
     const time=document.getElementById('summaryTime')?.textContent?.trim()||'–';
-    const amount=deposits[service]??0;
+    const state=window.SmileShineBooking?.state;
+    const configured=window.SmileShineBookingData?.getService?.(state?.serviceId||service);
+    const amount=Number(configured?.deposit||0);
     const serviceEl=document.getElementById('checkoutService');if(serviceEl)serviceEl.textContent=service||'–';
     const dateEl=document.getElementById('checkoutDate');if(dateEl)dateEl.textContent=date==='–'?'–':`${date} · ${time} Uhr`;
     const depEl=document.getElementById('checkoutDeposit');if(depEl)depEl.textContent=amount?`${amount.toFixed(2).replace('.',',')} €`:'Keine Anzahlung';

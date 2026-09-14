@@ -25,7 +25,7 @@
     const x=fallback();localStorage.setItem(KEY,JSON.stringify(x));return x;
   }
   function save(db){localStorage.setItem(KEY,JSON.stringify(db))}
-  function service(db,name){return db.services?.find(s=>s.name===name)}
+  function service(db,key){return db.services?.find(s=>String(s.id)===String(key)||s.name===key)}
 
   function free(db,date,time,name){
     if(!db||!date||!time)return true;
@@ -37,34 +37,22 @@
     return !(db.blocked||[]).filter(b=>b.date===date).some(b=>overlap(start,end,mins(b.start),mins(b.end)));
   }
 
-  function chooseService(btn){
-    const api=window.SmileShineBooking;
-    if(api&&typeof api.selectServiceButton==='function'){
-      api.selectServiceButton(btn);
-      refreshDeposit();
-      setTimeout(refreshSlots,60);
-      return;
+  function availableSlots(date,serviceKey,fallbackDuration=30){
+    const db=load(),s=service(db,serviceKey);
+    if(!s||s.active===false)return [];
+    const day=new Date(`${date}T12:00:00`).getDay(),hours=db.workingHours?.[day];
+    if(!hours?.enabled)return [];
+    const duration=Number(s.duration||fallbackDuration||30),interval=Math.max(15,Number(db.slotInterval||30));
+    const slots=[];
+    for(let start=mins(hours.start),last=mins(hours.end);start+duration<=last;start+=interval){
+      const time=`${String(Math.floor(start/60)).padStart(2,'0')}:${String(start%60).padStart(2,'0')}`;
+      if(free(db,date,time,s.id))slots.push(time);
     }
-    // Compatibility fallback for an older cached main script: existing buttons keep
-    // their original addEventListener handlers because syncServices no longer replaces them.
-  }
-
-  function bindGeneratedButton(btn){
-    if(btn.dataset.syncBound==='1')return;
-    btn.dataset.syncBound='1';
-    btn.addEventListener('click',event=>{
-      if(btn.disabled||btn.hidden)return;
-      const api=window.SmileShineBooking;
-      if(api&&typeof api.selectServiceButton==='function'){
-        event.preventDefault();
-        api.selectServiceButton(btn);
-        refreshDeposit();
-        setTimeout(refreshSlots,60);
-      }
-    });
+    return slots;
   }
 
   function updateButton(btn,s,index){
+    btn.dataset.serviceId=s.id;
     btn.dataset.service=s.name;
     btn.dataset.duration=String(Number(s.duration||30));
     btn.hidden=s.active===false;
@@ -77,7 +65,7 @@
     const btn=document.createElement('button');
     btn.className='service-option';btn.type='button';btn.dataset.generated='1';
     btn.innerHTML=`<span class="service-index">${String(index+1).padStart(2,'0')}</span><span class="service-info"><strong>${esc(s.name)}</strong><small>${esc(s.description||'Beauty-Behandlung')} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
-    updateButton(btn,s,index);bindGeneratedButton(btn);return btn;
+    updateButton(btn,s,index);return btn;
   }
 
   function syncServices(){
@@ -87,13 +75,13 @@
     const used=new Set();
 
     services.forEach((s,index)=>{
-      let btn=existing.find(b=>!used.has(b)&&String(b.dataset.service||'')===s.name);
+      let btn=existing.find(b=>!used.has(b)&&String(b.dataset.serviceId||'')===String(s.id||''));
+      if(!btn)btn=existing.find(b=>!used.has(b)&&String(b.dataset.service||'')===s.name);
       if(!btn)btn=makeButton(s,index);
       else updateButton(btn,s,index);
       used.add(btn);
       if(s.active!==false)root.appendChild(btn); // reorders without destroying existing listeners
       else btn.hidden=true;
-      if(btn.dataset.generated==='1')bindGeneratedButton(btn);
     });
 
     existing.forEach(btn=>{
@@ -108,17 +96,18 @@
       if(!empty){empty=document.createElement('div');empty.className='time-placeholder sync-services-empty';empty.textContent='Aktuell sind keine Leistungen online buchbar. Bitte kontaktiere das Studio direkt.';root.appendChild(empty)}
     }else if(empty)empty.remove();
 
-    const selected=window.SmileShineBooking?.state?.service;
-    if(selected&&!active.some(s=>s.name===selected)){
+    const state=window.SmileShineBooking?.state;
+    const selected=state?.serviceId||state?.service;
+    if(selected&&!active.some(s=>String(s.id)===String(selected)||s.name===selected)){
       const state=window.SmileShineBooking.state;
-      state.service='';state.duration='';state.date='';state.dateLabel='';state.time='';
+      state.serviceId='';state.service='';state.duration='';state.date='';state.dateLabel='';state.time='';
       window.SmileShineBooking.updateSummary?.();
       window.SmileShineBooking.setStep?.(1);
     }
   }
 
   function refreshDeposit(){
-    const db=load(),name=window.SmileShineBooking?.state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');
+    const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');
     if(!card||!s)return;
     const strong=$('strong',card),copy=$('p',card);
     if(strong)strong.textContent=Number(s.deposit||0)>0?`${money(s.deposit)} für diese Leistung`:'Keine Anzahlung hinterlegt';
@@ -126,14 +115,8 @@
   }
 
   function refreshSlots(){
-    const db=load(),root=$('#timeSlots'),selected=$('.date-option.selected'),serviceName=window.SmileShineBooking?.state?.service||$('#summaryService')?.textContent?.trim();
-    if(!root||!selected||!serviceName||serviceName==='Noch nicht gewählt')return;
-    const date=selected.dataset.iso,buttons=$$('.time-slot',root);
-    buttons.forEach(btn=>{const ok=free(db,date,btn.textContent.trim(),serviceName);btn.hidden=!ok;btn.disabled=!ok});
-    let empty=$('.synced-empty',root);const visible=buttons.some(btn=>!btn.hidden);
-    if(!visible&&!empty){empty=document.createElement('div');empty.className='time-placeholder synced-empty';empty.textContent='An diesem Tag ist aktuell keine passende Zeit frei.';root.appendChild(empty)}
-    if(visible&&empty)empty.remove();
-    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Mit Studio-Kalender verbunden';
+    const status=$('.summary-status');
+    if(status)status.innerHTML='<span></span>Mit Studio-Kalender verbunden';
   }
 
   function finalButton(){
@@ -144,9 +127,9 @@
   }
 
   function commit(panel,button){
-    const db=load(),serviceName=window.SmileShineBooking?.state?.service||$('#summaryService')?.textContent?.trim(),date=$('.date-option.selected')?.dataset.iso,time=$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm');
+    const db=load(),state=window.SmileShineBooking?.state,serviceKey=state?.serviceId||state?.service,serviceName=state?.service||$('#summaryService')?.textContent?.trim(),date=state?.date||$('.date-option.selected')?.dataset.iso,time=state?.time||$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm');
     if(!serviceName||!date||!time||!form)return;
-    const s=service(db,serviceName);if(!s||s.active===false){message(panel,'Diese Leistung ist derzeit pausiert und kann nicht gebucht werden.',true);return}
+    const s=service(db,serviceKey||serviceName);if(!s||s.active===false){message(panel,'Diese Leistung ist derzeit pausiert und kann nicht gebucht werden.',true);return}
     if(!free(db,date,time,serviceName)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
     const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),note=String(data.get('note')||'').trim();
     let customer=(db.customers||[]).find(c=>(email&&c.email===email)||(phone&&c.phone===phone));
@@ -165,9 +148,8 @@
     box.innerHTML=`<strong>${error?'Nicht verfügbar':'Demo-Buchung gespeichert'}</strong><span>${text}</span>`;
   }
 
-  document.addEventListener('click',e=>{if(e.target.closest('.date-option'))setTimeout(refreshSlots,60)});
-  const times=$('#timeSlots');if(times)new MutationObserver(()=>setTimeout(refreshSlots,0)).observe(times,{childList:true});
-  window.addEventListener('storage',e=>{if(e.key===KEY){syncServices();refreshDeposit();refreshSlots()}});
+  window.SmileShineBookingData={availableSlots,getService:key=>service(load(),key),load};
+  window.addEventListener('storage',e=>{if(e.key===KEY){syncServices();refreshDeposit();window.SmileShineBooking?.buildDates?.();refreshSlots()}});
 
   syncServices();
   finalButton();
