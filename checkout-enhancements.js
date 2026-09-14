@@ -92,3 +92,5 @@
   observer.observe(paymentPanel,{attributes:true,attributeFilter:['class']});
   refreshCheckout();
 })();
+
+import('./service-carousel.js?v=20260914-1643');
