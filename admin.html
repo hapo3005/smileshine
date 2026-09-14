@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f8f4f2">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Studio · Smile & Shine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-app">
+    <aside class="sidebar" aria-label="Studio-Navigation">
+      <a class="admin-brand" href="#dashboard" aria-label="Smile & Shine Studio Start">
+        <span class="admin-brand-mark">S</span>
+        <span><strong>SMILE &amp; SHINE</strong><small>STUDIO</small></span>
+      </a>
+
+      <nav class="side-nav">
+        <button class="nav-item active" type="button" data-view="dashboard"><span class="nav-icon">⌂</span><span>Startseite</span></button>
+        <button class="nav-item" type="button" data-view="calendar"><span class="nav-icon">□</span><span>Kalender</span></button>
+        <button class="nav-item" type="button" data-view="appointments"><span class="nav-icon">≡</span><span>Termine</span></button>
+        <button class="nav-item" type="button" data-view="customers"><span class="nav-icon">○</span><span>Kunden</span></button>
+        <button class="nav-item" type="button" data-view="services"><span class="nav-icon">◇</span><span>Leistungen</span></button>
+        <button class="nav-item" type="button" data-view="availability"><span class="nav-icon">◷</span><span>Verfügbarkeit</span></button>
+        <button class="nav-item" type="button" data-view="settings"><span class="nav-icon">⚙</span><span>Einstellungen</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="demo-state"><span></span><div><strong>Demo-Modus</strong><small>Lokal auf diesem Gerät</small></div></div>
+        <a href="index.html" class="customer-site-link">Kundenseite öffnen ↗</a>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="topbar">
+        <div>
+          <p class="topbar-kicker">Smile &amp; Shine · Wittlich-Bombogen</p>
+          <h1 id="pageTitle">Guten Tag, Birgit.</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="sync-pill"><i></i> Demo synchron</span>
+          <a href="index.html#booking" class="topbar-link">Buchung ansehen</a>
+          <button class="primary-action" id="quickAdd" type="button"><span>＋</span> Termin</button>
+        </div>
+      </header>
+
+      <div class="mobile-header">
+        <a class="mobile-brand" href="#dashboard"><span class="admin-brand-mark">S</span><span><strong>Smile &amp; Shine</strong><small>Studio</small></span></a>
+        <button class="mobile-add" id="mobileAdd" type="button" aria-label="Termin hinzufügen">＋</button>
+      </div>
+
+      <section class="view active" data-view-panel="dashboard">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow">Heute im Studio</p>
+            <h2 id="todayHeading">Dein Tag auf einen Blick.</h2>
+            <p class="muted" id="todaySubline"></p>
+          </div>
+          <button class="soft-button" type="button" data-jump="calendar">Tageskalender öffnen →</button>
+        </div>
+
+        <div class="kpi-grid" id="kpiGrid"></div>
+
+        <div class="dashboard-grid">
+          <article class="panel today-panel">
+            <div class="panel-head"><div><span class="panel-kicker">Tagesplan</span><h3>Heutige Termine</h3></div><button class="text-button" type="button" data-jump="appointments">Alle Termine</button></div>
+            <div class="today-list" id="todayList"></div>
+          </article>
+
+          <article class="panel week-panel">
+            <div class="panel-head"><div><span class="panel-kicker">Auslastung</span><h3>Diese Woche</h3></div><span class="panel-meta" id="weekMeta"></span></div>
+            <div class="week-bars" id="weekBars"></div>
+            <div class="next-free" id="nextFree"></div>
+          </article>
+        </div>
+
+        <div class="dashboard-grid secondary-grid">
+          <article class="panel quick-panel">
+            <div class="panel-head"><div><span class="panel-kicker">Schnellzugriff</span><h3>Was möchtest du tun?</h3></div></div>
+            <div class="quick-grid">
+              <button type="button" data-action="newAppointment"><span>＋</span><strong>Termin eintragen</strong><small>Manuelle Buchung</small></button>
+              <button type="button" data-jump="availability"><span>◷</span><strong>Zeit blockieren</strong><small>Pause, Urlaub, privat</small></button>
+              <button type="button" data-jump="customers"><span>○</span><strong>Kunden öffnen</strong><small>Kontaktdaten & Historie</small></button>
+              <button type="button" data-jump="services"><span>◇</span><strong>Leistungen</strong><small>Dauer, Preis, Anzahlung</small></button>
+            </div>
+          </article>
+
+          <article class="panel activity-panel">
+            <div class="panel-head"><div><span class="panel-kicker">Neu</span><h3>Letzte Aktivitäten</h3></div></div>
+            <div id="activityList" class="activity-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="calendar">
+        <div class="view-heading">
+          <div><p class="eyebrow">Kalender</p><h2>Termine und freie Zeiten.</h2><p class="muted">Buchungen, Pausen und Sperrzeiten in einer Tagesansicht.</p></div>
+          <div class="date-controls"><button id="prevDay" type="button" aria-label="Vorheriger Tag">←</button><button id="calendarToday" type="button">Heute</button><button id="nextDay" type="button" aria-label="Nächster Tag">→</button></div>
+        </div>
+        <article class="panel calendar-panel">
+          <div class="calendar-date-head"><div><span id="calendarWeekday">Montag</span><strong id="calendarDate">14. September</strong></div><div class="calendar-legend"><span><i class="legend-booking"></i> Termin</span><span><i class="legend-block"></i> Gesperrt</span></div></div>
+          <div class="day-schedule" id="daySchedule"></div>
+        </article>
+      </section>
+
+      <section class="view" data-view-panel="appointments">
+        <div class="view-heading"><div><p class="eyebrow">Terminverwaltung</p><h2>Alle Termine.</h2><p class="muted">Suchen, filtern, bestätigen, absagen oder direkt einen neuen Termin eintragen.</p></div><button class="primary-action" type="button" data-action="newAppointment">＋ Neuer Termin</button></div>
+        <article class="panel list-panel">
+          <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="appointmentSearch" type="search" placeholder="Name oder Leistung suchen"></label><select id="appointmentFilter"><option value="upcoming">Kommende</option><option value="all">Alle</option><option value="confirmed">Bestätigt</option><option value="pending">Offen</option><option value="cancelled">Abgesagt</option></select></div>
+          <div id="appointmentsList" class="appointments-list"></div>
+        </article>
+      </section>
+
+      <section class="view" data-view-panel="customers">
+        <div class="view-heading"><div><p class="eyebrow">Kunden</p><h2>Kundenkartei.</h2><p class="muted">Kontaktdaten und Terminverlauf – im Demo-Modus nur lokal auf diesem Gerät.</p></div></div>
+        <article class="panel list-panel">
+          <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="customerSearch" type="search" placeholder="Kunden suchen"></label><span class="result-count" id="customerCount"></span></div>
+          <div id="customersList" class="customers-list"></div>
+        </article>
+      </section>
+
+      <section class="view" data-view-panel="services">
+        <div class="view-heading"><div><p class="eyebrow">Leistungen</p><h2>Angebot verwalten.</h2><p class="muted">Dauer, Preis und mögliche Anzahlung steuern später direkt die Online-Buchung.</p></div></div>
+        <div id="servicesGrid" class="services-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="availability">
+        <div class="view-heading"><div><p class="eyebrow">Verfügbarkeit</p><h2>Wann darf gebucht werden?</h2><p class="muted">Arbeitszeiten und Sperrzeiten bilden die Grundlage der freien Online-Termine.</p></div></div>
+        <div class="availability-grid">
+          <article class="panel"><div class="panel-head"><div><span class="panel-kicker">Wochenplan</span><h3>Reguläre Arbeitszeiten</h3></div></div><div id="workingHours" class="working-hours"></div><button class="soft-button full" id="saveHours" type="button">Arbeitszeiten speichern</button></article>
+          <article class="panel"><div class="panel-head"><div><span class="panel-kicker">Blockieren</span><h3>Pause, Urlaub oder privat</h3></div></div><form id="blockForm" class="block-form"><label><span>Datum</span><input type="date" name="date" required></label><div class="form-row"><label><span>Von</span><input type="time" name="start" value="12:00" required></label><label><span>Bis</span><input type="time" name="end" value="13:00" required></label></div><label><span>Grund</span><input type="text" name="label" placeholder="z. B. Mittagspause" required></label><button class="primary-action full" type="submit">Zeit blockieren</button></form><div class="block-list" id="blockList"></div></article>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="settings">
+        <div class="view-heading"><div><p class="eyebrow">Einstellungen</p><h2>Studio-System.</h2><p class="muted">Die spätere Live-Version erhält Login, Cloud-Datenbank, Benachrichtigungen und Zahlungsanbindung.</p></div></div>
+        <div class="settings-grid">
+          <article class="panel setting-card"><span class="setting-icon">⌁</span><div><strong>Demo-Datenspeicher</strong><p>Termine und Einstellungen werden derzeit nur im Browser gespeichert. So können Kundenseite und Adminbereich auf diesem Gerät bereits zusammenspielen.</p></div><button class="soft-button" id="resetDemo" type="button">Demo zurücksetzen</button></article>
+          <article class="panel setting-card"><span class="setting-icon">🔒</span><div><strong>Login & Rechte</strong><p>Für den Livegang wird der Adminbereich geschützt. Zugriff erhält nur das Studio.</p></div><span class="status-tag planned">Backend</span></article>
+          <article class="panel setting-card"><span class="setting-icon">✉</span><div><strong>Bestätigungen & Erinnerungen</strong><p>E-Mail und optional SMS nach Buchung, vor dem Termin und bei Änderungen.</p></div><span class="status-tag planned">Geplant</span></article>
+          <article class="panel setting-card"><span class="setting-icon">€</span><div><strong>Online-Zahlung</strong><p>Anzahlungen je Leistung mit Stripe, Apple Pay und Google Pay.</p></div><span class="status-tag planned">Geplant</span></article>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-nav" aria-label="Mobile Studio-Navigation">
+      <button class="active" type="button" data-view="dashboard"><span>⌂</span><small>Start</small></button>
+      <button type="button" data-view="calendar"><span>□</span><small>Kalender</small></button>
+      <button class="mobile-nav-add" type="button" data-action="newAppointment" aria-label="Termin hinzufügen"><span>＋</span></button>
+      <button type="button" data-view="customers"><span>○</span><small>Kunden</small></button>
+      <button type="button" data-view="settings"><span>•••</span><small>Mehr</small></button>
+    </nav>
+  </div>
+
+  <dialog class="modal" id="appointmentModal">
+    <form method="dialog" class="modal-card" id="appointmentForm">
+      <div class="modal-head"><div><span class="panel-kicker">Manuell eintragen</span><h3>Neuer Termin</h3></div><button type="button" class="modal-close" data-close-modal aria-label="Schließen">×</button></div>
+      <div class="modal-body">
+        <label><span>Kundin / Kunde</span><input name="customerName" required placeholder="Vor- und Nachname"></label>
+        <div class="form-row"><label><span>Telefon</span><input name="phone" type="tel" placeholder="Optional"></label><label><span>E-Mail</span><input name="email" type="email" placeholder="Optional"></label></div>
+        <label><span>Leistung</span><select name="service" id="appointmentService" required></select></label>
+        <div class="form-row"><label><span>Datum</span><input name="date" type="date" required></label><label><span>Uhrzeit</span><input name="time" type="time" required></label></div>
+        <label><span>Hinweis</span><textarea name="note" rows="3" placeholder="Optional"></textarea></label>
+      </div>
+      <div class="modal-actions"><button type="button" class="soft-button" data-close-modal>Abbrechen</button><button type="submit" class="primary-action">Termin speichern</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="admin.js"></script>
+</body>
+</html>
