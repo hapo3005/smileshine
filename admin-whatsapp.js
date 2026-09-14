@@ -19,11 +19,9 @@
     try{return new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(new Date(`${value}T12:00:00`))}catch{return value}
   }
   function appointment(id){return (A.db.appointments||[]).find(a=>a.id===id)}
-  function phoneFor(a){
-    if(a?.phone)return a.phone;
-    const customer=(A.db.customers||[]).find(c=>c.id===a?.customerId)||((A.db.customers||[]).find(c=>c.email&&a?.email&&c.email===a.email));
-    return customer?.phone||'';
-  }
+  function customerFor(a){return (A.db.customers||[]).find(c=>c.id===a?.customerId)||((A.db.customers||[]).find(c=>c.email&&a?.email&&c.email===a.email))}
+  function phoneFor(a){return a?.phone||customerFor(a)?.phone||''}
+  function isDemoContact(a){return Boolean(a?.isDemoBooking||customerFor(a)?.isDemoProfile)}
 
   function message(type,a){
     const hello=`Hallo ${firstName(a.customerName)} 👋`;
@@ -49,10 +47,12 @@
       .wa-dialog-body{padding:20px 24px 24px;display:grid;gap:14px}
       .wa-appointment-summary{padding:13px 14px;border:1px solid var(--line);border-radius:13px;background:#fffaf8;display:grid;gap:3px}
       .wa-appointment-summary strong{font-size:13px}.wa-appointment-summary small{color:var(--muted);font-size:10px}
+      .wa-demo-warning{display:block;margin-top:5px;color:var(--rose-deep)!important;font-weight:700}
       .wa-template-grid{display:grid;gap:9px}
       .wa-template-button{width:100%;text-align:left;border:1px solid var(--line);border-radius:14px;background:#fffaf8;padding:14px 15px;cursor:pointer;color:var(--ink)}
       .wa-template-button:hover{border-color:#d7bbb5;background:#fff}.wa-template-button strong{display:block;font-size:12px;margin-bottom:3px}.wa-template-button small{display:block;color:var(--muted);font-size:10px;line-height:1.45}
       .wa-hint{font-size:10px;line-height:1.5;color:var(--muted);margin:0}
+      .status-tag.whatsapp-active{background:var(--rose-soft);color:var(--rose-deep)}
       @media(max-width:720px){.wa-dialog-head,.wa-dialog-body{padding-left:18px;padding-right:18px}}
     `;document.head.appendChild(style);
   }
@@ -69,12 +69,14 @@
     ensureDialog();const a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
     const phone=phoneFor(a);if(!phone)return A.toast('Für diesen Kunden ist keine Telefonnummer hinterlegt.');
     const dialog=$('#whatsappDialog');dialog.dataset.appointmentId=id;
-    $('#waAppointmentSummary').innerHTML=`<strong>${escapeHTML(a.customerName)} · ${escapeHTML(phone)}</strong><small>${escapeHTML(longDate(a.date))} · ${escapeHTML(a.time)} Uhr · ${escapeHTML(a.service)}</small>`;
+    const warning=isDemoContact(a)?'<small class="wa-demo-warning">Testprofil · kein echter WhatsApp-Empfänger wird geöffnet.</small>':'';
+    $('#waAppointmentSummary').innerHTML=`<strong>${escapeHTML(a.customerName)} · ${escapeHTML(phone)}</strong><small>${escapeHTML(longDate(a.date))} · ${escapeHTML(a.time)} Uhr · ${escapeHTML(a.service)}</small>${warning}`;
     dialog.showModal();
   }
 
   function openMessage(id,type){
     const a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
+    if(isDemoContact(a))return A.toast('Testprofil: WhatsApp wird aus Sicherheitsgründen nicht geöffnet.');
     const phone=normalizePhone(phoneFor(a));if(!phone)return A.toast('Die Telefonnummer kann nicht für WhatsApp verwendet werden.');
     const url=`https://wa.me/${phone}?text=${encodeURIComponent(message(type,a))}`;
     window.open(url,'_blank','noopener,noreferrer');
@@ -95,6 +97,13 @@
     });
   }
 
+  function decorateSettings(){
+    const card=$$('.setting-card').find(item=>$('strong',item)?.textContent?.trim()==='Bestätigungen & Erinnerungen');if(!card)return;
+    const copy=$('p',card),tag=$('.status-tag',card);
+    if(copy)copy.textContent='Kostenlose WhatsApp-Vorlagen für Bestätigung, Erinnerung und Terminänderung sind aktiv. E-Mail-Automatik folgt mit dem Backend.';
+    if(tag){tag.textContent='WhatsApp aktiv';tag.classList.remove('planned');tag.classList.add('whatsapp-active')}
+  }
+
   function bind(){
     if(A.whatsappBound)return;A.whatsappBound=true;
     document.addEventListener('click',event=>{
@@ -107,6 +116,6 @@
     const detail=$('#customerDetailBody');if(detail)new MutationObserver(()=>queueMicrotask(decorateCustomerDetail)).observe(detail,{childList:true,subtree:true});
   }
 
-  function initWhatsApp(){ensureDialog();bind();decorateAppointments();decorateCustomerDetail()}
+  function initWhatsApp(){ensureDialog();bind();decorateAppointments();decorateCustomerDetail();decorateSettings()}
   Object.assign(A,{initWhatsApp,openWhatsAppChooser:openChooser});
 })();
