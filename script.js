@@ -25,13 +25,18 @@ function updateSummary(){
   Object.entries(values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value});
 }
 function formatDate(date){return new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long'}).format(date)}
+function getDemoSlots(dateIso,service){
+  const base=['09:00','09:45','10:30','11:15','12:00','13:30','14:15','15:00','15:45','16:30','17:15'];
+  const seed=[...`${dateIso}-${service}`].reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
+  return base.filter((_,index)=>((seed+index*7)%5)!==0).slice(0,6);
+}
 function buildDates(){
   if(!dateScroller)return;
   dateScroller.innerHTML='';
   const weekdays=['So','Mo','Di','Mi','Do','Fr','Sa'];
   const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   const start=new Date();
-  for(let offset=1;offset<=10;offset++){
+  for(let offset=1;offset<=12;offset++){
     const d=new Date(start);d.setDate(start.getDate()+offset);
     if(d.getDay()===0)continue;
     const btn=document.createElement('button');btn.type='button';btn.className='date-option';btn.dataset.iso=d.toISOString().slice(0,10);btn.dataset.label=formatDate(d);
@@ -39,6 +44,8 @@ function buildDates(){
     btn.addEventListener('click',()=>selectDate(btn));dateScroller.appendChild(btn);
     if(dateScroller.children.length>=7)break;
   }
+  const firstDate=dateScroller.querySelector('.date-option');
+  if(firstDate)selectDate(firstDate);
 }
 function selectDate(btn){
   document.querySelectorAll('.date-option').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');
@@ -48,14 +55,15 @@ function selectDate(btn){
 }
 function buildTimes(){
   if(!timeSlots)return;
-  const slots=['09:00','10:30','12:00','14:00','15:30','17:00'];
+  const slots=getDemoSlots(bookingState.date,bookingState.service);
   timeSlots.innerHTML='';
+  if(!slots.length){timeSlots.innerHTML='<div class="time-placeholder">Für diesen Tag sind aktuell keine freien Zeiten verfügbar.</div>';return;}
   slots.forEach(time=>{const btn=document.createElement('button');btn.type='button';btn.className='time-slot';btn.textContent=time;btn.addEventListener('click',()=>{document.querySelectorAll('.time-slot').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');bookingState.time=time;updateSummary();setTimeout(()=>setStep(3),180)});timeSlots.appendChild(btn)});
 }
 serviceButtons.forEach(btn=>btn.addEventListener('click',()=>{
   serviceButtons.forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');
   bookingState.service=btn.dataset.service;bookingState.duration=btn.dataset.duration;bookingState.date='';bookingState.dateLabel='';bookingState.time='';
-  updateSummary();buildDates();if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">Bitte zuerst ein Datum auswählen.</div>';if(selectedDateLabel)selectedDateLabel.textContent='Datum auswählen';setTimeout(()=>setStep(2),180);
+  updateSummary();buildDates();setTimeout(()=>setStep(2),180);
 }));
 
 document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>setStep(Number(btn.dataset.back))));
