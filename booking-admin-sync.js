@@ -39,30 +39,74 @@
 
   function chooseService(btn){
     const api=window.SmileShineBooking;
-    if(!api||typeof api.selectServiceButton!=='function')return;
-    api.selectServiceButton(btn);
-    refreshDeposit();
-    setTimeout(refreshSlots,60);
+    if(api&&typeof api.selectServiceButton==='function'){
+      api.selectServiceButton(btn);
+      refreshDeposit();
+      setTimeout(refreshSlots,60);
+      return;
+    }
+    // Compatibility fallback for an older cached main script: existing buttons keep
+    // their original addEventListener handlers because syncServices no longer replaces them.
   }
 
-  function bindRenderedServices(root){
-    $$('.service-option',root).forEach(btn=>{
-      btn.onclick=event=>{
+  function bindGeneratedButton(btn){
+    if(btn.dataset.syncBound==='1')return;
+    btn.dataset.syncBound='1';
+    btn.addEventListener('click',event=>{
+      if(btn.disabled||btn.hidden)return;
+      const api=window.SmileShineBooking;
+      if(api&&typeof api.selectServiceButton==='function'){
         event.preventDefault();
-        event.stopPropagation();
-        if(btn.disabled||btn.hidden)return;
-        chooseService(btn);
-      };
+        api.selectServiceButton(btn);
+        refreshDeposit();
+        setTimeout(refreshSlots,60);
+      }
     });
+  }
+
+  function updateButton(btn,s,index){
+    btn.dataset.service=s.name;
+    btn.dataset.duration=String(Number(s.duration||30));
+    btn.hidden=s.active===false;
+    const idx=$('.service-index',btn);if(idx)idx.textContent=String(index+1).padStart(2,'0');
+    const title=$('.service-info strong',btn);if(title)title.textContent=s.name;
+    const info=$('.service-info small',btn);if(info)info.textContent=`${s.description||'Beauty-Behandlung'} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}`;
+  }
+
+  function makeButton(s,index){
+    const btn=document.createElement('button');
+    btn.className='service-option';btn.type='button';btn.dataset.generated='1';
+    btn.innerHTML=`<span class="service-index">${String(index+1).padStart(2,'0')}</span><span class="service-info"><strong>${esc(s.name)}</strong><small>${esc(s.description||'Beauty-Behandlung')} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
+    updateButton(btn,s,index);bindGeneratedButton(btn);return btn;
   }
 
   function syncServices(){
     const db=load(),root=$('.service-options');if(!root)return;
-    const active=(db.services||[]).filter(s=>s.active!==false);
-    root.innerHTML=active.length
-      ?active.map((s,i)=>`<button class="service-option" type="button" data-service="${esc(s.name)}" data-duration="${Number(s.duration||30)}"><span class="service-index">${String(i+1).padStart(2,'0')}</span><span class="service-info"><strong>${esc(s.name)}</strong><small>${esc(s.description||'Beauty-Behandlung')} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span></button>`).join('')
-      :'<div class="time-placeholder">Aktuell sind keine Leistungen online buchbar. Bitte kontaktiere das Studio direkt.</div>';
-    bindRenderedServices(root);
+    const services=db.services||[];
+    const existing=$$('.service-option',root);
+    const used=new Set();
+
+    services.forEach((s,index)=>{
+      let btn=existing.find(b=>!used.has(b)&&String(b.dataset.service||'')===s.name);
+      if(!btn)btn=makeButton(s,index);
+      else updateButton(btn,s,index);
+      used.add(btn);
+      if(s.active!==false)root.appendChild(btn); // reorders without destroying existing listeners
+      else btn.hidden=true;
+      if(btn.dataset.generated==='1')bindGeneratedButton(btn);
+    });
+
+    existing.forEach(btn=>{
+      if(used.has(btn))return;
+      if(btn.dataset.generated==='1')btn.remove();
+      else btn.hidden=true;
+    });
+
+    let empty=$('.sync-services-empty',root);
+    const active=services.filter(s=>s.active!==false);
+    if(!active.length){
+      if(!empty){empty=document.createElement('div');empty.className='time-placeholder sync-services-empty';empty.textContent='Aktuell sind keine Leistungen online buchbar. Bitte kontaktiere das Studio direkt.';root.appendChild(empty)}
+    }else if(empty)empty.remove();
 
     const selected=window.SmileShineBooking?.state?.service;
     if(selected&&!active.some(s=>s.name===selected)){
