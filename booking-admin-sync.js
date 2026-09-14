@@ -2,7 +2,7 @@
   'use strict';
 
   const KEY='smileshine_studio_v1';
-  const CATALOG_VERSION=2;
+  const CATALOG_VERSION=3;
   const CATALOG=[
     {id:'pmu',category:'Beratung & Grundlagen',name:'Permanent Make-up',description:'Individuelle Pigmentierung für ein dauerhaft gepflegtes Erscheinungsbild.',duration:90,price:0,deposit:0,active:true,verification:'verified',internalNote:'Öffentlich für Smile & Shine verifiziert.'},
     {id:'cosmetic',category:'Beratung & Grundlagen',name:'Kosmetische Behandlung',description:'Individuell abgestimmte kosmetische Behandlung im Studio.',duration:60,price:0,deposit:0,active:true,verification:'verified',internalNote:'Öffentlich für Smile & Shine verifiziert.'},
@@ -27,18 +27,20 @@
   const overlap=(a,b,c,d)=>a<d&&b>c;
   const uid=p=>`${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
   const today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
-  const esc=v=>String(v??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','\"':'&quot;'}[c]||c));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const money=v=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(v||0));
   const customerNumber=n=>`K-${String(Number(n)||0).padStart(5,'0')}`;
   const customerNumberValue=value=>{const match=String(value||'').match(/^K-(\d+)$/i);return match?Number(match[1]):0};
 
   function migrateCatalog(db){
     db.services=Array.isArray(db.services)?db.services:[];
-    if(Number(db.catalogVersion||0)>=CATALOG_VERSION&&db.services.length>=15)return db;
     const current=new Map(db.services.map(s=>[String(s.id),s]));
+    const needsMigration=Number(db.catalogVersion||0)<CATALOG_VERSION||db.services.length<15;
+    if(!needsMigration)return db;
     db.services=CATALOG.map(base=>{
       const old=current.get(base.id);
-      return old?{...base,...old,category:base.category,verification:base.verification,internalNote:base.internalNote}:{...base};
+      if(!old)return {...base};
+      return {...base,...old,name:base.name,description:base.description,category:base.category,verification:base.verification,internalNote:base.internalNote};
     });
     db.catalogVersion=CATALOG_VERSION;
     return db;
@@ -96,15 +98,43 @@
     const categories=[...new Set(active.map(s=>s.category||'Leistungen'))];let counter=0;
     categories.forEach(category=>{
       const section=document.createElement('section');section.className='service-group';
-      const heading=document.createElement('div');heading.className='service-group-title';heading.textContent=category;section.appendChild(heading);
+      const heading=document.createElement('div');heading.className='service-group-title';heading.innerHTML=`<span>${esc(category)}</span>`;section.appendChild(heading);
       const grid=document.createElement('div');grid.className='service-group-grid';
       active.filter(s=>(s.category||'Leistungen')===category).forEach(s=>grid.appendChild(makeButton(s,counter++)));
       section.appendChild(grid);root.appendChild(section);
     });
   }
 
+  function syncPublicServices(){
+    const section=$('#behandlungen');
+    const root=section?.querySelector('.treatment-grid');
+    if(!section||!root)return;
+    const db=load();
+    const active=(db.services||[]).filter(s=>s.active!==false);
+    const heading=section.querySelector('.section-heading.split>p');
+    if(heading)heading.textContent='Entdecke unsere Leistungen rund um Permanent Make-up und Beauty. Für eine persönliche Empfehlung kannst du direkt einen Beratungstermin auswählen.';
+    root.classList.add('public-services-grid');
+    root.innerHTML='';
+    const categories=[...new Set(active.map(s=>s.category||'Leistungen'))];
+    let index=1;
+    categories.forEach(category=>{
+      const group=document.createElement('section');group.className='public-service-group';
+      group.innerHTML=`<div class="public-service-group-head"><span>${esc(category)}</span></div>`;
+      const cards=document.createElement('div');cards.className='public-service-cards';
+      active.filter(s=>(s.category||'Leistungen')===category).forEach(s=>{
+        const card=document.createElement('article');card.className='public-service-card';
+        const price=Number(s.price||0)>0?`<small>${money(s.price)}</small>`:'';
+        card.innerHTML=`<div class="public-service-number">${String(index++).padStart(2,'0')}</div><div><h3>${esc(s.name)}</h3><p>${esc(s.description||'')}</p><div class="public-service-meta"><span>ca. ${Number(s.duration||30)} Min.</span>${price}</div></div><a href="#booking" aria-label="${esc(s.name)} buchen">→</a>`;
+        cards.appendChild(card);
+      });
+      group.appendChild(cards);root.appendChild(group);
+    });
+    const note=section.querySelector('.prototype-note');if(note)note.remove();
+  }
+
   function cleanCustomerCopy(){
     const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Online-Buchung';
+    const categoryLabel=$('.service-category-label');if(categoryLabel)categoryLabel.remove();
     const heads=$$('.booking-panel-head>p');
     const replacements=['Wähle die Behandlung, die zu deinem Wunsch passt.','Wähle einen freien Termin. Die verfügbaren Zeiten werden automatisch aktualisiert.','Mit ein paar Angaben können wir deinen Termin optimal vorbereiten.','Deine Kontaktdaten benötigen wir für Bestätigung und Rückfragen.','Wähle die gewünschte Zahlungsart.','Prüfe deine Angaben vor der verbindlichen Buchung.'];
     heads.forEach((el,i)=>{if(replacements[i])el.textContent=replacements[i]});
@@ -135,9 +165,10 @@
   function message(panel,text,error){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';panel.querySelector('.booking-actions')?.before(box)}box.innerHTML=`<strong>${error?'Nicht verfügbar':'Termin vorgemerkt'}</strong><span>${text}</span>`}
 
   window.SmileShineBookingData={availableSlots,getService:key=>service(load(),key),load,catalog:CATALOG};
-  window.addEventListener('storage',e=>{if(e.key===KEY){syncServices();refreshDeposit();window.SmileShineBooking?.buildDates?.()}});
+  window.addEventListener('storage',e=>{if(e.key===KEY){syncServices();syncPublicServices();refreshDeposit();window.SmileShineBooking?.buildDates?.()}});
 
   syncServices();
+  syncPublicServices();
   cleanCustomerCopy();
   finalButton();
   refreshDeposit();
