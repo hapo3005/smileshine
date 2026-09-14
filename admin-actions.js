@@ -9,6 +9,9 @@
     form.elements.date.value=prefill.date||next?.date||isoDate(addDays(new Date(),1));
     form.elements.time.value=prefill.time||next?.time||'09:00';
     if(prefill.service)form.elements.service.value=prefill.service;
+    if(prefill.customerName)form.elements.customerName.value=prefill.customerName;
+    if(prefill.phone)form.elements.phone.value=prefill.phone;
+    if(prefill.email)form.elements.email.value=prefill.email;
     modal.showModal();
   }
   function closeModal(){const modal=$('#appointmentModal');if(modal?.open)modal.close()}
@@ -51,8 +54,9 @@
     const name=String(data.get('customerName')||'').trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim();
     let customer=A.db.customers.find(c=>(email&&c.email===email)||(phone&&c.phone===phone)||c.name.toLowerCase()===name.toLowerCase());
     if(!customer){customer={id:uid('customer'),name,email,phone,created:isoDate(new Date())};A.db.customers.push(customer);A.addActivity('customer',`Neue Kundin / neuer Kunde: ${name}.`)}
-    A.db.appointments.push({id:uid('appointment'),date,time,duration:service.duration,service:service.name,customerId:customer.id,customerName:name,phone,email,status:'confirmed',payment:'Im Studio',source:'studio',note:String(data.get('note')||'')});
-    A.addActivity('booking',`${name}: ${service.name} am ${dateShort(date)} um ${time} Uhr eingetragen.`);closeModal();A.save('Termin gespeichert.');A.showView('appointments');
+    const price=Number(service.price||0);
+    A.db.appointments.push({id:uid('appointment'),date,time,duration:service.duration,service:service.name,customerId:customer.id,customerName:name,phone,email,status:'confirmed',payment:'Im Studio',paymentPreference:'Im Studio',source:'studio',note:String(data.get('note')||''),listPrice:price,finalPrice:price,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:price>0?'open':'paid'});
+    A.addActivity('booking',`${name}: ${service.name} am ${dateShort(date)} um ${time} Uhr eingetragen.`);closeModal();A.save('Termin gespeichert.');A.refreshPaymentUI?.();A.showView('appointments');
   }
 
   function bindDynamicAppointmentActions(){
@@ -95,8 +99,8 @@
     $('#calendarToday')?.addEventListener('click',()=>{A.calendarCursor=new Date();A.renderCalendar()});
     $('#saveHours')?.addEventListener('click',()=>{$$('.hours-row').forEach(row=>{A.db.workingHours[row.dataset.day]={enabled:$('[name=enabled]',row).checked,start:$('[name=start]',row).value,end:$('[name=end]',row).value}});A.addActivity('setting','Reguläre Arbeitszeiten wurden aktualisiert.');A.save('Arbeitszeiten gespeichert.')});
     const blockForm=$('#blockForm');if(blockForm){blockForm.elements.date.value=isoDate(addDays(new Date(),1));blockForm.addEventListener('submit',event=>{event.preventDefault();if(!blockForm.reportValidity())return;const data=new FormData(blockForm);if(minutesOf(data.get('end'))<=minutesOf(data.get('start')))return A.toast('„Bis“ muss nach „Von“ liegen.');A.db.blocked.push({id:uid('block'),date:data.get('date'),start:data.get('start'),end:data.get('end'),label:String(data.get('label')||'Gesperrt')});A.addActivity('setting',`${data.get('label')}: Zeit am ${dateShort(data.get('date'))} blockiert.`);blockForm.reset();blockForm.elements.date.value=isoDate(addDays(new Date(),1));blockForm.elements.start.value='12:00';blockForm.elements.end.value='13:00';A.save('Zeit wurde blockiert.')})}
-    $('#resetDemo')?.addEventListener('click',()=>{if(!confirm('Demo-Daten wirklich zurücksetzen? Eigene lokale Änderungen gehen verloren.'))return;A.db=A.seed();localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));A.calendarCursor=new Date();A.renderAll();A.toast('Demo wurde zurückgesetzt.');A.showView('dashboard')});
-    window.addEventListener('storage',event=>{if(event.key===A.STORE_KEY){try{A.db=JSON.parse(event.newValue);A.renderAll();A.toast('Daten aus einem anderen Tab aktualisiert.')}catch(e){}}});
+    $('#resetDemo')?.addEventListener('click',()=>{if(!confirm('Demo-Daten wirklich zurücksetzen? Eigene lokale Änderungen gehen dabei verloren.'))return;A.db=A.seed();localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));A.calendarCursor=new Date();A.renderAll();A.refreshPaymentUI?.();A.toast('Demo wurde zurückgesetzt.');A.showView('dashboard')});
+    window.addEventListener('storage',event=>{if(event.key===A.STORE_KEY){try{A.db=JSON.parse(event.newValue);A.renderAll();A.refreshPaymentUI?.();A.toast('Daten aus einem anderen Tab aktualisiert.')}catch(e){}}});
     bindCustomerActions();
   }
 
