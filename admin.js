@@ -19,10 +19,10 @@
     const t=isoDate(new Date()),d1=isoDate(addDays(new Date(),1)),d2=isoDate(addDays(new Date(),2)),d3=isoDate(addDays(new Date(),3)),d5=isoDate(addDays(new Date(),5));
     return {version:1,slotInterval:30,buffer:15,
       services:[
-        {id:'brows',name:'Augenbrauen',duration:90,price:289,deposit:50,active:true},
-        {id:'eyes',name:'Lid & Wimpernkranz',duration:75,price:249,deposit:40,active:true},
-        {id:'lips',name:'Lippen',duration:120,price:329,deposit:60,active:true},
-        {id:'consult',name:'Beratung',duration:30,price:0,deposit:0,active:true}],
+        {id:'brows',name:'Augenbrauen',description:'Form, Balance und Ausdruck mit natürlicher Wirkung.',duration:90,price:289,deposit:50,active:true},
+        {id:'eyes',name:'Lid & Wimpernkranz',description:'Dezente Betonung für einen klaren und wachen Blick.',duration:75,price:249,deposit:40,active:true},
+        {id:'lips',name:'Lippen',description:'Kontur, Farbe und Frische mit natürlichem Ergebnis.',duration:120,price:329,deposit:60,active:true},
+        {id:'consult',name:'Beratung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',duration:30,price:0,deposit:0,active:true}],
       workingHours:{1:{enabled:true,start:'09:00',end:'18:00'},2:{enabled:true,start:'09:00',end:'18:00'},3:{enabled:true,start:'09:00',end:'18:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'18:00'},6:{enabled:true,start:'09:00',end:'14:00'},0:{enabled:false,start:'09:00',end:'14:00'}},
       customers:[
         {id:'c1',name:'Anna Müller',phone:'0176 12345678',email:'anna.mueller@example.de',created:t},
@@ -54,5 +54,5 @@
   api.save=message=>{localStorage.setItem(STORE_KEY,JSON.stringify(api.db));if(message)api.toast(message);api.renderAll?.()};
   api.relativeTime=value=>{const diff=Math.max(0,Date.now()-new Date(value).getTime()),h=Math.floor(diff/3600000);if(h<1)return'Gerade eben';if(h<24)return`Vor ${h} Std.`;const d=Math.floor(h/24);return d===1?'Gestern':`Vor ${d} Tagen`};
   window.SSAdmin=api;
-  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js'),import('./admin-customer-detail.js'),import('./admin-payments.js')]).then(()=>{api.bindActions();api.initCalendarViews();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(()=>api.toast('Demo konnte nicht vollständig geladen werden.'));
+  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js'),import('./admin-customer-detail.js'),import('./admin-payments.js'),import('./admin-services-manager.js')]).then(()=>{api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(error=>{console.error(error);api.toast('Demo konnte nicht vollständig geladen werden.')});
 })();
