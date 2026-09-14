@@ -13,7 +13,7 @@
   const currency=value=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(value||0));
   const dateShort=value=>new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'}).format(new Date(`${value}T12:00:00`));
   const uid=prefix=>`${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
-  const escapeHTML=value=>String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
+  const escapeHTML=value=>String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt',"'":'&#039;','"':'&quot;'}[c]));
 
   function seed(){
     const t=isoDate(new Date()),d1=isoDate(addDays(new Date(),1)),d2=isoDate(addDays(new Date(),2)),d3=isoDate(addDays(new Date(),3)),d5=isoDate(addDays(new Date(),5));
@@ -54,5 +54,5 @@
   api.save=message=>{localStorage.setItem(STORE_KEY,JSON.stringify(api.db));if(message)api.toast(message);api.renderAll?.()};
   api.relativeTime=value=>{const diff=Math.max(0,Date.now()-new Date(value).getTime()),h=Math.floor(diff/3600000);if(h<1)return'Gerade eben';if(h<24)return`Vor ${h} Std.`;const d=Math.floor(h/24);return d===1?'Gestern':`Vor ${d} Tagen`};
   window.SSAdmin=api;
-  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js'),import('./admin-customer-detail.js'),import('./admin-payments.js'),import('./admin-services-manager.js')]).then(()=>{api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(error=>{console.error(error);api.toast('Demo konnte nicht vollständig geladen werden.')});
+  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js'),import('./admin-customer-detail.js'),import('./admin-payments.js'),import('./admin-services-manager.js'),import('./admin-customer-numbers.js?v=20260914-1443')]).then(()=>{api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(error=>{console.error(error);api.toast('Demo konnte nicht vollständig geladen werden.')});
 })();
