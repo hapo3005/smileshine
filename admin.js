@@ -54,5 +54,5 @@
   api.save=message=>{localStorage.setItem(STORE_KEY,JSON.stringify(api.db));if(message)api.toast(message);api.renderAll?.()};
   api.relativeTime=value=>{const diff=Math.max(0,Date.now()-new Date(value).getTime()),h=Math.floor(diff/3600000);if(h<1)return'Gerade eben';if(h<24)return`Vor ${h} Std.`;const d=Math.floor(h/24);return d===1?'Gestern':`Vor ${d} Tagen`};
   window.SSAdmin=api;
-  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js')]).then(()=>{api.bindActions();api.initCalendarViews();api.renderAll();api.showView(location.hash.replace('#','')||'dashboard')}).catch(()=>api.toast('Demo konnte nicht vollständig geladen werden.'));
+  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js'),import('./admin-customer-detail.js'),import('./admin-payments.js')]).then(()=>{api.bindActions();api.initCalendarViews();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(()=>api.toast('Demo konnte nicht vollständig geladen werden.'));
 })();
