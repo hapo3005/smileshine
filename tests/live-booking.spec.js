@@ -23,20 +23,22 @@ test('published booking flow stays in sync with admin services', async ({ page }
     date.setDate(date.getDate() + 1);
     date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
     const iso = date.toISOString().slice(0, 10);
-    db.appointments.push({ id: 'qa_occupied', date: iso, time: '09:00', duration: 90, service: 'Augenbrauen', status: 'confirmed' });
+    db.appointments.push({ id: 'qa_occupied', date: iso, time: '09:00', duration: 90, service: 'Augenbrauen Permanent Make-up', status: 'confirmed' });
     db.blocked.push({ id: 'qa_blocked', date: iso, start: '11:00', end: '12:00', label: 'QA Sperrzeit' });
     localStorage.setItem(key, JSON.stringify(db));
   });
   await page.reload({ waitUntil: 'networkidle' });
 
-  const choose = async (name, duration) => {
-    await page.getByRole('button', { name: new RegExp(name) }).click();
+  const choose = async (selector, name, duration) => {
+    const button = page.locator(selector).filter({ visible: true }).first();
+    await expect(button).toBeVisible();
+    await button.click();
     await expect(page.locator('#summaryService')).toHaveText(name);
     await expect(page.locator('#summaryDuration')).toHaveText(`${duration} Min.`);
     await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
   };
 
-  await choose('Augenbrauen', 90);
+  await choose('.service-option[data-service-id="brows-pmu"]', 'Augenbrauen Permanent Make-up', 90);
   await expect(page.locator('.date-option.selected')).toHaveCount(1);
   await expect(page.locator('.time-slot:visible')).not.toHaveCount(0, { timeout: 5000 });
   await expect(page.locator('.time-slot', { hasText: /^(09:00|09:30|10:00|10:30|11:00)$/ })).toHaveCount(0);
@@ -48,7 +50,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
 
   await page.locator('.booking-panel[data-panel="3"] [data-back="2"]').click();
   await page.locator('.booking-panel[data-panel="2"] [data-back="1"]').click();
-  await choose('Beratung', 30);
+  await choose('.service-option[data-service-id="consult"]', 'Beratung / Vorbesprechung', 30);
 
   await page.locator('.date-option.selected').click();
   await page.locator('.time-slot:visible').first().click();
@@ -58,21 +60,21 @@ test('published booking flow stays in sync with admin services', async ({ page }
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
   const browsCard = () => page.locator('.service-card-admin').filter({
-    has: page.locator('input[name="serviceName"][value="Augenbrauen"]')
+    has: page.locator('input[name="serviceName"][value="Augenbrauen Permanent Make-up"]')
   });
   await expect(browsCard()).toBeVisible();
   await browsCard().locator('input[name="active"]').uncheck({ force: true });
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
-  await expect(page.getByRole('button', { name: /Augenbrauen/ })).toBeHidden();
+  await expect(page.locator('.service-option[data-service-id="brows-pmu"]')).toBeHidden();
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
   await expect(browsCard()).toBeVisible();
   await browsCard().locator('input[name="active"]').check({ force: true });
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
-  await expect(page.getByRole('button', { name: /Augenbrauen/ })).toBeVisible();
-  await choose('Augenbrauen', 90);
+  await expect(page.locator('.service-option[data-service-id="brows-pmu"]')).toBeVisible();
+  await choose('.service-option[data-service-id="brows-pmu"]', 'Augenbrauen Permanent Make-up', 90);
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
   await page.locator('[data-action="newService"]').click();
@@ -85,7 +87,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await expect(page.locator('.service-card-admin').filter({ has: page.locator('input[name="serviceName"][value="QA Testleistung"]') })).toBeVisible();
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
-  await choose('QA Testleistung', 45);
+  await choose('.service-option[data-service="QA Testleistung"]', 'QA Testleistung', 45);
   await expect(page.locator('.date-option.selected')).toHaveCount(1);
   await expect(page.locator('.time-slot:visible')).not.toHaveCount(0);
   await page.locator('.time-slot:visible').first().click();
@@ -119,7 +121,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await expect(page.locator('input[name="serviceName"][value="QA Testleistung Neu"]')).toBeVisible();
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
-  await choose('QA Testleistung Neu', 45);
+  await choose('.service-option[data-service="QA Testleistung Neu"]', 'QA Testleistung Neu', 45);
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
   const renamedCard = page.locator('.service-card-admin').filter({
