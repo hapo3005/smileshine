@@ -110,7 +110,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await page.locator('#paymentContinue').click();
   await expect(page.locator('.booking-panel[data-panel="6"]')).toHaveClass(/active/);
   await page.locator('.booking-panel[data-panel="6"] .button.primary').click();
-  await expect(page.locator('.sync-booking-message')).toContainText('Demo-Buchung gespeichert');
+  await expect(page.locator('.sync-booking-message')).toContainText('Termin vorgemerkt');
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
   const qaCard = () => page.locator('.service-card-admin').filter({

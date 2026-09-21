@@ -226,3 +226,17 @@ img{max-width:100%;display:block}
   .section h2{font-size:clamp(38px,11.5vw,44px)}
   .hero-media{min-height:410px}
 }
+
+
+/* Keep horizontally scrollable service carousels from contributing to page width. */
+#behandlungen .public-service-group{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+}
+#behandlungen .public-service-cards{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  contain:inline-size;
+}
