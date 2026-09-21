@@ -1,15 +1,25 @@
-name: Live booking E2E
+name: Live booking + responsive E2E
 
 on:
   push:
     branches: ["main"]
     paths:
       - "index.html"
-      - "script.js"
+      - "admin.html"
+      - "styles.css"
       - "booking.css"
+      - "booking-advanced.css"
+      - "admin.css"
+      - "admin-calendar-views.css"
+      - "admin-customer-detail.css"
+      - "admin-payments.css"
+      - "admin-services-manager.css"
+      - "script.js"
+      - "admin.js"
       - "booking-admin-sync.js"
       - "checkout-enhancements.js"
       - "tests/live-booking.spec.js"
+      - "tests/responsive.spec.js"
       - ".github/workflows/live-booking-e2e.yml"
   workflow_dispatch:
 
@@ -19,7 +29,7 @@ permissions:
 jobs:
   live-booking:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -40,5 +50,13 @@ jobs:
           npm install --no-save @playwright/test
           npx playwright install --with-deps chromium
 
-      - name: Test published booking in Chromium
-        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js --reporter=line\n\n      - name: Upload Playwright diagnostics\n        if: failure()\n        uses: actions/upload-artifact@v4\n        with:\n          name: playwright-responsive-diagnostics\n          path: test-results\n          if-no-files-found: ignore
+      - name: Test published site in Chromium
+        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js --reporter=line
+
+      - name: Upload Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-responsive-diagnostics
+          path: test-results
+          if-no-files-found: ignore
