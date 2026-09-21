@@ -115,7 +115,7 @@ for (const viewport of viewports) {
     await page.goto(`index.html?responsive=${viewport.name}-${Date.now()}`, { waitUntil: 'networkidle' });
     await clearDemo(page);
 
-    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', '20260921-responsive-qa');
+    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', '20260921-responsive-qa2');
     await assertNoRootOverflow(page, `${viewport.name} public top`);
 
     if (viewport.width <= 900) {
