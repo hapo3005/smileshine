@@ -205,3 +205,24 @@ img{max-width:100%;display:block}
   .boutique-footer{grid-template-columns:1fr}.boutique-footer>div+div{border-left:0;border-top:1px solid var(--line)}
   .site-footer{flex-direction:column;padding:24px 20px 30px}
 }
+
+
+/* Responsive QA hardening · 2026-09-21 */
+.site-header,.hero,.section,.cta-section,.site-footer{max-width:100%}
+.brand>span:last-child,.hero-copy,.section-heading>*{min-width:0}
+.menu-toggle{flex:0 0 auto;min-width:44px;min-height:44px}
+@media(max-width:620px){
+  .site-header{gap:10px}
+  .brand{flex:1;gap:11px}
+  .brand strong{font-size:12px;letter-spacing:.16em;white-space:nowrap}
+  .hero{min-height:0}
+  .hero h1{font-size:clamp(44px,14.5vw,56px)}
+  .hero-copy{padding-top:44px}
+  .hero-actions .button{flex:1 1 145px}
+  .cta-section h2{font-size:clamp(40px,12vw,52px)}
+}
+@media(max-width:400px){
+  .brand strong{font-size:11px;letter-spacing:.13em}
+  .section h2{font-size:clamp(38px,11.5vw,44px)}
+  .hero-media{min-height:410px}
+}

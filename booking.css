@@ -52,3 +52,24 @@
 @media(max-width:760px){.booking-heading{grid-template-columns:1fr}.booking-demo-badge{display:inline-flex;width:max-content}.booking-progress{padding:0 18px;overflow-x:auto}.progress-step{padding:18px 24px 17px 0;margin-right:26px;min-width:max-content}.progress-step strong{font-size:8px}.booking-stage{padding:34px 20px}.booking-panel-head{grid-template-columns:1fr;gap:11px}.booking-panel-head h3{font-size:36px}.service-group-grid{grid-template-columns:1fr}.date-scroller{display:flex;overflow-x:auto;padding-bottom:5px}.date-option{min-width:74px}.time-slots{grid-template-columns:repeat(3,1fr)}.field-row{grid-template-columns:1fr}.booking-summary{grid-template-columns:1fr 1fr;padding:30px 22px}.booking-summary>h3,.summary-kicker,.summary-location,.summary-status{grid-column:1/-1}}
 @media(max-width:480px){.time-slots{grid-template-columns:repeat(2,1fr)}.booking-summary{grid-template-columns:1fr}.summary-location,.summary-status{grid-column:1}.booking-actions{align-items:stretch;flex-direction:column-reverse}.booking-actions .button{width:100%}.booking-back{text-align:center}}
 .service-option[hidden]{display:none!important}
+
+/* Responsive QA hardening · 2026-09-21 */
+.booking-shell,.booking-stage,.booking-panel,.service-options,.service-option,.service-info,.booking-form,.precheck-form{min-width:0}
+.booking-progress,.date-scroller{-webkit-overflow-scrolling:touch}
+.booking-progress{scrollbar-width:none}
+.booking-progress::-webkit-scrollbar{display:none}
+.booking-form input,.booking-form textarea,.precheck-form input,.precheck-form textarea,.precheck-form select{max-width:100%;min-width:0}
+@media(max-width:760px){
+  .booking-shell{border-radius:24px 7px 24px 7px}
+  .booking-main{min-height:0}
+  .booking-demo-badge{max-width:100%;white-space:normal}
+  .service-arrow{align-self:center}
+}
+@media(max-width:480px){
+  .booking-stage{padding-left:16px;padding-right:16px}
+  .booking-panel-head h3{font-size:clamp(31px,9.5vw,36px)}
+  .service-option{gap:10px}
+  .service-info strong{font-size:20px}
+  .payment-option{min-width:0;padding:17px 15px}
+  .payment-option strong{font-size:18px}
+}

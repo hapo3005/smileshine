@@ -26,7 +26,7 @@ jobs:
       - name: Wait for GitHub Pages version
         run: |
           for attempt in {1..30}; do
-            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "script.js?v=20260914-1630"; then
+            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260921-responsive-qa"; then
               exit 0
             fi
             sleep 10
@@ -41,4 +41,4 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Test published booking in Chromium
-        run: npx playwright test tests/live-booking.spec.js --reporter=line
+        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js --reporter=line\n\n      - name: Upload Playwright diagnostics\n        if: failure()\n        uses: actions/upload-artifact@v4\n        with:\n          name: playwright-responsive-diagnostics\n          path: test-results\n          if-no-files-found: ignore
