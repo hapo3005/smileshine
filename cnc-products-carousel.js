@@ -67,10 +67,12 @@
       .pickup-contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.pickup-field{display:grid;gap:5px}.pickup-field-wide{grid-column:1/-1}.pickup-field span{font-size:7px;font-weight:750;color:var(--muted)}.pickup-field input,.pickup-field textarea{width:100%;border:1px solid var(--line);border-radius:9px;background:white;padding:9px;font:9px Manrope,sans-serif;outline:0}.pickup-field input:focus,.pickup-field textarea:focus{border-color:#cb9a93;box-shadow:0 0 0 3px rgba(203,154,147,.1)}
       .pickup-demo-note{padding:10px 12px;border-radius:10px;background:#f6efeb;color:#766860;font-size:8px;line-height:1.5}.pickup-demo-note strong{color:#895b55}
       .pickup-checkout-actions{display:flex;justify-content:space-between;align-items:center;gap:10px}.pickup-clear{border:0;background:transparent;color:#92726c;font-size:8px;font-weight:700;cursor:pointer}.pickup-submit{border:0;border-radius:11px;background:#453c37;color:#fff;padding:12px 15px;font-size:8px;font-weight:800;cursor:pointer}.pickup-submit:disabled{opacity:.45;cursor:not-allowed}
-      .pickup-success{padding:26px 12px;text-align:center}.pickup-success-mark{width:54px;height:54px;border-radius:50%;background:#e6f0e7;color:#507057;display:grid;place-items:center;margin:0 auto 12px;font-size:21px}.pickup-success h4{font:24px var(--serif);font-weight:400;margin:0}.pickup-success p{max-width:440px;margin:8px auto 0;color:var(--muted);font-size:9px;line-height:1.6}
+      .pickup-guest-banner{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;padding:11px 12px;border:1px solid #e5ddd7;border-radius:12px;background:#fbf7f4}.pickup-guest-banner>span{width:32px;height:32px;border-radius:10px;background:#fff;display:grid;place-items:center;font-size:12px}.pickup-guest-banner strong{display:block;font-size:9px}.pickup-guest-banner small{display:block;margin-top:2px;color:var(--muted);font-size:7px;line-height:1.45}
+      .pickup-order-review{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.pickup-order-review>div{padding:10px 11px;border-right:1px solid var(--line)}.pickup-order-review>div:last-child{border-right:0}.pickup-order-review span{display:block;font-size:7px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.pickup-order-review strong{display:block;margin-top:4px;font-size:9px}
+            .pickup-success{padding:26px 12px;text-align:center}.pickup-success-mark{width:54px;height:54px;border-radius:50%;background:#e6f0e7;color:#507057;display:grid;place-items:center;margin:0 auto 12px;font-size:21px}.pickup-success h4{font:24px var(--serif);font-weight:400;margin:0}.pickup-success p{max-width:440px;margin:8px auto 0;color:var(--muted);font-size:9px;line-height:1.6}
 
       @media(max-width:1050px){.pickup-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-      @media(max-width:700px){.pickup-promise{grid-template-columns:1fr}.pickup-promise>div+div{border-left:0;border-top:1px solid var(--line)}.pickup-shop-toolbar{align-items:flex-start;flex-direction:column}.pickup-cart-button{align-self:stretch;justify-content:center}.pickup-product-grid{grid-template-columns:1fr}.pickup-product-visual{height:290px}.pickup-shop-footer{align-items:flex-start;flex-direction:column}.pickup-payment-options,.pickup-contact-grid{grid-template-columns:1fr}.pickup-field-wide{grid-column:auto}.pickup-cart-body{padding:14px}.pickup-cart-head{padding:17px}.pickup-checkout-actions{align-items:stretch;flex-direction:column}.pickup-submit{width:100%}}
+      @media(max-width:700px){.pickup-order-review{grid-template-columns:1fr}.pickup-order-review>div{border-right:0;border-bottom:1px solid var(--line)}.pickup-order-review>div:last-child{border-bottom:0}.pickup-promise{grid-template-columns:1fr}.pickup-promise>div+div{border-left:0;border-top:1px solid var(--line)}.pickup-shop-toolbar{align-items:flex-start;flex-direction:column}.pickup-cart-button{align-self:stretch;justify-content:center}.pickup-product-grid{grid-template-columns:1fr}.pickup-product-visual{height:290px}.pickup-shop-footer{align-items:flex-start;flex-direction:column}.pickup-payment-options,.pickup-contact-grid{grid-template-columns:1fr}.pickup-field-wide{grid-column:auto}.pickup-cart-body{padding:14px}.pickup-cart-head{padding:17px}.pickup-checkout-actions{align-items:stretch;flex-direction:column}.pickup-submit{width:100%}}
     `;document.head.appendChild(style);
   }
 
@@ -100,14 +102,30 @@
     return `<div class="pickup-cart-items">${cart.map(row=>{const item=product(row.id);return `<div class="pickup-cart-item"><img class="pickup-cart-thumb" src="${item.image}" alt=""><div><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.size)} · Preis vor Livegang festlegen</small></div><div class="pickup-qty"><button type="button" data-pickup-minus="${item.id}" aria-label="Menge verringern">−</button><span>${row.qty}</span><button type="button" data-pickup-plus="${item.id}" aria-label="Menge erhöhen">＋</button></div></div>`}).join('')}</div>`;
   }
 
+  function normalizePhone(value){return String(value||'').replace(/[^0-9+]/g,'')}
+  function matchExistingCustomer(email,phone){
+    try{
+      const db=JSON.parse(localStorage.getItem('smileshine_studio_v1')||'null');
+      const customers=Array.isArray(db?.customers)?db.customers:[];
+      const mail=String(email||'').trim().toLowerCase(),tel=normalizePhone(phone);
+      return customers.find(customer=>
+        (mail&&String(customer.email||'').trim().toLowerCase()===mail)||
+        (tel&&normalizePhone(customer.phone)===tel)
+      )||null;
+    }catch{return null}
+  }
+
   function checkoutHTML(){
     if(!cart.length)return '';
+    const count=cartCount();
     return `<form class="pickup-checkout" id="pickupCheckoutForm">
-      <div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen · keine Versandkosten</small></div></div>
+      <div class="pickup-guest-banner"><span>○</span><div><strong>Bestellen ohne Konto</strong><small>Keine Registrierung und kein Login nötig. Stammkundinnen werden im Livebetrieb intern erkannt – neue Käufer bleiben einfach Gastkunden.</small></div></div>
+      <div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen · keine Versandkosten · Abholung nach Bereitmeldung</small></div></div>
       <section class="pickup-checkout-section"><h4>Wie möchtest du bezahlen?</h4><p>Beide Wege führen zur Abholung im Studio. Es wird nichts verschickt.</p><div class="pickup-payment-options"><button class="pickup-payment-option active" type="button" data-pickup-payment="Online bezahlen"><strong>Online bezahlen</strong><small>Im Livebetrieb z. B. Karte, Apple Pay oder Google Pay.</small></button><button class="pickup-payment-option" type="button" data-pickup-payment="Bei Abholung bezahlen"><strong>Bei Abholung bezahlen</strong><small>Produkt im Studio bezahlen und direkt mitnehmen.</small></button></div><input type="hidden" name="payment" value="Online bezahlen"></section>
-      <section class="pickup-checkout-section"><h4>Wer holt die Bestellung ab?</h4><div class="pickup-contact-grid"><label class="pickup-field"><span>Vorname</span><input name="firstName" autocomplete="given-name" required></label><label class="pickup-field"><span>Nachname</span><input name="lastName" autocomplete="family-name" required></label><label class="pickup-field"><span>E-Mail</span><input name="email" type="email" autocomplete="email" required></label><label class="pickup-field"><span>Telefon</span><input name="phone" type="tel" autocomplete="tel" required></label><label class="pickup-field pickup-field-wide"><span>Hinweis <small>optional</small></span><textarea name="note" rows="2" placeholder="z. B. Abholung zusammen mit meinem Termin"></textarea></label></div></section>
-      <div class="pickup-demo-note"><strong>Demo-Modus:</strong> Der Ablauf ist vollständig vorbereitet, aber es wird noch keine echte Bestellung oder Zahlung an Birgit übertragen. Vor Livegang ergänzen wir bestätigte Verkaufspreise, Bestand und Zahlungsanbieter.</div>
-      <div class="pickup-checkout-actions"><button type="button" class="pickup-clear" data-pickup-clear>Warenkorb leeren</button><button type="submit" class="pickup-submit">Abholbestellung vormerken</button></div>
+      <section class="pickup-checkout-section"><h4>Wer holt die Bestellung ab?</h4><p>Wir brauchen nur die Daten, die für Bestätigung und Abholung nötig sind.</p><div class="pickup-contact-grid"><label class="pickup-field"><span>Vorname</span><input name="firstName" autocomplete="given-name" required></label><label class="pickup-field"><span>Nachname</span><input name="lastName" autocomplete="family-name" required></label><label class="pickup-field"><span>E-Mail</span><input name="email" type="email" autocomplete="email" required></label><label class="pickup-field"><span>Telefon <small>optional</small></span><input name="phone" type="tel" autocomplete="tel"></label><label class="pickup-field pickup-field-wide"><span>Hinweis <small>optional</small></span><textarea name="note" rows="2" placeholder="z. B. Abholung zusammen mit meinem Termin"></textarea></label></div></section>
+      <div class="pickup-order-review"><div><span>Artikel</span><strong>${count}</strong></div><div><span>Abholung</span><strong>Smile &amp; Shine</strong></div><div><span>Gesamt</span><strong>xx,xx €</strong></div></div>
+      <div class="pickup-demo-note"><strong>Demo-Modus:</strong> Noch keine echte Bestellung oder Zahlung. Vor Livegang ergänzen wir Preise, Bestand und Zahlungsanbieter. Im Livebetrieb wird die Bestellung direkt elektronisch bestätigt.</div>
+      <div class="pickup-checkout-actions"><button type="button" class="pickup-clear" data-pickup-clear>Warenkorb leeren</button><button type="submit" class="pickup-submit">Demo-Bestellung abschließen</button></div>
     </form>`;
   }
 
@@ -131,11 +149,13 @@
 
   function submitDemoOrder(form){
     if(!form.reportValidity())return;
-    const data=new FormData(form),order={
+    const data=new FormData(form),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),known=matchExistingCustomer(email,phone),order={
       id:'pickup_'+Date.now(),
       createdAt:new Date().toISOString(),
       items:cart.map(row=>({...row,name:product(row.id)?.name||row.id})),
-      customer:{firstName:String(data.get('firstName')||''),lastName:String(data.get('lastName')||''),email:String(data.get('email')||''),phone:String(data.get('phone')||''),note:String(data.get('note')||'')},
+      customer:{firstName:String(data.get('firstName')||''),lastName:String(data.get('lastName')||''),email,phone,note:String(data.get('note')||'')},
+      customerId:known?.id||null,
+      buyerType:known?'existing':'guest',
       payment:String(data.get('payment')||'Online bezahlen'),
       fulfillment:'pickup',
       pickupAddress:'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',
@@ -144,7 +164,7 @@
     };
     try{const old=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');localStorage.setItem(ORDERS_KEY,JSON.stringify([order,...(Array.isArray(old)?old:[])].slice(0,20)))}catch{}
     clearCart();
-    const body=document.getElementById('pickupCartBody');if(body)body.innerHTML=`<div class="pickup-success"><div class="pickup-success-mark">✓</div><h4>Abholung vorgemerkt.</h4><p>In der Demo wurde die Vormerkung nur lokal in diesem Browser gespeichert. Im Livebetrieb erhält Birgit daraus eine Abholbestellung und die Kundin eine Bestätigung, sobald die Produkte bereitliegen.</p></div><div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen</small></div></div>`;
+    const body=document.getElementById('pickupCartBody');if(body)body.innerHTML=`<div class="pickup-success"><div class="pickup-success-mark">✓</div><h4>Bestellung vorgemerkt.</h4><p>Kein Konto nötig. In der Demo wurde die Bestellung nur lokal gespeichert. Im Livebetrieb erhält die Käuferin sofort eine Bestätigung und später die Nachricht, sobald die Produkte abholbereit sind.</p></div><div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen</small></div></div>`;
   }
 
   function render(){
