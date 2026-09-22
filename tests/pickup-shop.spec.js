@@ -29,6 +29,7 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
   await expect(page.locator('[data-pickup-count]').first()).toHaveText('1');
   await expect(page.locator('.pickup-cart-location')).toContainText('Raiffeisenstraße 4');
   await expect(page.locator('.pickup-cart-location')).toContainText('keine Versandkosten');
+  await expect(page.locator('.pickup-guest-banner')).toContainText('Bestellen ohne Konto');
 
   await page.locator('[data-pickup-plus]').first().click();
   await expect(page.locator('[data-pickup-count]').first()).toHaveText('2');
@@ -37,16 +38,16 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
   await expect(page.locator('[data-pickup-payment="Bei Abholung bezahlen"]')).toHaveClass(/active/);
 
   const form=page.locator('#pickupCheckoutForm');
-  await expect(form.locator('input[name="address"],input[name="street"],input[name="zip"],input[name="city"]')).toHaveCount(0);
+  await expect(form.locator('input[name="address"],input[name="street"],input[name="zip"],input[name="city"],input[type="password"]')).toHaveCount(0);
+  await expect(form.locator('input[name="phone"]')).not.toHaveAttribute('required', '');
   await form.locator('input[name="firstName"]').fill('Pickup');
   await form.locator('input[name="lastName"]').fill('Test');
   await form.locator('input[name="email"]').fill('pickup@example.invalid');
-  await form.locator('input[name="phone"]').fill('0123456789');
   await form.locator('textarea[name="note"]').fill('Abholung zusammen mit meinem Termin.');
   await form.locator('button[type="submit"]').click();
 
   await expect(page.locator('.pickup-success')).toBeVisible();
-  await expect(page.locator('.pickup-success')).toContainText('Abholung vorgemerkt');
+  await expect(page.locator('.pickup-success')).toContainText('Bestellung vorgemerkt');
 
   const saved=await page.evaluate(()=>{
     const orders=JSON.parse(localStorage.getItem('smileshine_pickup_orders_demo_v1')||'[]');
@@ -58,6 +59,33 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
   expect(saved.payment).toBe('Bei Abholung bezahlen');
   expect(saved.items[0].qty).toBe(2);
   expect(saved.shippingAddress).toBeUndefined();
+  expect(saved.buyerType).toBe('guest');
+  expect(saved.customerId).toBeNull();
 
   expect(browserErrors).toEqual([]);
+});
+
+
+test('known customer is linked internally without login or registration', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.goto('index.html?pickup-known='+Date.now()+'#shop',{waitUntil:'networkidle'});
+  await page.evaluate(()=>{
+    localStorage.clear();
+    localStorage.setItem('smileshine_studio_v1',JSON.stringify({
+      customers:[{id:'cust_known_1',name:'Bekannte Kundin',email:'known@example.invalid',phone:'01701234567'}]
+    }));
+  });
+  await page.reload({waitUntil:'networkidle'});
+  await page.waitForFunction(()=>Boolean(window.SmileShinePickupShop));
+
+  await page.locator('[data-pickup-add]').first().click();
+  const form=page.locator('#pickupCheckoutForm');
+  await form.locator('input[name="firstName"]').fill('Bekannte');
+  await form.locator('input[name="lastName"]').fill('Kundin');
+  await form.locator('input[name="email"]').fill('known@example.invalid');
+  await form.locator('button[type="submit"]').click();
+
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('smileshine_pickup_orders_demo_v1')||'[]')[0]);
+  expect(saved.buyerType).toBe('existing');
+  expect(saved.customerId).toBe('cust_known_1');
 });
