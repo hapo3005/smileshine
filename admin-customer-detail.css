@@ -119,3 +119,34 @@
   .customer-filter-switch{grid-template-columns:1fr 1fr}
   .view[data-view-panel="customers"] .customer-money-stat{display:none}
 }
+
+
+/* Tablet / narrow-desktop customer list: sidebar remains visible, so cards must reflow early. */
+@media(max-width:1100px) and (min-width:761px){
+  .view[data-view-panel="customers"] .customer-card{
+    grid-template-columns:40px minmax(0,1fr) 104px;
+    gap:10px;
+    align-items:center;
+  }
+  .view[data-view-panel="customers"] .customer-contact{
+    grid-column:2;
+    min-width:0;
+  }
+  .view[data-view-panel="customers"] .customer-contact strong,
+  .view[data-view-panel="customers"] .customer-contact small{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .view[data-view-panel="customers"] .customer-next-stat{
+    grid-column:2;
+    min-width:0;
+  }
+  .view[data-view-panel="customers"] .customer-money-stat{
+    grid-column:3;
+    grid-row:1/4;
+    align-self:center;
+    min-width:0;
+  }
+  .view[data-view-panel="customers"] .customer-card-arrow{display:none}
+}
