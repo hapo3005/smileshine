@@ -66,7 +66,7 @@
     const created=order.createdAt?new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(order.createdAt)):'–';
     return `<article class="pickup-order-card status-${escapeHTML(order.status)}" data-pickup-order="${escapeHTML(order.id)}">
       <div class="pickup-order-status"><span></span><strong>${escapeHTML(statusLabels[order.status]||order.status)}</strong><small>${escapeHTML(created)}</small></div>
-      <div class="pickup-order-customer"><strong>${escapeHTML(name)}</strong><small>${escapeHTML(order.customer?.phone||'')} ${order.customer?.email?'· '+escapeHTML(order.customer.email):''}</small><em>${escapeHTML(order.payment||'Zahlung nicht gewählt')}</em></div>
+      <div class="pickup-order-customer"><strong>${escapeHTML(name)}</strong><small>${escapeHTML(order.customer?.phone||'')} ${order.customer?.email?'· '+escapeHTML(order.customer.email):''}</small><div class="pickup-order-customer-tags"><em>${escapeHTML(order.payment||'Zahlung nicht gewählt')}</em><b>${order.buyerType==='existing'?'Bestehende Kundin':'Gastbestellung'}</b></div></div>
       <ul class="pickup-order-items">${items}</ul>
       <div class="pickup-order-actions">
         ${order.status==='new'?'<button type="button" class="primary-action" data-pickup-status="ready">Als abholbereit markieren</button>':''}
