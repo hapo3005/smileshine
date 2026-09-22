@@ -99,7 +99,7 @@
 
   function cartItemsHTML(){
     if(!cart.length)return '<div class="pickup-empty"><strong>Dein Warenkorb ist leer.</strong><span>Wähle ein Produkt aus der Boutique aus. Versand gibt es bewusst nicht.</span></div>';
-    return `<div class="pickup-cart-items">${cart.map(row=>{const item=product(row.id);return `<div class="pickup-cart-item"><img class="pickup-cart-thumb" src="${item.image}" alt=""><div><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.size)} · Preis vor Livegang festlegen</small></div><div class="pickup-qty"><button type="button" data-pickup-minus="${item.id}" aria-label="Menge verringern">−</button><span>${row.qty}</span><button type="button" data-pickup-plus="${item.id}" aria-label="Menge erhöhen">＋</button></div></div>`}).join('')}</div>`;
+    return `<div class="pickup-cart-items">${cart.map(row=>{const item=product(row.id);return `<div class="pickup-cart-item"><img class="pickup-cart-thumb" src="${item.image}" alt=""><div><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.size)} · xx,xx €</small></div><div class="pickup-qty"><button type="button" data-pickup-minus="${item.id}" aria-label="Menge verringern">−</button><span>${row.qty}</span><button type="button" data-pickup-plus="${item.id}" aria-label="Menge erhöhen">＋</button></div></div>`}).join('')}</div>`;
   }
 
   function normalizePhone(value){return String(value||'').replace(/[^0-9+]/g,'')}
