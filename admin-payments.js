@@ -37,7 +37,7 @@
 
   function migrate(){
     let changed=false;(A.db.appointments||[]).forEach(a=>{if(ensureFinancials(a))changed=true;recalc(a)});
-    if(changed)localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));
+    if(changed){if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));}
   }
 
   function ensureStyles(){if(document.querySelector('link[data-payment-style]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='admin-payments.css';link.dataset.paymentStyle='true';document.head.appendChild(link)}
