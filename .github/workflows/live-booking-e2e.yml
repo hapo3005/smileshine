@@ -46,7 +46,7 @@ jobs:
       - name: Wait for GitHub Pages version
         run: |
           for attempt in {1..30}; do
-            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260922-calendar-workspace1"; then
+            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260922-calendar-workspace2"; then
               exit 0
             fi
             sleep 10
