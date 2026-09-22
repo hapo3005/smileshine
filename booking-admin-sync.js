@@ -87,7 +87,7 @@
 
   function makeButton(s,index){
     const btn=document.createElement('button');btn.className='service-option';btn.type='button';btn.dataset.serviceId=s.id;btn.dataset.service=s.name;btn.dataset.duration=String(Number(s.duration||30));
-    btn.innerHTML=`<span class="service-index">${String(index+1).padStart(2,'0')}</span><span class="service-info"><strong>${esc(s.name)}</strong><small>${esc(s.description||'Beauty-Behandlung')} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
+    btn.innerHTML=`<span class="service-info"><strong>${esc(s.name)}</strong><small>${esc(s.description||'Beauty-Behandlung')} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
     return btn;
   }
 
@@ -111,13 +111,13 @@
     const root=section?.querySelector('.treatment-grid');
     if(!section||!root)return;
     const db=load();
-    const active=(db.services||[]).filter(s=>s.active!==false);
+    const active=(db.services||[]).filter(s=>s.active!==false&&s.verification!=='market');
+    if(!active.length)return;
     const heading=section.querySelector('.section-heading.split>p');
-    if(heading)heading.textContent='Entdecke unsere Leistungen rund um Permanent Make-up und Beauty. Für eine persönliche Empfehlung kannst du direkt einen Beratungstermin auswählen.';
+    if(heading)heading.textContent='Permanent Make-up und Beauty-Behandlungen mit dem Anspruch, das Ergebnis natürlich, typgerecht und stimmig wirken zu lassen.';
     root.classList.add('public-services-grid');
     root.innerHTML='';
     const categories=[...new Set(active.map(s=>s.category||'Leistungen'))];
-    let index=1;
     categories.forEach(category=>{
       const group=document.createElement('section');group.className='public-service-group';
       group.innerHTML=`<div class="public-service-group-head"><span>${esc(category)}</span></div>`;
@@ -125,31 +125,30 @@
       active.filter(s=>(s.category||'Leistungen')===category).forEach(s=>{
         const card=document.createElement('article');card.className='public-service-card';
         const price=Number(s.price||0)>0?`<small>${money(s.price)}</small>`:'';
-        card.innerHTML=`<div class="public-service-number">${String(index++).padStart(2,'0')}</div><div><h3>${esc(s.name)}</h3><p>${esc(s.description||'')}</p><div class="public-service-meta"><span>ca. ${Number(s.duration||30)} Min.</span>${price}</div></div><a href="#booking" aria-label="${esc(s.name)} buchen">→</a>`;
+        card.innerHTML=`<div><h3>${esc(s.name)}</h3><p>${esc(s.description||'')}</p><div class="public-service-meta"><span>ca. ${Number(s.duration||30)} Min.</span>${price}</div></div><a href="#booking" aria-label="${esc(s.name)} buchen">→</a>`;
         cards.appendChild(card);
       });
       group.appendChild(cards);root.appendChild(group);
     });
-    const note=section.querySelector('.prototype-note');if(note)note.remove();
   }
 
   function cleanCustomerCopy(){
-    const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Online-Buchung';
+    const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Demo · keine echte Buchung';
     const categoryLabel=$('.service-category-label');if(categoryLabel)categoryLabel.remove();
     const heads=$$('.booking-panel-head>p');
-    const replacements=['Wähle die Behandlung, die zu deinem Wunsch passt.','Wähle einen freien Termin. Die verfügbaren Zeiten werden automatisch aktualisiert.','Mit ein paar Angaben können wir deinen Termin optimal vorbereiten.','Deine Kontaktdaten benötigen wir für Bestätigung und Rückfragen.','Wähle die gewünschte Zahlungsart.','Prüfe deine Angaben vor der verbindlichen Buchung.'];
+    const replacements=['Wähle die Behandlung, die zu deinem Wunsch passt.','Wähle einen freien Termin. Die verfügbaren Zeiten werden automatisch aktualisiert.','Mit ein paar Angaben können wir deinen Termin gut vorbereiten.','Deine Kontaktdaten benötigen wir für Bestätigung und Rückfragen.','Wähle die gewünschte Zahlungsart.','Prüfe deine Angaben noch einmal in Ruhe.'];
     heads.forEach((el,i)=>{if(replacements[i])el.textContent=replacements[i]});
-    const pre=$('.precheck-intro p');if(pre)pre.textContent='Bitte beantworte die Fragen so vollständig wie möglich, damit wir deinen Termin passend vorbereiten können.';
+    const pre=$('.precheck-intro p');if(pre)pre.textContent='Bitte beantworte die Fragen so vollständig wie möglich.';
     const consent=$('#precheckForm .consent-row span');if(consent)consent.textContent='Ich bestätige, dass meine Angaben vollständig und korrekt sind.';
     const dataConsent=$('#bookingForm .consent-row span');if(dataConsent)dataConsent.textContent='Ich stimme der Verarbeitung meiner Angaben zur Terminorganisation zu.';
-    const waitNote=$('.waitlist-actions>span');if(waitNote)waitNote.textContent='Wir melden uns, sobald ein passender Termin frei wird.';
-    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML='<strong>Fast geschafft.</strong><span>Mit der verbindlichen Buchung bestätigst du deine ausgewählte Behandlung und den Termin.</span>';
-    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Aktuelle Verfügbarkeit';
+    const waitNote=$('.waitlist-actions>span');if(waitNote)waitNote.textContent='Demo · es wird noch keine Benachrichtigung versendet.';
+    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML='<strong>Demo-Modus.</strong><span>Dieser Schritt speichert den Termin nur in dieser Demo und löst keine echte Buchung oder Zahlung aus.</span>';
+    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Demo · keine echte Buchung';
   }
 
   function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card);if(strong)strong.textContent=Number(s.deposit||0)>0?`${money(s.deposit)} für diese Leistung`:'Keine Anzahlung erforderlich';if(copy)copy.textContent=Number(s.deposit||0)>0?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':'Für diese Leistung ist derzeit keine Anzahlung vorgesehen.'}
 
-  function finalButton(){const panel=$('.booking-panel[data-panel="6"]'),button=panel?.querySelector('.button.primary');if(!button||button.dataset.synced)return;button.dataset.synced='true';button.classList.remove('booking-disabled');button.removeAttribute('aria-disabled');button.textContent='Termin verbindlich buchen';button.addEventListener('click',()=>commit(panel,button))}
+  function finalButton(){const panel=$('.booking-panel[data-panel="6"]'),button=panel?.querySelector('.button.primary');if(!button||button.dataset.synced)return;button.dataset.synced='true';button.classList.remove('booking-disabled');button.removeAttribute('aria-disabled');button.textContent='Demo-Termin vormerken';button.addEventListener('click',()=>commit(panel,button))}
 
   function commit(panel,button){
     const db=load(),state=window.SmileShineBooking?.state,serviceKey=state?.serviceId||state?.service,serviceName=state?.service||$('#summaryService')?.textContent?.trim(),date=state?.date||$('.date-option.selected')?.dataset.iso,time=state?.time||$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm');
