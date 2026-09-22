@@ -1,6 +1,7 @@
 (() => {
   'use strict';
-  const STORE=window.SmileShineDataStore;\n  const STORE_KEY=STORE?.key||'smileshine_studio_v1';
+  const STORE=window.SmileShineDataStore;
+  const STORE_KEY=STORE?.key||'smileshine_studio_v1';
   const DAY_NAMES=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
   const SHORT_DAYS=['So','Mo','Di','Mi','Do','Fr','Sa'];
   const STATUS_LABELS={confirmed:'Bestätigt',pending:'Offen',completed:'Abgeschlossen',no_show:'Nicht erschienen',cancelled:'Abgesagt'};
