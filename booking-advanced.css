@@ -27,3 +27,47 @@
 .public-service-cards::-webkit-scrollbar{height:5px}.public-service-cards::-webkit-scrollbar-track{background:transparent}.public-service-cards::-webkit-scrollbar-thumb{background:rgba(116,87,74,.22);border-radius:999px}.public-service-card{scroll-snap-align:start;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;min-height:118px;padding:18px 20px;border:1px solid rgba(78,68,61,.09);border-radius:6px 18px 6px 18px;background:rgba(255,255,255,.48);box-shadow:0 8px 24px rgba(47,39,34,.035)}.public-service-number{display:none!important}.public-service-card h3{margin:0;font-family:var(--serif);font-size:26px;font-weight:400;line-height:1.08}.public-service-card p{margin:7px 0 0;font-size:12px;line-height:1.55;color:var(--muted)}.public-service-card>a{font-size:19px;color:var(--accent-dark);text-decoration:none;align-self:center}.public-service-meta{display:flex;gap:10px;align-items:center;margin-top:11px;font-size:10px;color:#8d857f}.public-service-meta small{font-size:10px;color:var(--accent-dark)}
 @media(max-width:980px){.public-service-cards{grid-auto-columns:calc((100% - 12px)/2)}}
 @media(max-width:760px){.service-group-grid{grid-template-columns:1fr}.service-option{min-height:78px;padding:15px 16px}.service-info strong{font-size:22px}.service-info small{font-size:11px}.public-service-cards{grid-auto-columns:86%}.public-service-card{min-height:112px;padding:17px 18px}.public-service-card h3{font-size:25px}.public-service-card p{font-size:12px}.public-service-group{margin-bottom:28px}}
+
+
+/* Narrow-phone containment: keep the service carousel scroll local to its track. */
+#behandlungen{
+  overflow-x:clip;
+}
+#behandlungen .public-services-grid,
+#behandlungen .public-service-group{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+#behandlungen .public-services-grid{
+  overflow:hidden;
+}
+#behandlungen .public-service-cards{
+  box-sizing:border-box;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto!important;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+@supports not (overflow:clip){
+  #behandlungen{overflow-x:hidden}
+}
+@media(max-width:420px){
+  #behandlungen .public-service-cards{
+    grid-auto-columns:82%;
+    padding-right:12%;
+  }
+  #behandlungen .public-service-card{
+    min-width:0;
+    overflow:hidden;
+  }
+  #behandlungen .public-service-card>div{
+    min-width:0;
+  }
+  #behandlungen .public-service-card h3,
+  #behandlungen .public-service-card p{
+    overflow-wrap:anywhere;
+  }
+}
