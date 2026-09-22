@@ -217,4 +217,4 @@ window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes
 updateSummary();
 import('./checkout-enhancements.js?v=20260914-1630');
 import('./booking-admin-sync.js?v=20260922-appointment-detail2');
-import('./cnc-products-carousel.js?v=20260922-pickup-shop2');
+import('./cnc-products-carousel.js?v=20260922-pickup-shop3');
