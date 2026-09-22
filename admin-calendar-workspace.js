@@ -257,10 +257,22 @@
   }
 
   const baseInit=A.initCalendarViews;
-  if(baseInit){
+  if(baseInit&&document.querySelector(".calendar-control-stack")){
+    install();
+  }else if(baseInit){
     A.initCalendarViews=()=>{baseInit();install()};
   }else{
-    install();
+    let tries=0;
+    const timer=setInterval(()=>{
+      tries++;
+      if(A.initCalendarViews){
+        clearInterval(timer);
+        const init=A.initCalendarViews;
+        A.initCalendarViews=()=>{init();install()};
+      }else if(tries>40){
+        clearInterval(timer);install();
+      }
+    },25);
   }
 
   Object.assign(A,{refreshCalendarWorkspace:decorate});
