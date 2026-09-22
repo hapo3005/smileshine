@@ -20,10 +20,16 @@ const viewports = [
 ];
 
 async function assertNoRootOverflow(page, label) {
-  const metrics = await page.evaluate(() => {
+  const metrics = await page.evaluate(async () => {
     const viewport = document.documentElement.clientWidth;
     const explicitScrollers = '.public-service-cards,.cnc-product-track,.booking-progress,.date-scroller,.calendar-week-view,.calendar-month-view,.day-schedule';
-    const offenders = [...document.body.querySelectorAll('*')].map(el => {
+
+    const offenders = [...document.body.querySelectorAll('*')].filter(el => {
+      if (el.closest(explicitScrollers)) return false;
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) return false;
+      return r.left < -2 || r.right > viewport + 2;
+    }).slice(0, 20).map(el => {
       const r = el.getBoundingClientRect();
       const cs = getComputedStyle(el);
       return {
@@ -33,31 +39,30 @@ async function assertNoRootOverflow(page, label) {
         left: Math.round(r.left),
         right: Math.round(r.right),
         width: Math.round(r.width),
-        scrollWidth: el.scrollWidth,
-        clientWidth: el.clientWidth,
         overflowX: cs.overflowX
       };
-    }).filter(item => {
-      if (item.right <= viewport + 2 && item.left >= -2) return false;
-      return true;
     });
-    const unclipped = offenders.filter(item => {
-      const selector = item.id ? `#${CSS.escape(item.id)}` : null;
-      const el = selector ? document.querySelector(selector) : null;
-      return !(el && el.closest(explicitScrollers));
-    }).slice(0, 20);
+
+    const scrolling = document.scrollingElement || document.documentElement;
+    const before = scrolling.scrollLeft;
+    scrolling.scrollLeft = 100000;
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const actualRootScroll = scrolling.scrollLeft;
+    scrolling.scrollLeft = before;
+
     return {
       viewport,
       root: document.documentElement.scrollWidth,
       body: document.body.scrollWidth,
-      offenders: unclipped
+      actualRootScroll,
+      offenders
     };
   });
-  const detail = metrics.offenders.length ? ` Offenders: ${JSON.stringify(metrics.offenders)}` : '';
-  expect(metrics.root, `${label}: document overflow ${metrics.root}px > ${metrics.viewport}px.${detail}`).toBeLessThanOrEqual(metrics.viewport + 2);
-  expect(metrics.body, `${label}: body overflow ${metrics.body}px > ${metrics.viewport}px.${detail}`).toBeLessThanOrEqual(metrics.viewport + 2);
-}
 
+  const detail = metrics.offenders.length ? ` Offenders: ${JSON.stringify(metrics.offenders)}` : '';
+  expect(metrics.actualRootScroll, `${label}: page can scroll horizontally by ${metrics.actualRootScroll}px.${detail}`).toBeLessThanOrEqual(2);
+  expect(metrics.offenders, `${label}: visible content escapes the viewport.${detail}`).toEqual([]);
+}
 async function clearDemo(page) {
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
