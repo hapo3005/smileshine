@@ -111,6 +111,7 @@
     const root=section?.querySelector('.treatment-grid');
     if(!section||!root)return;
     const db=load();
+    if(db.publicCatalogReady!==true)return;
     const active=(db.services||[]).filter(s=>s.active!==false&&s.verification!=='market');
     if(!active.length)return;
     const heading=section.querySelector('.section-heading.split>p');
