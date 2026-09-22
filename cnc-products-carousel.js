@@ -80,8 +80,8 @@
       <div class="pickup-product-copy">
         <div class="pickup-product-meta"><span>${escapeHTML(item.category)}</span><span>${escapeHTML(item.size)}</span></div>
         <h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.description)}</p>
-        <div class="pickup-product-price"><strong>Preis wird gepflegt</strong><small>vor Livegang<br>mit Birgit bestätigen</small></div>
-        <button class="pickup-add" type="button" data-pickup-add="${item.id}">In den Abholkorb</button>
+        <div class="pickup-product-price"><strong>xx,xx €</strong><small>vor Livegang<br>mit Birgit bestätigen</small></div>
+        <button class="pickup-add" type="button" data-pickup-add="${item.id}">In den Warenkorb</button>
         <span class="pickup-only-note">Kein Versand · Abholung im Studio</span>
       </div>
     </article>`;
@@ -90,13 +90,13 @@
   function ensureDialog(){
     if(document.getElementById('pickupCartDialog'))return;
     const dialog=document.createElement('dialog');dialog.id='pickupCartDialog';dialog.className='pickup-cart-dialog';
-    dialog.innerHTML=`<div class="pickup-cart-card"><div class="pickup-cart-head"><div><span class="eyebrow">Smile &amp; Shine Abholshop</span><h3>Dein Abholkorb</h3><p>Online auswählen und im Studio in Wittlich-Bombogen abholen.</p></div><button type="button" class="pickup-cart-close" data-pickup-close aria-label="Abholkorb schließen">×</button></div><div class="pickup-cart-body" id="pickupCartBody"></div></div>`;
+    dialog.innerHTML=`<div class="pickup-cart-card"><div class="pickup-cart-head"><div><span class="eyebrow">Smile &amp; Shine Abholshop</span><h3>Dein Warenkorb</h3><p>Online auswählen und im Studio in Wittlich-Bombogen abholen.</p></div><button type="button" class="pickup-cart-close" data-pickup-close aria-label="Warenkorb schließen">×</button></div><div class="pickup-cart-body" id="pickupCartBody"></div></div>`;
     document.body.appendChild(dialog);
     dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
   }
 
   function cartItemsHTML(){
-    if(!cart.length)return '<div class="pickup-empty"><strong>Dein Abholkorb ist leer.</strong><span>Wähle ein Produkt aus der Boutique aus. Versand gibt es bewusst nicht.</span></div>';
+    if(!cart.length)return '<div class="pickup-empty"><strong>Dein Warenkorb ist leer.</strong><span>Wähle ein Produkt aus der Boutique aus. Versand gibt es bewusst nicht.</span></div>';
     return `<div class="pickup-cart-items">${cart.map(row=>{const item=product(row.id);return `<div class="pickup-cart-item"><img class="pickup-cart-thumb" src="${item.image}" alt=""><div><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.size)} · Preis vor Livegang festlegen</small></div><div class="pickup-qty"><button type="button" data-pickup-minus="${item.id}" aria-label="Menge verringern">−</button><span>${row.qty}</span><button type="button" data-pickup-plus="${item.id}" aria-label="Menge erhöhen">＋</button></div></div>`}).join('')}</div>`;
   }
 
@@ -107,7 +107,7 @@
       <section class="pickup-checkout-section"><h4>Wie möchtest du bezahlen?</h4><p>Beide Wege führen zur Abholung im Studio. Es wird nichts verschickt.</p><div class="pickup-payment-options"><button class="pickup-payment-option active" type="button" data-pickup-payment="Online bezahlen"><strong>Online bezahlen</strong><small>Im Livebetrieb z. B. Karte, Apple Pay oder Google Pay.</small></button><button class="pickup-payment-option" type="button" data-pickup-payment="Bei Abholung bezahlen"><strong>Bei Abholung bezahlen</strong><small>Produkt im Studio bezahlen und direkt mitnehmen.</small></button></div><input type="hidden" name="payment" value="Online bezahlen"></section>
       <section class="pickup-checkout-section"><h4>Wer holt die Bestellung ab?</h4><div class="pickup-contact-grid"><label class="pickup-field"><span>Vorname</span><input name="firstName" autocomplete="given-name" required></label><label class="pickup-field"><span>Nachname</span><input name="lastName" autocomplete="family-name" required></label><label class="pickup-field"><span>E-Mail</span><input name="email" type="email" autocomplete="email" required></label><label class="pickup-field"><span>Telefon</span><input name="phone" type="tel" autocomplete="tel" required></label><label class="pickup-field pickup-field-wide"><span>Hinweis <small>optional</small></span><textarea name="note" rows="2" placeholder="z. B. Abholung zusammen mit meinem Termin"></textarea></label></div></section>
       <div class="pickup-demo-note"><strong>Demo-Modus:</strong> Der Ablauf ist vollständig vorbereitet, aber es wird noch keine echte Bestellung oder Zahlung an Birgit übertragen. Vor Livegang ergänzen wir bestätigte Verkaufspreise, Bestand und Zahlungsanbieter.</div>
-      <div class="pickup-checkout-actions"><button type="button" class="pickup-clear" data-pickup-clear>Abholkorb leeren</button><button type="submit" class="pickup-submit">Abholbestellung vormerken</button></div>
+      <div class="pickup-checkout-actions"><button type="button" class="pickup-clear" data-pickup-clear>Warenkorb leeren</button><button type="submit" class="pickup-submit">Abholbestellung vormerken</button></div>
     </form>`;
   }
 
@@ -123,7 +123,7 @@
 
   function renderCartState(){
     const count=cartCount();document.querySelectorAll('[data-pickup-count]').forEach(el=>el.textContent=String(count));
-    document.querySelectorAll('[data-pickup-cart]').forEach(btn=>btn.setAttribute('aria-label',`Abholkorb öffnen, ${count} Artikel`));
+    document.querySelectorAll('[data-pickup-cart]').forEach(btn=>btn.setAttribute('aria-label',`Warenkorb öffnen, ${count} Artikel`));
     if(document.getElementById('pickupCartDialog')?.open)renderCart();
   }
 
@@ -151,8 +151,8 @@
     const section=document.getElementById('shop');if(!section)return;
     injectStyles();ensureDialog();section.classList.add('pickup-shop');
     section.innerHTML=`<div class="section-heading split boutique-heading"><div><p class="eyebrow">Smile &amp; Shine Abholboutique · CNC Cosmetic</p><h2>Online auswählen. Im Studio abholen.</h2></div><div class="boutique-intro"><p>Birgits ausgewählte Pflegeprodukte können künftig online gekauft oder direkt im Studio mitgenommen werden. Jede Online-Bestellung bleibt lokal: Abholung bei Smile &amp; Shine in Wittlich-Bombogen – ohne Paketversand.</p><span class="shop-status">Nur Abholung · kein Versand</span></div></div>
-      <div class="pickup-promise" aria-label="So funktioniert der Abholshop"><div><span>♡</span><div><strong>Produkt auswählen</strong><small>Online in den Abholkorb oder direkt im Studio kaufen.</small></div></div><div><span>€</span><div><strong>Flexibel bezahlen</strong><small>Online bezahlen oder bei der Abholung im Studio.</small></div></div><div><span>⌖</span><div><strong>Im Studio abholen</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen.</small></div></div></div>
-      <div class="pickup-shop-toolbar"><p>Acht ausgewählte CNC Cosmetic Produkte. Preise und realer Bestand werden vor Livegang mit Birgit gepflegt.</p><button class="pickup-cart-button" type="button" data-pickup-cart>Abholkorb <span class="pickup-cart-count" data-pickup-count>0</span></button></div>
+      <div class="pickup-promise" aria-label="So funktioniert der Abholshop"><div><span>♡</span><div><strong>Produkt auswählen</strong><small>Online in den Warenkorb oder direkt im Studio kaufen.</small></div></div><div><span>€</span><div><strong>Flexibel bezahlen</strong><small>Online bezahlen oder bei der Abholung im Studio.</small></div></div><div><span>⌖</span><div><strong>Im Studio abholen</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen.</small></div></div></div>
+      <div class="pickup-shop-toolbar"><p>Acht ausgewählte CNC Cosmetic Produkte. Preise und realer Bestand werden vor Livegang mit Birgit gepflegt.</p><button class="pickup-cart-button" type="button" data-pickup-cart>Warenkorb <span class="pickup-cart-count" data-pickup-count>0</span></button></div>
       <div class="pickup-product-grid">${products.map(productCard).join('')}</div>
       <div class="pickup-shop-footer"><div><strong>Bewusst lokal statt Versandhandel.</strong><p>Onlinekauf dient der bequemen Vorbestellung und Bezahlung. Birgit muss weder verpacken noch frankieren noch Pakete zur Post bringen.</p></div><span>Abholung im Studio · kostenlos</span></div>`;
 
