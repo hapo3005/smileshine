@@ -38,7 +38,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
     await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
   };
 
-  await choose('.service-option[data-service-id="brows-pmu"]', 'Augenbrauen Permanent Make-up', 90);
+  await choose('.service-option[data-service-id="brows-pmu"]', 'Augenbrauen', 90);
   await expect(page.locator('.date-option.selected')).toHaveCount(1);
   await expect(page.locator('.time-slot:visible')).not.toHaveCount(0, { timeout: 5000 });
   await expect(page.locator('.time-slot', { hasText: /^(09:00|09:30|10:00|10:30|11:00)$/ })).toHaveCount(0);
@@ -50,7 +50,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
 
   await page.locator('.booking-panel[data-panel="3"] [data-back="2"]').click();
   await page.locator('.booking-panel[data-panel="2"] [data-back="1"]').click();
-  await choose('.service-option[data-service-id="consult"]', 'Beratung / Vorbesprechung', 30);
+  await choose('.service-option[data-service-id="consult"]', 'Beratung', 30);
 
   await page.locator('.date-option.selected').click();
   await page.locator('.time-slot:visible').first().click();
@@ -74,7 +74,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
   await expect(page.locator('.service-option[data-service-id="brows-pmu"]')).toBeVisible();
-  await choose('.service-option[data-service-id="brows-pmu"]', 'Augenbrauen Permanent Make-up', 90);
+  await choose('.service-option[data-service-id="brows-pmu"]', 'Augenbrauen', 90);
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
   await page.locator('[data-action="newService"]').click();
