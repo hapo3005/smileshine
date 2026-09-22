@@ -69,13 +69,14 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
 test('known customer is linked internally without login or registration', async ({ page }) => {
   test.setTimeout(90000);
   await page.goto('index.html?pickup-known='+Date.now()+'#shop',{waitUntil:'networkidle'});
-  await page.evaluate(()=>{
-    localStorage.clear();
-    localStorage.setItem('smileshine_studio_v1',JSON.stringify({
-      customers:[{id:'cust_known_1',name:'Bekannte Kundin',email:'known@example.invalid',phone:'01701234567'}]
-    }));
-  });
+  await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'networkidle'});
+  await page.evaluate(()=>{
+    const db=JSON.parse(localStorage.getItem('smileshine_studio_v1')||'{}');
+    db.customers=Array.isArray(db.customers)?db.customers:[];
+    db.customers.push({id:'cust_known_1',name:'Bekannte Kundin',email:'known@example.invalid',phone:'01701234567'});
+    localStorage.setItem('smileshine_studio_v1',JSON.stringify(db));
+  });
   await page.waitForFunction(()=>Boolean(window.SmileShinePickupShop));
 
   await page.locator('[data-pickup-add]').first().click();
