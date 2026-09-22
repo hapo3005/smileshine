@@ -139,7 +139,8 @@
       payment:String(data.get('payment')||'Online bezahlen'),
       fulfillment:'pickup',
       pickupAddress:'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',
-      demo:true
+      demo:true,
+      status:'new'
     };
     try{const old=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');localStorage.setItem(ORDERS_KEY,JSON.stringify([order,...(Array.isArray(old)?old:[])].slice(0,20)))}catch{}
     clearCart();
