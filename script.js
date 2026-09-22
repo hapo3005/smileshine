@@ -41,7 +41,6 @@ const serviceCatalog=[
 
 function renderServiceCatalog(){
   if(!serviceOptionsRoot)return;
-  let index=0;
   let html='';
   let currentGroup='';
   serviceCatalog.forEach(item=>{
@@ -49,8 +48,7 @@ function renderServiceCatalog(){
       currentGroup=item.group;
       html+=`<div class="service-group-title"><span>${currentGroup}</span></div>`;
     }
-    index+=1;
-    html+=`<button class="service-option" type="button" data-service="${item.name}" data-service-id="${item.serviceId}" data-duration="${item.duration}"><span class="service-index">${String(index).padStart(2,'0')}</span><span class="service-info"><strong>${item.name}</strong><small>${item.note} · ca. ${item.duration} Min. (Demo)</small></span><span class="service-arrow">→</span></button>`;
+    html+=`<button class="service-option" type="button" data-service="${item.name}" data-service-id="${item.serviceId}" data-duration="${item.duration}"><span class="service-info"><strong>${item.name}</strong><small>ca. ${item.duration} Min.</small></span><span class="service-arrow">→</span></button>`;
   });
   serviceOptionsRoot.innerHTML=html;
 }
@@ -215,6 +213,6 @@ if(waitlistToggle&&waitlistForm){
 
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
 updateSummary();
-import('./checkout-enhancements.js?v=20260914-1630');
-import('./booking-admin-sync.js?v=20260922-appointment-detail2');
+import('./checkout-enhancements.js?v=20260922-public-cleanup1');
+import('./booking-admin-sync.js?v=20260922-public-cleanup1');
 import('./cnc-products-carousel.js?v=20260922-pickup-shop4');
