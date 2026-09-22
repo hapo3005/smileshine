@@ -3,11 +3,11 @@
   const {$,$$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,escapeHTML,SHORT_DAYS,DAY_NAMES,STATUS_LABELS}=A;
 
   function showView(name){
-    const views=['dashboard','calendar','appointments','customers','services','availability','settings'];
+    const views=['dashboard','calendar','appointments','customers','services','availability','pickup','settings'];
     if(!views.includes(name))name='dashboard';
     $$('.view').forEach(v=>v.classList.toggle('active',v.dataset.viewPanel===name));
     $$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
-    const titles={dashboard:'Guten Tag, Birgit.',calendar:'Kalender',appointments:'Termine',customers:'Kunden',services:'Leistungen',availability:'Verfügbarkeit',settings:'Einstellungen'};
+    const titles={dashboard:'Guten Tag, Birgit.',calendar:'Kalender',appointments:'Termine',customers:'Kunden',services:'Leistungen',availability:'Verfügbarkeit',pickup:'Abholshop',settings:'Einstellungen'};
     if($('#pageTitle'))$('#pageTitle').textContent=titles[name];
     if(location.hash!==`#${name}`)history.replaceState(null,'',`#${name}`);
     window.scrollTo({top:0,behavior:'smooth'});
