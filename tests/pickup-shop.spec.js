@@ -22,7 +22,7 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
   await expect(page.locator('[data-pickup-add]').first()).toHaveText('In den Warenkorb');
   await expect(page.locator('[data-pickup-cart]')).toContainText('Warenkorb');
   await expect(page.locator('.pickup-promise')).toContainText('Im Studio abholen');
-  await expect(page.locator('.pickup-shop-footer')).toContainText('ohne Kartons');
+  await expect(page.locator('.pickup-shop-footer')).toContainText('Abholung bei Smile & Shine');
 
   await page.locator('[data-pickup-add]').first().click();
   await expect(page.locator('#pickupCartDialog')).toBeVisible();
