@@ -14,3 +14,7 @@
 @media(max-width:1100px){.pickup-admin-summary{grid-template-columns:1fr 1fr}.pickup-order-card{grid-template-columns:95px minmax(0,1fr) 145px}.pickup-order-items{grid-column:2}.pickup-order-actions{grid-column:3;grid-row:1/3}}
 @media(max-width:760px){.pickup-admin-summary{gap:7px}.pickup-admin-summary article{padding:11px}.pickup-admin-summary strong{font-size:19px}.pickup-orders-panel .panel-head{align-items:flex-start;flex-direction:column}.pickup-order-card{grid-template-columns:1fr;padding:14px 0}.pickup-order-status,.pickup-order-customer,.pickup-order-items,.pickup-order-actions,.pickup-order-location{grid-column:1;grid-row:auto}.pickup-order-actions{grid-template-columns:1fr 1fr}.pickup-order-location{margin-top:0}}
 @media(max-width:430px){.pickup-admin-summary{grid-template-columns:1fr 1fr}.pickup-order-actions{grid-template-columns:1fr}}
+.pickup-order-customer-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:6px}
+.pickup-order-customer-tags em,.pickup-order-customer-tags b{display:inline-flex;padding:4px 6px;border-radius:999px;font-style:normal;font-size:7px;font-weight:700}
+.pickup-order-customer-tags em{background:#f2e9e5;color:#805a55}
+.pickup-order-customer-tags b{background:#edf3ee;color:#58705e}
