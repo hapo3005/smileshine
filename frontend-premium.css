@@ -1,0 +1,268 @@
+/* Smile & Shine premium frontend preview · 2026-09-22
+   Scoped to body.premium-preview so the live index remains untouched. */
+
+.premium-preview{
+  --premium-ink:#201d1b;
+  --premium-soft:#6d655f;
+  --premium-accent:#8b6556;
+  --premium-wash:#eee7e1;
+  --premium-line:rgba(57,47,42,.12);
+  background:
+    radial-gradient(circle at 12% -5%,rgba(255,255,255,.98),transparent 32rem),
+    radial-gradient(circle at 94% 16%,rgba(220,207,198,.24),transparent 31rem),
+    linear-gradient(180deg,#f5f2ee 0%,#fbfaf8 46%,#f1ede8 100%);
+}
+.premium-preview .site-header{padding-top:14px;padding-bottom:14px}
+.premium-preview .brand strong{font-size:12px;letter-spacing:.22em}
+.premium-preview .main-nav>a:not(.nav-cta){letter-spacing:.13em}
+.premium-preview .nav-cta{padding:12px 19px}
+
+.premium-preview .premium-hero{
+  min-height:760px;
+  padding-top:32px;
+  padding-bottom:42px;
+}
+.premium-preview .premium-hero .hero-copy{padding-top:78px;padding-bottom:84px}
+.premium-preview .premium-hero h1{
+  max-width:760px;
+  font-size:clamp(58px,6vw,96px);
+  letter-spacing:-.045em;
+}
+.premium-preview .premium-hero h1 em{
+  color:var(--premium-accent);
+  font-style:italic;
+  font-weight:400;
+}
+.premium-preview .premium-hero .lead{
+  max-width:610px;
+  font-size:15px;
+  line-height:1.9;
+  color:#6c655f;
+}
+.premium-preview .premium-hero .hero-media{
+  min-height:690px;
+  border-radius:3px 32px 3px 32px;
+  filter:saturate(.88) contrast(.98);
+}
+.premium-preview .premium-hero .hero-media-caption{
+  align-items:flex-end;
+}
+.premium-preview .premium-hero .hero-media-caption strong{
+  max-width:330px;
+  font-size:23px;
+  line-height:1.24;
+}
+.premium-preview .premium-trust{
+  border-color:var(--premium-line);
+}
+.premium-preview .premium-trust article{padding-top:27px;padding-bottom:27px}
+.premium-preview .premium-trust strong{font-size:9px}
+.premium-preview .premium-trust small{font-size:10px}
+
+.premium-preview .premium-treatments .section-heading{margin-bottom:52px}
+.premium-preview .premium-treatments .treatment-card::before{
+  background:linear-gradient(to top,rgba(25,21,18,.83) 0%,rgba(25,21,18,.18) 52%,rgba(25,21,18,.02) 75%);
+}
+.premium-preview .premium-treatments .treatment-card>div{bottom:24px}
+.premium-preview .premium-treatments .treatment-card span{
+  display:block;
+  margin-bottom:10px;
+  font-size:8px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+.premium-preview .premium-treatments .treatment-card h3{font-size:31px}
+.premium-preview .premium-treatments .treatment-card p{
+  min-height:34px;
+  max-width:300px;
+}
+.premium-preview .premium-treatments .treatment-card a{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  margin-top:17px;
+  padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.22);
+  color:#fff;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.premium-preview .premium-treatments .treatment-card a b{
+  font-size:14px;
+  font-weight:400;
+  transition:transform .25s ease;
+}
+.premium-preview .premium-treatments .treatment-card:hover a b{transform:translate(2px,-2px)}
+.premium-preview .treatment-consultation{
+  margin-top:22px;
+  padding:28px 0;
+}
+.premium-preview .treatment-consultation strong{
+  max-width:860px;
+  font-size:27px;
+  line-height:1.25;
+}
+
+.premium-preview .premium-about{
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  gap:clamp(48px,7vw,110px);
+  padding-top:124px;
+  padding-bottom:112px;
+}
+.premium-preview .premium-about .about-image{
+  position:relative;
+  min-height:680px;
+  border-radius:2px 32px 2px 32px;
+  background:
+    linear-gradient(180deg,rgba(245,241,237,.03),rgba(40,33,29,.10)),
+    url('https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=1400&q=90') center/cover no-repeat;
+}
+.premium-preview .about-image-note{
+  position:absolute;
+  left:18px;
+  bottom:18px;
+  padding:9px 11px;
+  border:1px solid rgba(255,255,255,.62);
+  border-radius:999px;
+  background:rgba(38,32,29,.38);
+  backdrop-filter:blur(12px);
+  color:rgba(255,255,255,.82);
+  font-size:8px;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+.premium-preview .premium-about .about-copy{padding:18px 0}
+.premium-preview .premium-about .about-copy h2{
+  max-width:720px;
+  font-size:clamp(50px,5.3vw,78px);
+}
+.premium-preview .premium-about .about-intro{
+  max-width:690px!important;
+  margin-top:28px!important;
+  color:#3f3a36!important;
+  font-family:var(--serif);
+  font-size:22px!important;
+  line-height:1.55!important;
+}
+.premium-preview .about-signals{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:28px;
+}
+.premium-preview .about-signals span{
+  padding:9px 12px;
+  border:1px solid var(--premium-line);
+  border-radius:999px;
+  background:rgba(255,255,255,.36);
+  color:#5f5751;
+  font-size:8px;
+  font-weight:650;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.premium-preview .about-statement{
+  margin:34px 0 0;
+  padding:24px 0 5px;
+  border-top:1px solid var(--premium-line);
+  color:#2b2724;
+  font-family:var(--serif);
+  font-size:clamp(26px,2.4vw,38px);
+  line-height:1.35;
+}
+
+.premium-preview .premium-principles{
+  padding-top:106px;
+  padding-bottom:116px;
+}
+.premium-preview .premium-principles::before{background:var(--premium-line)}
+.premium-preview .principles-heading{
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(300px,.55fr);
+  column-gap:clamp(50px,9vw,140px);
+  align-items:end;
+  margin-bottom:44px;
+}
+.premium-preview .principles-heading .eyebrow{
+  grid-column:1/-1;
+}
+.premium-preview .principles-heading h2{
+  max-width:760px;
+  font-size:clamp(48px,5vw,74px);
+}
+.premium-preview .principles-heading>p:last-child{
+  margin:0;
+  color:var(--premium-soft);
+  font-size:13px;
+  line-height:1.8;
+}
+.premium-preview .principles-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border-top:1px solid var(--premium-line);
+  border-bottom:1px solid var(--premium-line);
+}
+.premium-preview .principles-grid article{
+  min-height:270px;
+  padding:34px clamp(22px,2.4vw,38px) 38px;
+}
+.premium-preview .principles-grid article+article{border-left:1px solid var(--premium-line)}
+.premium-preview .principles-grid span{
+  color:var(--premium-accent);
+  font-size:8px;
+  font-weight:750;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.premium-preview .principles-grid h3{
+  max-width:330px;
+  margin:60px 0 16px;
+  font-family:var(--serif);
+  font-size:28px;
+  font-weight:400;
+  line-height:1.2;
+}
+.premium-preview .principles-grid p{
+  max-width:360px;
+  margin:0;
+  color:var(--premium-soft);
+  font-size:11px;
+  line-height:1.75;
+}
+
+.premium-preview .booking-section{
+  padding-top:118px;
+}
+.premium-preview .booking-shell{
+  box-shadow:0 24px 80px rgba(48,39,34,.08);
+}
+.premium-preview .boutique,
+.premium-preview .contact-experience{
+  background:transparent;
+}
+
+@media(max-width:900px){
+  .premium-preview .premium-hero{min-height:0}
+  .premium-preview .premium-hero .hero-copy{padding-top:58px;padding-bottom:48px}
+  .premium-preview .premium-hero .hero-media{min-height:560px}
+  .premium-preview .premium-about{grid-template-columns:1fr;gap:38px}
+  .premium-preview .premium-about .about-image{min-height:540px}
+  .premium-preview .principles-heading{grid-template-columns:1fr;gap:18px}
+  .premium-preview .principles-grid{grid-template-columns:1fr}
+  .premium-preview .principles-grid article{min-height:0;padding:28px 4px}
+  .premium-preview .principles-grid article+article{border-left:0;border-top:1px solid var(--premium-line)}
+  .premium-preview .principles-grid h3{margin-top:24px}
+}
+@media(max-width:620px){
+  .premium-preview .premium-hero{padding-bottom:28px}
+  .premium-preview .premium-hero h1{font-size:clamp(46px,12.5vw,58px)}
+  .premium-preview .premium-hero .hero-media{min-height:450px}
+  .premium-preview .premium-about{padding-top:94px}
+  .premium-preview .premium-about .about-image{min-height:430px}
+  .premium-preview .premium-about .about-intro{font-size:19px!important}
+  .premium-preview .about-signals{gap:6px}
+  .premium-preview .about-signals span{font-size:7px}
+  .premium-preview .premium-principles{padding-top:82px;padding-bottom:88px}
+}
