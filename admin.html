@@ -111,7 +111,7 @@
       <section class="view" data-view-panel="appointments">
         <div class="view-heading"><div><p class="eyebrow">Terminverwaltung</p><h2>Alle Termine.</h2><p class="muted">Suchen, filtern, bestätigen, absagen oder direkt einen neuen Termin eintragen.</p></div><button class="primary-action" type="button" data-action="newAppointment">＋ Neuer Termin</button></div>
         <article class="panel list-panel">
-          <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="appointmentSearch" type="search" placeholder="Name oder Leistung suchen"></label><select id="appointmentFilter"><option value="upcoming">Kommende</option><option value="all">Alle</option><option value="confirmed">Bestätigt</option><option value="pending">Offen</option><option value="cancelled">Abgesagt</option></select></div>
+          <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="appointmentSearch" type="search" placeholder="Name oder Leistung suchen"></label><select id="appointmentFilter"><option value="upcoming">Kommende</option><option value="all">Alle</option><option value="confirmed">Bestätigt</option><option value="pending">Offen</option><option value="completed">Abgeschlossen</option><option value="no_show">Nicht erschienen</option><option value="cancelled">Abgesagt</option></select></div>
           <div id="appointmentsList" class="appointments-list"></div>
         </article>
       </section>
@@ -172,6 +172,7 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="studio-data-store.js?v=20260922-datalayer1"></script>\n  <script src="admin.js"></script>
+  <script src="studio-data-store.js?v=20260922-datalayer1"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
