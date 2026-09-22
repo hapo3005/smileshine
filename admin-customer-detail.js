@@ -27,7 +27,10 @@
     return {finalPrice:price,paid,open:Math.max(0,price-paid),status:paid>=price&&price>0?'paid':paid>0?'partial':price===0?'paid':'open'};
   }
   function finances(a){return A.appointmentFinancials?A.appointmentFinancials(a):fallbackFinancials(a)}
-  function appointmentRow(a){const f=finances(a),status=A.STATUS_LABELS[a.status]||a.status,payLabel=A.paymentStatusLabel?A.paymentStatusLabel(f.status):(f.status==='paid'?'Bezahlt':f.status==='partial'?'Teilbezahlt':'Offen');return `<div class="customer-history-row"><div><strong>${dateShort(a.date)} · ${a.time} Uhr</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><div><strong>${money(f.finalPrice)}</strong><small>${escapeHTML(a.paymentPreference||a.payment||'Im Studio')} · ${escapeHTML(status)}</small><div class="customer-payment-meta"><span class="customer-payment-status ${f.status==='paid'?'paid':f.status==='partial'?'partial':'open'}">${escapeHTML(payLabel)}${f.open>0?` · ${money(f.open)} offen`:''}</span><button type="button" class="customer-payment-button" data-payment-id="${a.id}">Zahlung</button></div></div></div>`}
+  function appointmentRow(a){
+    const f=finances(a),status=A.STATUS_LABELS[a.status]||a.status,payLabel=A.paymentStatusLabel?A.paymentStatusLabel(f.status):(f.status==='paid'?'Bezahlt':f.status==='partial'?'Teilbezahlt':'Offen');
+    return `<div class="customer-history-row" data-appointment-id="${a.id}"><div><strong>${dateShort(a.date)} · ${a.time} Uhr</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><div><strong>${money(f.finalPrice)}</strong><small>${escapeHTML(a.paymentPreference||a.payment||'Im Studio')} · ${escapeHTML(status)}</small><div class="customer-payment-meta"><span class="customer-payment-status ${f.status==='paid'?'paid':f.status==='partial'?'partial':'open'}">${escapeHTML(payLabel)}${f.open>0?` · ${money(f.open)} offen`:''}</span><button type="button" class="customer-payment-button" data-payment-id="${a.id}">Zahlung</button><button type="button" class="customer-payment-button" data-open-appointment="${a.id}">Termin</button></div></div></div>`;
+  }
 
   function renderCustomerDetail(id){
     ensureCustomerDetail();
