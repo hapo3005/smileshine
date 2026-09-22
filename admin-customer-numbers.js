@@ -58,7 +58,7 @@
       const pending=active.filter(a=>a.status==='pending'&&a.date>=today).length;
       const initials=String(c.name||'').split(/\s+/).map(p=>p[0]).slice(0,2).join('').toUpperCase();
       const attention=open>0||pending>0;
-      return `<div class="customer-card ${attention?'customer-card-attention':''}" data-customer-id="${escapeHTML(c.id)}">
+      return `<div class="customer-card ${attention?'customer-card-attention':''}" data-customer-id="${escapeHTML(c.id)}" data-has-next="${next?'1':'0'}" data-has-open="${open>0?'1':'0'}" data-has-pending="${pending>0?'1':'0'}">
         <span class="customer-avatar">${escapeHTML(initials)}</span>
         <div class="customer-name"><strong>${escapeHTML(c.name)}</strong><small>${escapeHTML(c.customerNumber)} · seit ${dateShort(c.created||today)}</small></div>
         <div class="customer-contact"><strong>${escapeHTML(c.email||c.phone||'Keine Kontaktdaten')}</strong><small>${escapeHTML(c.email?c.phone||'':c.phone?'Telefon':'')}</small></div>
@@ -67,7 +67,70 @@
         <span class="customer-card-arrow" aria-hidden="true">→</span>
       </div>`;
     }).join(''):'<div class="empty-state"><strong>Keine Kunden gefunden.</strong>Versuche Name, Kundennummer, E-Mail oder Telefonnummer.</div>';
-    A.bindCustomerDetailRows?.();
+    A.bindCustomerDetailRows?.();applyCustomerFilter();
+  }
+
+  function customerWorkspaceMetrics(){
+    const today=isoDate(new Date()),customers=A.db.customers||[],appointments=A.db.appointments||[];
+    const financials=a=>{
+      if(A.appointmentFinancials)return A.appointmentFinancials(a);
+      const servicePrice=A.db.services.find(s=>s.name===a.service)?.price;
+      const price=Number(a.finalPrice??a.listPrice??servicePrice??0),paid=Number(a.paidAmount||0);
+      return {open:Math.max(0,price-paid)};
+    };
+    let withNext=0,attention=0,withoutNext=0,openTotal=0;
+    customers.forEach(customer=>{
+      const apps=appointments.filter(a=>a.customerId===customer.id||(!a.customerId&&customer.email&&a.email===customer.email)).filter(a=>a.status!=='cancelled');
+      const next=apps.some(a=>a.date>=today);
+      const pending=apps.some(a=>a.date>=today&&a.status==='pending');
+      const open=apps.reduce((sum,a)=>sum+Number(financials(a).open||0),0);
+      if(next)withNext++;else withoutNext++;
+      if(pending||open>0)attention++;
+      openTotal+=open;
+    });
+    return {total:customers.length,withNext,attention,withoutNext,openTotal};
+  }
+
+  function ensureCustomerWorkspaceUI(){
+    const view=document.querySelector('.view[data-view-panel="customers"]');if(!view)return;
+    const heading=view.querySelector('.view-heading'),copy=heading?.querySelector('.muted');
+    if(copy)copy.textContent='Kunden, Termine, Zahlungen und Notizen an einem Ort – schnell erfassbar und direkt bearbeitbar.';
+
+    if(!document.getElementById('customerWorkspaceSummary')){
+      const summary=document.createElement('section');summary.id='customerWorkspaceSummary';summary.className='customer-workspace-summary';
+      view.querySelector('.list-panel')?.before(summary);
+    }
+
+    const toolbar=view.querySelector('.list-toolbar');
+    if(toolbar&&!toolbar.querySelector('.customer-filter-switch')){
+      const filters=document.createElement('div');filters.className='customer-filter-switch';filters.setAttribute('aria-label','Kunden filtern');
+      filters.innerHTML='<button type="button" data-customer-filter="all">Alle</button><button type="button" data-customer-filter="next">Mit Termin</button><button type="button" data-customer-filter="attention">Aufmerksamkeit</button><button type="button" data-customer-filter="none">Ohne Termin</button>';
+      const count=toolbar.querySelector('#customerCount');toolbar.insertBefore(filters,count||null);
+      filters.addEventListener('click',event=>{
+        const button=event.target.closest('[data-customer-filter]');if(!button)return;
+        A.customerFilter=button.dataset.customerFilter;applyCustomerFilter();
+      });
+    }
+  }
+
+  function renderCustomerWorkspaceSummary(){
+    ensureCustomerWorkspaceUI();
+    const root=document.getElementById('customerWorkspaceSummary');if(!root)return;
+    const m=customerWorkspaceMetrics(),currency=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
+    root.innerHTML=`<article><span>Kunden gesamt</span><strong>${m.total}</strong><small>in der Kartei</small></article><article><span>Mit Termin</span><strong>${m.withNext}</strong><small>kommender Termin vorhanden</small></article><article class="${m.attention?'is-attention':''}"><span>Aufmerksamkeit</span><strong>${m.attention}</strong><small>offen oder unbestätigt</small></article><article class="${m.openTotal>0?'is-attention':''}"><span>Offene Beträge</span><strong>${currency.format(m.openTotal)}</strong><small>über alle Kunden</small></article>`;
+  }
+
+  function applyCustomerFilter(){
+    ensureCustomerWorkspaceUI();
+    const filter=A.customerFilter||'all',cards=[...document.querySelectorAll('#customersList .customer-card')];
+    let visible=0;
+    cards.forEach(card=>{
+      const show=filter==='all'||(filter==='next'&&card.dataset.hasNext==='1')||(filter==='attention'&&(card.dataset.hasOpen==='1'||card.dataset.hasPending==='1'))||(filter==='none'&&card.dataset.hasNext!=='1');
+      card.hidden=!show;if(show)visible++;
+    });
+    document.querySelectorAll('[data-customer-filter]').forEach(btn=>{const active=btn.dataset.customerFilter===filter;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active))});
+    const count=document.getElementById('customerCount');if(count)count.textContent=`${visible} angezeigt · ${A.db.customers.length} gesamt`;
+    renderCustomerWorkspaceSummary();
   }
 
   function currentDetailCustomer(){
@@ -97,17 +160,17 @@
   }
 
   function initCustomerNumbers(){
-    if(A.customerNumbersReady)return;A.customerNumbersReady=true;
+    if(A.customerNumbersReady)return;A.customerNumbersReady=true;A.customerFilter=A.customerFilter||'all';ensureCustomerWorkspaceUI();
     ensureCustomerNumbers(A.db);if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));
     const baseSeed=A.seed;A.seed=()=>ensureCustomerNumbers(baseSeed());
     const baseSave=A.save;A.save=message=>{ensureCustomerNumbers(A.db);return baseSave(message)};
     const baseRenderAll=A.renderAll;A.renderAll=()=>{baseRenderAll?.();renderCustomersWithNumbers();bindExactCustomerOpen()};
     A.renderCustomers=renderCustomersWithNumbers;
     const detail=$('#customerDetailBody');if(detail)new MutationObserver(()=>queueMicrotask(decorateCustomerDetail)).observe(detail,{childList:true,subtree:true});
-    renderCustomersWithNumbers();bindExactCustomerOpen();
+    renderCustomersWithNumbers();bindExactCustomerOpen();renderCustomerWorkspaceSummary();applyCustomerFilter();
   }
 
-  Object.assign(A,{initCustomerNumbers,ensureCustomerNumbers,nextCustomerNumber,formatCustomerNumber,renderCustomersWithNumbers});
+  Object.assign(A,{initCustomerNumbers,ensureCustomerNumbers,nextCustomerNumber,formatCustomerNumber,renderCustomersWithNumbers,renderCustomerWorkspaceSummary,applyCustomerFilter});
 })();
 import('./admin-demo-profiles.js?v=20260914-1455').then(()=>window.SSAdmin?.initDemoProfiles?.());
 import('./admin-whatsapp.js?v=20260914-1636').then(()=>window.SSAdmin?.initWhatsApp?.());
