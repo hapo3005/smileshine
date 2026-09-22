@@ -36,16 +36,36 @@
   function renderCustomersWithNumbers(){
     ensureCustomerNumbers(A.db);
     const root=$('#customersList');if(!root)return;
-    const q=($('#customerSearch')?.value||'').trim().toLowerCase();let list=[...A.db.customers];
+    const q=($('#customerSearch')?.value||'').trim().toLowerCase(),today=isoDate(new Date());
+    let list=[...A.db.customers];
     if(q)list=list.filter(c=>`${c.customerNumber||''} ${c.name||''} ${c.email||''} ${c.phone||''}`.toLowerCase().includes(q));
     list.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'de'));
     if($('#customerCount'))$('#customerCount').textContent=`${list.length} von ${A.db.customers.length}`;
+
+    const financials=a=>{
+      if(A.appointmentFinancials)return A.appointmentFinancials(a);
+      const servicePrice=A.db.services.find(s=>s.name===a.service)?.price;
+      const price=Number(a.finalPrice??a.listPrice??servicePrice??0),paid=Number(a.paidAmount||0);
+      return {finalPrice:price,paid,open:Math.max(0,price-paid)};
+    };
+
     root.innerHTML=list.length?list.map(c=>{
-      const apps=A.db.appointments.filter(a=>a.customerId===c.id||(!a.customerId&&a.email&&a.email===c.email));
-      const count=apps.filter(a=>a.status!=='cancelled').length;
-      const last=[...apps].sort((a,b)=>`${b.date}${b.time}`.localeCompare(`${a.date}${a.time}`))[0];
+      const apps=A.db.appointments.filter(a=>a.customerId===c.id||(!a.customerId&&c.email&&a.email===c.email));
+      const active=apps.filter(a=>a.status!=='cancelled');
+      const next=[...active].filter(a=>a.date>=today).sort((a,b)=>`${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`))[0];
+      const last=[...active].filter(a=>a.date<today).sort((a,b)=>`${b.date}${b.time}`.localeCompare(`${a.date}${a.time}`))[0];
+      const open=active.reduce((sum,a)=>sum+Number(financials(a).open||0),0);
+      const pending=active.filter(a=>a.status==='pending'&&a.date>=today).length;
       const initials=String(c.name||'').split(/\s+/).map(p=>p[0]).slice(0,2).join('').toUpperCase();
-      return `<div class="customer-card" data-customer-id="${escapeHTML(c.id)}"><span class="customer-avatar">${escapeHTML(initials)}</span><div class="customer-name"><strong>${escapeHTML(c.name)}</strong><small>${escapeHTML(c.customerNumber)} · Kunde seit ${dateShort(c.created||isoDate(new Date()))}</small></div><div class="customer-contact"><strong>${escapeHTML(c.email||'–')}</strong><small>${escapeHTML(c.phone||'–')}</small></div><div class="customer-stat"><strong>${count}</strong><small>Termine</small></div><div class="customer-stat"><strong>${last?dateShort(last.date):'–'}</strong><small>Letzter Termin</small></div></div>`;
+      const attention=open>0||pending>0;
+      return `<div class="customer-card ${attention?'customer-card-attention':''}" data-customer-id="${escapeHTML(c.id)}">
+        <span class="customer-avatar">${escapeHTML(initials)}</span>
+        <div class="customer-name"><strong>${escapeHTML(c.name)}</strong><small>${escapeHTML(c.customerNumber)} · seit ${dateShort(c.created||today)}</small></div>
+        <div class="customer-contact"><strong>${escapeHTML(c.email||c.phone||'Keine Kontaktdaten')}</strong><small>${escapeHTML(c.email?c.phone||'':c.phone?'Telefon':'')}</small></div>
+        <div class="customer-stat customer-next-stat"><strong>${next?`${dateShort(next.date)} · ${next.time}`:'–'}</strong><small>${next?escapeHTML(next.service):last?`zuletzt ${dateShort(last.date)}`:'kein Termin'}</small></div>
+        <div class="customer-stat customer-money-stat ${open>0?'has-open':''}"><strong>${open>0?new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(open):'✓'}</strong><small>${open>0?'offen':pending?`${pending} unbestätigt`:'alles ruhig'}</small></div>
+        <span class="customer-card-arrow" aria-hidden="true">→</span>
+      </div>`;
     }).join(''):'<div class="empty-state"><strong>Keine Kunden gefunden.</strong>Versuche Name, Kundennummer, E-Mail oder Telefonnummer.</div>';
     A.bindCustomerDetailRows?.();
   }
@@ -78,7 +98,7 @@
 
   function initCustomerNumbers(){
     if(A.customerNumbersReady)return;A.customerNumbersReady=true;
-    ensureCustomerNumbers(A.db);localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));
+    ensureCustomerNumbers(A.db);if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));
     const baseSeed=A.seed;A.seed=()=>ensureCustomerNumbers(baseSeed());
     const baseSave=A.save;A.save=message=>{ensureCustomerNumbers(A.db);return baseSave(message)};
     const baseRenderAll=A.renderAll;A.renderAll=()=>{baseRenderAll?.();renderCustomersWithNumbers();bindExactCustomerOpen()};
