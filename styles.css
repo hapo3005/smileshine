@@ -678,3 +678,10 @@ body::before{opacity:.08}
   .about-actions .button{width:100%}
   .booking-section{padding-top:82px}
 }
+
+/* Presentation-safe temporary imagery: do not imply a stock model is the studio owner. */
+.about-refined .about-image{
+  background:
+    linear-gradient(180deg,rgba(246,242,238,.04),rgba(44,37,33,.08)),
+    url('https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=1400&q=90') center/cover no-repeat;
+}
