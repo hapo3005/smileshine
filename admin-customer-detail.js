@@ -8,7 +8,7 @@
 
   function ensureStyles(){
     if(document.querySelector('link[data-customer-detail-style]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-customer-detail.css?v=20260922-customer-workspace2';link.dataset.customerDetailStyle='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-customer-detail.css?v=20260922-admin-unified4';link.dataset.customerDetailStyle='true';document.head.appendChild(link);
   }
 
   function ensureCustomerDetail(){
