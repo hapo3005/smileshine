@@ -215,4 +215,4 @@ window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes
 updateSummary();
 import('./checkout-enhancements.js?v=20260922-public-cleanup1');
 import('./booking-admin-sync.js?v=20260922-public-cleanup1');
-import('./cnc-products-carousel.js?v=20260922-pickup-shop4');
+import('./cnc-products-carousel.js?v=20260922-frontend-pass1');
