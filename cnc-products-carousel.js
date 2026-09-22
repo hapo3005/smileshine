@@ -31,31 +31,31 @@
       .pickup-shop{overflow:visible}
       .pickup-shop .boutique-heading{margin-bottom:26px}
       .pickup-shop .shop-status{background:#edf3ed;color:#55705b;border-color:#d7e4d9}
-      .pickup-promise{display:grid;grid-template-columns:repeat(3,1fr);margin:0 0 24px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.45)}
-      .pickup-promise>div{padding:15px 17px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center}.pickup-promise>div+div{border-left:1px solid var(--line)}
-      .pickup-promise span{width:32px;height:32px;border-radius:10px;background:#f1e7e2;display:grid;place-items:center;color:#8b5e58;font-size:13px}.pickup-promise strong{display:block;font-size:10px}.pickup-promise small{display:block;color:var(--muted);font-size:8px;line-height:1.4;margin-top:2px}
+      .pickup-promise{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 20px;padding:15px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:transparent}
+      .pickup-promise>div{padding:0;display:flex;align-items:center;gap:9px;min-width:0}.pickup-promise>div+div{border-left:0}
+      .pickup-promise span{display:none}.pickup-promise strong{display:block;font-size:9px}.pickup-promise small{display:block;color:var(--muted);font-size:8px;line-height:1.4;margin-top:2px}
       .pickup-shop-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:15px}.pickup-shop-toolbar>p{margin:0;color:var(--muted);font-size:10px;line-height:1.5}
-      .pickup-cart-button{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fffaf8;border-radius:999px;padding:10px 14px;color:var(--ink);font-size:9px;font-weight:750;cursor:pointer;white-space:nowrap;box-shadow:var(--shadow-sm)}
+      .pickup-cart-button{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fffaf8;border-radius:10px;padding:10px 13px;color:var(--ink);font-size:9px;font-weight:750;cursor:pointer;white-space:nowrap;box-shadow:none}
       .pickup-cart-count{min-width:21px;height:21px;border-radius:999px;background:var(--rose);color:#fff;display:grid;place-items:center;font-size:8px}
       .pickup-product-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-      .pickup-product-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid rgba(77,67,61,.09);border-radius:8px 25px 8px 25px;background:rgba(255,255,255,.58);box-shadow:var(--shadow-sm);transition:.25s ease}
-      .pickup-product-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+      .pickup-product-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid rgba(77,67,61,.09);border-radius:14px;background:rgba(255,255,255,.62);box-shadow:0 10px 28px rgba(47,39,34,.045);transition:.22s ease}
+      .pickup-product-card:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(47,39,34,.07)}
       .pickup-product-visual{position:relative;height:260px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#f8f5f1,#eee7e1);overflow:hidden;border-bottom:1px solid rgba(77,67,61,.07)}
       .pickup-product-visual:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 24% 18%,rgba(255,255,255,.82),transparent 30%)}
       .pickup-product-visual img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;padding:20px 24px;mix-blend-mode:multiply}
-      .pickup-product-badge{position:absolute;z-index:3;left:14px;top:14px;padding:6px 9px;border:1px solid rgba(255,255,255,.86);border-radius:999px;background:rgba(250,248,245,.84);backdrop-filter:blur(12px);font-size:7px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+      .pickup-product-badge{position:absolute;z-index:3;left:14px;top:14px;padding:6px 9px;border:1px solid rgba(255,255,255,.86);border-radius:8px;background:rgba(250,248,245,.90);font-size:7px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
       .pickup-product-copy{display:flex;flex-direction:column;flex:1;padding:20px}
       .pickup-product-meta{display:flex;justify-content:space-between;gap:10px;color:var(--accent-dark);font-size:7px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
       .pickup-product-copy h3{font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.15;margin:9px 0}.pickup-product-copy p{margin:0;color:var(--muted);font-size:9px;line-height:1.65}
       .pickup-product-price{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:auto;padding-top:17px}.pickup-product-price strong{font-size:10px}.pickup-product-price small{font-size:7px;color:var(--muted);text-align:right}
-      .pickup-add{width:100%;margin-top:12px;border:0;border-radius:11px;background:#453c37;color:#fff;padding:11px 12px;font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.pickup-add:hover{background:#2f2926}
+      .pickup-add{width:100%;margin-top:12px;border:0;border-radius:10px;background:#3a3430;color:#fff;padding:11px 12px;font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.pickup-add:hover{background:#2f2926}
       .pickup-only-note{display:flex;align-items:center;gap:6px;margin-top:9px;color:#6b7d6f;font-size:7px;font-weight:700}.pickup-only-note:before{content:"";width:6px;height:6px;border-radius:50%;background:#83a288}
-      .pickup-shop-footer{margin-top:20px;padding:17px 19px;border-radius:17px;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:space-between;gap:20px}
+      .pickup-shop-footer{margin-top:20px;padding:16px 0;border-top:1px solid var(--line);border-radius:0;background:transparent;display:flex;align-items:center;justify-content:space-between;gap:20px}
       .pickup-shop-footer strong{font-size:10px}.pickup-shop-footer p{margin:3px 0 0;color:var(--muted);font-size:9px;line-height:1.5}.pickup-shop-footer span{font-size:8px;font-weight:800;color:#6c7e70;white-space:nowrap}
 
       .pickup-cart-dialog{border:0;padding:0;background:transparent;width:min(760px,calc(100vw - 24px));max-height:calc(100dvh - 24px)}
       .pickup-cart-dialog::backdrop{background:rgba(37,31,28,.42);backdrop-filter:blur(4px)}
-      .pickup-cart-card{display:flex;flex-direction:column;max-height:calc(100dvh - 24px);overflow:hidden;border:1px solid var(--line);border-radius:24px;background:#fcfaf8;box-shadow:0 25px 80px rgba(37,29,25,.22)}
+      .pickup-cart-card{display:flex;flex-direction:column;max-height:calc(100dvh - 24px);overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fcfaf8;box-shadow:0 25px 80px rgba(37,29,25,.18)}
       .pickup-cart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:20px 22px 16px;border-bottom:1px solid var(--line)}.pickup-cart-head h3{font:26px/1.1 var(--serif);font-weight:400;margin:3px 0 4px}.pickup-cart-head p{margin:0;color:var(--muted);font-size:8px}
       .pickup-cart-close{width:37px;height:37px;border:1px solid var(--line);border-radius:50%;background:#fff;cursor:pointer;font-size:19px}
       .pickup-cart-body{overflow:auto;padding:18px 22px 22px;display:grid;gap:14px}
@@ -72,7 +72,7 @@
             .pickup-success{padding:26px 12px;text-align:center}.pickup-success-mark{width:54px;height:54px;border-radius:50%;background:#e6f0e7;color:#507057;display:grid;place-items:center;margin:0 auto 12px;font-size:21px}.pickup-success h4{font:24px var(--serif);font-weight:400;margin:0}.pickup-success p{max-width:440px;margin:8px auto 0;color:var(--muted);font-size:9px;line-height:1.6}
 
       @media(max-width:1050px){.pickup-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-      @media(max-width:700px){.pickup-order-review{grid-template-columns:1fr}.pickup-order-review>div{border-right:0;border-bottom:1px solid var(--line)}.pickup-order-review>div:last-child{border-bottom:0}.pickup-promise{grid-template-columns:1fr}.pickup-promise>div+div{border-left:0;border-top:1px solid var(--line)}.pickup-shop-toolbar{align-items:flex-start;flex-direction:column}.pickup-cart-button{align-self:stretch;justify-content:center}.pickup-product-grid{grid-template-columns:1fr}.pickup-product-visual{height:290px}.pickup-shop-footer{align-items:flex-start;flex-direction:column}.pickup-payment-options,.pickup-contact-grid{grid-template-columns:1fr}.pickup-field-wide{grid-column:auto}.pickup-cart-body{padding:14px}.pickup-cart-head{padding:17px}.pickup-checkout-actions{align-items:stretch;flex-direction:column}.pickup-submit{width:100%}}
+      @media(max-width:700px){.pickup-order-review{grid-template-columns:1fr}.pickup-order-review>div{border-right:0;border-bottom:1px solid var(--line)}.pickup-order-review>div:last-child{border-bottom:0}.pickup-promise{display:grid;grid-template-columns:1fr;gap:10px}.pickup-promise>div+div{border-left:0;border-top:0}.pickup-shop-toolbar{align-items:flex-start;flex-direction:column}.pickup-cart-button{align-self:stretch;justify-content:center}.pickup-product-grid{grid-template-columns:1fr}.pickup-product-visual{height:290px}.pickup-shop-footer{align-items:flex-start;flex-direction:column}.pickup-payment-options,.pickup-contact-grid{grid-template-columns:1fr}.pickup-field-wide{grid-column:auto}.pickup-cart-body{padding:14px}.pickup-cart-head{padding:17px}.pickup-checkout-actions{align-items:stretch;flex-direction:column}.pickup-submit{width:100%}}
     `;document.head.appendChild(style);
   }
 
@@ -82,7 +82,7 @@
       <div class="pickup-product-copy">
         <div class="pickup-product-meta"><span>${escapeHTML(item.category)}</span><span>${escapeHTML(item.size)}</span></div>
         <h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.description)}</p>
-        <div class="pickup-product-price"><strong>xx,xx €</strong><small>vor Livegang<br>mit Birgit bestätigen</small></div>
+        <div class="pickup-product-price"><strong>xx,xx €</strong><small>inkl. MwSt.<br>Abholung im Studio</small></div>
         <button class="pickup-add" type="button" data-pickup-add="${item.id}">In den Warenkorb</button>
         <span class="pickup-only-note">Kein Versand · Abholung im Studio</span>
       </div>
@@ -170,11 +170,11 @@
   function render(){
     const section=document.getElementById('shop');if(!section)return;
     injectStyles();ensureDialog();section.classList.add('pickup-shop');
-    section.innerHTML=`<div class="section-heading split boutique-heading"><div><p class="eyebrow">Smile &amp; Shine Abholboutique · CNC Cosmetic</p><h2>Online auswählen. Im Studio abholen.</h2></div><div class="boutique-intro"><p>Birgits ausgewählte Pflegeprodukte können künftig online gekauft oder direkt im Studio mitgenommen werden. Jede Online-Bestellung bleibt lokal: Abholung bei Smile &amp; Shine in Wittlich-Bombogen – ohne Paketversand.</p><span class="shop-status">Nur Abholung · kein Versand</span></div></div>
+    section.innerHTML=`<div class="section-heading split boutique-heading"><div><p class="eyebrow">Pflege für zu Hause · CNC Cosmetic</p><h2>Online auswählen. Im Studio abholen.</h2></div><div class="boutique-intro"><p>Ausgewählte Pflegeprodukte können online in den Warenkorb gelegt und anschließend bei Smile &amp; Shine in Wittlich-Bombogen abgeholt werden.</p><span class="shop-status">Nur Abholung · kein Versand</span></div></div>
       <div class="pickup-promise" aria-label="So funktioniert der Abholshop"><div><span>♡</span><div><strong>Produkt auswählen</strong><small>Online in den Warenkorb oder direkt im Studio kaufen.</small></div></div><div><span>€</span><div><strong>Flexibel bezahlen</strong><small>Online bezahlen oder bei der Abholung im Studio.</small></div></div><div><span>⌖</span><div><strong>Im Studio abholen</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen.</small></div></div></div>
-      <div class="pickup-shop-toolbar"><p>Acht ausgewählte CNC Cosmetic Produkte. Preise und realer Bestand werden vor Livegang mit Birgit gepflegt.</p><button class="pickup-cart-button" type="button" data-pickup-cart>Warenkorb <span class="pickup-cart-count" data-pickup-count>0</span></button></div>
+      <div class="pickup-shop-toolbar"><p>Ausgewählte Produkte für Reinigung, Feuchtigkeit, Schutz und Pflege.</p><button class="pickup-cart-button" type="button" data-pickup-cart>Warenkorb <span class="pickup-cart-count" data-pickup-count>0</span></button></div>
       <div class="pickup-product-grid">${products.map(productCard).join('')}</div>
-      <div class="pickup-shop-footer"><div><strong>Bewusst lokal statt Versandhandel.</strong><p>Onlinekauf dient der bequemen Vorbestellung und Bezahlung. Birgit muss weder verpacken noch frankieren noch Pakete zur Post bringen.</p></div><span>Abholung im Studio · kostenlos</span></div>`;
+      <div class="pickup-shop-footer"><div><strong>Abholung bei Smile &amp; Shine.</strong><p>Bestellung online vorbereiten und nach Bereitmeldung im Studio mitnehmen.</p></div><span>Raiffeisenstraße 4 · Wittlich-Bombogen</span></div>`;
 
     section.querySelectorAll('.pickup-product-visual img').forEach(img=>img.addEventListener('error',()=>{img.style.display='none'},{once:true}));
     renderCartState();
