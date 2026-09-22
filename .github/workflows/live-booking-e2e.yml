@@ -17,7 +17,9 @@ on:
       - "admin-calendar-views.css"
       - "admin-calendar-workspace.js"
       - "admin-calendar-workspace.css"
+      - "admin-customer-detail.js"
       - "admin-customer-detail.css"
+      - "admin-customer-numbers.js"
       - "admin-payments.css"
       - "admin-services-manager.css"
       - "script.js"
@@ -30,6 +32,7 @@ on:
       - "tests/responsive.spec.js"
       - "tests/admin-appointment-detail.spec.js"
       - "tests/admin-calendar-workspace.spec.js"
+      - "tests/admin-customer-workspace.spec.js"
       - ".github/workflows/live-booking-e2e.yml"
   workflow_dispatch:
 
@@ -46,7 +49,7 @@ jobs:
       - name: Wait for GitHub Pages version
         run: |
           for attempt in {1..30}; do
-            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260922-calendar-workspace2"; then
+            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260922-customer-workspace1"; then
               exit 0
             fi
             sleep 10
@@ -61,7 +64,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Test published site in Chromium
-        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js tests/admin-appointment-detail.spec.js tests/admin-calendar-workspace.spec.js --reporter=line
+        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js tests/admin-appointment-detail.spec.js tests/admin-calendar-workspace.spec.js tests/admin-customer-workspace.spec.js --reporter=line
 
       - name: Upload Playwright diagnostics
         if: failure()
