@@ -7,44 +7,43 @@ test.use({
 
 for (const viewport of [
   { name: 'desktop', width: 1440, height: 1000 },
+  { name: 'tablet', width: 820, height: 1180 },
   { name: 'mobile', width: 390, height: 844 }
 ]) {
-  test(`refined public frontend follows Smile & Shine rules on ${viewport.name}`, async ({ page }) => {
+  test(`customer-focused contact experience works on ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    await page.goto('index.html?frontend-pass='+Date.now(),{waitUntil:'networkidle'});
+    await page.goto('index.html?contact-experience='+Date.now()+'#kontakt',{waitUntil:'networkidle'});
 
-    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260922-frontend-pass2');
-    await expect(page.locator('.hero-refined')).toBeVisible();
-    await expect(page.locator('.hero-glass-card')).toHaveCount(0);
-    await expect(page.locator('.hero-meta')).toBeVisible();
-    await expect(page.locator('.trust-strip article')).toHaveCount(3);
+    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260922-contact-experience1');
 
-    await expect(page.locator('#behandlungen .treatment-card')).toHaveCount(3);
-    await expect(page.locator('#behandlungen .treatment-consultation')).toBeVisible();
-    await expect(page.locator('#behandlungen .service-index')).toHaveCount(0);
+    const section=page.locator('#kontakt');
+    await expect(section).toBeVisible();
+    await expect(section).toHaveClass(/contact-experience/);
+    await expect(section).toContainText('Alles geklärt, bevor du losfährst.');
 
-    await expect(page.locator('#ueber')).toHaveClass(/about-refined/);
-    await expect(page.locator('#ueber .about-quote')).toHaveCount(0);
+    await expect(section.locator('.contact-benefit')).toHaveCount(4);
+    await expect(section.locator('.contact-benefit-icon svg')).toHaveCount(4);
+    await expect(section).toContainText('Direkt online wählen');
+    await expect(section).toContainText('Ohne Kundenkonto');
+    await expect(section).toContainText('Persönlich vorbereitet');
+    await expect(section).toContainText('Route sofort parat');
 
-    await expect(page.locator('#shop')).toContainText('Nur Abholung');
-    await expect(page.locator('#shop')).not.toContainText('vor Livegang');
-    await expect(page.locator('#shop')).not.toContainText('mit Birgit');
+    await expect(section.locator('.contact-map-card')).toBeVisible();
+    await expect(section.locator('.contact-map-preview iframe')).toBeVisible();
+    await expect(section.locator('.contact-map-overlay')).toContainText('Smile & Shine');
+    await expect(section.locator('.contact-map-overlay')).toContainText('Raiffeisenstraße 4');
+    await expect(section.getByRole('link',{name:/Route öffnen/})).toBeVisible();
 
-    const contact=page.locator('#kontakt');
-    await expect(contact).toHaveClass(/contact-section/);
-    await expect(contact.locator('.contact-panel')).toHaveCount(2);
-    await expect(contact.getByRole('link',{name:/Termin buchen/})).toBeVisible();
-    await expect(contact.getByRole('link',{name:/Route öffnen/})).toBeVisible();
+    await expect(section.locator('.contact-booking-card')).toBeVisible();
+    await expect(section.locator('.contact-booking-flow>div')).toHaveCount(3);
+    await expect(section.locator('.contact-booking-flow svg')).toHaveCount(3);
+    await expect(section.getByRole('link',{name:/Termin online auswählen/})).toBeVisible();
+    await expect(section).toContainText('Keine Registrierung');
 
     const body=page.locator('body');
     await expect(body).not.toContainText('Design-Vorschau');
     await expect(body).not.toContainText('Frontend-Prototyp');
     await expect(body).not.toContainText('Backend folgt');
-    await expect(body).not.toContainText('Positionierung der neuen Website');
-    await expect(body).not.toContainText('Clean Glass Premium');
-
-    const heroBefore=await page.locator('.hero-refined').evaluate(el=>getComputedStyle(el,'::before').content);
-    expect(['none','normal','""']).toContain(heroBefore);
 
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
