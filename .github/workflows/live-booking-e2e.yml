@@ -21,6 +21,7 @@ on:
       - "admin-customer-detail.css"
       - "admin-customer-numbers.js"
       - "admin-payments.css"
+      - "admin-services-manager.js"
       - "admin-services-manager.css"
       - "script.js"
       - "admin.js"
@@ -49,7 +50,7 @@ jobs:
       - name: Wait for GitHub Pages version
         run: |
           for attempt in {1..30}; do
-            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260922-customer-workspace2"; then
+            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260922-customer-workspace3"; then
               exit 0
             fi
             sleep 10
