@@ -7,14 +7,14 @@
   if(dataHead){
     dataHead.querySelector('h3').textContent='Deine Kontaktdaten.';
     const copy=dataHead.querySelector('p');
-    if(copy)copy.textContent='Für Bestätigung, Erinnerungen und Rückfragen. Im Frontend-Prototyp bleiben alle Angaben ausschließlich im Browser und werden nicht übertragen.';
+    if(copy)copy.textContent='Für Bestätigung und eventuelle Rückfragen.';
   }
 
   const form=dataPanel.querySelector('#bookingForm');
   if(form&&!form.querySelector('.data-trust-row')){
     const trust=document.createElement('div');
     trust.className='data-trust-row';
-    trust.innerHTML='<div><span class="trust-icon">⌁</span><p><strong>Datensparsam</strong><small>Nur Angaben, die für die Buchung benötigt werden.</small></p></div><div><span class="trust-icon">◌</span><p><strong>Transparent</strong><small>Keine Speicherung im aktuellen Prototyp.</small></p></div><div><span class="trust-icon">✓</span><p><strong>Kontrolliert</strong><small>Einwilligungen werden vor Livegang finalisiert.</small></p></div>';
+    trust.innerHTML='<div><span class="trust-icon">⌁</span><p><strong>Datensparsam</strong><small>Nur Angaben, die für die Terminorganisation benötigt werden.</small></p></div><div><span class="trust-icon">◌</span><p><strong>Persönlich</strong><small>Kontakt nur für Termin und Rückfragen.</small></p></div><div><span class="trust-icon">✓</span><p><strong>Übersichtlich</strong><small>Alle Angaben vor dem Abschluss noch einmal prüfen.</small></p></div>';
     form.prepend(trust);
 
     const note=form.querySelector('textarea[name="note"]')?.closest('label');
@@ -26,7 +26,7 @@
 
       const privacy=document.createElement('div');
       privacy.className='privacy-card';
-      privacy.innerHTML='<div><strong>Datenschutz & Terminorganisation</strong><small>Im Live-System werden personenbezogene Daten nur zweckgebunden für Buchung, Bestätigung, Erinnerungen und Rückfragen verarbeitet. Aufbewahrungsfristen, Datenschutzinformation und Einwilligungstexte werden vor Veröffentlichung final festgelegt.</small></div><span>DSGVO-ready</span>';
+      privacy.innerHTML='<div><strong>Datenschutz &amp; Terminorganisation</strong><small>Die angegebenen Daten dienen ausschließlich der Organisation des Termins und eventuellen Rückfragen.</small></div>';
       note.after(privacy);
     }
 
@@ -34,7 +34,7 @@
     if(requiredConsent){
       const optional=document.createElement('label');
       optional.className='consent-row optional-consent';
-      optional.innerHTML='<input type="checkbox" name="reminderOptIn"><span>Ich möchte später eine Terminerinnerung per E-Mail oder SMS erhalten, sofern diese Funktion aktiviert wird.</span>';
+      optional.innerHTML='<input type="checkbox" name="reminderOptIn"><span>Ich möchte eine Terminerinnerung erhalten.</span>';
       requiredConsent.after(optional);
     }
   }
@@ -43,7 +43,7 @@
   if(payHead){
     payHead.querySelector('h3').textContent='Sicher bezahlen.';
     const copy=payHead.querySelector('p');
-    if(copy)copy.textContent='Wähle zwischen Zahlung im Studio oder vorbereiteter Online-Anzahlung. Im Prototyp findet keine echte Zahlung statt.';
+    if(copy)copy.textContent='Wähle zwischen Zahlung im Studio und einer möglichen Online-Anzahlung.';
   }
 
   const paymentOptions=paymentPanel.querySelector('.payment-options');
@@ -55,7 +55,7 @@
 
     const online=document.createElement('div');
     online.className='online-payment-box';online.id='onlinePaymentBox';online.hidden=true;
-    online.innerHTML='<div class="wallet-row"><button type="button" class="wallet-button" aria-disabled="true">Apple Pay</button><button type="button" class="wallet-button" aria-disabled="true">Google Pay</button></div><div class="card-fields"><label><span>Kartennummer</span><div class="fake-input">•••• •••• •••• 4242 <em>Demo</em></div></label><div class="field-row"><label><span>Gültig bis</span><div class="fake-input">MM / JJ</div></label><label><span>CVC</span><div class="fake-input">•••</div></label></div></div><div class="payment-security"><span>🔒</span><p><strong>Sichere Zahlungsabwicklung</strong><small>Später werden Kartendaten ausschließlich beim Zahlungsanbieter verarbeitet und nicht auf unserer Website gespeichert.</small></p></div>';
+    online.innerHTML='<div class="payment-security"><span>◇</span><p><strong>Online-Anzahlung</strong><small>In dieser Demo wird keine echte Zahlung ausgelöst.</small></p></div>';
     paymentOptions.after(online);
 
     const deposit=paymentPanel.querySelector('.deposit-card');
@@ -64,7 +64,7 @@
       const text=deposit.querySelector('p');if(text)text.id='depositText';
       const notice=document.createElement('div');
       notice.className='checkout-notice';
-      notice.innerHTML='<span>i</span><p><strong>Keine Belastung im Prototyp.</strong><small>Dieser Schritt demonstriert ausschließlich den späteren Checkout. Es wird keine Zahlungsinformation erhoben oder versendet.</small></p>';
+      notice.innerHTML='<span>i</span><p><strong>Demo-Modus.</strong><small>Es wird keine echte Zahlung ausgelöst.</small></p>';
       deposit.after(notice);
     }
   }
@@ -79,8 +79,8 @@
     const serviceEl=document.getElementById('checkoutService');if(serviceEl)serviceEl.textContent=service||'–';
     const dateEl=document.getElementById('checkoutDate');if(dateEl)dateEl.textContent=date==='–'?'–':`${date} · ${time} Uhr`;
     const depEl=document.getElementById('checkoutDeposit');if(depEl)depEl.textContent=amount?`${amount.toFixed(2).replace('.',',')} €`:'Keine Anzahlung';
-    const depAmount=document.getElementById('depositAmount');if(depAmount)depAmount.textContent=amount?`${amount.toFixed(2).replace('.',',')} € Demo-Anzahlung`:'Für Beratung keine Anzahlung';
-    const depText=document.getElementById('depositText');if(depText)depText.textContent=amount?'Demo-Betrag zur Visualisierung. Der tatsächliche Anzahlungsbetrag und die Stornoregeln werden später je Leistung im Adminbereich festgelegt.':'Für die Beratung ist im Prototyp keine Anzahlung vorgesehen. Finale Regeln werden später im Adminbereich definiert.';
+    const depAmount=document.getElementById('depositAmount');if(depAmount)depAmount.textContent=amount?`${amount.toFixed(2).replace('.',',')} € Anzahlung`:'Für Beratung keine Anzahlung';
+    const depText=document.getElementById('depositText');if(depText)depText.textContent=amount?'Die Anzahlung wird bei der Terminbuchung berücksichtigt.':'Für diese Leistung ist keine Anzahlung vorgesehen.';
   }
 
   paymentPanel.querySelectorAll('.payment-option').forEach(btn=>btn.addEventListener('click',()=>{
