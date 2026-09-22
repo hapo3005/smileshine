@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const STORE_KEY='smileshine_studio_v1';
+  const STORE=window.SmileShineDataStore;\n  const STORE_KEY=STORE?.key||'smileshine_studio_v1';
   const DAY_NAMES=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
   const SHORT_DAYS=['So','Mo','Di','Mi','Do','Fr','Sa'];
   const STATUS_LABELS={confirmed:'Bestätigt',pending:'Offen',cancelled:'Abgesagt'};
@@ -43,7 +43,8 @@
       activity:[{id:'x1',type:'booking',text:'Karin Hoffmann hat online einen Termin angefragt.',date:new Date().toISOString()},{id:'x2',type:'customer',text:'Neue Kundin in der Kartei: Julia Weber.',date:new Date(Date.now()-14400000).toISOString()},{id:'x3',type:'setting',text:'Arbeitszeiten wurden im Demo-Modus gespeichert.',date:new Date(Date.now()-86400000).toISOString()}]};
   }
 
-  function load(){try{const raw=localStorage.getItem(STORE_KEY);if(!raw){const s=seed();localStorage.setItem(STORE_KEY,JSON.stringify(s));return s}const parsed=JSON.parse(raw);if(!parsed||!Array.isArray(parsed.appointments)||!Array.isArray(parsed.services))throw new Error('invalid');return parsed}catch(e){const s=seed();localStorage.setItem(STORE_KEY,JSON.stringify(s));return s}}
+  function persist(value){if(STORE)STORE.write(value);else localStorage.setItem(STORE_KEY,JSON.stringify(value));return value}
+  function load(){try{const parsed=STORE?STORE.read():JSON.parse(localStorage.getItem(STORE_KEY)||'null');if(!parsed){const s=seed();return persist(s)}if(!Array.isArray(parsed.appointments)||!Array.isArray(parsed.services))throw new Error('invalid');return parsed}catch(e){const s=seed();return persist(s)}}
   const api={STORE_KEY,DAY_NAMES,SHORT_DAYS,STATUS_LABELS,$,$$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,uid,escapeHTML,seed,db:load(),calendarCursor:new Date(),calendarMode:'day'};
   api.activeAppointments=()=>api.db.appointments.filter(a=>a.status!=='cancelled');
   api.overlaps=(sa,ea,sb,eb)=>sa<eb&&ea>sb;
@@ -51,7 +52,7 @@
   api.findNextFreeSlot=(duration=30)=>{const now=new Date();for(let offset=0;offset<30;offset++){const d=addDays(now,offset),wh=api.db.workingHours[d.getDay()];if(!wh?.enabled)continue;const date=isoDate(d);let start=minutesOf(wh.start),end=minutesOf(wh.end);if(offset===0){const current=d.getHours()*60+d.getMinutes()+60;start=Math.max(start,Math.ceil(current/30)*30)}for(let m=start;m+duration<=end;m+=Number(api.db.slotInterval||30))if(api.isSlotFree(date,timeOf(m),duration))return{date,time:timeOf(m)}}return null};
   api.addActivity=(type,text)=>{api.db.activity=api.db.activity||[];api.db.activity.unshift({id:uid('activity'),type,text,date:new Date().toISOString()});api.db.activity=api.db.activity.slice(0,20)};
   api.toast=message=>{const toast=$('#toast');if(!toast)return;toast.textContent=message;toast.classList.add('show');clearTimeout(api.toast.timer);api.toast.timer=setTimeout(()=>toast.classList.remove('show'),2500)};
-  api.save=message=>{localStorage.setItem(STORE_KEY,JSON.stringify(api.db));if(message)api.toast(message);api.renderAll?.()};
+  api.save=message=>{persist(api.db);if(message)api.toast(message);api.renderAll?.()};
   api.relativeTime=value=>{const diff=Math.max(0,Date.now()-new Date(value).getTime()),h=Math.floor(diff/3600000);if(h<1)return'Gerade eben';if(h<24)return`Vor ${h} Std.`;const d=Math.floor(h/24);return d===1?'Gestern':`Vor ${d} Tagen`};
   window.SSAdmin=api;
   Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js'),import('./admin-customer-detail.js'),import('./admin-payments.js'),import('./admin-services-manager.js'),import('./admin-customer-numbers.js?v=20260914-1443')]).then(()=>{api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(error=>{console.error(error);api.toast('Demo konnte nicht vollständig geladen werden.')});
