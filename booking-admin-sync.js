@@ -85,23 +85,51 @@
     return slots;
   }
 
-  function makeButton(s,index){
-    const btn=document.createElement('button');btn.className='service-option';btn.type='button';btn.dataset.serviceId=s.id;btn.dataset.service=s.name;btn.dataset.duration=String(Number(s.duration||30));
-    btn.innerHTML=`<span class="service-info"><strong>${esc(s.name)}</strong><small>${esc(s.description||'Beauty-Behandlung')} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
+  const BUILTIN_IDS=new Set(CATALOG.map(item=>item.id));
+  const PRESENTATION_SERVICES=[
+    {id:'brows-pmu',name:'Augenbrauen',description:'Permanent Make-up für Form, Balance und Ausdruck.'},
+    {id:'lashline',name:'Lid & Wimpernkranz',description:'Dezente Betonung der Augenpartie.'},
+    {id:'lip-pmu',name:'Lippen',description:'Pigmentierung für Kontur, Farbe und Frische.'},
+    {id:'consult',name:'Beratung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.'}
+  ];
+
+  function makeButton(s,display){
+    const shown=display||{};
+    const name=shown.name||s.name;
+    const description=shown.description||s.description||'Beauty-Behandlung';
+    const btn=document.createElement('button');
+    btn.className='service-option';btn.type='button';
+    btn.dataset.serviceId=s.id;btn.dataset.service=name;btn.dataset.duration=String(Number(s.duration||30));
+    btn.innerHTML=`<span class="service-info"><strong>${esc(name)}</strong><small>${esc(description)} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
     return btn;
   }
 
   function syncServices(){
     const db=load(),root=$('.service-options');if(!root)return;
-    const active=(db.services||[]).filter(s=>s.active!==false);
+    const services=db.services||[];
+    const rows=[];
+
+    PRESENTATION_SERVICES.forEach(display=>{
+      const s=services.find(item=>item.id===display.id&&item.active!==false);
+      if(s)rows.push({category:display.id==='consult'?'Beratung':'Permanent Make-up',service:s,display});
+    });
+
+    services.filter(s=>s.active!==false&&!BUILTIN_IDS.has(s.id)).forEach(s=>{
+      rows.push({category:s.category||'Weitere Leistungen',service:s,display:{name:s.name,description:s.description||''}});
+    });
+
     root.innerHTML='';
-    if(!active.length){root.innerHTML='<div class="time-placeholder sync-services-empty">Aktuell sind keine Leistungen online buchbar. Bitte kontaktiere das Studio direkt.</div>';return}
-    const categories=[...new Set(active.map(s=>s.category||'Leistungen'))];let counter=0;
+    if(!rows.length){
+      root.innerHTML='<div class="time-placeholder sync-services-empty">Aktuell sind keine Leistungen online buchbar. Bitte kontaktiere das Studio direkt.</div>';
+      return;
+    }
+
+    const categories=[...new Set(rows.map(row=>row.category))];
     categories.forEach(category=>{
       const section=document.createElement('section');section.className='service-group';
       const heading=document.createElement('div');heading.className='service-group-title';heading.innerHTML=`<span>${esc(category)}</span>`;section.appendChild(heading);
       const grid=document.createElement('div');grid.className='service-group-grid';
-      active.filter(s=>(s.category||'Leistungen')===category).forEach(s=>grid.appendChild(makeButton(s,counter++)));
+      rows.filter(row=>row.category===category).forEach(row=>grid.appendChild(makeButton(row.service,row.display)));
       section.appendChild(grid);root.appendChild(section);
     });
   }
@@ -155,7 +183,7 @@
     const db=load(),state=window.SmileShineBooking?.state,serviceKey=state?.serviceId||state?.service,serviceName=state?.service||$('#summaryService')?.textContent?.trim(),date=state?.date||$('.date-option.selected')?.dataset.iso,time=state?.time||$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm');
     if(!serviceName||!date||!time||!form)return;
     const s=service(db,serviceKey||serviceName);if(!s||s.active===false){message(panel,'Diese Leistung ist derzeit nicht online buchbar.',true);return}
-    if(!free(db,date,time,serviceName)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
+    if(!free(db,date,time,s.id)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
     const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),note=String(data.get('note')||'').trim();
     let customer=(db.customers||[]).find(c=>(email&&c.email===email)||(phone&&c.phone===phone));if(!customer){customer={id:uid('customer'),customerNumber:takeCustomerNumber(db),name,firstName:first,lastName:last,email,phone,created:today()};db.customers=db.customers||[];db.customers.push(customer)}
     const payment=$('#summaryPayment')?.textContent?.trim()||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
