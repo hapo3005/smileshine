@@ -53,7 +53,7 @@ test('admin appointment detail supports intuitive edit, reschedule and navigatio
   await page.locator('[data-appointment-customer]').click();
   await expect(page.locator('#customerDetailModal')).toBeVisible();
 
-  await page.locator('[data-open-appointment]').first().click();
+  await page.locator('#customerDetailModal [data-open-appointment]').first().click();
   await expect(page.locator('#appointmentDetailModal')).toBeVisible();
 
   expect(browserErrors).toEqual([]);
