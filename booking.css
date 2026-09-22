@@ -73,3 +73,72 @@
   .payment-option{min-width:0;padding:17px 15px}
   .payment-option strong{font-size:18px}
 }
+
+
+/* Frontend refinement · booking */
+.booking-shell{border-radius:18px}
+.booking-progress{padding:0 28px;background:rgba(255,255,255,.38)}
+.progress-step{padding:21px 28px 20px 0;margin-right:34px}
+.progress-step:not(:last-child)::after{width:17px}
+.booking-stage{padding:48px 50px 52px}
+.booking-panel-head{gap:48px;margin-bottom:30px}
+.booking-panel-head h3{font-size:40px}
+.service-option{
+  min-height:88px;
+  padding:18px 19px;
+  border-radius:12px;
+  background:rgba(255,255,255,.50);
+}
+.service-option::before{width:3px}
+.service-option:hover,.service-option.selected{
+  transform:none;
+  background:#fff;
+  box-shadow:0 10px 28px rgba(47,39,34,.05);
+}
+.service-info strong{font-size:23px}
+.date-option{
+  border-radius:11px;
+  background:rgba(255,255,255,.52);
+}
+.date-option:hover,.date-option.selected{box-shadow:none;background:#fff}
+.time-area{
+  border-radius:12px;
+  background:rgba(255,255,255,.38);
+}
+.booking-form input,.booking-form textarea{
+  border-radius:10px;
+  background:rgba(255,255,255,.68);
+}
+.confirmation-card{border-radius:12px}
+.booking-final-note{border-left:0;border-radius:10px;background:rgba(181,138,119,.07)}
+
+.booking-summary{
+  min-height:610px;
+  padding:42px 29px;
+  background:#e4dbd4;
+  color:var(--ink);
+  border-left:1px solid rgba(87,72,62,.08);
+}
+.booking-summary::before{display:none}
+.summary-kicker{color:#867970}
+.booking-summary>h3{color:#2f2a27}
+.summary-item{border-color:rgba(69,57,50,.11)}
+.summary-item span{color:#847a74}
+.summary-item strong{color:#342f2c}
+.summary-location{
+  border-radius:11px;
+  background:rgba(255,255,255,.45);
+  border-color:rgba(255,255,255,.4);
+}
+.summary-location>span{color:#8a695c}
+.summary-location small{color:#786f69}
+.summary-status{color:#756b64}
+.summary-status span{background:#9a7463;box-shadow:none}
+
+@media(max-width:760px){
+  .booking-shell{border-radius:14px}
+  .booking-stage{padding:32px 18px}
+  .booking-progress{padding:0 16px}
+  .booking-panel-head h3{font-size:34px}
+  .booking-summary{padding:28px 20px}
+}
