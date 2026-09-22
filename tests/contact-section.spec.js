@@ -13,7 +13,7 @@ for (const viewport of [
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto('index.html?frontend-pass='+Date.now(),{waitUntil:'networkidle'});
 
-    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260922-frontend-pass1');
+    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260922-frontend-pass2');
     await expect(page.locator('.hero-refined')).toBeVisible();
     await expect(page.locator('.hero-glass-card')).toHaveCount(0);
     await expect(page.locator('.hero-meta')).toBeVisible();
