@@ -22,22 +22,11 @@ const waitlistToggle=document.querySelector('#waitlistToggle');
 const waitlistForm=document.querySelector('#waitlistForm');
 
 const serviceCatalog=[
-  {group:'Direkt öffentlich belegt',name:'Permanent Make-up',duration:90,serviceId:'Augenbrauen',note:'Schwerpunkt laut öffentlichem Unternehmensgegenstand'},
-  {group:'Direkt öffentlich belegt',name:'Kosmetische Behandlung',duration:60,serviceId:'Beratung',note:'Kosmetische Behandlungen öffentlich belegt'},
-  {group:'Augenbrauen',name:'Augenbrauen Permanent Make-up',duration:90,serviceId:'Augenbrauen',note:'PMU · Leistungsdetail noch mit Studio abzugleichen'},
-  {group:'Augenbrauen',name:'Härchenzeichnung Augenbrauen',duration:120,serviceId:'Augenbrauen',note:'PMU · regional marktüblich'},
-  {group:'Augenbrauen',name:'Powder Brows',duration:120,serviceId:'Augenbrauen',note:'PMU · regional marktüblich'},
-  {group:'Augenbrauen',name:'Augenbrauen-Auffrischung',duration:75,serviceId:'Augenbrauen',note:'Auffrischung bestehender Pigmentierung'},
-  {group:'Augen & Lid',name:'Lidstrich',duration:90,serviceId:'Lid & Wimpernkranz',note:'PMU · regional marktüblich'},
-  {group:'Augen & Lid',name:'Wimpernkranzverdichtung',duration:75,serviceId:'Lid & Wimpernkranz',note:'PMU · regional marktüblich'},
-  {group:'Augen & Lid',name:'Modellierter Lidstrich / Eyeliner',duration:120,serviceId:'Lid & Wimpernkranz',note:'PMU · Leistungsdetail noch zu bestätigen'},
-  {group:'Lippen',name:'Lippenpigmentierung',duration:120,serviceId:'Lippen',note:'PMU · regional marktüblich'},
-  {group:'Lippen',name:'Lippenkontur',duration:90,serviceId:'Lippen',note:'PMU · Leistungsdetail noch zu bestätigen'},
-  {group:'Lippen',name:'Lippen-Vollzeichnung',duration:150,serviceId:'Lippen',note:'PMU · Leistungsdetail noch zu bestätigen'},
-  {group:'Service & Bestand',name:'PMU-Auffrischung allgemein',duration:90,serviceId:'Augenbrauen',note:'Für bestehendes Permanent Make-up'},
-  {group:'Service & Bestand',name:'PMU-Nachbehandlung',duration:60,serviceId:'Beratung',note:'Kontroll- und Nachbehandlung'},
-  {group:'Service & Bestand',name:'Beratung / Vorbesprechung',duration:30,serviceId:'Beratung',note:'Persönliches Vorgespräch'}
-];
+  {group:'Permanent Make-up',name:'Augenbrauen',duration:90,serviceId:'brows-pmu'},
+  {group:'Permanent Make-up',name:'Lid & Wimpernkranz',duration:75,serviceId:'lashline'},
+  {group:'Permanent Make-up',name:'Lippen',duration:120,serviceId:'lip-pmu'},
+  {group:'Beratung',name:'Beratung',duration:30,serviceId:'consult'}
+]
 
 function renderServiceCatalog(){
   if(!serviceOptionsRoot)return;
