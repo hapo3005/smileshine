@@ -1,7 +1,8 @@
 (() => {
   'use strict';
 
-  const STORE=window.SmileShineDataStore;\n  const KEY=STORE?.key||'smileshine_studio_v1';
+  const STORE=window.SmileShineDataStore;
+  const KEY=STORE?.key||'smileshine_studio_v1';
   const CATALOG_VERSION=3;
   const CATALOG=[
     {id:'pmu',category:'Beratung & Grundlagen',name:'Permanent Make-up',description:'Individuelle Pigmentierung für ein dauerhaft gepflegtes Erscheinungsbild.',duration:90,price:0,deposit:0,active:true,verification:'verified',internalNote:'Öffentlich für Smile & Shine verifiziert.'},
