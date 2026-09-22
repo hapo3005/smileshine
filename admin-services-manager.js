@@ -8,7 +8,7 @@
     'Beratung':'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.'
   };
 
-  function migrateDescriptions(){let changed=false;(A.db.services||[]).forEach(s=>{if(s.description===undefined){s.description=defaults[s.name]||'';changed=true}});if(changed)localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db))}
+  function migrateDescriptions(){let changed=false;(A.db.services||[]).forEach(s=>{if(s.description===undefined){s.description=defaults[s.name]||'';changed=true}});if(changed){if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db))}}
   function ensureStyles(){if(document.querySelector('link[data-service-manager-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='admin-services-manager.css';l.dataset.serviceManagerStyle='true';document.head.appendChild(l)}
 
   function ensureUI(){
@@ -29,7 +29,7 @@
     $$('[data-close-service]').forEach(btn=>btn.onclick=closeServiceModal);
     const modal=$('#serviceModal');if(modal&&!modal.dataset.bound){modal.dataset.bound='1';modal.addEventListener('click',e=>{if(e.target===modal)closeServiceModal()});$('#serviceForm')?.addEventListener('submit',e=>{e.preventDefault();saveNewService(e.currentTarget)})}
   }
-  function openServiceModal(){ensureUI();const form=$('#serviceForm');form?.reset();if(form){form.elements.duration.value='60';form.elements.price.value='0';form.elements.deposit.value='0';form.elements.active.checked=true}$('#serviceModal')?.showModal();setTimeout(()=>form?.elements.name?.focus(),30)}
+  function openServiceModal(){ensureUI();const form=$('#serviceForm'),modal=$('#serviceModal');form?.reset();if(form){form.elements.duration.value='60';form.elements.price.value='0';form.elements.deposit.value='0';form.elements.active.checked=true}modal?.showModal();queueMicrotask(()=>{if(!form||!modal?.open)return;const active=document.activeElement;if(active===document.body||active===modal||!form.contains(active))form.elements.name?.focus()})}
   function closeServiceModal(){if($('#serviceModal')?.open)$('#serviceModal').close()}
 
   function saveNewService(form){
