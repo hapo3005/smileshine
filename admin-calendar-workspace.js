@@ -267,8 +267,12 @@
       tries++;
       if(A.initCalendarViews){
         clearInterval(timer);
-        const init=A.initCalendarViews;
-        A.initCalendarViews=()=>{init();install()};
+        if(document.querySelector(".calendar-control-stack")){
+          install();
+        }else{
+          const init=A.initCalendarViews;
+          A.initCalendarViews=()=>{init();install()};
+        }
       }else if(tries>40){
         clearInterval(timer);install();
       }
