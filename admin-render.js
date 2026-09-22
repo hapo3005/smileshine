@@ -28,7 +28,7 @@
       {icon:'○',label:'Kunden',value:unique,foot:'in 7 Tagen',delta:`${A.db.customers.length} gesamt`},
       {icon:'€',label:'Umsatz · Monat',value:currency(revenue),foot:'Demo-Berechnung',delta:`${monthApps.length} Termine`}];
     if($('#kpiGrid'))$('#kpiGrid').innerHTML=kpis.map(k=>`<article class="kpi-card"><div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon">${k.icon}</span></div><strong class="kpi-value">${k.value}</strong><div class="kpi-foot"><span>${k.foot}</span><span class="delta">${k.delta}</span></div></article>`).join('');
-    if($('#todayList'))$('#todayList').innerHTML=todays.length?todays.map(a=>`<div class="appointment-row"><div class="appointment-time">${a.time}</div><div class="appointment-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><span class="appointment-status status-${a.status}">${STATUS_LABELS[a.status]||a.status}</span></div>`).join(''):`<div class="empty-state"><strong>Heute ist noch frei.</strong>Über „Termin“ kannst du direkt eine Buchung eintragen.</div>`;
+    if($('#todayList'))$('#todayList').innerHTML=todays.length?todays.map(a=>`<div class="appointment-row appointment-open-row" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="appointment-time">${a.time}</div><div class="appointment-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><span class="appointment-status status-${a.status}">${STATUS_LABELS[a.status]||a.status}</span><span class="appointment-row-arrow" aria-hidden="true">→</span></div>`).join(''):`<div class="empty-state"><strong>Heute ist noch frei.</strong>Über „Termin“ kannst du direkt eine Buchung eintragen.</div>`;
     renderWeekBars();renderActivities();
   }
 
@@ -59,8 +59,18 @@
     const start=Math.floor(minutesOf(wh.start)/60)*60,end=Math.ceil(minutesOf(wh.end)/60)*60;root.innerHTML='';
     for(let min=start;min<end;min+=60){
       const row=document.createElement('div');row.className='schedule-row';row.innerHTML=`<div class="schedule-time">${timeOf(min)}</div><div class="schedule-lane"></div>`;const lane=$('.schedule-lane',row);
-      const events=[...A.activeAppointments().filter(a=>a.date===date&&Math.floor(minutesOf(a.time)/60)*60===min).map(a=>({kind:'booking',start:a.time,end:timeOf(minutesOf(a.time)+Number(a.duration||30)),title:a.customerName,sub:a.service})),...A.db.blocked.filter(b=>b.date===date&&Math.floor(minutesOf(b.start)/60)*60===min).map(b=>({kind:'blocked',start:b.start,end:b.end,title:b.label,sub:'Gesperrt'}))];
-      events.forEach(e=>{const offset=(minutesOf(e.start)-min)/60*58,duration=Math.max(28,(minutesOf(e.end)-minutesOf(e.start))/60*58-4),el=document.createElement('div');el.className=`schedule-event ${e.kind}`;el.style.top=`${offset}px`;el.style.height=`${duration}px`;el.innerHTML=`<strong>${escapeHTML(e.start)} · ${escapeHTML(e.title)}</strong><small>${escapeHTML(e.sub)}</small>`;lane.appendChild(el)});root.appendChild(row);
+      const events=[
+        ...A.activeAppointments().filter(a=>a.date===date&&Math.floor(minutesOf(a.time)/60)*60===min).map(a=>({kind:'booking',id:a.id,status:a.status,start:a.time,end:timeOf(minutesOf(a.time)+Number(a.duration||30)),title:a.customerName,sub:a.service})),
+        ...A.db.blocked.filter(b=>b.date===date&&Math.floor(minutesOf(b.start)/60)*60===min).map(b=>({kind:'blocked',start:b.start,end:b.end,title:b.label,sub:'Gesperrt'}))
+      ];
+      events.forEach(e=>{
+        const offset=(minutesOf(e.start)-min)/60*58,duration=Math.max(28,(minutesOf(e.end)-minutesOf(e.start))/60*58-4),el=document.createElement('div');
+        el.className=`schedule-event ${e.kind}${e.status?` status-${e.status}`:''}`;
+        el.style.top=`${offset}px`;el.style.height=`${duration}px`;
+        if(e.kind==='booking'){el.dataset.appointmentId=e.id;el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label',`Termin von ${e.title} öffnen`)}
+        el.innerHTML=`<strong>${escapeHTML(e.start)} · ${escapeHTML(e.title)}</strong><small>${escapeHTML(e.sub)}</small>`;
+        lane.appendChild(el);
+      });root.appendChild(row);
     }
   }
 
@@ -68,7 +78,7 @@
     const root=$('#appointmentsList');if(!root)return;const q=($('#appointmentSearch')?.value||'').trim().toLowerCase(),filter=$('#appointmentFilter')?.value||'upcoming',today=isoDate(new Date());let list=[...A.db.appointments];
     if(filter==='upcoming')list=list.filter(a=>a.date>=today&&a.status!=='cancelled');else if(filter!=='all')list=list.filter(a=>a.status===filter);if(q)list=list.filter(a=>`${a.customerName} ${a.service}`.toLowerCase().includes(q));list.sort((a,b)=>`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
     if(!list.length){root.innerHTML='<div class="empty-state"><strong>Keine Termine gefunden.</strong>Ändere Filter oder Suchbegriff.</div>';return}
-    root.innerHTML=list.map(a=>`<div class="appointment-card" data-id="${a.id}"><div class="date-block"><strong>${dateShort(a.date)}</strong><small>${a.time} Uhr</small></div><div class="card-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.phone||a.email||'Keine Kontaktdaten')}</small></div><div class="card-service"><strong>${escapeHTML(a.service)}</strong><small>${a.duration} Min. · ${a.source==='online'?'Online':'Studio'}</small></div><select class="status-select" data-status-id="${a.id}"><option value="confirmed" ${a.status==='confirmed'?'selected':''}>Bestätigt</option><option value="pending" ${a.status==='pending'?'selected':''}>Offen</option><option value="cancelled" ${a.status==='cancelled'?'selected':''}>Abgesagt</option></select><div class="row-menu"><button type="button" data-show-calendar="${a.date}" title="Im Kalender zeigen">□</button><button type="button" data-delete-id="${a.id}" title="Termin löschen">×</button></div></div>`).join('');
+    root.innerHTML=list.map(a=>`<div class="appointment-card appointment-open-card" data-id="${a.id}" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="date-block"><strong>${dateShort(a.date)}</strong><small>${a.time} Uhr</small></div><div class="card-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.phone||a.email||'Keine Kontaktdaten')}</small></div><div class="card-service"><strong>${escapeHTML(a.service)}</strong><small>${a.duration} Min. · ${a.source==='online'?'Online':'Studio'}</small></div><select class="status-select" data-status-id="${a.id}" aria-label="Terminstatus von ${escapeHTML(a.customerName)}"><option value="confirmed" ${a.status==='confirmed'?'selected':''}>Bestätigt</option><option value="pending" ${a.status==='pending'?'selected':''}>Offen</option><option value="completed" ${a.status==='completed'?'selected':''}>Abgeschlossen</option><option value="no_show" ${a.status==='no_show'?'selected':''}>Nicht erschienen</option><option value="cancelled" ${a.status==='cancelled'?'selected':''}>Abgesagt</option></select><div class="row-menu"><button type="button" data-show-calendar="${a.date}" title="Im Kalender zeigen" aria-label="Im Kalender zeigen">□</button><button type="button" data-open-appointment="${a.id}" title="Termin öffnen" aria-label="Termin öffnen">→</button></div></div>`).join('');
     A.bindDynamicAppointmentActions?.();
   }
 
