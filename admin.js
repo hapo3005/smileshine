@@ -3,7 +3,7 @@
   const STORE=window.SmileShineDataStore;\n  const STORE_KEY=STORE?.key||'smileshine_studio_v1';
   const DAY_NAMES=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
   const SHORT_DAYS=['So','Mo','Di','Mi','Do','Fr','Sa'];
-  const STATUS_LABELS={confirmed:'Bestätigt',pending:'Offen',cancelled:'Abgesagt'};
+  const STATUS_LABELS={confirmed:'Bestätigt',pending:'Offen',completed:'Abgeschlossen',no_show:'Nicht erschienen',cancelled:'Abgesagt'};
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const isoDate=date=>{const d=new Date(date);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
@@ -55,5 +55,5 @@
   api.save=message=>{persist(api.db);if(message)api.toast(message);api.renderAll?.()};
   api.relativeTime=value=>{const diff=Math.max(0,Date.now()-new Date(value).getTime()),h=Math.floor(diff/3600000);if(h<1)return'Gerade eben';if(h<24)return`Vor ${h} Std.`;const d=Math.floor(h/24);return d===1?'Gestern':`Vor ${d} Tagen`};
   window.SSAdmin=api;
-  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js'),import('./admin-customer-detail.js'),import('./admin-payments.js'),import('./admin-services-manager.js'),import('./admin-customer-numbers.js?v=20260914-1443')]).then(()=>{api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(error=>{console.error(error);api.toast('Demo konnte nicht vollständig geladen werden.')});
+  Promise.all([import('./admin-render.js'),import('./admin-actions.js'),import('./admin-calendar-views.js'),import('./admin-customer-detail.js'),import('./admin-payments.js'),import('./admin-appointment-detail.js'),import('./admin-services-manager.js'),import('./admin-customer-numbers.js?v=20260914-1443')]).then(()=>{api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(error=>{console.error(error);api.toast('Demo konnte nicht vollständig geladen werden.')});
 })();
