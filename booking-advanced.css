@@ -71,3 +71,43 @@
     overflow-wrap:anywhere;
   }
 }
+
+
+/* Frontend refinement · advanced booking */
+.waitlist-button{border-radius:10px}
+.waitlist-form,
+.choice-block,
+.payment-option,
+.deposit-card,
+.confirmation-grid>div,
+.data-trust-row>div,
+.contact-preference,
+.checkout-summary,
+.online-payment-box,
+.fake-input,
+.checkout-notice{
+  border-radius:10px;
+}
+.precheck-intro{
+  border-left:0;
+  border-radius:10px;
+  background:rgba(255,255,255,.40);
+  border:1px solid var(--line);
+}
+.payment-option{
+  background:rgba(255,255,255,.48);
+  box-shadow:none;
+}
+.payment-option:hover,.payment-option.selected{
+  background:#fff;
+  box-shadow:none;
+}
+.payment-icon{border-radius:9px}
+.privacy-card{
+  border-left:0;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:rgba(255,255,255,.35);
+}
+.checkout-summary{background:rgba(255,255,255,.42)}
+.online-payment-box{background:rgba(255,255,255,.44)}
