@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="smileshine-build" content="20260922-pickup-shop4">
+  <meta name="smileshine-build" content="20260923-pitch-mode1">
   <meta name="theme-color" content="#f8f4f2">
   <meta name="robots" content="noindex,nofollow">
   <title>Studio · Smile & Shine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=20260921-responsive-qa">
+  <link rel="stylesheet" href="admin.css?v=20260923-pitch-mode1">
 </head>
 <body>
   <div class="admin-app">
@@ -31,7 +31,7 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="demo-state"><span></span><div><strong>Demo-Modus</strong><small>Lokal auf diesem Gerät</small></div></div>
+        <div class="demo-state"><span></span><div><strong>Präsentationsmodus</strong><small>Beispieldaten · nur lokal</small></div></div>
         <a href="index.html" class="customer-site-link">Kundenseite öffnen ↗</a>
       </div>
     </aside>
@@ -43,7 +43,7 @@
           <h1 id="pageTitle">Guten Tag, Birgit.</h1>
         </div>
         <div class="topbar-actions">
-          <span class="sync-pill"><i></i> Demo synchron</span>
+          <span class="sync-pill"><i></i> Präsentationsdaten aktiv</span>
           <a href="index.html#booking" class="topbar-link">Buchung ansehen</a>
           <button class="primary-action" id="quickAdd" type="button"><span>＋</span> Termin</button>
         </div>
@@ -117,7 +117,7 @@
       </section>
 
       <section class="view" data-view-panel="customers">
-        <div class="view-heading"><div><p class="eyebrow">Kunden</p><h2>Kundenkartei.</h2><p class="muted">Kontaktdaten und Terminverlauf – im Demo-Modus nur lokal auf diesem Gerät.</p></div></div>
+        <div class="view-heading"><div><p class="eyebrow">Kunden</p><h2>Kundenkartei.</h2><p class="muted">Kontaktdaten und Terminverlauf – mit vorbereiteten Beispieldaten für diese Präsentation.</p></div></div>
         <article class="panel list-panel">
           <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="customerSearch" type="search" placeholder="Kunden suchen"></label><span class="result-count" id="customerCount"></span></div>
           <div id="customersList" class="customers-list"></div>
@@ -140,7 +140,7 @@
       <section class="view" data-view-panel="settings">
         <div class="view-heading"><div><p class="eyebrow">Einstellungen</p><h2>Studio-System.</h2><p class="muted">Die spätere Live-Version erhält Login, Cloud-Datenbank, Benachrichtigungen und Zahlungsanbindung.</p></div></div>
         <div class="settings-grid">
-          <article class="panel setting-card"><span class="setting-icon">⌁</span><div><strong>Demo-Datenspeicher</strong><p>Termine und Einstellungen werden derzeit nur im Browser gespeichert. So können Kundenseite und Adminbereich auf diesem Gerät bereits zusammenspielen.</p></div><button class="soft-button" id="resetDemo" type="button">Demo zurücksetzen</button></article>
+          <article class="panel setting-card"><span class="setting-icon">⌁</span><div><strong>Präsentationsdaten</strong><p>Die vorbereiteten Beispieldaten zeigen einen realistischen Studiotag. Änderungen bleiben nur auf diesem Gerät und können jederzeit auf den Pitch-Zustand zurückgesetzt werden.</p></div><button class="soft-button" id="resetDemo" type="button">Pitch-Zustand herstellen</button></article>
           <article class="panel setting-card"><span class="setting-icon">🔒</span><div><strong>Login & Rechte</strong><p>Für den Livegang wird der Adminbereich geschützt. Zugriff erhält nur das Studio.</p></div><span class="status-tag planned">Backend</span></article>
           <article class="panel setting-card"><span class="setting-icon">✉</span><div><strong>Bestätigungen & Erinnerungen</strong><p>E-Mail und optional SMS nach Buchung, vor dem Termin und bei Änderungen.</p></div><span class="status-tag planned">Geplant</span></article>
           <article class="panel setting-card"><span class="setting-icon">€</span><div><strong>Online-Zahlung</strong><p>Anzahlungen je Leistung mit Stripe, Apple Pay und Google Pay.</p></div><span class="status-tag planned">Geplant</span></article>
@@ -173,6 +173,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="studio-data-store.js?v=20260922-datalayer1"></script>
-  <script src="admin.js?v=20260922-pickup-shop4"></script>
+  <script src="admin.js?v=20260923-pitch-mode1"></script>
 </body>
 </html>
