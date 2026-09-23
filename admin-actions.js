@@ -1,11 +1,13 @@
 (() => {
   const A=window.SSAdmin;if(!A)return;
-  const {$,$$,isoDate,addDays,minutesOf,dateShort,uid}=A;
+  const {$,$,isoDate,addDays,minutesOf,dateShort,uid}=A;
+  const CORE_SERVICE_IDS=new Set(['brows-pmu','lashline','lip-pmu','consult']);
+  const visibleServices=()=>A.db.services.filter(s=>s.active&&(CORE_SERVICE_IDS.has(s.id)||!s.verification));
 
   function openModal(prefill={}){
     const modal=$('#appointmentModal'),form=$('#appointmentForm');if(!modal||!form)return;
-    const select=$('#appointmentService');select.innerHTML=A.db.services.filter(s=>s.active).map(s=>`<option value="${s.name}">${s.name} · ${s.duration} Min.</option>`).join('');
-    form.reset();const first=A.db.services.find(s=>s.active),next=A.findNextFreeSlot(first?.duration||30);
+    const select=$('#appointmentService');select.innerHTML=visibleServices().map(s=>`<option value="${s.name}">${s.name} · ${s.duration} Min.</option>`).join('');
+    form.reset();const first=visibleServices()[0],next=A.findNextFreeSlot(first?.duration||30);
     form.elements.date.value=prefill.date||next?.date||isoDate(addDays(new Date(),1));
     form.elements.time.value=prefill.time||next?.time||'09:00';
     if(prefill.service)form.elements.service.value=prefill.service;
@@ -28,7 +30,7 @@
     }
     if(!$('#customerModal')){
       const dialog=document.createElement('dialog');dialog.className='modal';dialog.id='customerModal';
-      dialog.innerHTML=`<form method="dialog" class="modal-card" id="customerForm"><div class="modal-head"><div><span class="panel-kicker">Kundenkartei</span><h3>Neuer Kunde</h3></div><button type="button" class="modal-close" data-close-customer aria-label="Schließen">×</button></div><div class="modal-body"><div class="form-row"><label><span>Vorname</span><input name="firstName" autocomplete="given-name" required placeholder="Vorname"></label><label><span>Nachname</span><input name="lastName" autocomplete="family-name" required placeholder="Nachname"></label></div><div class="form-row"><label><span>Telefon</span><input name="phone" type="tel" autocomplete="tel" placeholder="z. B. 0176 12345678"></label><label><span>E-Mail</span><input name="email" type="email" autocomplete="email" placeholder="name@beispiel.de"></label></div><label><span>Geburtsdatum <small>optional</small></span><input name="birthday" type="date"></label><label><span>Interne Notiz <small>optional</small></span><textarea name="notes" rows="4" placeholder="z. B. Wünsche, Hinweise oder Besonderheiten"></textarea></label><div class="privacy-card"><div><strong>Kundenkartei im Präsentationsmodus</strong><small>Diese Beispieldaten bleiben ausschließlich in diesem Browser. Für die Live-Version folgen Login, Datenbank und Datenschutzkonzept.</small></div><span>Vorschau</span></div></div><div class="modal-actions"><button type="button" class="soft-button" data-close-customer>Abbrechen</button><button type="submit" class="primary-action">Kunde speichern</button></div></form>`;
+      dialog.innerHTML=`<form method="dialog" class="modal-card" id="customerForm"><div class="modal-head"><div><span class="panel-kicker">Kundenkartei</span><h3>Neuer Kunde</h3></div><button type="button" class="modal-close" data-close-customer aria-label="Schließen">×</button></div><div class="modal-body"><div class="form-row"><label><span>Vorname</span><input name="firstName" autocomplete="given-name" required placeholder="Vorname"></label><label><span>Nachname</span><input name="lastName" autocomplete="family-name" required placeholder="Nachname"></label></div><div class="form-row"><label><span>Telefon</span><input name="phone" type="tel" autocomplete="tel" placeholder="z. B. 0176 12345678"></label><label><span>E-Mail</span><input name="email" type="email" autocomplete="email" placeholder="name@beispiel.de"></label></div><label><span>Geburtsdatum <small>optional</small></span><input name="birthday" type="date"></label><label><span>Interne Notiz <small>optional</small></span><textarea name="notes" rows="4" placeholder="z. B. Wünsche, Hinweise oder Besonderheiten"></textarea></label><div class="privacy-card"><div><strong>Kundenkartei in der Vorschau</strong><small>Diese anonymisierten Beispieldaten bleiben ausschließlich in diesem Browser. Im Livebetrieb wird der Studiozugang geschützt und zentral gespeichert.</small></div><span>Vorschau</span></div></div><div class="modal-actions"><button type="button" class="soft-button" data-close-customer>Abbrechen</button><button type="submit" class="primary-action">Kunde speichern</button></div></form>`;
       document.body.appendChild(dialog);
     }
   }
@@ -90,6 +92,11 @@
     $$('[data-jump]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.jump)));
     $$('[data-action="newAppointment"]').forEach(btn=>btn.addEventListener('click',()=>openModal()));
     $('#quickAdd')?.addEventListener('click',()=>openModal());$('#mobileAdd')?.addEventListener('click',()=>openModal());
+    const more=$('#mobileMoreDialog');
+    $('[data-mobile-more]')?.addEventListener('click',()=>more?.showModal());
+    $('[data-close-mobile-more]').forEach(btn=>btn.addEventListener('click',()=>more?.close()));
+    $('[data-mobile-more-view]').forEach(btn=>btn.addEventListener('click',()=>{more?.close();A.showView(btn.dataset.mobileMoreView)}));
+    more?.addEventListener('click',event=>{if(event.target===more)more.close()});
     $$('[data-close-modal]').forEach(btn=>btn.addEventListener('click',closeModal));
     $('#appointmentModal')?.addEventListener('click',event=>{if(event.target.id==='appointmentModal')closeModal()});
     $('#appointmentForm')?.addEventListener('submit',event=>{event.preventDefault();if(event.currentTarget.reportValidity())saveAppointment(event.currentTarget)});
@@ -99,7 +106,7 @@
     $('#calendarToday')?.addEventListener('click',()=>{A.calendarCursor=new Date();A.renderCalendar()});
     $('#saveHours')?.addEventListener('click',()=>{$$('.hours-row').forEach(row=>{A.db.workingHours[row.dataset.day]={enabled:$('[name=enabled]',row).checked,start:$('[name=start]',row).value,end:$('[name=end]',row).value}});A.addActivity('setting','Reguläre Arbeitszeiten wurden aktualisiert.');A.save('Arbeitszeiten gespeichert.')});
     const blockForm=$('#blockForm');if(blockForm){blockForm.elements.date.value=isoDate(addDays(new Date(),1));blockForm.addEventListener('submit',event=>{event.preventDefault();if(!blockForm.reportValidity())return;const data=new FormData(blockForm);if(minutesOf(data.get('end'))<=minutesOf(data.get('start')))return A.toast('„Bis“ muss nach „Von“ liegen.');A.db.blocked.push({id:uid('block'),date:data.get('date'),start:data.get('start'),end:data.get('end'),label:String(data.get('label')||'Gesperrt')});A.addActivity('setting',`${data.get('label')}: Zeit am ${dateShort(data.get('date'))} blockiert.`);blockForm.reset();blockForm.elements.date.value=isoDate(addDays(new Date(),1));blockForm.elements.start.value='12:00';blockForm.elements.end.value='13:00';A.save('Zeit wurde blockiert.')})}
-    $('#resetDemo')?.addEventListener('click',()=>{if(!confirm('Präsentationsdaten wieder auf den vorbereiteten Pitch-Zustand setzen? Eigene lokale Änderungen gehen dabei verloren.'))return;A.db=window.SmileShineDataStore?.resetPresentationData?.()||A.seed();if(!window.SmileShineDataStore)localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));A.calendarCursor=new Date();A.renderAll();A.refreshPaymentUI?.();A.renderPickupOrders?.();A.toast('Pitch-Zustand ist wiederhergestellt.');A.showView('dashboard')});
+    $('#resetDemo')?.addEventListener('click',()=>{if(!confirm('Beispieldaten auf den vorbereiteten Ausgangszustand zurücksetzen? Eigene lokale Änderungen gehen dabei verloren.'))return;A.db=window.SmileShineDataStore?.resetPresentationData?.()||A.seed();if(!window.SmileShineDataStore)localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));A.calendarCursor=new Date();A.renderAll();A.refreshPaymentUI?.();A.renderPickupOrders?.();A.toast('Beispieldaten wurden zurückgesetzt.');A.showView('dashboard')});
     window.addEventListener('storage',event=>{if(event.key===A.STORE_KEY){try{A.db=JSON.parse(event.newValue);A.renderAll();A.refreshPaymentUI?.();A.toast('Daten aus einem anderen Tab aktualisiert.')}catch(e){}}});
     bindCustomerActions();
   }
