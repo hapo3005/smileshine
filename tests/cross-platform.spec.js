@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const BUILD = '20260923-pitch-mode1';
+const BUILD = '20260923-birgit-polish1';
 const browserName = process.env.PW_BROWSER || 'chromium';
 const profile = process.env.QA_PROFILE || 'desktop';
 const label = process.env.QA_LABEL || `${process.platform} / ${browserName} / ${profile}`;
