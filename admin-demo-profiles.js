@@ -105,8 +105,8 @@
   }
 
   function ensureAppointments(db){
-    db.appointments=Array.isArray(db.appointments)?db.appointments:[];
-    const services=db.services||[];
+    db.appointments=(Array.isArray(db.appointments)?db.appointments:[]).filter(a=>!String(a.id||'').startsWith('demo_2026_'));
+    const services=db.services||[],serviceIds={'Augenbrauen':'brows-pmu','Lid & Wimpernkranz':'lashline','Lippen':'lip-pmu','Beratung':'consult'};
     const start=new Date('2026-09-21T12:00:00'),end=new Date('2026-12-30T12:00:00'),span=Math.round((end-start)/86400000);
     profiles.forEach((row,index)=>{
       const customer=db.customers.find(c=>c.name===row[0]);if(!customer)return;
@@ -116,7 +116,7 @@
         const baseOffset=Math.round(index*(span/(profiles.length-1)))+seq*24;
         const target=addDays(start,Math.min(span,baseOffset));
         const preferredName=seq===0?row[6]:serviceCycle[(index+seq)%serviceCycle.length];
-        const service=services.find(s=>s.name===preferredName)||services[(index+seq)%services.length];if(!service)continue;
+        const service=services.find(s=>s.id===serviceIds[preferredName])||services.find(s=>s.id==='consult');if(!service)continue;
         const slot=findSlot(db,target,service,row[4]);if(!slot)continue;
         const source=(index+seq)%3===0?'online-demo':'studio',depositExpected=source==='online-demo'?Number(service.deposit||0):0;
         const price=Number(service.price||0),status=(index+seq)%11===0?'pending':'confirmed';
