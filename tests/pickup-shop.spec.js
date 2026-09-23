@@ -18,7 +18,7 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
 
   await expect(page.locator('#shop .shop-status')).toHaveText(/Nur Abholung/);
   await expect(page.locator('.pickup-product-card')).toHaveCount(8);
-  await expect(page.locator('.pickup-product-card').first()).toContainText('xx,xx €');
+  await expect(page.locator('.pickup-product-card').first()).toContainText('Preis im Studio');
   await expect(page.locator('[data-pickup-add]').first()).toHaveText('In den Warenkorb');
   await expect(page.locator('[data-pickup-cart]')).toContainText('Warenkorb');
   await expect(page.locator('.pickup-promise')).toContainText('Im Studio abholen');
