@@ -119,8 +119,8 @@ img{max-width:100%;display:block}
 .treatment-card h3{font-size:30px;line-height:1.05;margin:8px 0 8px}
 .treatment-card p{margin:0;font-size:11px;opacity:.82}
 .image-brows{background-image:url('https://images.pexels.com/photos/8990708/pexels-photo-8990708.jpeg?auto=compress&cs=tinysrgb&w=1400');background-position:center 42%}
-.image-eyes{background-image:url('https://images.pexels.com/photos/8064912/pexels-photo-8064912.jpeg?auto=compress&cs=tinysrgb&w=1400');background-position:center 46%}
-.image-lips{background-image:url('https://images.pexels.com/photos/3762445/pexels-photo-3762445.jpeg?auto=compress&cs=tinysrgb&w=1400');background-position:center 46%}
+.image-eyes{background-image:url('https://images.pexels.com/photos/13965213/pexels-photo-13965213.jpeg?auto=compress&cs=tinysrgb&w=1400');background-position:center 46%}
+.image-lips{background-image:url('https://images.pexels.com/photos/14358835/pexels-photo-14358835.jpeg?auto=compress&cs=tinysrgb&w=1400');background-position:center 46%}
 .treatment-card--glass{background:linear-gradient(145deg,#d7cec7,#bfaea3)}
 .treatment-card--glass::before{background:linear-gradient(to top,rgba(48,39,34,.65),rgba(86,73,64,.08))}
 .prototype-note{margin:24px 0 0;color:var(--muted-2);font-size:10px;letter-spacing:.02em}
@@ -1498,7 +1498,7 @@ body.site-premium{
   border-radius:2px 34px 2px 34px;
   background:
     linear-gradient(180deg,rgba(245,241,237,.02),rgba(35,29,26,.15)),
-    url('https://images.pexels.com/photos/18809795/pexels-photo-18809795/free-photo-of-beautician-doing-eyebrows.jpeg?auto=compress&cs=tinysrgb&w=1600') center 42%/cover no-repeat;
+    url('https://images.pexels.com/photos/8558256/pexels-photo-8558256.jpeg?auto=compress&cs=tinysrgb&w=1600') center 42%/cover no-repeat;
   box-shadow:0 30px 74px rgba(45,35,29,.14);
 }
 .site-premium .premium-about .about-copy{
