@@ -1,6 +1,6 @@
 (() => {
   const A=window.SSAdmin;if(!A)return;
-  const {$,$,isoDate,addDays,minutesOf,dateShort,uid}=A;
+  const {$,$$,isoDate,addDays,minutesOf,dateShort,uid}=A;
   const CORE_SERVICE_IDS=new Set(['brows-pmu','lashline','lip-pmu','consult']);
   const visibleServices=()=>A.db.services.filter(s=>s.active&&(CORE_SERVICE_IDS.has(s.id)||!s.verification));
 
@@ -94,8 +94,8 @@
     $('#quickAdd')?.addEventListener('click',()=>openModal());$('#mobileAdd')?.addEventListener('click',()=>openModal());
     const more=$('#mobileMoreDialog');
     $('[data-mobile-more]')?.addEventListener('click',()=>more?.showModal());
-    $('[data-close-mobile-more]').forEach(btn=>btn.addEventListener('click',()=>more?.close()));
-    $('[data-mobile-more-view]').forEach(btn=>btn.addEventListener('click',()=>{more?.close();A.showView(btn.dataset.mobileMoreView)}));
+    $$('[data-close-mobile-more]').forEach(btn=>btn.addEventListener('click',()=>more?.close()));
+    $$('[data-mobile-more-view]').forEach(btn=>btn.addEventListener('click',()=>{more?.close();A.showView(btn.dataset.mobileMoreView)}));
     more?.addEventListener('click',event=>{if(event.target===more)more.close()});
     $$('[data-close-modal]').forEach(btn=>btn.addEventListener('click',closeModal));
     $('#appointmentModal')?.addEventListener('click',event=>{if(event.target.id==='appointmentModal')closeModal()});
