@@ -162,7 +162,7 @@
   }
 
   function cleanCustomerCopy(){
-    const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Demo · keine echte Buchung';
+    const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Interaktive Vorschau · keine Datenübermittlung';
     const categoryLabel=$('.service-category-label');if(categoryLabel)categoryLabel.remove();
     const heads=$$('.booking-panel-head>p');
     const replacements=['Wähle die Behandlung, die zu deinem Wunsch passt.','Wähle einen freien Termin. Die verfügbaren Zeiten werden automatisch aktualisiert.','Mit ein paar Angaben können wir deinen Termin gut vorbereiten.','Deine Kontaktdaten benötigen wir für Bestätigung und Rückfragen.','Wähle die gewünschte Zahlungsart.','Prüfe deine Angaben noch einmal in Ruhe.'];
@@ -170,14 +170,14 @@
     const pre=$('.precheck-intro p');if(pre)pre.textContent='Bitte beantworte die Fragen so vollständig wie möglich.';
     const consent=$('#precheckForm .consent-row span');if(consent)consent.textContent='Ich bestätige, dass meine Angaben vollständig und korrekt sind.';
     const dataConsent=$('#bookingForm .consent-row span');if(dataConsent)dataConsent.textContent='Ich stimme der Verarbeitung meiner Angaben zur Terminorganisation zu.';
-    const waitNote=$('.waitlist-actions>span');if(waitNote)waitNote.textContent='Demo · es wird noch keine Benachrichtigung versendet.';
-    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML='<strong>Demo-Modus.</strong><span>Dieser Schritt speichert den Termin nur in dieser Demo und löst keine echte Buchung oder Zahlung aus.</span>';
-    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Demo · keine echte Buchung';
+    const waitNote=$('.waitlist-actions>span');if(waitNote)waitNote.textContent='Vorschau · keine Nachricht wird versendet.';
+    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML='<strong>Präsentationsmodus.</strong><span>Der Ablauf wird vollständig simuliert. Es wird keine echte Buchung, Zahlung oder Nachricht ausgelöst.</span>';
+    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Präsentationsmodus · nur lokal';
   }
 
   function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card);if(strong)strong.textContent=Number(s.deposit||0)>0?`${money(s.deposit)} für diese Leistung`:'Keine Anzahlung erforderlich';if(copy)copy.textContent=Number(s.deposit||0)>0?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':'Für diese Leistung ist derzeit keine Anzahlung vorgesehen.'}
 
-  function finalButton(){const panel=$('.booking-panel[data-panel="6"]'),button=panel?.querySelector('.button.primary');if(!button||button.dataset.synced)return;button.dataset.synced='true';button.classList.remove('booking-disabled');button.removeAttribute('aria-disabled');button.textContent='Demo-Termin vormerken';button.addEventListener('click',()=>commit(panel,button))}
+  function finalButton(){const panel=$('.booking-panel[data-panel="6"]'),button=panel?.querySelector('.button.primary');if(!button||button.dataset.synced)return;button.dataset.synced='true';button.classList.remove('booking-disabled');button.removeAttribute('aria-disabled');button.textContent='Termin simulieren';button.addEventListener('click',()=>commit(panel,button))}
 
   function commit(panel,button){
     const db=load(),state=window.SmileShineBooking?.state,serviceKey=state?.serviceId||state?.service,serviceName=state?.service||$('#summaryService')?.textContent?.trim(),date=state?.date||$('.date-option.selected')?.dataset.iso,time=state?.time||$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm');
@@ -188,7 +188,7 @@
     let customer=(db.customers||[]).find(c=>(email&&c.email===email)||(phone&&c.phone===phone));if(!customer){customer={id:uid('customer'),customerNumber:takeCustomerNumber(db),name,firstName:first,lastName:last,email,phone,created:today()};db.customers=db.customers||[];db.customers.push(customer)}
     const payment=$('#summaryPayment')?.textContent?.trim()||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
     db.appointments=db.appointments||[];db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,status:'confirmed',payment,paymentPreference:payment,source:'online-demo',note,listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
-    db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Online-Buchung: ${name}, ${serviceName}.`,date:new Date().toISOString()});save(db);button.disabled=true;button.textContent='✓ Termin vorgemerkt';message(panel,'Dein Termin wurde in dieser Demo im Studio-Kalender vorgemerkt.',false);
+    db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Online-Buchung: ${name}, ${serviceName}.`,date:new Date().toISOString()});save(db);button.disabled=true;button.textContent='✓ Termin vorgemerkt';message(panel,'Der Termin wurde für diese Präsentation lokal im Studio-Kalender vorgemerkt.',false);
   }
 
   function message(panel,text,error){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';panel.querySelector('.booking-actions')?.before(box)}box.innerHTML=`<strong>${error?'Nicht verfügbar':'Termin vorgemerkt'}</strong><span>${text}</span>`}
