@@ -68,7 +68,7 @@
     })
   }
   function refreshDashboardRevenue(){
-    const grid=$('#kpiGrid');if(!grid)return;const cards=$$('.kpi-card',grid);if(cards.length<4)return;const now=new Date(),paid=(A.db.appointments||[]).reduce((total,a)=>total+(a.status==='cancelled'?0:(a.payments||[]).reduce((sum,p)=>{const d=new Date(p.createdAt);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()?sum+Number(p.amount||0):sum},0)),0);const card=cards[3],label=$('.kpi-label',card),value=$('.kpi-value',card),foot=$('.kpi-foot>span:first-child',card),formatted=money(paid);if(label&&label.textContent!=='Umsatz · Monat')label.textContent='Umsatz · Monat';if(value&&value.textContent!==formatted)value.textContent=formatted;if(foot&&foot.textContent!=='Tatsächlich bezahlt')foot.textContent='Tatsächlich bezahlt';
+    const grid=$('#kpiGrid');if(!grid)return;const cards=$$('.kpi-card',grid);if(cards.length<4)return;const now=new Date(),paid=(A.db.appointments||[]).reduce((total,a)=>total+(a.status==='cancelled'?0:(a.payments||[]).reduce((sum,p)=>{const d=new Date(p.createdAt);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()?sum+Number(p.amount||0):sum},0)),0);const card=cards[3],label=$('.kpi-label',card),value=$('.kpi-value',card),foot=$('.kpi-foot>span:first-child',card),formatted=paid>0?money(paid):'–';if(label&&label.textContent!=='Umsatz · Monat')label.textContent='Umsatz · Monat';if(value&&value.textContent!==formatted)value.textContent=formatted;if(foot){const copy=paid>0?'Tatsächlich bezahlt':'Noch keine Zahlungen';if(foot.textContent!==copy)foot.textContent=copy;}
   }
   function refreshPaymentUI(){migrate();refreshAppointmentList();refreshDashboardRevenue();A.bindCustomerDetailRows?.()}
 
