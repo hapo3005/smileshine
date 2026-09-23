@@ -26,7 +26,7 @@
       {icon:'□',label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
       {icon:'◷',label:'Diese Woche',value:weekApps.length,foot:'Termine',delta:`${weekApps.filter(a=>a.status==='pending').length} offen`},
       {icon:'○',label:'Kunden',value:unique,foot:'in 7 Tagen',delta:`${A.db.customers.length} gesamt`},
-      {icon:'€',label:'Umsatz · Monat',value:currency(revenue),foot:'Beispielrechnung',delta:`${monthApps.length} Termine`}];
+      {icon:'€',label:'Umsatz · Monat',value:revenue>0?currency(revenue):'–',foot:revenue>0?'Geplante Leistungen':'Noch keine Zahlungen',delta:`${monthApps.length} Termine`}];
     if($('#kpiGrid'))$('#kpiGrid').innerHTML=kpis.map(k=>`<article class="kpi-card"><div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon">${k.icon}</span></div><strong class="kpi-value">${k.value}</strong><div class="kpi-foot"><span>${k.foot}</span><span class="delta">${k.delta}</span></div></article>`).join('');
     if($('#todayList'))$('#todayList').innerHTML=todays.length?todays.map(a=>`<div class="appointment-row appointment-open-row" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="appointment-time">${a.time}</div><div class="appointment-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><span class="appointment-status status-${a.status}">${STATUS_LABELS[a.status]||a.status}</span><span class="appointment-row-arrow" aria-hidden="true">→</span></div>`).join(''):`<div class="empty-state"><strong>Heute ist noch frei.</strong>Über „Termin“ kannst du direkt eine Buchung eintragen.</div>`;
     renderWeekBars();renderActivities();
@@ -47,7 +47,8 @@
 
   function renderActivities(){
     const root=$('#activityList');if(!root)return;const icons={booking:'＋',customer:'○',setting:'⚙'};
-    root.innerHTML=(A.db.activity||[]).slice(0,4).map(x=>`<div class="activity-item"><span class="activity-dot">${icons[x.type]||'•'}</span><div><strong>${escapeHTML(x.text)}</strong><small>${A.relativeTime(x.date)}</small></div></div>`).join('');
+    const visibleActivity=(A.db.activity||[]).filter(x=>x.id!=='demo_profiles_loaded'&&!/Testkundenprofile/i.test(String(x.text||'')));
+    root.innerHTML=visibleActivity.slice(0,4).map(x=>`<div class="activity-item"><span class="activity-dot">${icons[x.type]||'•'}</span><div><strong>${escapeHTML(x.text)}</strong><small>${A.relativeTime(x.date)}</small></div></div>`).join('');
   }
 
   function renderCalendar(){
@@ -88,7 +89,7 @@
   }
 
   function renderServices(){
-    const root=$('#servicesGrid');if(!root)return;root.innerHTML=A.db.services.map((s,i)=>`<article class="panel service-card-admin" data-service-id="${s.id}"><div class="service-card-top"><span class="service-number">${String(i+1).padStart(2,'0')}</span><label class="switch"><input type="checkbox" name="active" ${s.active?'checked':''}><span></span></label></div><h3>${escapeHTML(s.name)}</h3><p>${s.active?'Online buchbar':'Derzeit nicht online buchbar'}</p><div class="service-fields"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="${s.duration}"></label><label><span>Preis · €</span><input name="price" type="number" min="0" value="${s.price}"></label><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" value="${s.deposit}"></label></div><button class="soft-button service-save" type="button">Änderungen speichern</button></article>`).join('');A.bindServiceActions?.();
+    const root=$('#servicesGrid');if(!root)return;const core=new Set(['brows-pmu','lashline','lip-pmu','consult']);const visible=A.db.services.filter(s=>core.has(s.id)||!s.verification);root.innerHTML=visible.map((s,i)=>`<article class="panel service-card-admin" data-service-id="${s.id}"><div class="service-card-top"><span class="service-number">${String(i+1).padStart(2,'0')}</span><label class="switch"><input type="checkbox" name="active" ${s.active?'checked':''}><span></span></label></div><h3>${escapeHTML(s.name)}</h3><p>${s.active?'Online buchbar':'Derzeit nicht online buchbar'}</p><div class="service-fields"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="${s.duration}"></label><label><span>Preis · €</span><input name="price" type="number" min="0" value="${s.price}"></label><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" value="${s.deposit}"></label></div><button class="soft-button service-save" type="button">Änderungen speichern</button></article>`).join('');A.bindServiceActions?.();
   }
 
   function renderWorkingHours(){
