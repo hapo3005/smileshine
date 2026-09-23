@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="smileshine-build" content="20260923-pitch-mode1">
+  <meta name="smileshine-build" content="20260923-birgit-polish1">
   <meta name="theme-color" content="#f8f4f2">
   <meta name="robots" content="noindex,nofollow">
   <title>Studio · Smile & Shine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=20260923-pitch-mode1">
+  <link rel="stylesheet" href="admin.css?v=20260923-birgit-polish1">
 </head>
 <body>
   <div class="admin-app">
@@ -31,7 +31,7 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="demo-state"><span></span><div><strong>Präsentationsmodus</strong><small>Beispieldaten · nur lokal</small></div></div>
+        <div class="demo-state"><span></span><div><strong>Vorschau aktiv</strong><small>Beispieldaten · nur lokal</small></div></div>
         <a href="index.html" class="customer-site-link">Kundenseite öffnen ↗</a>
       </div>
     </aside>
@@ -43,7 +43,7 @@
           <h1 id="pageTitle">Guten Tag, Birgit.</h1>
         </div>
         <div class="topbar-actions">
-          <span class="sync-pill"><i></i> Präsentationsdaten aktiv</span>
+          <span class="sync-pill"><i></i> Vorschau aktiv</span>
           <a href="index.html#booking" class="topbar-link">Buchung ansehen</a>
           <button class="primary-action" id="quickAdd" type="button"><span>＋</span> Termin</button>
         </div>
@@ -117,7 +117,7 @@
       </section>
 
       <section class="view" data-view-panel="customers">
-        <div class="view-heading"><div><p class="eyebrow">Kunden</p><h2>Kundenkartei.</h2><p class="muted">Kontaktdaten und Terminverlauf – mit vorbereiteten Beispieldaten für diese Präsentation.</p></div></div>
+        <div class="view-heading"><div><p class="eyebrow">Kunden</p><h2>Kundenkartei.</h2><p class="muted">Kontaktdaten, Wünsche und Terminverlauf – mit anonymisierten Beispieldaten für die Vorschau.</p></div></div>
         <article class="panel list-panel">
           <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="customerSearch" type="search" placeholder="Kunden suchen"></label><span class="result-count" id="customerCount"></span></div>
           <div id="customersList" class="customers-list"></div>
@@ -138,10 +138,10 @@
       </section>
 
       <section class="view" data-view-panel="settings">
-        <div class="view-heading"><div><p class="eyebrow">Einstellungen</p><h2>Studio-System.</h2><p class="muted">Die spätere Live-Version erhält Login, Cloud-Datenbank, Benachrichtigungen und Zahlungsanbindung.</p></div></div>
+        <div class="view-heading"><div><p class="eyebrow">Einstellungen</p><h2>Studio-Einstellungen.</h2><p class="muted">Hier siehst du, welche Funktionen bereits vorbereitet sind und was vor dem Livegang noch verbunden wird.</p></div></div>
         <div class="settings-grid">
-          <article class="panel setting-card"><span class="setting-icon">⌁</span><div><strong>Präsentationsdaten</strong><p>Die vorbereiteten Beispieldaten zeigen einen realistischen Studiotag. Änderungen bleiben nur auf diesem Gerät und können jederzeit auf den Pitch-Zustand zurückgesetzt werden.</p></div><button class="soft-button" id="resetDemo" type="button">Pitch-Zustand herstellen</button></article>
-          <article class="panel setting-card"><span class="setting-icon">🔒</span><div><strong>Login & Rechte</strong><p>Für den Livegang wird der Adminbereich geschützt. Zugriff erhält nur das Studio.</p></div><span class="status-tag planned">Backend</span></article>
+          <article class="panel setting-card"><span class="setting-icon">⌁</span><div><strong>Beispieldaten</strong><p>Die Vorschau zeigt einen realistischen Studiotag. Eigene Änderungen bleiben nur auf diesem Gerät und können jederzeit zurückgesetzt werden.</p></div><button class="soft-button" id="resetDemo" type="button">Beispieldaten zurücksetzen</button></article>
+          <article class="panel setting-card"><span class="setting-icon">🔒</span><div><strong>Login & Rechte</strong><p>Für den Livegang wird der Adminbereich geschützt. Zugriff erhält nur das Studio.</p></div><span class="status-tag planned">Vor Livegang</span></article>
           <article class="panel setting-card"><span class="setting-icon">✉</span><div><strong>Bestätigungen & Erinnerungen</strong><p>E-Mail und optional SMS nach Buchung, vor dem Termin und bei Änderungen.</p></div><span class="status-tag planned">Geplant</span></article>
           <article class="panel setting-card"><span class="setting-icon">€</span><div><strong>Online-Zahlung</strong><p>Anzahlungen je Leistung mit Stripe, Apple Pay und Google Pay.</p></div><span class="status-tag planned">Geplant</span></article>
         </div>
@@ -153,9 +153,23 @@
       <button type="button" data-view="calendar"><span>□</span><small>Kalender</small></button>
       <button class="mobile-nav-add" type="button" data-action="newAppointment" aria-label="Termin hinzufügen"><span>＋</span></button>
       <button type="button" data-view="customers"><span>○</span><small>Kunden</small></button>
-      <button type="button" data-view="settings"><span>•••</span><small>Mehr</small></button>
+      <button type="button" data-mobile-more><span>•••</span><small>Mehr</small></button>
     </nav>
   </div>
+
+  <dialog class="mobile-more-dialog" id="mobileMoreDialog" aria-labelledby="mobileMoreTitle">
+    <div class="mobile-more-sheet">
+      <div class="mobile-more-head"><div><span class="panel-kicker">Studio</span><h3 id="mobileMoreTitle">Mehr Funktionen</h3></div><button type="button" data-close-mobile-more aria-label="Schließen">×</button></div>
+      <div class="mobile-more-grid">
+        <button type="button" data-mobile-more-view="appointments"><span>≡</span><strong>Termine</strong><small>Alle Buchungen</small></button>
+        <button type="button" data-mobile-more-view="services"><span>◇</span><strong>Leistungen</strong><small>Dauer & Buchbarkeit</small></button>
+        <button type="button" data-mobile-more-view="availability"><span>◷</span><strong>Verfügbarkeit</strong><small>Arbeits- & Sperrzeiten</small></button>
+        <button type="button" data-mobile-more-view="pickup"><span>▣</span><strong>Abholshop</strong><small>Bestellungen vorbereiten</small></button>
+        <button type="button" data-mobile-more-view="settings"><span>⚙</span><strong>Einstellungen</strong><small>Studio & Vorschau</small></button>
+        <a href="index.html"><span>↗</span><strong>Kundenseite</strong><small>Website öffnen</small></a>
+      </div>
+    </div>
+  </dialog>
 
   <dialog class="modal" id="appointmentModal">
     <form method="dialog" class="modal-card" id="appointmentForm">
@@ -173,6 +187,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="studio-data-store.js?v=20260922-datalayer1"></script>
-  <script src="admin.js?v=20260923-pitch-mode1"></script>
+  <script src="admin.js?v=20260923-birgit-polish1"></script>
 </body>
 </html>
