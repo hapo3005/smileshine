@@ -63,7 +63,7 @@
     const [name,birthday,personality,communication,preferredTimes,style,favorite,wish]=row;
     const parts=fullNameParts(name);
     Object.assign(customer,{name,firstName:parts.firstName,lastName:parts.lastName,birthday,personality,communication,preferredTimes,style,favoriteServices:[favorite],wishes:wish,isDemoProfile:true,demoProfileIndex:index+1});
-    customer.notes=`TESTPROFIL · ${personality}. Bevorzugt ${preferredTimes}; Kontakt am liebsten per ${communication}. Wunsch: ${wish}.`;
+    customer.notes=`${personality}. Bevorzugt ${preferredTimes}; Kontakt am liebsten per ${communication}. Wunsch: ${wish}.`;
     if(!customer.created)customer.created=`2026-${String((index%8)+1).padStart(2,'0')}-${String((index%24)+1).padStart(2,'0')}`;
     return customer;
   }
@@ -120,7 +120,7 @@
         const slot=findSlot(db,target,service,row[4]);if(!slot)continue;
         const source=(index+seq)%3===0?'online-demo':'studio',depositExpected=source==='online-demo'?Number(service.deposit||0):0;
         const price=Number(service.price||0),status=(index+seq)%11===0?'pending':'confirmed';
-        db.appointments.push({id,date:slot.date,time:slot.time,duration:Number(service.duration||30),service:service.name,serviceDescription:service.description||'',customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status,payment:source==='online-demo'&&depositExpected>0?'Online-Anzahlung':'Im Studio',paymentPreference:source==='online-demo'&&depositExpected>0?'Online-Anzahlung':'Im Studio',source,note:`Testbuchung · Wunsch: ${row[7]}`,listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open',isDemoBooking:true});
+        db.appointments.push({id,date:slot.date,time:slot.time,duration:Number(service.duration||30),service:service.name,serviceDescription:service.description||'',customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status,payment:source==='online-demo'&&depositExpected>0?'Online-Anzahlung':'Im Studio',paymentPreference:source==='online-demo'&&depositExpected>0?'Online-Anzahlung':'Im Studio',source,note:`Wunsch: ${row[7]}`,listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open',isDemoBooking:true});
       }
     });
   }
@@ -128,8 +128,7 @@
   function expand(db){
     if(!db)return db;
     ensureProfiles(db);ensureAppointments(db);db.demoProfilesVersion=VERSION;
-    db.activity=Array.isArray(db.activity)?db.activity:[];
-    if(!db.activity.some(x=>x.id==='demo_profiles_loaded'))db.activity.unshift({id:'demo_profiles_loaded',type:'customer',text:'40 unterschiedliche Testkundenprofile mit Terminen bis Ende 2026 geladen.',date:new Date().toISOString()});
+    db.activity=(Array.isArray(db.activity)?db.activity:[]).filter(x=>x.id!=='demo_profiles_loaded'&&!/Testkundenprofile/i.test(String(x.text||'')));
     return db;
   }
 
@@ -146,7 +145,7 @@
     const body=$('#customerDetailBody');if(!body||$('.demo-profile-panel',body))return;
     const title=$('#customerDetailTitle')?.textContent?.trim(),customer=A.db.customers.find(c=>c.name===title);if(!customer?.isDemoProfile)return;
     const section=document.createElement('section');section.className='customer-detail-panel demo-profile-panel';
-    section.innerHTML=`<div class="customer-section-head"><div><span class="panel-kicker">Testprofil</span><h4>Charakter & Vorlieben</h4></div><span class="demo-profile-badge">Fiktive Daten</span></div><div class="demo-profile-grid"><p><span>Auftreten</span><strong>${escapeHTML(customer.personality||'–')}</strong></p><p><span>Kontakt</span><strong>${escapeHTML(customer.communication||'–')}</strong></p><p><span>Terminzeit</span><strong>${escapeHTML(customer.preferredTimes||'–')}</strong></p><p><span>Stil</span><strong>${escapeHTML(customer.style||'–')}</strong></p><p class="demo-profile-wish"><span>Wunsch</span><strong>${escapeHTML(customer.wishes||'–')}</strong></p></div>`;
+    section.innerHTML=`<div class="customer-section-head"><div><span class="panel-kicker">Beispielprofil</span><h4>Charakter & Vorlieben</h4></div><span class="demo-profile-badge">Beispieldaten</span></div><div class="demo-profile-grid"><p><span>Auftreten</span><strong>${escapeHTML(customer.personality||'–')}</strong></p><p><span>Kontakt</span><strong>${escapeHTML(customer.communication||'–')}</strong></p><p><span>Terminzeit</span><strong>${escapeHTML(customer.preferredTimes||'–')}</strong></p><p><span>Stil</span><strong>${escapeHTML(customer.style||'–')}</strong></p><p class="demo-profile-wish"><span>Wunsch</span><strong>${escapeHTML(customer.wishes||'–')}</strong></p></div>`;
     const history=$('.customer-history-panel',body);history?.before(section);
   }
 
