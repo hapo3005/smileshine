@@ -17,6 +17,7 @@
   const escapeHTML=value=>String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
 
   function seed(){
+    if(STORE?.createPresentationData)return STORE.createPresentationData();
     const t=isoDate(new Date()),d1=isoDate(addDays(new Date(),1)),d2=isoDate(addDays(new Date(),2)),d3=isoDate(addDays(new Date(),3)),d5=isoDate(addDays(new Date(),5));
     return {version:1,slotInterval:30,buffer:15,
       services:[
@@ -56,5 +57,5 @@
   api.save=message=>{persist(api.db);if(message)api.toast(message);api.renderAll?.()};
   api.relativeTime=value=>{const diff=Math.max(0,Date.now()-new Date(value).getTime()),h=Math.floor(diff/3600000);if(h<1)return'Gerade eben';if(h<24)return`Vor ${h} Std.`;const d=Math.floor(h/24);return d===1?'Gestern':`Vor ${d} Tagen`};
   window.SSAdmin=api;
-  Promise.all([import('./admin-render.js?v=20260922-pickup-shop4'),import('./admin-actions.js?v=20260922-pickup-shop4'),import('./admin-calendar-views.js?v=20260922-pickup-shop4'),import('./admin-calendar-workspace.js?v=20260922-pickup-shop4'),import('./admin-customer-detail.js?v=20260922-pickup-shop4'),import('./admin-payments.js?v=20260922-pickup-shop4'),import('./admin-appointment-detail.js?v=20260922-pickup-shop4'),import('./admin-services-manager.js?v=20260922-pickup-shop4'),import('./admin-customer-numbers.js?v=20260922-pickup-shop4'),import('./admin-pickup-shop.js?v=20260922-pickup-shop4')]).then(()=>{api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.initPickupShop?.();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(error=>{console.error(error);api.toast('Demo konnte nicht vollständig geladen werden.')});
+  Promise.all([import('./admin-render.js?v=20260923-pitch-mode1'),import('./admin-actions.js?v=20260923-pitch-mode1'),import('./admin-calendar-views.js?v=20260923-pitch-mode1'),import('./admin-calendar-workspace.js?v=20260923-pitch-mode1'),import('./admin-customer-detail.js?v=20260923-pitch-mode1'),import('./admin-payments.js?v=20260923-pitch-mode1'),import('./admin-appointment-detail.js?v=20260923-pitch-mode1'),import('./admin-services-manager.js?v=20260923-pitch-mode1'),import('./admin-customer-numbers.js?v=20260923-pitch-mode1'),import('./admin-pickup-shop.js?v=20260923-pitch-mode1')]).then(()=>{api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.initPickupShop?.();api.renderAll();api.refreshPaymentUI?.();api.bindCustomerDetailRows?.();api.showView(location.hash.replace('#','')||'dashboard')}).catch(error=>{console.error(error);api.toast('Präsentationsversion konnte nicht vollständig geladen werden.')});
 })();
