@@ -108,15 +108,15 @@
     ensureDialog();const a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
     const phone=phoneFor(a);if(!phone)return A.toast('Für diesen Kunden ist keine Telefonnummer hinterlegt.');
     const dialog=$('#whatsappDialog');dialog.dataset.appointmentId=id;dialog.dataset.template='confirm';dialog.dataset.tone='friendly';
-    const demo=isDemoContact(a),warning=demo?'<small class="wa-demo-warning">Testprofil · Vorschau ist aktiv, echter WhatsApp-Versand bleibt gesperrt.</small>':'';
+    const demo=isDemoContact(a),warning=demo?'<small class="wa-demo-warning">Beispielprofil · Vorschau ist aktiv, echter WhatsApp-Versand bleibt gesperrt.</small>':'';
     $('#waAppointmentSummary').innerHTML=`<strong>${escapeHTML(a.customerName)} · ${escapeHTML(phone)}</strong><small>${escapeHTML(longDate(a.date))} · ${escapeHTML(a.time)} Uhr · ${escapeHTML(a.service)}</small>${warning}`;
-    const open=$('#waOpenButton');if(open){open.disabled=demo;open.textContent=demo?'Testprofil – Versand gesperrt':'In WhatsApp öffnen ↗'}
+    const open=$('#waOpenButton');if(open){open.disabled=demo;open.textContent=demo?'Beispielprofil – Versand gesperrt':'In WhatsApp öffnen ↗'}
     refreshPreview();dialog.showModal();
   }
 
   function openMessage(){
     const {id}=currentSelection(),a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
-    if(isDemoContact(a))return A.toast('Testprofil: WhatsApp wird aus Sicherheitsgründen nicht geöffnet.');
+    if(isDemoContact(a))return A.toast('Beispielprofil: WhatsApp wird aus Sicherheitsgründen nicht geöffnet.');
     const phone=normalizePhone(phoneFor(a));if(!phone)return A.toast('Die Telefonnummer kann nicht für WhatsApp verwendet werden.');
     const text=$('#waMessagePreview')?.value?.trim();if(!text)return A.toast('Bitte einen Nachrichtentext eingeben.');
     const url=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
@@ -141,7 +141,7 @@
   function decorateSettings(){
     const card=$$('.setting-card').find(item=>$('strong',item)?.textContent?.trim()==='Bestätigungen & Erinnerungen');if(!card)return;
     const copy=$('p',card),tag=$('.status-tag',card);
-    if(copy)copy.textContent='Kostenlose WhatsApp-Vorlagen mit Vorschau, Tonwahl und Bearbeitung für Bestätigung, Erinnerung und Terminänderung sind aktiv. E-Mail-Automatik folgt mit dem Backend.';
+    if(copy)copy.textContent='Kostenlose WhatsApp-Vorlagen mit Vorschau, Tonwahl und Bearbeitung für Bestätigung, Erinnerung und Terminänderung sind aktiv. Automatische E-Mail-Erinnerungen werden vor dem Livegang angebunden.';
     if(tag){tag.textContent='WhatsApp aktiv';tag.classList.remove('planned');tag.classList.add('whatsapp-active')}
   }
 
