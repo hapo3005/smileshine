@@ -54,6 +54,7 @@ function monitorErrors(page) {
     const source = message.location()?.url || '';
     const text = message.text();
     if (source.includes('maps.gstatic.com') && text.includes('google is not defined')) return;
+    if (text.includes('downloadable font: download failed') && text.includes('fonts.gstatic.com')) return;
     errors.push(`console: ${text}`);
   });
   return errors;
