@@ -111,3 +111,139 @@
 }
 .checkout-summary{background:rgba(255,255,255,.42)}
 .online-payment-box{background:rgba(255,255,255,.44)}
+
+
+/* Premium public services + booking experience · 2026-09-23 */
+body.site-premium #behandlungen .public-service-group-head{
+  margin-bottom:16px;
+}
+body.site-premium #behandlungen .public-service-group-head span{
+  color:#765548;
+  font-size:9px;
+  letter-spacing:.17em;
+}
+body.site-premium #behandlungen .public-service-cards{
+  grid-auto-columns:calc((100% - 28px)/3);
+  gap:14px;
+  padding-bottom:18px;
+}
+body.site-premium #behandlungen .public-service-card{
+  position:relative;
+  isolation:isolate;
+  min-height:390px;
+  padding:26px 25px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:2px 24px 2px 24px;
+  background:
+    linear-gradient(180deg,rgba(28,23,20,.03),rgba(28,23,20,.86)),
+    url('https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=1200&q=88') center/cover no-repeat;
+  box-shadow:0 20px 48px rgba(47,37,31,.11);
+  color:#fff;
+}
+body.site-premium #behandlungen .public-service-card:nth-child(2){
+  background:
+    linear-gradient(180deg,rgba(28,23,20,.03),rgba(28,23,20,.86)),
+    url('https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=88') center/cover no-repeat;
+}
+body.site-premium #behandlungen .public-service-card:nth-child(3){
+  background:
+    linear-gradient(180deg,rgba(28,23,20,.03),rgba(28,23,20,.86)),
+    url('https://images.unsplash.com/photo-1619451334792-150fd785ee74?auto=format&fit=crop&w=1200&q=88') center/cover no-repeat;
+}
+body.site-premium #behandlungen .public-service-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 42%);
+}
+body.site-premium #behandlungen .public-service-card h3{
+  color:#fff;
+  font-size:31px;
+}
+body.site-premium #behandlungen .public-service-card p{
+  max-width:310px;
+  color:rgba(255,255,255,.68);
+}
+body.site-premium #behandlungen .public-service-meta{
+  color:rgba(255,255,255,.58);
+}
+body.site-premium #behandlungen .public-service-meta small{
+  color:#edcbbb;
+}
+body.site-premium #behandlungen .public-service-card>a{
+  position:absolute;
+  right:22px;
+  bottom:22px;
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:50%;
+  color:#fff;
+  font-size:18px;
+}
+body.site-premium .booking-editorial .booking-progress{
+  background:rgba(245,239,234,.78);
+  border-bottom-color:rgba(69,55,48,.10);
+}
+body.site-premium .booking-editorial .progress-step.active{
+  color:#7d5748;
+}
+body.site-premium .booking-editorial .booking-stage{
+  background:rgba(255,255,255,.72);
+}
+body.site-premium .booking-editorial .booking-summary{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(202,155,133,.18),transparent 18rem),
+    #26201d;
+  color:#fff;
+}
+body.site-premium .booking-editorial .booking-summary h3,
+body.site-premium .booking-editorial .booking-summary strong{
+  color:#fff;
+}
+body.site-premium .booking-editorial .booking-summary .summary-kicker,
+body.site-premium .booking-editorial .booking-summary .summary-item span,
+body.site-premium .booking-editorial .booking-summary small{
+  color:rgba(255,255,255,.56);
+}
+body.site-premium .booking-editorial .summary-item,
+body.site-premium .booking-editorial .summary-location{
+  border-color:rgba(255,255,255,.12);
+}
+body.site-premium .booking-editorial .summary-status{
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.64);
+}
+body.site-premium .booking-editorial .service-option{
+  border-radius:2px 14px 2px 14px;
+  background:rgba(255,255,255,.68);
+}
+body.site-premium .booking-editorial .service-option:hover,
+body.site-premium .booking-editorial .service-option.selected{
+  border-color:#caa392;
+  background:#fff;
+  box-shadow:0 12px 30px rgba(58,43,36,.07);
+}
+@media(max-width:980px){
+  body.site-premium #behandlungen .public-service-cards{grid-auto-columns:calc((100% - 14px)/2)}
+}
+@media(max-width:760px){
+  body.site-premium #behandlungen .public-service-cards{grid-auto-columns:86%}
+  body.site-premium #behandlungen .public-service-card{min-height:350px}
+  body.site-premium .booking-editorial .booking-summary{
+    background:#26201d;
+  }
+}
+@media(max-width:420px){
+  body.site-premium #behandlungen .public-service-cards{
+    grid-auto-columns:86%;
+    padding-right:10%;
+  }
+}

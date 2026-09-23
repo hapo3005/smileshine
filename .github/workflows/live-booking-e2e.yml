@@ -56,7 +56,7 @@ jobs:
       - name: Wait for GitHub Pages version
         run: |
           for attempt in {1..30}; do
-            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260923-cinematic-hero2"; then
+            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260923-premium-flow1"; then
               exit 0
             fi
             sleep 10
@@ -81,4 +81,4 @@ jobs:
           path: test-results
           if-no-files-found: ignore
 
-# QA recheck trigger 2026-09-23
+# Premium flow QA 2026-09-23
