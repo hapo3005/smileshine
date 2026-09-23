@@ -1,6 +1,7 @@
 (() => {
   const A=window.SSAdmin;if(!A)return;
-  const {$,$$,escapeHTML,uid}=A;
+  const {$,$,escapeHTML,uid}=A;
+  const CORE_SERVICE_IDS=new Set(['brows-pmu','lashline','lip-pmu','consult']);
   const defaults={
     'Augenbrauen':'Form, Balance und Ausdruck mit natürlicher Wirkung.',
     'Lid & Wimpernkranz':'Dezente Betonung für einen klaren und wachen Blick.',
