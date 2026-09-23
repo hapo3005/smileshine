@@ -160,7 +160,7 @@ test(`Birgit admin cross-platform smoke — ${label}`, async ({ page }, testInfo
   await page.goto(`admin.html?crossqa=${Date.now()}#dashboard`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => Boolean(window.SSAdmin?.showView), null, { timeout: 15000 });
+  await page.waitForFunction(() => window.SSAdmin?.ready === true, null, { timeout: 15000 });
   await page.evaluate(() => document.fonts?.ready);
 
   const width = profiles[profile].viewport.width;
