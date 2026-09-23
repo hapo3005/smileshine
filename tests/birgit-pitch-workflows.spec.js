@@ -85,6 +85,23 @@ test('appointment payment records a partial payment and updates actual revenue',
   await expect(page.locator('#kpiGrid .kpi-card').nth(3)).toContainText('50,00 €');
 });
 
+test('reset restores the complete pitch customer set', async ({ page }) => {
+  await reset(page, 'settings');
+  await page.evaluate(() => {
+    window.SSAdmin.db.customers = window.SSAdmin.db.customers.slice(0, 2);
+    localStorage.setItem(window.SSAdmin.STORE_KEY, JSON.stringify(window.SSAdmin.db));
+  });
+  page.once('dialog', dialog => dialog.accept());
+  await page.locator('#resetDemo').click();
+  await page.waitForFunction(() => window.SSAdmin.db.customers.length >= 40);
+  const state = await page.evaluate(() => ({
+    customers: window.SSAdmin.db.customers.length,
+    demoServices: [...new Set(window.SSAdmin.db.appointments.filter(a => String(a.id).startsWith('demo_2026_')).map(a => a.service))]
+  }));
+  expect(state.customers).toBeGreaterThanOrEqual(40);
+  expect(state.demoServices.every(name => /Augenbrauen|Wimpernkranz|Lippen|Beratung/.test(name))).toBe(true);
+});
+
 test('mobile More opens actual studio navigation', async ({ page }) => {
   await page.setViewportSize({width:390,height:844});
   await reset(page, 'dashboard');
