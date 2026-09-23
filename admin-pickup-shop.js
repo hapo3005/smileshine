@@ -85,7 +85,7 @@
     const root=$('#pickupOrdersList');if(!root)return;
     const filter=A.pickupAdminFilter||'active';
     const visible=filter==='all'?orders:orders.filter(o=>!['collected','cancelled'].includes(o.status));
-    root.innerHTML=visible.length?visible.map(orderCard).join(''):'<div class="pickup-admin-empty"><strong>Keine offenen Abholaufträge.</strong><span>Neue Demo-Bestellungen aus dem Abholshop erscheinen hier auf diesem Gerät.</span></div>';
+    root.innerHTML=visible.length?visible.map(orderCard).join(''):'<div class="pickup-admin-empty"><strong>Keine offenen Abholaufträge.</strong><span>Neue simulierte Abholbestellungen aus dem Abholshop erscheinen hier auf diesem Gerät.</span></div>';
     $$('[data-pickup-admin-filter]').forEach(btn=>btn.classList.toggle('active',btn.dataset.pickupAdminFilter===filter));
   }
 
