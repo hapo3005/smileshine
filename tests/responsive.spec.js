@@ -120,7 +120,7 @@ for (const viewport of viewports) {
     await page.goto(`index.html?responsive=${viewport.name}-${Date.now()}`, { waitUntil: 'networkidle' });
     await clearDemo(page);
 
-    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', '20260922-contact-experience1');
+    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', '20260923-cinematic-hero1');
     await assertNoRootOverflow(page, `${viewport.name} public top`);
 
     if (viewport.width <= 900) {
@@ -135,6 +135,13 @@ for (const viewport of viewports) {
     }
 
     await expect(page.locator('.hero h1')).toBeVisible();
+    await expect(page.locator('.hero-cinematic .hero-media')).toBeVisible();
+    if (viewport.width <= 620) {
+      const hero = await page.locator('.hero-cinematic').boundingBox();
+      const media = await page.locator('.hero-cinematic .hero-media').boundingBox();
+      expect(hero.height, `${viewport.name}: cinematic hero should fill the first mobile viewport`).toBeGreaterThanOrEqual(Math.min(viewport.height - 100, 650));
+      expect(media.height, `${viewport.name}: hero image must be present in the first viewport`).toBeGreaterThanOrEqual(hero.height - 4);
+    }
     await completeBooking(page, viewport.name);
   });
 
