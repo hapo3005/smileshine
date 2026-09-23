@@ -47,7 +47,7 @@
       const top=$('.service-card-top',card),h3=$('h3',card),p=card.querySelector(':scope > p'),save=$('.service-save',card),toggle=$('[name=active]',card);
       if(top){
         const status=document.createElement('span');status.className=`service-live-status ${s.active?'active':'paused'}`;status.textContent=s.active?'Online buchbar':'Pausiert';top.insertBefore(status,top.lastElementChild);if(toggle)toggle.setAttribute('aria-label',s.active?'Leistung pausieren':'Leistung wieder online stellen');
-        if(s.verification){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Noch bestätigen':'Studio';top.insertBefore(v,status)}
+        if(s.verification&&!CORE_SERVICE_IDS.has(s.id)){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Noch bestätigen':'Studio';top.insertBefore(v,status)}
       }
       if(h3){const nameLabel=document.createElement('label');nameLabel.className='service-name-field';nameLabel.innerHTML=`<span>Name</span><input name="serviceName" maxlength="80" value="${escapeHTML(s.name)}">`;h3.replaceWith(nameLabel)}
       if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${s.active?'Für Kunden sichtbar und buchbar.':'Vorübergehend pausiert – für Kunden ausgeblendet.'}</small>`;p.replaceWith(desc)}
