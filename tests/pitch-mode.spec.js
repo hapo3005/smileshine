@@ -11,10 +11,10 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
 
-  await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260923-pitch-mode1');
+  await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260923-birgit-polish1');
   await page.locator('#booking').scrollIntoViewIfNeeded();
   await expect(page.locator('.booking-demo-badge')).toContainText('Interaktive Vorschau');
-  await expect(page.locator('.summary-status')).toContainText('Präsentationsmodus');
+  await expect(page.locator('.summary-status')).toContainText('Vorschau');
 
   const seeded = await page.evaluate(() => {
     const db = JSON.parse(localStorage.getItem('smileshine_studio_v1') || 'null');
@@ -44,8 +44,8 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
 
   await page.goto('admin.html?pitch='+Date.now()+'#dashboard', { waitUntil: 'networkidle' });
   await page.waitForFunction(() => Boolean(window.SSAdmin?.showView));
-  await expect(page.locator('.demo-state')).toContainText('Präsentationsmodus');
-  await expect(page.locator('.sync-pill')).toContainText('Präsentationsdaten aktiv');
+  await expect(page.locator('.demo-state')).toContainText('Vorschau');
+  await expect(page.locator('.sync-pill')).toContainText('Vorschau aktiv');
   await expect(page.locator('#todayList .appointment-row')).toHaveCount(4);
   await expect(page.locator('#activityList')).toContainText('Laura Becker');
 
@@ -54,5 +54,5 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   await expect(page.locator('[data-pickup-order="pickup_pitch_2"]')).toContainText('Abholbereit');
 
   await page.evaluate(() => window.SSAdmin.showView('settings'));
-  await expect(page.locator('#resetDemo')).toHaveText('Pitch-Zustand herstellen');
+  await expect(page.locator('#resetDemo')).toHaveText('Beispieldaten zurücksetzen');
 });
