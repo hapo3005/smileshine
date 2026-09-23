@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="smileshine-build" content="20260923-pitch-mode1">
+  <meta name="smileshine-build" content="20260923-birgit-polish1">
   <meta name="description" content="Smile & Shine in Wittlich-Bombogen – Permanent Make-up & Beauty. Präzise Behandlungen, natürliche Ergebnisse und persönliche Beratung in ruhiger Atmosphäre.">
   <title>Smile & Shine · Wittlich-Bombogen</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260923-pitch-mode1">
-  <link rel="stylesheet" href="booking.css?v=20260923-pitch-mode1">
-  <link rel="stylesheet" href="booking-advanced.css?v=20260923-pitch-mode1">
+  <link rel="stylesheet" href="styles.css?v=20260923-birgit-polish1">
+  <link rel="stylesheet" href="booking.css?v=20260923-birgit-polish1">
+  <link rel="stylesheet" href="booking-advanced.css?v=20260923-birgit-polish1">
 </head>
 <body class="site-premium">
   <header class="site-header">
@@ -28,7 +28,7 @@
         <p class="eyebrow">Birgit Porn · Permanent Make-up &amp; Beauty</p>
         <h1>Permanent Make-up,<br><em>das nach dir aussieht.</em></h1>
         <p class="lead">Form, Farbe und Ausdruck werden nicht nach einem Schema gewählt. Bei Smile &amp; Shine beginnt jede Behandlung mit einem genauen Blick auf dich – für ein Ergebnis, das gepflegt, harmonisch und selbstverständlich wirkt.</p>
-        <div class="hero-actions"><a class="button primary" href="#booking">Persönliche Beratung</a><a class="button ghost" href="#behandlungen">Leistungen entdecken</a></div>
+        <div class="hero-actions"><a class="button primary" href="#booking" data-booking-service="consult">Persönliche Beratung</a><a class="button ghost" href="#behandlungen">Leistungen entdecken</a></div>
         <div class="hero-meta"><span>Wittlich-Bombogen</span><span>Persönlich · präzise · typgerecht</span></div>
       </div>
       <a class="hero-scroll-cue" href="#behandlungen" aria-label="Zu den Behandlungen"><span>Entdecken</span><i aria-hidden="true">↓</i></a>
@@ -46,11 +46,11 @@
         <p>Permanent Make-up soll nicht wie ein Effekt wirken. Entscheidend ist das Zusammenspiel aus Proportion, Farbe und gewünschter Wirkung – abgestimmt auf dein Gesicht und deinen Alltag.</p>
       </div>
       <div class="treatment-grid treatment-grid-refined">
-        <article class="treatment-card image-brows"><div><span>Brows</span><h3>Augenbrauen</h3><p>Mehr Balance und Ausdruck, ohne die Natürlichkeit zu verlieren.</p><a href="#booking">Beratung wählen <b>↗</b></a></div></article>
-        <article class="treatment-card image-eyes"><div><span>Eyes</span><h3>Lid &amp; Wimpernkranz</h3><p>Subtile Definition für einen klaren, wachen Blick.</p><a href="#booking">Beratung wählen <b>↗</b></a></div></article>
-        <article class="treatment-card image-lips"><div><span>Lips</span><h3>Lippen</h3><p>Kontur, Farbe und Harmonie mit einer weichen, stimmigen Wirkung.</p><a href="#booking">Beratung wählen <b>↗</b></a></div></article>
+        <article class="treatment-card image-brows"><div><span>Brows</span><h3>Augenbrauen</h3><p>Mehr Balance und Ausdruck, ohne die Natürlichkeit zu verlieren.</p><a href="#booking" data-booking-service="brows-pmu">Augenbrauen auswählen <b>↗</b></a></div></article>
+        <article class="treatment-card image-eyes"><div><span>Eyes</span><h3>Lid &amp; Wimpernkranz</h3><p>Subtile Definition für einen klaren, wachen Blick.</p><a href="#booking" data-booking-service="lashline">Wimpernkranz auswählen <b>↗</b></a></div></article>
+        <article class="treatment-card image-lips"><div><span>Lips</span><h3>Lippen</h3><p>Kontur, Farbe und Harmonie mit einer weichen, stimmigen Wirkung.</p><a href="#booking" data-booking-service="lip-pmu">Lippen auswählen <b>↗</b></a></div></article>
       </div>
-      <div class="treatment-consultation"><div><span>Noch nicht sicher?</span><strong>Dann beginnt dein Termin nicht mit einer Entscheidung, sondern mit einer Beratung.</strong><p>Wir klären in Ruhe, was du dir wünschst, was zu dir passt und welche Behandlung sinnvoll ist.</p></div><a class="text-link" href="#booking">Beratung auswählen →</a></div>
+      <div class="treatment-consultation"><div><span>Noch nicht sicher?</span><strong>Dann beginnt dein Termin nicht mit einer Entscheidung, sondern mit einer Beratung.</strong><p>Wir klären in Ruhe, was du dir wünschst, was zu dir passt und welche Behandlung sinnvoll ist.</p></div><a class="text-link" href="#booking" data-booking-service="consult">Beratung auswählen →</a></div>
     </section>
 
     <section class="section about about-refined premium-about" id="ueber">
@@ -62,7 +62,7 @@
         <p>Langjährige Beauty-Erfahrung, ein geschultes Auge für Proportionen, Farbe und Balance sowie eine ehrliche Beratung bilden die Grundlage jeder Behandlung.</p>
         <div class="about-signals" aria-label="Wofür Birgit steht"><span>Langjährige Beauty-Erfahrung</span><span>Gespür für Form &amp; Farbe</span><span>Persönliche Beratung</span><span>Präzises Arbeiten</span></div>
         <blockquote class="about-statement">„Nicht mehr. Nicht auffälliger. Sondern stimmiger.“</blockquote>
-        <div class="about-actions"><a class="button primary" href="#booking">Persönlich beraten lassen</a><a class="text-link" href="#kontakt">Studio &amp; Anfahrt →</a></div>
+        <div class="about-actions"><a class="button primary" href="#booking" data-booking-service="consult">Persönlich beraten lassen</a><a class="text-link" href="#kontakt">Studio &amp; Anfahrt →</a></div>
       </div>
     </section>
 
@@ -86,7 +86,7 @@
             <div class="booking-panel" data-panel="3"><div class="booking-panel-head"><div><span class="booking-step-label">Schritt 3 von 6</span><h3>Gut vorbereitet zum Termin.</h3></div><p>Beantworte vorab ein paar kurze Fragen zur gewählten Behandlung.</p></div><form class="precheck-form" id="precheckForm"><div class="precheck-intro"><span>Vorabinformationen</span><strong id="precheckService">Gewählte Behandlung</strong><p>So kann sich das Studio besser auf deinen Termin vorbereiten.</p></div><div id="precheckQuestions" class="precheck-questions"></div><label class="consent-row"><input type="checkbox" required><span>Ich bestätige, dass meine Angaben vollständig sind.</span></label><div class="booking-actions"><button class="booking-back" type="button" data-back="2">← Zurück</button><button class="button primary" type="submit">Weiter zu meinen Daten</button></div></form></div>
             <div class="booking-panel" data-panel="4"><div class="booking-panel-head"><div><span class="booking-step-label">Schritt 4 von 6</span><h3>Wie erreichen wir dich?</h3></div><p>Diese Angaben benötigen wir für Terminbestätigung und eventuelle Rückfragen.</p></div><form class="booking-form" id="bookingForm"><div class="field-row"><label><span>Vorname</span><input name="firstName" autocomplete="given-name" required placeholder="Vorname"></label><label><span>Nachname</span><input name="lastName" autocomplete="family-name" required placeholder="Nachname"></label></div><div class="field-row"><label><span>E-Mail</span><input type="email" name="email" autocomplete="email" required placeholder="name@beispiel.de"></label><label><span>Telefon</span><input type="tel" name="phone" autocomplete="tel" required placeholder="0123 456789"></label></div><label><span>Hinweis für das Studio <small>optional</small></span><textarea name="note" rows="3" placeholder="Gibt es etwas, das wir vorab wissen sollten?"></textarea></label><label class="consent-row"><input type="checkbox" required><span>Ich stimme der Verarbeitung meiner Angaben zur Terminorganisation zu.</span></label><div class="booking-actions"><button class="booking-back" type="button" data-back="3">← Zurück</button><button class="button primary" type="submit">Weiter zur Zahlung</button></div></form></div>
             <div class="booking-panel" data-panel="5"><div class="booking-panel-head"><div><span class="booking-step-label">Schritt 5 von 6</span><h3>Wie möchtest du bezahlen?</h3></div><p>Wähle, wie du den Termin bezahlen möchtest.</p></div><div class="payment-options"><button class="payment-option selected" type="button" data-payment="Im Studio"><span class="payment-icon">⌂</span><span><strong>Im Studio bezahlen</strong><small>Bezahlung beim Termin vor Ort.</small></span><span class="payment-check">✓</span></button><button class="payment-option" type="button" data-payment="Online-Anzahlung"><span class="payment-icon">◇</span><span><strong>Online-Anzahlung</strong><small>Online-Anzahlung, sofern sie für die Leistung vorgesehen ist.</small></span><span class="payment-check">○</span></button></div><div class="deposit-card"><div><span class="deposit-label">Anzahlung</span><strong>Wird vor der Buchung angezeigt</strong></div><p>Falls eine Anzahlung erforderlich ist, wird der Betrag vor dem Abschluss klar angezeigt.</p></div><div class="booking-actions"><button class="booking-back" type="button" data-back="4">← Zurück</button><button class="button primary" type="button" id="paymentContinue">Buchung prüfen</button></div></div>
-            <div class="booking-panel" data-panel="6"><div class="booking-panel-head"><div><span class="booking-step-label">Schritt 6 von 6</span><h3>Passt alles?</h3></div><p>Prüfe deine Auswahl und Angaben noch einmal in Ruhe.</p></div><div class="confirmation-card"><div class="confirmation-mark">✓</div><div><span class="confirmation-kicker">Deine Auswahl</span><h4 id="confirmService">–</h4><p id="confirmDate">–</p><p id="confirmCustomer">–</p><p id="confirmPayment">–</p></div></div><div class="confirmation-grid"><div><span>Vorbereitung</span><strong>Vorabformular ausgefüllt</strong></div><div><span>Warteliste</span><strong id="confirmWaitlist">Nicht aktiviert</strong></div></div><div class="booking-final-note"><strong>Präsentationsmodus.</strong><span>Der Ablauf wird vollständig simuliert. Es wird keine echte Buchung, Zahlung oder Nachricht ausgelöst.</span></div><div class="booking-actions"><button class="booking-back" type="button" data-back="5">← Angaben ändern</button><button class="button primary booking-disabled" type="button" aria-disabled="true">Termin simulieren</button></div></div>
+            <div class="booking-panel" data-panel="6"><div class="booking-panel-head"><div><span class="booking-step-label">Schritt 6 von 6</span><h3>Passt alles?</h3></div><p>Prüfe deine Auswahl und Angaben noch einmal in Ruhe.</p></div><div class="confirmation-card"><div class="confirmation-mark">✓</div><div><span class="confirmation-kicker">Deine Auswahl</span><h4 id="confirmService">–</h4><p id="confirmDate">–</p><p id="confirmCustomer">–</p><p id="confirmPayment">–</p></div></div><div class="confirmation-grid"><div><span>Vorbereitung</span><strong>Vorabformular ausgefüllt</strong></div><div><span>Warteliste</span><strong id="confirmWaitlist">Nicht aktiviert</strong></div></div><div class="booking-final-note"><strong>Interaktive Vorschau.</strong><span>Der Ablauf kann vollständig ausprobiert werden. Es wird keine echte Buchung, Zahlung oder Nachricht ausgelöst.</span></div><div class="booking-actions"><button class="booking-back" type="button" data-back="5">← Angaben ändern</button><button class="button primary booking-disabled" type="button" aria-disabled="true">Termin simulieren</button></div></div>
           </div>
           <aside class="booking-summary"><p class="summary-kicker">Deine Buchung</p><h3>Smile &amp; Shine</h3><div class="summary-item"><span>Behandlung</span><strong id="summaryService">Noch nicht gewählt</strong></div><div class="summary-item"><span>Dauer</span><strong id="summaryDuration">–</strong></div><div class="summary-item"><span>Datum</span><strong id="summaryDate">–</strong></div><div class="summary-item"><span>Uhrzeit</span><strong id="summaryTime">–</strong></div><div class="summary-item"><span>Zahlung</span><strong id="summaryPayment">Im Studio</strong></div><div class="summary-location"><span>⌖</span><div><strong>Wittlich-Bombogen</strong><small>Raiffeisenstraße 4 · 54516 Wittlich</small></div></div><div class="summary-status"><span></span>Interaktive Vorschau · keine Datenübermittlung</div></aside>
         </div>
@@ -143,10 +143,10 @@
           </div>
           <div class="contact-map-actions">
             <div><span>Studio</span><strong>Wittlich-Bombogen</strong></div>
-            <a class="contact-route-button" href="https://www.google.com/maps/search/?api=1&amp;query=Raiffeisenstra%C3%9Fe%204%2C%2054516%20Wittlich-Bombogen" target="_blank" rel="noopener">
-              <span>Route öffnen</span>
-              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>
-            </a>
+            <div class="contact-direct-actions">
+              <a class="contact-route-button" href="tel:+4965719561078"><span>06571 9561078</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 4h3l1.5 4-2 1.5a14 14 0 0 0 5 5l1.5-2 4 1.5v3a2 2 0 0 1-2 2C10 19 5 14 5 6a2 2 0 0 1 2-2Z"/></svg></a>
+              <a class="contact-route-button" href="https://www.google.com/maps/search/?api=1&amp;query=Raiffeisenstra%C3%9Fe%204%2C%2054516%20Wittlich-Bombogen" target="_blank" rel="noopener"><span>Route öffnen</span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+            </div>
           </div>
         </article>
 
@@ -174,8 +174,8 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer premium-footer"><span>© <span id="year"></span> Smile &amp; Shine</span><span>Permanent Make-up &amp; Beauty · Wittlich-Bombogen</span><a href="#top">Nach oben ↑</a></footer>
+  <footer class="site-footer premium-footer"><span>© <span id="year"></span> Smile &amp; Shine</span><span class="footer-meta">Permanent Make-up &amp; Beauty · Wittlich-Bombogen · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span><a href="#top">Nach oben ↑</a></footer>
   <script src="studio-data-store.js?v=20260922-datalayer1"></script>
-  <script src="script.js?v=20260923-pitch-mode1"></script>
+  <script src="script.js?v=20260923-birgit-polish1"></script>
 </body>
 </html>
