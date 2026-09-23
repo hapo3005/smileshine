@@ -160,7 +160,9 @@ test(`Birgit admin cross-platform smoke — ${label}`, async ({ page }, testInfo
   await page.goto(`admin.html?crossqa=${Date.now()}#dashboard`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.SSAdmin?.ready === true, null, { timeout: 15000 });
+  await page.waitForFunction(() => window.SSAdmin?.ready === true || Boolean(window.SSAdmin?.initError), null, { timeout: 15000 });
+  const initError = await page.evaluate(() => window.SSAdmin?.initError || '');
+  expect(initError, `Admin initialization failed: ${initError}`).toBe('');
   await page.evaluate(() => document.fonts?.ready);
 
   const width = profiles[profile].viewport.width;
