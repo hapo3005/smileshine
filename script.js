@@ -154,6 +154,17 @@ function selectServiceButton(btn){
 
 renderServiceCatalog();
 
+document.querySelectorAll('[data-booking-service]').forEach(link=>link.addEventListener('click',event=>{
+  event.preventDefault();
+  const key=String(link.dataset.bookingService||'').trim();
+  document.querySelector('#booking')?.scrollIntoView({behavior:'smooth',block:'start'});
+  const select=()=>{
+    const btn=document.querySelector('.service-option[data-service-id="'+key+'"]');
+    if(btn&&!btn.disabled&&!btn.hidden)selectServiceButton(btn);
+  };
+  requestAnimationFrame(()=>setTimeout(select,80));
+}));
+
 if(serviceOptionsRoot){
   serviceOptionsRoot.addEventListener('click',event=>{
     const btn=event.target.closest('.service-option');
@@ -197,11 +208,11 @@ document.getElementById('paymentContinue')?.addEventListener('click',()=>{
 
 if(waitlistToggle&&waitlistForm){
   waitlistToggle.addEventListener('click',()=>{waitlistForm.hidden=!waitlistForm.hidden;waitlistToggle.textContent=waitlistForm.hidden?'Warteliste':'Schließen'});
-  waitlistForm.addEventListener('submit',e=>{e.preventDefault();bookingState.waitlist=true;waitlistForm.hidden=true;waitlistToggle.textContent='✓ Vorgemerkt';waitlistToggle.classList.add('active');(()=>{const confirmWaitlist=document.getElementById('confirmWaitlist');if(confirmWaitlist)confirmWaitlist.textContent='Vorgemerkt'})()});
+  waitlistForm.addEventListener('submit',e=>{e.preventDefault();bookingState.waitlist=true;waitlistForm.hidden=true;waitlistToggle.textContent='✓ Wunsch gespeichert';waitlistToggle.classList.add('active');(()=>{const confirmWaitlist=document.getElementById('confirmWaitlist');if(confirmWaitlist)confirmWaitlist.textContent='Wird mit deinen Kontaktdaten übermittelt'})()});
 }
 
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
 updateSummary();
-import('./checkout-enhancements.js?v=20260923-pitch-mode1');
-import('./booking-admin-sync.js?v=20260923-pitch-mode1');
-import('./cnc-products-carousel.js?v=20260923-pitch-mode1');
+import('./checkout-enhancements.js?v=20260923-birgit-polish1');
+import('./booking-admin-sync.js?v=20260923-birgit-polish1');
+import('./cnc-products-carousel.js?v=20260923-birgit-polish1');
