@@ -32,5 +32,3 @@
   function initCalendarViews(){A.calendarMode=A.calendarMode||'day';ensureUI();A.baseCalendarRender=A.renderCalendar;const baseRenderAll=A.renderAll,baseShowView=A.showView;A.renderCalendar=renderCalendarAdvanced;A.renderAll=()=>{baseRenderAll();if($('.view[data-view-panel="calendar"]')?.classList.contains('active'))renderCalendarAdvanced()};A.showView=name=>{baseShowView(name);if(name==='calendar')renderCalendarAdvanced()};bindFreshNavigation();renderCalendarAdvanced()}
   Object.assign(A,{initCalendarViews,renderCalendarAdvanced});
 })();
-import('./admin-customer-detail.js');
-import('./admin-recurring-blocks.js?v=20260923-birgit-final2').then(()=>window.SSAdmin?.initRecurringBlocks?.());
