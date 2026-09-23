@@ -45,9 +45,9 @@
       .pickup-product-visual img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;padding:20px 24px;mix-blend-mode:multiply}
       .pickup-product-badge{position:absolute;z-index:3;left:14px;top:14px;padding:6px 9px;border:1px solid rgba(255,255,255,.86);border-radius:8px;background:rgba(250,248,245,.90);font-size:7px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
       .pickup-product-copy{display:flex;flex-direction:column;flex:1;padding:20px}
-      .pickup-product-meta{display:flex;justify-content:space-between;gap:10px;color:var(--accent-dark);font-size:7px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
-      .pickup-product-copy h3{font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.15;margin:9px 0}.pickup-product-copy p{margin:0;color:var(--muted);font-size:9px;line-height:1.65}
-      .pickup-product-price{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:auto;padding-top:17px}.pickup-product-price strong{font-size:10px}.pickup-product-price small{font-size:7px;color:var(--muted);text-align:right}
+      .pickup-product-meta{display:flex;justify-content:space-between;gap:10px;color:var(--accent-dark);font-size:10px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+      .pickup-product-copy h3{font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.15;margin:9px 0}.pickup-product-copy p{margin:0;color:var(--muted);font-size:12px;line-height:1.62}
+      .pickup-product-price{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:auto;padding-top:17px}.pickup-product-price strong{font-size:13px}.pickup-product-price small{font-size:10px;color:var(--muted);text-align:right}
       .pickup-add{width:100%;margin-top:12px;border:0;border-radius:10px;background:#3a3430;color:#fff;padding:11px 12px;font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.pickup-add:hover{background:#2f2926}
       .pickup-only-note{display:flex;align-items:center;gap:6px;margin-top:9px;color:#6b7d6f;font-size:7px;font-weight:700}.pickup-only-note:before{content:"";width:6px;height:6px;border-radius:50%;background:#83a288}
       .pickup-shop-footer{margin-top:20px;padding:16px 0;border-top:1px solid var(--line);border-radius:0;background:transparent;display:flex;align-items:center;justify-content:space-between;gap:20px}
@@ -82,7 +82,7 @@
       <div class="pickup-product-copy">
         <div class="pickup-product-meta"><span>${escapeHTML(item.category)}</span><span>${escapeHTML(item.size)}</span></div>
         <h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.description)}</p>
-        <div class="pickup-product-price"><strong>xx,xx €</strong><small>inkl. MwSt.<br>Abholung im Studio</small></div>
+        <div class="pickup-product-price"><strong>Preis im Studio</strong><small>Abholung vor Ort<br>keine Versandkosten</small></div>
         <button class="pickup-add" type="button" data-pickup-add="${item.id}">In den Warenkorb</button>
         <span class="pickup-only-note">Kein Versand · Abholung im Studio</span>
       </div>
@@ -99,7 +99,7 @@
 
   function cartItemsHTML(){
     if(!cart.length)return '<div class="pickup-empty"><strong>Dein Warenkorb ist leer.</strong><span>Wähle ein Produkt aus der Boutique aus. Versand gibt es bewusst nicht.</span></div>';
-    return `<div class="pickup-cart-items">${cart.map(row=>{const item=product(row.id);return `<div class="pickup-cart-item"><img class="pickup-cart-thumb" src="${item.image}" alt=""><div><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.size)} · xx,xx €</small></div><div class="pickup-qty"><button type="button" data-pickup-minus="${item.id}" aria-label="Menge verringern">−</button><span>${row.qty}</span><button type="button" data-pickup-plus="${item.id}" aria-label="Menge erhöhen">＋</button></div></div>`}).join('')}</div>`;
+    return `<div class="pickup-cart-items">${cart.map(row=>{const item=product(row.id);return `<div class="pickup-cart-item"><img class="pickup-cart-thumb" src="${item.image}" alt=""><div><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.size)} · Preis im Studio</small></div><div class="pickup-qty"><button type="button" data-pickup-minus="${item.id}" aria-label="Menge verringern">−</button><span>${row.qty}</span><button type="button" data-pickup-plus="${item.id}" aria-label="Menge erhöhen">＋</button></div></div>`}).join('')}</div>`;
   }
 
   function normalizePhone(value){return String(value||'').replace(/[^0-9+]/g,'')}
@@ -121,10 +121,10 @@
     return `<form class="pickup-checkout" id="pickupCheckoutForm">
       <div class="pickup-guest-banner"><span>○</span><div><strong>Bestellen ohne Konto</strong><small>Keine Registrierung und kein Login nötig. Bestehende Kundinnen können ihre bekannte E-Mail verwenden; neue Käufer bestellen ganz normal als Gast.</small></div></div>
       <div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen · keine Versandkosten · Abholung nach Bereitmeldung</small></div></div>
-      <section class="pickup-checkout-section"><h4>Wie möchtest du bezahlen?</h4><p>Beide Wege führen zur Abholung im Studio. Es wird nichts verschickt.</p><div class="pickup-payment-options"><button class="pickup-payment-option active" type="button" data-pickup-payment="Online bezahlen"><strong>Online bezahlen</strong><small>Im Livebetrieb z. B. Karte, Apple Pay oder Google Pay.</small></button><button class="pickup-payment-option" type="button" data-pickup-payment="Bei Abholung bezahlen"><strong>Bei Abholung bezahlen</strong><small>Produkt im Studio bezahlen und direkt mitnehmen.</small></button></div><input type="hidden" name="payment" value="Online bezahlen"></section>
+      <section class="pickup-checkout-section"><h4>Bezahlung bei Abholung</h4><p>Die tatsächlichen Produktpreise werden mit Birgit abgestimmt. In der Vorschau wird deshalb keine Online-Zahlung vorgetäuscht.</p><div class="pickup-payment-options pickup-payment-single"><button class="pickup-payment-option active" type="button" data-pickup-payment="Bei Abholung bezahlen"><strong>Bei Abholung bezahlen</strong><small>Produkt im Studio bezahlen und direkt mitnehmen.</small></button></div><input type="hidden" name="payment" value="Bei Abholung bezahlen"></section>
       <section class="pickup-checkout-section"><h4>Wer holt die Bestellung ab?</h4><p>Wir brauchen nur die Daten, die für Bestätigung und Abholung nötig sind.</p><div class="pickup-contact-grid"><label class="pickup-field"><span>Vorname</span><input name="firstName" autocomplete="given-name" required></label><label class="pickup-field"><span>Nachname</span><input name="lastName" autocomplete="family-name" required></label><label class="pickup-field"><span>E-Mail</span><input name="email" type="email" autocomplete="email" required></label><label class="pickup-field"><span>Telefon <small>optional</small></span><input name="phone" type="tel" autocomplete="tel"></label><label class="pickup-field pickup-field-wide"><span>Hinweis <small>optional</small></span><textarea name="note" rows="2" placeholder="z. B. Abholung zusammen mit meinem Termin"></textarea></label></div></section>
-      <div class="pickup-order-review"><div><span>Artikel</span><strong>${count}</strong></div><div><span>Abholung</span><strong>Smile &amp; Shine</strong></div><div><span>Gesamt</span><strong>xx,xx €</strong></div></div>
-      <div class="pickup-demo-note"><strong>Präsentationsmodus:</strong> Bestellung und Zahlung werden nur auf diesem Gerät simuliert.</div>
+      <div class="pickup-order-review"><div><span>Artikel</span><strong>${count}</strong></div><div><span>Abholung</span><strong>Smile &amp; Shine</strong></div><div><span>Preis</span><strong>Im Studio</strong></div></div>
+      <div class="pickup-demo-note"><strong>Interaktive Vorschau:</strong> Die Bestellung wird nur auf diesem Gerät gespeichert; es wird keine Zahlung ausgelöst.</div>
       <div class="pickup-checkout-actions"><button type="button" class="pickup-clear" data-pickup-clear>Warenkorb leeren</button><button type="submit" class="pickup-submit">Bestellung simulieren</button></div>
     </form>`;
   }
@@ -164,7 +164,7 @@
     };
     try{const old=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');localStorage.setItem(ORDERS_KEY,JSON.stringify([order,...(Array.isArray(old)?old:[])].slice(0,20)))}catch{}
     clearCart();
-    const body=document.getElementById('pickupCartBody');if(body)body.innerHTML=`<div class="pickup-success"><div class="pickup-success-mark">✓</div><h4>Bestellung vorgemerkt.</h4><p>Kein Konto nötig. In dieser Präsentationsversion wurde die Bestellung nur lokal gespeichert und nicht an das Studio übermittelt.</p></div><div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen</small></div></div>`;
+    const body=document.getElementById('pickupCartBody');if(body)body.innerHTML=`<div class="pickup-success"><div class="pickup-success-mark">✓</div><h4>Bestellung vorgemerkt.</h4><p>Kein Konto nötig. In dieser Vorschau wurde die Bestellung nur lokal gespeichert und nicht an das Studio übermittelt.</p></div><div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen</small></div></div>`;
   }
 
   function render(){
