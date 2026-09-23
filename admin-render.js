@@ -26,7 +26,7 @@
       {icon:'□',label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
       {icon:'◷',label:'Diese Woche',value:weekApps.length,foot:'Termine',delta:`${weekApps.filter(a=>a.status==='pending').length} offen`},
       {icon:'○',label:'Kunden',value:unique,foot:'in 7 Tagen',delta:`${A.db.customers.length} gesamt`},
-      {icon:'€',label:'Umsatz · Monat',value:currency(revenue),foot:'Demo-Berechnung',delta:`${monthApps.length} Termine`}];
+      {icon:'€',label:'Umsatz · Monat',value:currency(revenue),foot:'Beispielrechnung',delta:`${monthApps.length} Termine`}];
     if($('#kpiGrid'))$('#kpiGrid').innerHTML=kpis.map(k=>`<article class="kpi-card"><div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon">${k.icon}</span></div><strong class="kpi-value">${k.value}</strong><div class="kpi-foot"><span>${k.foot}</span><span class="delta">${k.delta}</span></div></article>`).join('');
     if($('#todayList'))$('#todayList').innerHTML=todays.length?todays.map(a=>`<div class="appointment-row appointment-open-row" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="appointment-time">${a.time}</div><div class="appointment-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><span class="appointment-status status-${a.status}">${STATUS_LABELS[a.status]||a.status}</span><span class="appointment-row-arrow" aria-hidden="true">→</span></div>`).join(''):`<div class="empty-state"><strong>Heute ist noch frei.</strong>Über „Termin“ kannst du direkt eine Buchung eintragen.</div>`;
     renderWeekBars();renderActivities();
