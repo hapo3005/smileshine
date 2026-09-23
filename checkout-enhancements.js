@@ -93,4 +93,4 @@
   refreshCheckout();
 })();
 
-import('./service-carousel.js?v=20260914-1643');
+import('./service-carousel.js?v=20260923-birgit-final2-carousel1');
