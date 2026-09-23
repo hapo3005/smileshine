@@ -120,7 +120,7 @@ for (const viewport of viewports) {
     await page.goto(`index.html?responsive=${viewport.name}-${Date.now()}`, { waitUntil: 'networkidle' });
     await clearDemo(page);
 
-    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', '20260923-pitch-mode1');
+    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', '20260923-birgit-polish1');
     await assertNoRootOverflow(page, `${viewport.name} public top`);
 
     if (viewport.width <= 900) {
@@ -184,6 +184,10 @@ for (const viewport of viewports) {
       await expect(page.locator('#appointmentModal')).toBeVisible();
       await assertNoRootOverflow(page, `${viewport.name} admin modal`);
       await page.locator('[data-close-modal]').first().click();
+      await page.locator('[data-mobile-more]').click();
+      await expect(page.locator('#mobileMoreDialog')).toBeVisible();
+      await assertNoRootOverflow(page, `${viewport.name} admin more sheet`);
+      await page.locator('[data-close-mobile-more]').click();
     }
   });
 }
