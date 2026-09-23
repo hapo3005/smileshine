@@ -10,7 +10,11 @@ test('published booking flow stays in sync with admin services', async ({ page }
   const browserErrors = [];
   page.on('pageerror', error => browserErrors.push(`pageerror: ${error.message}`));
   page.on('console', message => {
-    if (message.type() === 'error') browserErrors.push(`console: ${message.text()}`);
+    if (message.type() !== 'error') return;
+    const source = message.location()?.url || '';
+    const text = message.text();
+    if (source.includes('maps.gstatic.com') && text.includes('google is not defined')) return;
+    browserErrors.push(`console: ${text}`);
   });
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });

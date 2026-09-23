@@ -14,7 +14,7 @@ for (const viewport of [
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto('index.html?contact-experience='+Date.now()+'#kontakt',{waitUntil:'networkidle'});
 
-    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260922-contact-experience1');
+    await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260923-cinematic-hero2');
 
     const section=page.locator('#kontakt');
     await expect(section).toBeVisible();
