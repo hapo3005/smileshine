@@ -17,7 +17,13 @@ test('admin appointment detail supports intuitive edit, reschedule and navigatio
   await page.waitForFunction(() => Boolean(window.SSAdmin?.openAppointmentDetail));
 
   const appointment = await page.evaluate(() => {
-    const a = window.SSAdmin.db.appointments.find(item => item.status !== 'cancelled');
+    const today = (() => {
+      const d = new Date();
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().slice(0,10);
+    })();
+    const a = window.SSAdmin.db.appointments.find(item => item.status !== 'cancelled' && item.date >= today)
+      || window.SSAdmin.db.appointments.find(item => item.status !== 'cancelled');
     const service = window.SSAdmin.db.services.find(s => s.name === a.service);
     const next = window.SSAdmin.findNextFreeSlot(service?.duration || a.duration || 30);
     return { id: a.id, customerId: a.customerId, next };
