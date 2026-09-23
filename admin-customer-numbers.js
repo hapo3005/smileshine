@@ -172,5 +172,5 @@
 
   Object.assign(A,{initCustomerNumbers,ensureCustomerNumbers,nextCustomerNumber,formatCustomerNumber,renderCustomersWithNumbers,renderCustomerWorkspaceSummary,applyCustomerFilter});
 })();
-import('./admin-demo-profiles.js?v=20260923-birgit-polish2').then(()=>window.SSAdmin?.initDemoProfiles?.());
-import('./admin-whatsapp.js?v=20260923-birgit-polish2').then(()=>window.SSAdmin?.initWhatsApp?.());
+import('./admin-demo-profiles.js?v=20260923-birgit-final2').then(()=>window.SSAdmin?.initDemoProfiles?.());
+import('./admin-whatsapp.js?v=20260923-birgit-final2').then(()=>window.SSAdmin?.initWhatsApp?.());
