@@ -133,7 +133,7 @@ test(`public storefront cross-platform smoke — ${label}`, async ({ page }, tes
   }
 
   await page.locator('#behandlungen').scrollIntoViewIfNeeded();
-  await expect(page.locator('#behandlungen .public-service-card').first()).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('#behandlungen .public-service-card, #behandlungen .treatment-card').first()).toBeVisible({ timeout: 10000 });
 
   await page.locator('#booking').scrollIntoViewIfNeeded();
   const service = page.locator('.service-option:visible').first();
