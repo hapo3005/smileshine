@@ -1,7 +1,7 @@
 name: Cross-platform device QA
 
 concurrency:
-  group: smileshine-cross-platform
+  group: smileshine-cross-platform-final2
   cancel-in-progress: true
 
 on:
