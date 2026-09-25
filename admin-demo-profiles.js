@@ -93,9 +93,9 @@
   const fullNameParts=name=>{const p=name.split(/\s+/);return {firstName:p[0],lastName:p.slice(1).join(' ')}};
 
   function segmentFor(index){
-    if(index<78)return 'nail-regular';
-    if(index<95)return 'nail-occasional';
-    if(index<125)return 'pmu';
+    if(index<55)return 'nail-regular';
+    if(index<75)return 'nail-occasional';
+    if(index<120)return 'pmu';
     if(index<145)return 'mixed';
     return 'consult';
   }
@@ -144,11 +144,11 @@
   };
   const PMU_NAMES=['Augenbrauen','Lid & Wimpernkranz','Lippen'];
   const DAY_PATTERNS={
-    1:['nail-refill','nail-refill','pmu','nail-refill','nail-care','consult'],
-    2:['nail-refill','nail-new','nail-refill','pmu','nail-refill','pmu-followup'],
-    3:['nail-refill','nail-care','pmu-followup','nail-refill','nail-new','nail-refill'],
-    4:['nail-refill','nail-refill','pmu','nail-care','nail-refill','consult','pmu-followup'],
-    5:['nail-refill','nail-new','pmu','nail-refill','nail-care','consult']
+    1:['nail-refill','nail-refill','pmu','nail-refill','nail-refill','consult'],
+    2:['nail-refill','nail-new','nail-refill','pmu','nail-refill','nail-refill'],
+    3:['nail-refill','nail-care','pmu-followup','nail-refill','nail-refill','nail-refill'],
+    4:['nail-refill','nail-refill','pmu','nail-refill','consult','pmu-followup','nail-refill'],
+    5:['nail-refill','nail-new','pmu','nail-refill','nail-refill','consult']
   };
   const NAIL_COLORS=['Milky Nude','Rosé Beige','French Soft White','Dusty Rose','Taupe Nude','Cherry Red','Soft Mauve','Natural Pink'];
 
