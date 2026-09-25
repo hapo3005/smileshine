@@ -56,7 +56,7 @@
     });
   }
 
-  function serviceFor=name=>(A.db.services||[]).find(s=>s.name===name);
+  const serviceFor=name=>(A.db.services||[]).find(s=>s.name===name);
   function matchingSlot(entry){
     const service=serviceFor(entry.service),duration=Number(service?.duration||30),startDate=entry.earliest&&entry.earliest>today()?new Date(`${entry.earliest}T12:00:00`):new Date();
     for(let offset=0;offset<7;offset++){
