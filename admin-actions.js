@@ -7,13 +7,14 @@
   function openModal(prefill={}){
     const modal=$('#appointmentModal'),form=$('#appointmentForm');if(!modal||!form)return;
     const select=$('#appointmentService');select.innerHTML=visibleServices().map(s=>`<option value="${s.name}">${s.name} · ${s.duration} Min.</option>`).join('');
-    form.reset();const first=visibleServices()[0],next=A.findNextFreeSlot(first?.duration||30);
+    form.reset();delete form.dataset.waitlistId;const first=visibleServices()[0],next=A.findNextFreeSlot(first?.duration||30);
     form.elements.date.value=prefill.date||next?.date||isoDate(addDays(new Date(),1));
     form.elements.time.value=prefill.time||next?.time||'09:00';
     if(prefill.service)form.elements.service.value=prefill.service;
     if(prefill.customerName)form.elements.customerName.value=prefill.customerName;
     if(prefill.phone)form.elements.phone.value=prefill.phone;
     if(prefill.email)form.elements.email.value=prefill.email;
+    if(prefill.waitlistId)form.dataset.waitlistId=prefill.waitlistId;
     modal.showModal();
   }
   function closeModal(){const modal=$('#appointmentModal');if(modal?.open)modal.close()}
@@ -57,8 +58,15 @@
     let customer=A.db.customers.find(c=>(email&&c.email===email)||(phone&&c.phone===phone)||c.name.toLowerCase()===name.toLowerCase());
     if(!customer){customer={id:uid('customer'),name,email,phone,created:isoDate(new Date())};A.db.customers.push(customer);A.addActivity('customer',`Neue Kundin / neuer Kunde: ${name}.`)}
     const price=Number(service.price||0);
-    A.db.appointments.push({id:uid('appointment'),date,time,duration:service.duration,service:service.name,customerId:customer.id,customerName:name,phone,email,status:'confirmed',payment:'Im Studio',paymentPreference:'Im Studio',source:'studio',note:String(data.get('note')||''),listPrice:price,finalPrice:price,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:price>0?'open':'paid'});
-    A.addActivity('booking',`${name}: ${service.name} am ${dateShort(date)} um ${time} Uhr eingetragen.`);closeModal();A.save('Termin gespeichert.');A.refreshPaymentUI?.();A.showView('appointments');
+    const appointmentId=uid('appointment'),waitlistId=form.dataset.waitlistId||'';
+    A.db.appointments.push({id:appointmentId,date,time,duration:service.duration,service:service.name,customerId:customer.id,customerName:name,phone,email,status:'confirmed',payment:'Im Studio',paymentPreference:'Im Studio',source:waitlistId?'waitlist':'studio',note:String(data.get('note')||''),listPrice:price,finalPrice:price,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:price>0?'open':'paid'});
+    if(waitlistId){
+      const entry=(A.db.waitlist||[]).find(x=>x.id===waitlistId);
+      if(entry){entry.status='booked';entry.bookedAppointmentId=appointmentId;entry.bookedAt=new Date().toISOString();}
+    }
+    A.addActivity('booking',waitlistId?`${name}: Wartelistenplatz übernommen · ${service.name} am ${dateShort(date)} um ${time} Uhr bestätigt.`:`${name}: ${service.name} am ${dateShort(date)} um ${time} Uhr eingetragen.`);
+    closeModal();delete form.dataset.waitlistId;A.save(waitlistId?'Termin aus Warteliste bestätigt.':'Termin gespeichert.');A.refreshPaymentUI?.();A.showView('appointments');
+    if(waitlistId)queueMicrotask(()=>A.openWhatsAppChooser?.(appointmentId));
   }
 
   function bindDynamicAppointmentActions(){
