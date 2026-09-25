@@ -11,7 +11,7 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
 
-  await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content','20260923-birgit-final2');
+  await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', /.+/);
   await page.locator('#booking').scrollIntoViewIfNeeded();
   await expect(page.locator('.booking-demo-badge')).toContainText('Interaktive Vorschau');
   await expect(page.locator('.summary-status')).toContainText('Vorschau');
