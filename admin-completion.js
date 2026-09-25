@@ -10,7 +10,7 @@
 
   function ensureStyles(){
     if(document.querySelector('link[data-completion-style]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-completion.css?v=20260925-completion1';link.dataset.completionStyle='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-completion.css?v=20260925-completion2';link.dataset.completionStyle='true';document.head.appendChild(link);
   }
 
   function ensureDialog(){
