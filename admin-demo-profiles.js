@@ -2,7 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=2;
+  const VERSION=3;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -70,7 +70,15 @@
     const year=1958+((index*7)%43),month=String((index%12)+1).padStart(2,'0'),day=String(((index*5)%27)+1).padStart(2,'0');
     return [name,`${year}-${month}-${day}`,personalityCycle[index%personalityCycle.length],communicationCycle[index%communicationCycle.length],preferenceCycle[index%preferenceCycle.length],styleCycle[index%styleCycle.length],favorite,list[index%list.length]];
   });
-  const allProfiles=[...profiles,...extraProfiles];
+  const generatedFirstNames=['Ariane','Beate','Carmen','Denise','Elke','Frauke','Greta','Hannah','Ilona','Judith','Katja','Lara','Meike','Natalie','Olivia','Pia','Ramona','Sabrina','Tamara','Viktoria','Wiebke','Xenia','Yasmin','Zoe','Maren','Nicole','Petra','Sandra','Tina','Ulrike'];
+  const generatedLastNames=['Ackermann','Bauer','Conrad','Döring','Engel','Fischer','Gerber','Heller','Igel','Jäger','Kaufmann','Lenz','Mertens','Nowak','Oster','Pfeiffer','Rabe','Schneider','Thoma','Urban','Voigt','Weller','Xander','Yilmaz','Zeller','Albrecht','Bach','Christ','Dahl','Ernst','Freitag'];
+  const generatedProfiles=Array.from({length:70},(_,index)=>{
+    const name=`${generatedFirstNames[(index*7)%generatedFirstNames.length]} ${generatedLastNames[(index*11+3)%generatedLastNames.length]}`;
+    const favorite=favoriteCycle[(index+2)%favoriteCycle.length],list=wishes[favorite]||wishes.Beratung;
+    const year=1956+((index*9)%47),month=String(((index+4)%12)+1).padStart(2,'0'),day=String(((index*3)%27)+1).padStart(2,'0');
+    return [name,`${year}-${month}-${day}`,personalityCycle[(index+1)%personalityCycle.length],communicationCycle[(index+2)%communicationCycle.length],preferenceCycle[(index+3)%preferenceCycle.length],styleCycle[(index+4)%styleCycle.length],favorite,list[(index+1)%list.length]];
+  });
+  const allProfiles=[...profiles,...extraProfiles,...generatedProfiles];
 
   const serviceCycle=['Augenbrauen','Lid & Wimpernkranz','Lippen','Beratung'];
   const timeSets={
@@ -84,12 +92,25 @@
   const slug=name=>name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'');
   const fullNameParts=name=>{const p=name.split(/\s+/);return {firstName:p[0],lastName:p.slice(1).join(' ')}};
 
+  function segmentFor(index){
+    if(index<78)return 'nail-regular';
+    if(index<95)return 'nail-occasional';
+    if(index<125)return 'pmu';
+    if(index<145)return 'mixed';
+    return 'consult';
+  }
+  function simulationPreference(index,row){
+    const segment=segmentFor(index);
+    if(segment==='nail-regular')return {favorite:'Nageldesign · Auffüllen',wish:['kurze gepflegte Nägel in Naturtönen','saubere Form mit wechselnder Farbe','haltbare Modellage für den Alltag'][index%3]};
+    if(segment==='nail-occasional')return {favorite:index%2?'Nageldesign · Neumodellage':'Maniküre / Naturnagel',wish:index%2?'Neumodellage mit alltagstauglicher Länge':'gepflegte Naturnägel und saubere Nagelhaut'};
+    if(segment==='mixed')return index%2?{favorite:'Nageldesign · Auffüllen',wish:'regelmäßige Nägel, zusätzlich Interesse an PMU'}:{favorite:row[6],wish:row[7]};
+    return {favorite:row[6],wish:row[7]};
+  }
   function applyProfile(customer,row,index){
-    const [name,birthday,personality,communication,preferredTimes,style,favorite,wish]=row;
-    const parts=fullNameParts(name);
-    Object.assign(customer,{name,firstName:parts.firstName,lastName:parts.lastName,birthday,personality,communication,preferredTimes,style,favoriteServices:[favorite],wishes:wish,isDemoProfile:true,demoProfileIndex:index+1});
-    customer.notes=`${personality}. Bevorzugt ${preferredTimes}; Kontakt am liebsten per ${communication}. Wunsch: ${wish}.`;
-    if(!customer.created)customer.created=`2026-${String((index%8)+1).padStart(2,'0')}-${String((index%24)+1).padStart(2,'0')}`;
+    const [name,birthday,personality,communication,preferredTimes,style]=row,preference=simulationPreference(index,row),parts=fullNameParts(name),segment=segmentFor(index);
+    Object.assign(customer,{name,firstName:parts.firstName,lastName:parts.lastName,birthday,personality,communication,preferredTimes,style,favoriteServices:[preference.favorite],wishes:preference.wish,segment,isDemoProfile:true,demoProfileIndex:index+1});
+    customer.notes=`${personality}. Bevorzugt ${preferredTimes}; Kontakt am liebsten per ${communication}. Wunsch: ${preference.wish}.`;
+    if(!customer.created)customer.created=isoDate(addDays(new Date(),-(30+(index*7)%720)));
     return customer;
   }
 
