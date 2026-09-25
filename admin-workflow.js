@@ -87,6 +87,35 @@
     if(end>cursor&&end-cursor>=60)return {start:A.timeOf(cursor),minutes:end-cursor};
     return null;
   }
+  function latestTreatmentFor(customerId,beforeDate=today()){
+    return (A.db.treatmentRecords||[]).filter(x=>x.customerId===customerId&&(!beforeDate||String(x.date||'')<=beforeDate)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')))[0]||null;
+  }
+  function focusSnapshot(a){
+    if(!a)return null;
+    const customer=customerFor(a.customerId),last=latestTreatmentFor(a.customerId,a.date),f=financials(a),prep=a.preparation||{status:'open'};
+    const wish=customer?.wishes||customer?.favoriteServices?.[0]||'Kein besonderer Wunsch hinterlegt';
+    const lastText=last?(`${last.service} · ${last.material||'ohne Materialnotiz'}`):'Noch keine Behandlung dokumentiert';
+    const prepText=prep.status==='complete'?'Vorbereitung vollständig':a.status==='pending'?'Termin noch bestätigen':'Vorbereitung noch prüfen';
+    const payText=f.open>0?`${money(f.open)} offen`:'ausgeglichen';
+    return {customer,last,wish,lastText,prepText,payText};
+  }
+  function daypartMatches(entry,startMinutes){
+    const p=String(entry.daypart||'Flexibel');
+    if(p==='Vormittag')return startMinutes<720;
+    if(p==='Nachmittag')return startMinutes>=720&&startMinutes<1020;
+    if(p==='Abend')return startMinutes>=1020;
+    return true;
+  }
+  function matchingWaitlistForGap(gap){
+    if(!gap)return[];
+    const start=A.minutesOf(gap.start);
+    return (A.db.waitlist||[]).filter(entry=>{
+      if(entry.status!=='waiting'||(entry.earliest&&entry.earliest>today())||!daypartMatches(entry,start))return false;
+      const service=serviceFor(entry.service),duration=Number(service?.duration||30);
+      return duration<=gap.minutes;
+    }).map(entry=>({entry,customer:customerFor(entry.customerId),service:serviceFor(entry.service)}));
+  }
+
   function dayCockpit(){
     const t=today(),now=nowMinutes(),todays=(A.db.appointments||[]).filter(a=>a.date===t&&a.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
     const running=todays.find(a=>!['completed','no_show'].includes(a.status)&&appointmentMinutes(a)<=now&&appointmentEnd(a)>now);
@@ -96,8 +125,8 @@
     const mode=running?'running':next?'next':overdue?'overdue':todays.length?'done':'empty';
     const completed=todays.filter(a=>a.status==='completed').length,noShows=todays.filter(a=>a.status==='no_show').length;
     const remaining=todays.filter(a=>!['completed','cancelled','no_show'].includes(a.status)&&appointmentEnd(a)>now).length;
-    const waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,gap=nextUsefulGap(todays);
-    return {todays,focus,mode,completed,noShows,remaining,waiting,gap,paid:paidToday()};
+    const waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,gap=nextUsefulGap(todays),matches=matchingWaitlistForGap(gap);
+    return {todays,focus,mode,completed,noShows,remaining,waiting,gap,matches,paid:paidToday()};
   }
 
   function deriveActions(){
@@ -138,7 +167,7 @@
     const root=dashboardRoot();if(!root)return;
     const cockpit=dayCockpit(),actions=deriveActions(),waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,follow=(A.db.followUps||[]).filter(x=>x.status!=='done').length,messages=(A.getDueCommunications?.()||[]).length;
     const treatmentDue=(A.db.followUps||[]).filter(x=>x.status!=='done'&&x.type==='aftercare').length;
-    const focus=cockpit.focus,focusCustomer=focus&&customerFor(focus.customerId),focusFinancial=focus?financials(focus):null;
+    const focus=cockpit.focus,focusCustomer=focus&&customerFor(focus.customerId),focusFinancial=focus?financials(focus):null,focusInfo=focusSnapshot(focus);
     const focusLabel=cockpit.mode==='running'?'Läuft gerade':cockpit.mode==='next'?'Als Nächstes':cockpit.mode==='overdue'?'Abschluss offen':cockpit.mode==='done'?'Tag im Blick':'Heute';
     const focusCopy=cockpit.mode==='running'?'Der Termin läuft gerade.':cockpit.mode==='next'?(`Start um ${focus?.time||''} Uhr · ${Number(focus?.duration||0)} Min.`):cockpit.mode==='overdue'?'Der Termin ist zeitlich beendet und noch nicht abgeschlossen.':cockpit.mode==='done'?'Für heute ist kein weiterer Termin geplant.':'Heute sind keine Termine eingetragen.';
     root.innerHTML=`
@@ -152,7 +181,12 @@
               ${cockpit.mode==='overdue'?`<button type="button" class="primary-action" data-focus-complete="${escapeHTML(focus.id)}">Termin abschließen</button>`:`<button type="button" class="primary-action" data-focus-open="${escapeHTML(focus.id)}">Termin öffnen</button>`}
             </div>
           </div>
-          <p>${escapeHTML(focusCopy)}${focusFinancial&&focusFinancial.open>0?` · ${money(focusFinancial.open)} offen`:''}</p>`
+          <p>${escapeHTML(focusCopy)}${focusFinancial&&focusFinancial.open>0?` · ${money(focusFinancial.open)} offen`:''}</p>
+          ${focusInfo?`<div class="day-cockpit-brief">
+            <div><span>Wunsch</span><strong>${escapeHTML(focusInfo.wish)}</strong></div>
+            <div><span>Zuletzt</span><strong>${escapeHTML(focusInfo.lastText)}</strong></div>
+            <div><span>Startklar?</span><strong>${escapeHTML(focusInfo.prepText)}</strong><small>${escapeHTML(focusInfo.payText)}</small></div>
+          </div>`:''}`
           :`<div class="day-cockpit-empty"><strong>Heute ist noch frei.</strong><span>Neue Termine oder Wartelistenplätze kannst du direkt eintragen.</span></div>`}
         </div>
         <div class="day-cockpit-stats">
@@ -160,8 +194,8 @@
           <div><span>Noch vor dir</span><strong>${cockpit.remaining}</strong><small>${cockpit.noShows?cockpit.noShows+' nicht erschienen':'heute geplant'}</small></div>
           <div><span>Heute bezahlt</span><strong>${money(cockpit.paid)}</strong><small>tatsächlich erfasst</small></div>
         </div>
-        ${cockpit.gap&&cockpit.waiting?`<button type="button" class="day-gap-card" data-focus-waitlist>
-          <span class="day-gap-icon">↔</span><span><strong>Freie Lücke ab ${escapeHTML(cockpit.gap.start)} Uhr</strong><small>${cockpit.gap.minutes} Min. frei · ${cockpit.waiting} auf der Warteliste</small></span><b>Warteliste prüfen →</b>
+        ${cockpit.gap&&cockpit.waiting?`<button type="button" class="day-gap-card ${cockpit.matches.length?'has-match':''}" data-focus-waitlist>
+          <span class="day-gap-icon">↔</span><span><strong>Freie Lücke ab ${escapeHTML(cockpit.gap.start)} Uhr</strong><small>${cockpit.gap.minutes} Min. frei · ${cockpit.matches.length?cockpit.matches.length+' passende Wartelistenkund'+(cockpit.matches.length===1?'in':'innen'):cockpit.waiting+' auf der Warteliste'}</small></span><b>${cockpit.matches.length?'Passende Kundinnen ansehen':'Warteliste prüfen'} →</b>
         </button>`:''}
       </div>
       <div class="workflow-head">
@@ -184,6 +218,24 @@
           <button type="button" data-open-communication-center><span>Nachrichten</span><strong>${messages}</strong><small>heute fällig</small></button>
         </div>
       </div>`;
+  }
+
+  function decorateTodayAgenda(){
+    const root=$('#todayList');if(!root)return;
+    const now=nowMinutes();
+    $('.appointment-row[data-appointment-id]',root).forEach(row=>{
+      if($('.today-context-action',row))return;
+      const a=appointmentFor(row.dataset.appointmentId);if(!a)return;
+      const ended=appointmentEnd(a)<=now,f=financials(a);
+      let label='Öffnen',kind='open';
+      if(a.status==='pending'){label='Bestätigen';kind='open'}
+      else if(a.status==='confirmed'&&ended){label='Abschließen';kind='complete'}
+      else if(a.status==='completed'&&f.open>0){label='Zahlung';kind='payment'}
+      const btn=document.createElement('button');btn.type='button';btn.className='today-context-action';btn.dataset.todayAction=kind;btn.dataset.appointmentId=a.id;btn.textContent=label;
+      row.appendChild(btn);
+      row.classList.toggle('is-complete',a.status==='completed');
+      row.classList.toggle('needs-attention',kind!=='open');
+    });
   }
 
   function ensureCenter(){
@@ -445,7 +497,16 @@
         if(kind==='appointment'){ $('#customerDetailModal')?.close();A.openAppointmentDetail?.(workNext.dataset.appointmentId);return }
         if(kind==='followup'){ $('#customerDetailModal')?.close();A.openWorkflowCenter?.('followups');return }
       }
-      const focusOpen=event.target.closest('[data-focus-open]');if(focusOpen){A.openAppointmentDetail?.(focusOpen.dataset.focusOpen);return}
+      const todayAction=event.target.closest('[data-today-action]');
+      if(todayAction){
+        event.preventDefault();event.stopPropagation();
+        const id=todayAction.dataset.appointmentId,kind=todayAction.dataset.todayAction;
+        if(kind==='complete')A.openCompletion?.(id);
+        else if(kind==='payment')A.openPaymentModal?.(id);
+        else A.openAppointmentDetail?.(id);
+        return;
+      }
+            const focusOpen=event.target.closest('[data-focus-open]');if(focusOpen){A.openAppointmentDetail?.(focusOpen.dataset.focusOpen);return}
       const focusComplete=event.target.closest('[data-focus-complete]');if(focusComplete){A.openCompletion?.(focusComplete.dataset.focusComplete);return}
       const focusCustomer=event.target.closest('[data-focus-customer]');if(focusCustomer){A.renderCustomerDetail?.(focusCustomer.dataset.focusCustomer);return}
       if(event.target.closest('[data-focus-waitlist]')){openCenter('waitlist');return}
@@ -505,10 +566,10 @@
     if(!A.workflowRenderWrapped){
       A.workflowRenderWrapped=true;
       const original=A.renderAll?.bind(A);
-      if(original)A.renderAll=()=>{ensureData();original();renderDashboardWorkflow();queueMicrotask(()=>{decorateCustomerDetail();decorateAppointmentDetail()})};
+      if(original)A.renderAll=()=>{ensureData();original();renderDashboardWorkflow();queueMicrotask(()=>{decorateCustomerDetail();decorateAppointmentDetail();decorateTodayAgenda()})};
     }
 
-    renderDashboardWorkflow();
+    renderDashboardWorkflow();decorateTodayAgenda();
     const detail=$('#customerDetailBody');
     if(detail)new MutationObserver(()=>queueMicrotask(decorateCustomerDetail)).observe(detail,{childList:true,subtree:false});
     decorateCustomerDetail();
