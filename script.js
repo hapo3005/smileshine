@@ -213,6 +213,17 @@ if(waitlistToggle&&waitlistForm){
 
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
 updateSummary();
-import('./checkout-enhancements.js?v=20260923-birgit-final2-carousel1');
-import('./booking-admin-sync.js?v=20260925-hours5');
-import('./cnc-products-carousel.js?v=20260923-birgit-final2');
+
+async function importPublicModule(url,attempts=3){
+  let lastError;
+  for(let attempt=0;attempt<attempts;attempt++){
+    const specifier=attempt?url+(url.includes('?')?'&':'?')+'retry='+attempt+'-'+Date.now():url;
+    try{return await import(specifier)}
+    catch(error){lastError=error;if(attempt<attempts-1)await new Promise(resolve=>setTimeout(resolve,180*(attempt+1)))}
+  }
+  console.error('Smile & Shine: Modul konnte nicht geladen werden.',url,lastError);
+  return null;
+}
+importPublicModule('./checkout-enhancements.js?v=20260923-birgit-final2-carousel1');
+importPublicModule('./booking-admin-sync.js?v=20260925-hours5');
+importPublicModule('./cnc-products-carousel.js?v=20260923-birgit-final2');
