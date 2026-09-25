@@ -14,6 +14,8 @@ on:
       - "booking.css"
       - "booking-advanced.css"
       - "admin.css"
+      - "admin-*.js"
+      - "admin-*.css"
       - "admin-calendar-views.css"
       - "admin-calendar-workspace.js"
       - "admin-calendar-workspace.css"
@@ -62,15 +64,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Wait for GitHub Pages version
+      - name: Wait for current GitHub Pages admin build
         run: |
+          EXPECTED_BUILD=$(grep -o 'meta name="smileshine-build" content="[^"]*"' admin.html | sed -E 's/.*content="([^"]*)"/\1/')
+          echo "Waiting for admin build: $EXPECTED_BUILD"
           for attempt in {1..30}; do
-            if curl -fsSL "https://hapo3005.github.io/smileshine/index.html?run=$GITHUB_RUN_ID" | grep -q "20260923-birgit-final2"; then
+            if curl -fsSL "https://hapo3005.github.io/smileshine/admin.html?run=$GITHUB_RUN_ID-$attempt" | grep -q "$EXPECTED_BUILD"; then
               exit 0
             fi
             sleep 10
           done
-          echo "Published page did not reach expected version in time."
+          echo "Published admin page did not reach expected build $EXPECTED_BUILD in time."
           exit 1
 
       - name: Install Playwright
