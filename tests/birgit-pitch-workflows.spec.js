@@ -106,6 +106,37 @@ test('appointment payment records a partial payment and updates actual revenue',
   await expect(page.locator('#kpiGrid .kpi-card').nth(3)).toContainText('Tatsächlich bezahlt');
 });
 
+test('daily cockpit turns studio work into direct actions', async ({ page }) => {
+  await reset(page, 'dashboard');
+  await expect(page.locator('.day-cockpit')).toBeVisible();
+  await expect(page.locator('.day-cockpit-stats > div')).toHaveCount(3);
+
+  await page.evaluate(() => {
+    const A = window.SSAdmin, today = A.isoDate(new Date());
+    const customer = A.db.customers[0];
+    A.db.appointments.push({
+      id:'qa_daily_finished',date:today,time:'00:00',duration:1,service:'Nageldesign · Auffüllen',
+      customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,
+      status:'confirmed',payment:'Im Studio',paymentPreference:'Im Studio',source:'studio',
+      listPrice:55,finalPrice:55,discount:0,paidAmount:0,payments:[],paymentStatus:'open',
+      preparation:{status:'complete',consent:true,photos:true,note:'QA vorbereitet.'}
+    });
+    A.renderDashboardWorkflow();
+  });
+
+  const finish = page.locator('[data-workflow-action="completion"][data-appointment-id="qa_daily_finished"]');
+  await expect(finish).toBeVisible();
+  await finish.click();
+  await expect(page.locator('#completionDialog')).toBeVisible();
+  await page.locator('[data-close-completion]').first().click();
+
+  const waitlistShortcut = page.locator('[data-open-workflow-center][data-workflow-tab="waitlist"]').first();
+  await expect(waitlistShortcut).toBeVisible();
+  await waitlistShortcut.click();
+  await expect(page.locator('#workflowCenterDialog')).toBeVisible();
+  await expect(page.locator('#workflowCenterDialog')).toHaveAttribute('data-tab','waitlist');
+});
+
 test('reset restores the realistic three-month studio simulation', async ({ page }) => {
   await reset(page, 'settings');
   await page.evaluate(() => {
