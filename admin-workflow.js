@@ -279,23 +279,30 @@
     return null;
   }
 
-  function renderWaitlist(){
+  function renderWaitlist(gap=null){
     const list=(A.db.waitlist||[]).filter(x=>x.status==='waiting');
+    const currentDate=today(),gapStart=gap?A.minutesOf(gap.start):0;
+    const rows=list.map(x=>{
+      const c=customerFor(x.customerId),service=serviceFor(x.service),duration=Number(service?.duration||30);
+      const fitsGap=Boolean(gap&&(!x.earliest||x.earliest<=currentDate)&&daypartMatches(x,gapStart)&&duration<=gap.minutes&&A.isSlotFree(currentDate,gap.start,duration));
+      const slot=fitsGap?{date:currentDate,time:gap.start,isGap:true}:nextSlotFor(x);
+      return {x,c,slot,fitsGap};
+    }).sort((a,b)=>Number(b.fitsGap)-Number(a.fitsGap)||String(a.c?.name||'').localeCompare(String(b.c?.name||''),'de'));
     return `<section class="workflow-center-section">
-      <div class="workflow-center-title"><div><span class="panel-kicker">Warteliste</span><h4>Freie Zeiten schneller nachbesetzen</h4></div><button type="button" class="soft-button" data-new-waitlist>＋ Eintrag</button></div>
-      <div class="workflow-center-list waitlist-list">${list.length?list.map(x=>{const c=customerFor(x.customerId),slot=nextSlotFor(x);return `<article><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>ab ${safeDate(x.earliest)} · ${escapeHTML(x.daypart||'Flexibel')}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}</div><div class="waitlist-match">${slot?`<span>Nächster Slot<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}">Termin übernehmen</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`}).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
+      <div class="workflow-center-title"><div><span class="panel-kicker">Warteliste</span><h4>${gap?`Lücke ab ${escapeHTML(gap.start)} Uhr gezielt besetzen`:'Freie Zeiten schneller nachbesetzen'}</h4>${gap?`<p class="waitlist-gap-intro">${gap.minutes} Minuten frei · passende Kundinnen stehen zuerst.</p>`:''}</div><button type="button" class="soft-button" data-new-waitlist>＋ Eintrag</button></div>
+      <div class="workflow-center-list waitlist-list">${rows.length?rows.map(({x,c,slot,fitsGap})=>`<article class="${fitsGap?'is-gap-match':''}"><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>ab ${safeDate(x.earliest)} · ${escapeHTML(x.daypart||'Flexibel')}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}${fitsGap?'<em class="waitlist-gap-badge">Passt in die aktuelle Lücke</em>':''}</div><div class="waitlist-match">${slot?`<span>${fitsGap?'Freie Lücke':'Nächster Slot'}<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}" data-slot-date="${slot.date}" data-slot-time="${slot.time}">${fitsGap?'Lücke besetzen':'Termin übernehmen'}</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
     </section>`;
   }
 
   function setCenterTab(tab){
     const dialog=ensureCenter(),body=$('#workflowCenterBody',dialog);
     dialog.dataset.tab=tab;
-    $$('[data-workflow-tab-button]',dialog).forEach(btn=>btn.classList.toggle('active',btn.dataset.workflowTabButton===tab));
-    body.innerHTML=tab==='waitlist'?renderWaitlist():renderFollowUps(tab==='aftercare'?'aftercare':'all');
+    $('[data-workflow-tab-button]',dialog).forEach(btn=>btn.classList.toggle('active',btn.dataset.workflowTabButton===tab));
+    body.innerHTML=tab==='waitlist'?renderWaitlist(dialog._gapContext||null):renderFollowUps(tab==='aftercare'?'aftercare':'all');
   }
 
-  function openCenter(tab='followups'){
-    const dialog=ensureCenter();setCenterTab(tab);if(!dialog.open)dialog.showModal();
+  function openCenter(tab='followups',gap=null){
+    const dialog=ensureCenter();dialog._gapContext=tab==='waitlist'?gap:null;setCenterTab(tab);if(!dialog.open)dialog.showModal();
   }
 
   function ensureFollowupDialog(){
@@ -509,7 +516,7 @@
             const focusOpen=event.target.closest('[data-focus-open]');if(focusOpen){A.openAppointmentDetail?.(focusOpen.dataset.focusOpen);return}
       const focusComplete=event.target.closest('[data-focus-complete]');if(focusComplete){A.openCompletion?.(focusComplete.dataset.focusComplete);return}
       const focusCustomer=event.target.closest('[data-focus-customer]');if(focusCustomer){A.renderCustomerDetail?.(focusCustomer.dataset.focusCustomer);return}
-      if(event.target.closest('[data-focus-waitlist]')){openCenter('waitlist');return}
+      if(event.target.closest('[data-focus-waitlist]')){openCenter('waitlist',dayCockpit().gap);return}
       const action=event.target.closest('[data-workflow-action]');
       if(action){
         if(action.dataset.workflowAction==='task'){completeTask(action.dataset.taskId);return}
@@ -528,7 +535,8 @@
       if(event.target.closest('[data-new-waitlist]')){openWaitlist();return}
       const book=event.target.closest('[data-book-waitlist]');
       if(book){
-        const entry=(A.db.waitlist||[]).find(x=>x.id===book.dataset.bookWaitlist),c=customerFor(entry?.customerId),slot=entry&&nextSlotFor(entry);
+        const entry=(A.db.waitlist||[]).find(x=>x.id===book.dataset.bookWaitlist),c=customerFor(entry?.customerId);
+        const slot=entry&&(book.dataset.slotDate&&book.dataset.slotTime?{date:book.dataset.slotDate,time:book.dataset.slotTime}:nextSlotFor(entry));
         if(entry&&c&&slot){ensureCenter().close();A.openModal?.({customerId:c.id,customerName:c.name,phone:c.phone||'',email:c.email||'',service:entry.service,date:slot.date,time:slot.time,waitlistId:entry.id});}
         return;
       }
