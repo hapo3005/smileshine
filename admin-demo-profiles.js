@@ -101,9 +101,9 @@
   }
   function simulationPreference(index,row){
     const segment=segmentFor(index);
-    if(segment==='nail-regular')return {favorite:'Nageldesign · Auffüllen',wish:['kurze gepflegte Nägel in Naturtönen','saubere Form mit wechselnder Farbe','haltbare Modellage für den Alltag'][index%3]};
-    if(segment==='nail-occasional')return {favorite:index%2?'Nageldesign · Neumodellage':'Maniküre / Naturnagel',wish:index%2?'Neumodellage mit alltagstauglicher Länge':'gepflegte Naturnägel und saubere Nagelhaut'};
-    if(segment==='mixed')return index%2?{favorite:'Nageldesign · Auffüllen',wish:'regelmäßige Nägel, zusätzlich Interesse an PMU'}:{favorite:row[6],wish:row[7]};
+    if(segment==='nail-regular')return {favorite:'Nageldesign · Auffüllen Standard',wish:['kurze gepflegte Nägel in Naturtönen','saubere Form mit wechselnder Farbe','haltbare Modellage für den Alltag'][index%3]};
+    if(segment==='nail-occasional')return {favorite:index%2?'Nageldesign · Neumodellage':'Klassische Maniküre',wish:index%2?'Neumodellage mit alltagstauglicher Länge':'gepflegte Naturnägel und saubere Nagelhaut'};
+    if(segment==='mixed')return index%2?{favorite:'Nageldesign · Auffüllen Standard',wish:'regelmäßige Nägel, zusätzlich Interesse an PMU'}:{favorite:row[6],wish:row[7]};
     return {favorite:row[6],wish:row[7]};
   }
   function applyProfile(customer,row,index){
@@ -283,7 +283,7 @@
   }
 
   function appointmentFinance(service,status,source,date,seed){
-    const finalPrice=Number(service?.price||0),payments=[],isPMU=!/^Nageldesign|^Maniküre/i.test(service?.name||'')&&!/Beratung/.test(service?.name||'');
+    const finalPrice=Number(service?.price||0),payments=[],isNail=/Nageldesign|Maniküre|Naturnagel|Modellage|Nagelreparatur/i.test(service?.name||''),isPMU=!isNail&&!/Beratung/i.test(service?.name||'');
     const depositExpected=isPMU&&source==='online-demo'&&finalPrice>0?Math.min(finalPrice,Number(service?.deposit||0)):0;
     if(status==='completed'&&finalPrice>0){
       const rare=seed%31;
