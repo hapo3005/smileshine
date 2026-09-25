@@ -152,6 +152,7 @@ test('reset restores the realistic three-month studio simulation', async ({ page
       nailAppointments: simulated.filter(a => /Nageldesign|Maniküre/i.test(a.service)).length,
       nailShare: A.db.demoSimulation?.nailShare || 0,
       openingHours: A.db.demoSimulation?.openingHours || '',
+      workingHours: A.db.workingHours,
       medianRefillGap,
       refillRepeatCustomers: [...refillByCustomer.values()].filter(list => list.length >= 2).length,
       specialSaturdays: simulated.filter(a => a.specialOpening).length,
@@ -184,6 +185,11 @@ test('reset restores the realistic three-month studio simulation', async ({ page
   expect(state.nailShare).toBeGreaterThanOrEqual(60);
   expect(state.nailShare).toBeLessThanOrEqual(75);
   expect(state.openingHours).toBe('Mo–Fr 09:00–19:00');
+  for (const day of ['1','2','3','4','5']) {
+    expect(state.workingHours[day]).toEqual({enabled:true,start:'09:00',end:'19:00'});
+  }
+  expect(state.workingHours['6'].enabled).toBe(false);
+  expect(state.workingHours['0'].enabled).toBe(false);
   expect(state.medianRefillGap).toBeGreaterThanOrEqual(20);
   expect(state.medianRefillGap).toBeLessThanOrEqual(35);
   expect(state.refillRepeatCustomers).toBeGreaterThanOrEqual(30);
