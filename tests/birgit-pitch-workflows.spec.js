@@ -137,6 +137,24 @@ test('daily cockpit turns studio work into direct actions', async ({ page }) => 
   await expect(page.locator('#completionDialog')).toBeVisible();
   await page.locator('[data-close-completion]').first().click();
 
+  await page.evaluate(() => {
+    const A = window.SSAdmin, today = A.isoDate(new Date()), customer = A.db.customers[1] || A.db.customers[0], service = A.db.services.find(s => /Beratung/i.test(s.name)) || A.db.services[0];
+    A.db.appointments.push({
+      id:'qa_daily_pending',date:today,time:'23:58',duration:Number(service.duration||30),service:service.name,
+      customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status:'pending',
+      payment:'Im Studio',paymentPreference:'Im Studio',source:'studio',listPrice:Number(service.price||0),finalPrice:Number(service.price||0),
+      discount:0,paidAmount:0,payments:[],paymentStatus:Number(service.price||0)>0?'open':'paid'
+    });
+    A.renderAll(); A.renderDashboardWorkflow();
+  });
+  const pendingAction = page.locator('#todayList .today-context-action[data-appointment-id="qa_daily_pending"]');
+  await expect(pendingAction).toHaveText('Bestätigen');
+  await pendingAction.click();
+  await expect(page.locator('#whatsappDialog')).toBeVisible();
+  const pendingState = await page.evaluate(() => window.SSAdmin.db.appointments.find(a=>a.id==='qa_daily_pending')?.status || '');
+  expect(pendingState).toBe('confirmed');
+  await page.locator('[data-close-whatsapp]').first().click();
+
   const waitlistShortcut = page.locator('[data-open-workflow-center][data-workflow-tab="waitlist"]').first();
   await expect(waitlistShortcut).toBeVisible();
   await waitlistShortcut.click();
@@ -320,8 +338,8 @@ test('guided completion closes treatment, payment and follow-up in one flow', as
   await expect(page.locator('[data-completion-progress="4"]')).toHaveClass(/active/);
   await page.locator('#completionForm button[type="submit"]').click();
 
-  await expect(page.locator('#appointmentDetailModal')).toBeVisible();
-  await expect(page.locator('.completion-done-badge')).toContainText('Abgeschlossen');
+  await expect(page.locator('.view[data-view-panel="dashboard"]')).toHaveClass(/active/);
+  await expect(page.locator('#completionDialog')).not.toBeVisible();
 
   const state = await page.evaluate(appointmentId => {
     const appointment = window.SSAdmin.db.appointments.find(a => a.id === appointmentId);
@@ -409,6 +427,8 @@ test('same-day gap surfaces matching waitlist customer and books exact slot', as
     const waitCustomer = A.db.customers.find(c => c.id !== customer.id && c.segment === 'nail-regular') || A.db.customers[1];
     const entryId = 'qa_gap_waitlist';
     A.db.waitlist = (A.db.waitlist || []).filter(x => x.id !== entryId);
+    A.db.appointments = A.db.appointments.filter(a => !(a.date === today && a.status !== 'cancelled' && A.overlaps(15*60,16*60+30,A.minutesOf(a.time),A.minutesOf(a.time)+Number(a.duration||30))));
+    A.db.blocked = (A.db.blocked || []).filter(b => !(b.date === today && A.overlaps(15*60,16*60+30,A.minutesOf(b.start),A.minutesOf(b.end))));
     A.db.waitlist.push({id:entryId,customerId:waitCustomer.id,service:nail.name,earliest:today,daypart:'Flexibel',note:'Kann kurzfristig kommen.',status:'waiting'});
     A.save();
     return {entryId,service:nail.name};
@@ -465,7 +485,7 @@ test('Birgit full workday path stays coherent from preparation to follow-up', as
   await expect(page.locator('#completionForm input[name="followupTitle"]')).toHaveValue('Nächsten Nageltermin vereinbaren');
   await page.locator('#completionForm button[type="submit"]').click();
   await page.locator('#completionForm button[type="submit"]').click();
-  await page.locator('[data-close-appointment-detail]').first().click();
+  await expect(page.locator('.view[data-view-panel="dashboard"]')).toHaveClass(/active/);
 
   await page.evaluate(id => window.SSAdmin.openCompletion(id), ids.pmu);
   await page.locator('#completionForm input[name="material"]').fill('Soft Brown');
