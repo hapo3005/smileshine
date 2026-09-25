@@ -47,11 +47,14 @@
       const s=A.db.services.find(x=>x.id===card.dataset.serviceId);if(!s||card.dataset.serviceEnhanced==='1')return;card.dataset.serviceEnhanced='1';
       const top=$('.service-card-top',card),h3=$('h3',card),p=card.querySelector(':scope > p'),save=$('.service-save',card),toggle=$('[name=active]',card);
       if(top){
-        const status=document.createElement('span');status.className=`service-live-status ${s.active?'active':'paused'}`;status.textContent=s.active?'Online buchbar':'Pausiert';top.insertBefore(status,top.lastElementChild);if(toggle)toggle.setAttribute('aria-label',s.active?'Leistung pausieren':'Leistung wieder online stellen');
+        const status=document.createElement('span');status.className=`service-live-status ${s.active?'active':'paused'}`;
+        status.textContent=!s.active?'Pausiert':s.demoOnly?'Studio aktiv':CORE_SERVICE_IDS.has(s.id)?'Öffentlich buchbar':'Im Leistungsstamm';
+        top.insertBefore(status,top.lastElementChild);
+        if(toggle)toggle.setAttribute('aria-label',s.active?'Leistung pausieren':'Leistung aktivieren');
         if(s.verification&&!CORE_SERVICE_IDS.has(s.id)){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Noch bestätigen':'Studio';top.insertBefore(v,status)}
       }
       if(h3){const nameLabel=document.createElement('label');nameLabel.className='service-name-field';nameLabel.innerHTML=`<span>Name</span><input name="serviceName" maxlength="80" value="${escapeHTML(s.name)}">`;h3.replaceWith(nameLabel)}
-      if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${s.active?'Für Kunden sichtbar und buchbar.':'Vorübergehend pausiert – für Kunden ausgeblendet.'}</small>`;p.replaceWith(desc)}
+      if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${!s.active?'Vorübergehend pausiert.':s.demoOnly?'Nur für Studio/Demo – nicht öffentlich buchbar.':CORE_SERVICE_IDS.has(s.id)?'In der öffentlichen Buchung sichtbar.':'Im internen Leistungsstamm – Angebot noch mit Birgit bestätigen.'}</small>`;p.replaceWith(desc)}
       if(s.internalNote){const note=document.createElement('div');note.className='service-internal-note';note.innerHTML=`<span>Interne Einordnung</span><p>${escapeHTML(s.internalNote)}</p>`;card.insertBefore(note,$('.service-fields',card)||save||null)}
       if(save){const actions=document.createElement('div');actions.className='service-card-actions';const del=document.createElement('button');del.type='button';del.className='service-delete-button';del.dataset.deleteService=s.id;del.textContent='Leistung löschen';save.replaceWith(actions);actions.append(save,del)}
     });
@@ -62,7 +65,7 @@
     $$('.service-card-admin').forEach(card=>{
       const s=A.db.services.find(x=>x.id===card.dataset.serviceId);if(!s)return;
       const toggle=$('[name=active]',card);
-      if(toggle)toggle.onchange=()=>{s.active=toggle.checked;A.addActivity('setting',`${s.name}: ${s.active?'wieder online buchbar':'vorübergehend pausiert'}.`);A.save(s.active?`${s.name} ist wieder online buchbar.`:`${s.name} wurde pausiert.`);A.renderServices?.()};
+      if(toggle)toggle.onchange=()=>{s.active=toggle.checked;A.addActivity('setting',`${s.name}: ${s.active?'aktiviert':'pausiert'}.`);A.save(s.active?`${s.name} ist aktiv.`:`${s.name} wurde pausiert.`);A.renderServices?.()};
       const save=$('.service-save',card);if(save)save.onclick=()=>{
         const oldName=s.name,name=String($('[name=serviceName]',card)?.value||s.name).trim(),description=String($('[name=description]',card)?.value||'').trim();
         if(!name)return A.toast('Bitte einen Namen für die Leistung eingeben.');
