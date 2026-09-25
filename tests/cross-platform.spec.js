@@ -204,6 +204,10 @@ test(`Birgit admin cross-platform smoke — ${label}`, async ({ page }, testInfo
   }
 
   await page.evaluate(() => window.SSAdmin.showView('dashboard'));
+  await expect(page.locator('.day-cockpit')).toBeVisible();
+  await expect(page.locator('.day-cockpit-brief')).toBeVisible();
+  await expect(page.locator('#todayList .today-context-action').first()).toBeVisible();
+  await assertNoUnexpectedOverflow(page, `${label} Birgit daily cockpit`);
   const addButton = width <= 760 ? page.locator('#mobileAdd') : page.locator('#quickAdd');
   await addButton.click();
   await expect(page.locator('#appointmentModal')).toBeVisible();
