@@ -14,7 +14,7 @@
   function ensureStyles(){
     if(document.querySelector('link[data-workflow-style]'))return;
     const link=document.createElement('link');
-    link.rel='stylesheet';link.href='admin-workflow.css?v=20260925-workfile1';link.dataset.workflowStyle='true';
+    link.rel='stylesheet';link.href='admin-workflow.css?v=20260925-daily1';link.dataset.workflowStyle='true';
     document.head.appendChild(link);
   }
 
