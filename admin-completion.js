@@ -23,10 +23,10 @@
         <button type="button" class="modal-close" data-close-completion aria-label="Schließen">×</button>
       </div>
       <div class="completion-progress" aria-label="Fortschritt">
-        <span data-completion-progress="1">1<i>Behandlung</i></span>
-        <span data-completion-progress="2">2<i>Zahlung</i></span>
-        <span data-completion-progress="3">3<i>Nachpflege</i></span>
-        <span data-completion-progress="4">4<i>Abschluss</i></span>
+        <span data-completion-progress="1"><i>Behandlung</i></span>
+        <span data-completion-progress="2"><i>Zahlung</i></span>
+        <span data-completion-progress="3"><i>Nachpflege</i></span>
+        <span data-completion-progress="4"><i>Abschluss</i></span>
       </div>
       <form id="completionForm" class="completion-body"></form>
     </div>`;
