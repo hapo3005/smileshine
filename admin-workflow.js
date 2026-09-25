@@ -297,7 +297,7 @@
   function setCenterTab(tab){
     const dialog=ensureCenter(),body=$('#workflowCenterBody',dialog);
     dialog.dataset.tab=tab;
-    $('[data-workflow-tab-button]',dialog).forEach(btn=>btn.classList.toggle('active',btn.dataset.workflowTabButton===tab));
+    $$('[data-workflow-tab-button]',dialog).forEach(btn=>btn.classList.toggle('active',btn.dataset.workflowTabButton===tab));
     body.innerHTML=tab==='waitlist'?renderWaitlist(dialog._gapContext||null):renderFollowUps(tab==='aftercare'?'aftercare':'all');
   }
 
