@@ -38,11 +38,12 @@
     const current=new Map(db.services.map(s=>[String(s.id),s]));
     const needsMigration=Number(db.catalogVersion||0)<CATALOG_VERSION||db.services.length<15;
     if(!needsMigration)return db;
-    db.services=CATALOG.map(base=>{
+    const extras=db.services.filter(service=>!CATALOG.some(base=>base.id===service.id));
+    db.services=[...CATALOG.map(base=>{
       const old=current.get(base.id);
       if(!old)return {...base};
       return {...base,...old,name:base.name,description:base.description,category:base.category,verification:base.verification,internalNote:base.internalNote};
-    });
+    }),...extras];
     db.catalogVersion=CATALOG_VERSION;
     return db;
   }
@@ -114,7 +115,7 @@
       if(s)rows.push({category:display.id==='consult'?'Beratung':'Permanent Make-up',service:s,display});
     });
 
-    services.filter(s=>s.active!==false&&!BUILTIN_IDS.has(s.id)).forEach(s=>{
+    services.filter(s=>s.active!==false&&!s.demoOnly&&!BUILTIN_IDS.has(s.id)).forEach(s=>{
       rows.push({category:s.category||'Weitere Leistungen',service:s,display:{name:s.name,description:s.description||''}});
     });
 
@@ -140,7 +141,7 @@
     if(!section||!root)return;
     const db=load();
     if(db.publicCatalogReady!==true)return;
-    const active=(db.services||[]).filter(s=>s.active!==false&&s.verification!=='market');
+    const active=(db.services||[]).filter(s=>s.active!==false&&!s.demoOnly&&s.verification!=='market');
     if(!active.length)return;
     const heading=section.querySelector('.section-heading.split>p');
     if(heading)heading.textContent='Permanent Make-up und Beauty-Behandlungen mit dem Anspruch, das Ergebnis natürlich, typgerecht und stimmig wirken zu lassen.';
