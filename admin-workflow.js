@@ -64,14 +64,46 @@
     return (A.db.followUps||[]).filter(x=>x.status!=='done'&&x.dueDate<=t).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
   }
 
+  function appointmentMinutes(a){return A.minutesOf(a.time)}
+  function appointmentEnd(a){return appointmentMinutes(a)+Number(a.duration||30)}
+  function nowMinutes(){const d=new Date();return d.getHours()*60+d.getMinutes()}
+  function paidToday(){
+    const t=today();
+    return (A.db.appointments||[]).reduce((sum,a)=>sum+(a.payments||[]).reduce((part,p)=>String(p.createdAt||'').slice(0,10)===t?part+Number(p.amount||0):part,0),0);
+  }
+  function nextUsefulGap(todays){
+    const day=new Date(),wh=A.db.workingHours?.[day.getDay()];if(!wh?.enabled)return null;
+    let cursor=Math.max(A.minutesOf(wh.start),nowMinutes()),end=A.minutesOf(wh.end);
+    for(const a of todays.filter(a=>!['cancelled','no_show'].includes(a.status)).sort((a,b)=>a.time.localeCompare(b.time))){
+      const start=appointmentMinutes(a);if(start>cursor&&start-cursor>=60)return {start:A.timeOf(cursor),minutes:start-cursor};
+      cursor=Math.max(cursor,appointmentEnd(a));
+    }
+    if(end>cursor&&end-cursor>=60)return {start:A.timeOf(cursor),minutes:end-cursor};
+    return null;
+  }
+  function dayCockpit(){
+    const t=today(),now=nowMinutes(),todays=(A.db.appointments||[]).filter(a=>a.date===t&&a.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
+    const running=todays.find(a=>!['completed','no_show'].includes(a.status)&&appointmentMinutes(a)<=now&&appointmentEnd(a)>now);
+    const next=todays.find(a=>!['completed','no_show'].includes(a.status)&&appointmentMinutes(a)>now);
+    const overdue=[...todays].reverse().find(a=>a.status==='confirmed'&&appointmentEnd(a)<=now);
+    const focus=running||next||overdue||todays[todays.length-1]||null;
+    const mode=running?'running':next?'next':overdue?'overdue':todays.length?'done':'empty';
+    const completed=todays.filter(a=>a.status==='completed').length,noShows=todays.filter(a=>a.status==='no_show').length;
+    const remaining=todays.filter(a=>!['completed','cancelled','no_show'].includes(a.status)&&appointmentEnd(a)>now).length;
+    const waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,gap=nextUsefulGap(todays);
+    return {todays,focus,mode,completed,noShows,remaining,waiting,gap,paid:paidToday()};
+  }
+
   function deriveActions(){
     const t=today(),items=[],communications=A.getDueCommunications?.()||[];
     const todays=(A.db.appointments||[]).filter(a=>a.date===t&&a.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
     todays.forEach(a=>{
+      const ended=appointmentEnd(a)<=nowMinutes();
       if(a.status==='pending')items.push({key:'confirm-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · ${a.customerName}`,detail:'Termin ist noch offen und sollte bestätigt werden.',action:'Termin öffnen'});
-      if(a.preparation?.status==='open')items.push({key:'prep-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Vorbereitung fehlt`,detail:`${a.customerName} · ${a.service}`,action:'Vorbereitung prüfen'});
+      if(a.status==='confirmed'&&ended)items.push({key:'finish-'+a.id,priority:1,kind:'completion',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Abschluss offen`,detail:`${a.customerName} · ${a.service} ist zeitlich beendet.`,action:'Abschließen'});
+      if(a.preparation?.status==='open'&&!ended)items.push({key:'prep-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Vorbereitung fehlt`,detail:`${a.customerName} · ${a.service}`,action:'Vorbereitung prüfen'});
       const f=financials(a);
-      if(f.open>0&&a.status==='completed')items.push({key:'pay-'+a.id,priority:3,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Zahlung im Blick`,detail:`${a.customerName} · ${money(f.open)} offen`,action:'Termin öffnen'});
+      if(f.open>0&&a.status==='completed')items.push({key:'pay-'+a.id,priority:3,kind:'payment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Zahlung offen`,detail:`${a.customerName} · ${money(f.open)} noch ausstehend`,action:'Zahlung'});
     });
     dueFollowUps().forEach(x=>{
       if(x.type==='aftercare'&&communications.some(item=>item.followUpId===x.id))return;
@@ -98,9 +130,34 @@
   function renderDashboardWorkflow(){
     ensureData();
     const root=dashboardRoot();if(!root)return;
-    const actions=deriveActions(),waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,follow=(A.db.followUps||[]).filter(x=>x.status!=='done').length,messages=(A.getDueCommunications?.()||[]).length;
+    const cockpit=dayCockpit(),actions=deriveActions(),waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,follow=(A.db.followUps||[]).filter(x=>x.status!=='done').length,messages=(A.getDueCommunications?.()||[]).length;
     const treatmentDue=(A.db.followUps||[]).filter(x=>x.status!=='done'&&x.type==='aftercare').length;
+    const focus=cockpit.focus,focusCustomer=focus&&customerFor(focus.customerId),focusFinancial=focus?financials(focus):null;
+    const focusLabel=cockpit.mode==='running'?'Läuft gerade':cockpit.mode==='next'?'Als Nächstes':cockpit.mode==='overdue'?'Abschluss offen':cockpit.mode==='done'?'Tag im Blick':'Heute';
+    const focusCopy=cockpit.mode==='running'?'Der Termin läuft gerade.':cockpit.mode==='next'?(`Start um ${focus?.time||''} Uhr · ${Number(focus?.duration||0)} Min.`):cockpit.mode==='overdue'?'Der Termin ist zeitlich beendet und noch nicht abgeschlossen.':cockpit.mode==='done'?'Für heute ist kein weiterer Termin geplant.':'Heute sind keine Termine eingetragen.';
     root.innerHTML=`
+      <div class="day-cockpit">
+        <div class="day-cockpit-focus ${cockpit.mode}">
+          <div class="day-cockpit-label"><span></span>${focusLabel}</div>
+          ${focus?`<div class="day-cockpit-main">
+            <div><strong>${escapeHTML(focus.customerName)}</strong><small>${escapeHTML(focus.service)} · ${escapeHTML(focus.time)} Uhr</small></div>
+            <div class="day-cockpit-actions">
+              ${focusCustomer?`<button type="button" class="soft-button" data-focus-customer="${escapeHTML(focusCustomer.id)}">Kundenakte</button>`:''}
+              ${cockpit.mode==='overdue'?`<button type="button" class="primary-action" data-focus-complete="${escapeHTML(focus.id)}">Termin abschließen</button>`:`<button type="button" class="primary-action" data-focus-open="${escapeHTML(focus.id)}">Termin öffnen</button>`}
+            </div>
+          </div>
+          <p>${escapeHTML(focusCopy)}${focusFinancial&&focusFinancial.open>0?` · ${money(focusFinancial.open)} offen`:''}</p>`
+          :`<div class="day-cockpit-empty"><strong>Heute ist noch frei.</strong><span>Neue Termine oder Wartelistenplätze kannst du direkt eintragen.</span></div>`}
+        </div>
+        <div class="day-cockpit-stats">
+          <div><span>Erledigt</span><strong>${cockpit.completed}</strong><small>von ${cockpit.todays.length} Terminen</small></div>
+          <div><span>Noch vor dir</span><strong>${cockpit.remaining}</strong><small>${cockpit.noShows?cockpit.noShows+' nicht erschienen':'heute geplant'}</small></div>
+          <div><span>Heute bezahlt</span><strong>${money(cockpit.paid)}</strong><small>tatsächlich erfasst</small></div>
+        </div>
+        ${cockpit.gap&&cockpit.waiting?`<button type="button" class="day-gap-card" data-focus-waitlist>
+          <span class="day-gap-icon">↔</span><span><strong>Freie Lücke ab ${escapeHTML(cockpit.gap.start)} Uhr</strong><small>${cockpit.gap.minutes} Min. frei · ${cockpit.waiting} auf der Warteliste</small></span><b>Warteliste prüfen →</b>
+        </button>`:''}
+      </div>
       <div class="workflow-head">
         <div><span class="panel-kicker">Heute wichtig</span><h3>${actions.length?`${actions.length} Dinge brauchen deine Aufmerksamkeit.`:'Alles vorbereitet.'}</h3><p>${actions.length?'Nur das, was heute wirklich erledigt werden sollte.':'Für heute gibt es keine offenen Hinweise.'}</p></div>
         <button type="button" class="soft-button" data-open-workflow-center>Organisation öffnen</button>
@@ -382,10 +439,16 @@
         if(kind==='appointment'){ $('#customerDetailModal')?.close();A.openAppointmentDetail?.(workNext.dataset.appointmentId);return }
         if(kind==='followup'){ $('#customerDetailModal')?.close();A.openWorkflowCenter?.('followups');return }
       }
+      const focusOpen=event.target.closest('[data-focus-open]');if(focusOpen){A.openAppointmentDetail?.(focusOpen.dataset.focusOpen);return}
+      const focusComplete=event.target.closest('[data-focus-complete]');if(focusComplete){A.openCompletion?.(focusComplete.dataset.focusComplete);return}
+      const focusCustomer=event.target.closest('[data-focus-customer]');if(focusCustomer){A.renderCustomerDetail?.(focusCustomer.dataset.focusCustomer);return}
+      if(event.target.closest('[data-focus-waitlist]')){openCenter('waitlist');return}
       const action=event.target.closest('[data-workflow-action]');
       if(action){
         if(action.dataset.workflowAction==='task'){completeTask(action.dataset.taskId);return}
         if(action.dataset.workflowAction==='communication'){A.openCommunication?.(action.dataset.communicationId);return}
+        if(action.dataset.workflowAction==='completion'){A.openCompletion?.(action.dataset.appointmentId);return}
+        if(action.dataset.workflowAction==='payment'){A.openPaymentModal?.(action.dataset.appointmentId);return}
         if(action.dataset.appointmentId){A.openAppointmentDetail?.(action.dataset.appointmentId);return}
         if(action.dataset.customerId)A.renderCustomerDetail?.(action.dataset.customerId);
         return;
