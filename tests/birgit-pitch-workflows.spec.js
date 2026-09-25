@@ -131,6 +131,9 @@ test('reset restores the realistic three-month studio simulation', async ({ page
       todayAppointments: A.db.appointments.filter(a => a.status !== 'cancelled' && a.date === today).length,
       weekAppointments: weekApps.length,
       weekCustomers: new Set(weekApps.map(a => a.customerId || a.email || a.customerName)).size,
+      nailAppointments: simulated.filter(a => /Nageldesign|Maniküre/i.test(a.service)).length,
+      nailShare: A.db.demoSimulation?.nailShare || 0,
+      openingHours: A.db.demoSimulation?.openingHours || '',
       rangeStart: dates[0],
       rangeEnd: dates[dates.length - 1],
       simulation: A.db.demoSimulation
@@ -156,6 +159,10 @@ test('reset restores the realistic three-month studio simulation', async ({ page
   expect(state.waitlist).toBeGreaterThanOrEqual(4);
   expect(state.treatmentRecords).toBeGreaterThanOrEqual(10);
   expect(state.simulation?.customerTarget).toBe(150);
+  expect(state.services.some(name => /Nageldesign|Maniküre/i.test(name))).toBe(true);
+  expect(state.nailShare).toBeGreaterThanOrEqual(60);
+  expect(state.nailShare).toBeLessThanOrEqual(75);
+  expect(state.openingHours).toBe('Mo–Fr 09:00–19:00');
   expect(new Date(state.rangeEnd + 'T12:00:00').getTime() - new Date(state.rangeStart + 'T12:00:00').getTime()).toBeGreaterThan(100 * 86400000);
 });
 
@@ -166,7 +173,7 @@ test('mobile More opens actual studio navigation', async ({ page }) => {
   await expect(page.locator('#mobileMoreDialog')).toBeVisible();
   await page.locator('[data-mobile-more-view="services"]').click();
   await expect(page.locator('.view[data-view-panel="services"]')).toHaveClass(/active/);
-  await expect(page.locator('#servicesGrid .service-card-admin')).toHaveCount(4);
+  expect(await page.locator('#servicesGrid .service-card-admin').count()).toBeGreaterThanOrEqual(8);
 });
 
 test('public treatment CTA opens booking with matching service selected', async ({ page }) => {
