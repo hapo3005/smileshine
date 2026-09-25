@@ -184,9 +184,10 @@
     } else if(previous)previous.status='cancelled';
 
     a.status='completed';a.completedAt=new Date().toISOString();a.preparation={status:'complete',consent:true,photos:Boolean(s.beforePhoto||s.afterPhoto),note:'Termin abgeschlossen.'};
+    A.queueAppointmentCommunication?.('aftercare',a.id,isoDate(new Date()),{title:'Nachpflege senden'});
     A.addActivity('booking',`${a.customerName}: ${a.service} abgeschlossen und dokumentiert.`);
     A.save('Termin vollständig abgeschlossen.');
-    A.refreshPaymentUI?.();
+    A.refreshPaymentUI?.();A.renderDashboardWorkflow?.();
     dialog.close();
     A.openAppointmentDetail?.(a.id);
   }
