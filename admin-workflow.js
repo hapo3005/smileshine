@@ -263,18 +263,74 @@
   }
 
   function customerWorkflowSection(customerId){
-    const records=(A.db.treatmentRecords||[]).filter(x=>x.customerId===customerId).sort((a,b)=>b.date.localeCompare(a.date));
-    const tasks=(A.db.followUps||[]).filter(x=>x.customerId===customerId&&x.status!=='done').sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+    const records=(A.db.treatmentRecords||[]).filter(x=>x.customerId===customerId).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    const tasks=(A.db.followUps||[]).filter(x=>x.customerId===customerId&&!['done','cancelled'].includes(x.status)).sort((a,b)=>String(a.dueDate||'').localeCompare(String(b.dueDate||'')));
     const waiting=(A.db.waitlist||[]).filter(x=>x.customerId===customerId&&x.status==='waiting');
-    const last=records[0],next=tasks[0];
-    return `<section class="customer-workflow-panel" data-customer-workflow="${customerId}">
-      <div class="customer-workflow-head"><div><span class="panel-kicker">Arbeitsakte</span><h4>Beim Öffnen sofort wissen, was wichtig ist</h4></div><div class="customer-workflow-buttons"><button type="button" class="soft-button" data-customer-followup="${customerId}">＋ Wiedervorlage</button><button type="button" class="primary-action" data-customer-treatment="${customerId}">＋ Behandlung dokumentieren</button></div></div>
-      <div class="customer-workflow-grid">
-        <div><span>Nächster Schritt</span><strong>${next?escapeHTML(next.title):'Nichts offen'}</strong><small>${next?`fällig ${safeDate(next.dueDate)}`:'Keine Wiedervorlage vorhanden'}</small></div>
-        <div><span>Letzte Dokumentation</span><strong>${last?escapeHTML(last.service):'Noch keine'}</strong><small>${last?`${safeDate(last.date)} · ${escapeHTML(last.material||'ohne Zusatz')}`:'Beim nächsten Termin direkt erfassen'}</small></div>
-        <div><span>Warteliste</span><strong>${waiting.length?escapeHTML(waiting[0].service):'Nicht vorgemerkt'}</strong><small>${waiting.length?`ab ${safeDate(waiting[0].earliest)}`:'Kein kurzfristiger Terminwunsch'}</small></div>
+    const communications=(A.db.communications||[]).filter(x=>x.customerId===customerId&&x.status!=='cancelled').sort((a,b)=>String(b.handedOffAt||b.completedAt||b.createdAt||'').localeCompare(String(a.handedOffAt||a.completedAt||a.createdAt||'')));
+    const dueCommunications=(A.getDueCommunications?.()||[]).filter(x=>x.customerId===customerId);
+    const appointments=(A.db.appointments||[]).filter(a=>a.customerId===customerId&&a.status!=='cancelled').sort((a,b)=>`${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
+    const t=today(),upcoming=appointments.filter(a=>a.date>=t),last=records[0],nextTask=tasks[0],lastCommunication=communications[0];
+    const openAppointments=appointments.map(a=>({a,f:financials(a)})).filter(x=>x.f.open>0);
+    const openTotal=openAppointments.reduce((sum,x)=>sum+x.f.open,0);
+    const unpaidCompleted=openAppointments.find(x=>x.a.status==='completed');
+    const pending=upcoming.find(a=>a.status==='pending'),nextAppointment=upcoming[0];
+
+    let nextAction={kind:'none',title:'Aktuell nichts offen',detail:'Keine fällige Nachricht, Wiedervorlage oder Zahlung.',label:'Alles im Blick'};
+    if(dueCommunications[0]){
+      const item=dueCommunications[0];
+      nextAction={kind:'communication',communicationId:item.id,title:'Nachricht ist fällig',detail:(item.title||'Kundenkontakt')+' · '+safeDate(item.dueDate),label:'Nachricht vorbereiten'};
+    }else if(nextTask&&nextTask.dueDate<=t){
+      nextAction={kind:'followup',title:nextTask.title,detail:'Wiedervorlage · fällig '+safeDate(nextTask.dueDate),label:'Wiedervorlagen öffnen'};
+    }else if(unpaidCompleted){
+      nextAction={kind:'payment',appointmentId:unpaidCompleted.a.id,title:'Zahlung noch offen',detail:money(unpaidCompleted.f.open)+' · '+unpaidCompleted.a.service,label:'Zahlung öffnen'};
+    }else if(pending){
+      nextAction={kind:'appointment',appointmentId:pending.id,title:'Termin noch bestätigen',detail:safeDate(pending.date)+' · '+pending.time+' Uhr · '+pending.service,label:'Termin öffnen'};
+    }else if(nextAppointment){
+      nextAction={kind:'appointment',appointmentId:nextAppointment.id,title:'Nächster Termin vorbereitet halten',detail:safeDate(nextAppointment.date)+' · '+nextAppointment.time+' Uhr · '+nextAppointment.service,label:'Termin öffnen'};
+    }else if(nextTask){
+      nextAction={kind:'followup',title:'Nächste Wiedervorlage',detail:nextTask.title+' · '+safeDate(nextTask.dueDate),label:'Wiedervorlagen öffnen'};
+    }
+
+    const photoStatus=last?(last.beforePhoto&&last.afterPhoto?'Vorher & Nachher vorhanden':last.beforePhoto||last.afterPhoto?'Foto teilweise dokumentiert':'Keine Fotos markiert'):'Noch keine Dokumentation';
+    const aftercareStatus=nextTask?(`${nextTask.title} · ${safeDate(nextTask.dueDate)}`):'Keine Wiedervorlage geplant';
+    const communicationStatus=lastCommunication?(lastCommunication.status==='handed_off'?'An WhatsApp übergeben':lastCommunication.status==='done'?'Erledigt':lastCommunication.dueDate<=t?'Fällig':'Geplant'):'Noch kein Kontakt protokolliert';
+    const communicationTypeLabel=type=>({confirm:'Terminbestätigung',change:'Terminänderung',reminder:'Terminerinnerung',aftercare:'Nachpflege',healing:'Heilungsverlauf',waitlist:'Freier Termin'})[type]||'Nachricht';
+    const communicationDate=item=>{
+      const value=item?.handedOffAt||item?.completedAt||item?.createdAt;
+      if(!value)return safeDate(item?.dueDate);
+      try{return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(value))}catch{return safeDate(item?.dueDate)}
+    };
+
+    return `<section class="customer-workfile" data-customer-workflow="${customerId}">
+      <div class="customer-workfile-head">
+        <div><span class="panel-kicker">Arbeitsakte</span><h4>Alles, was Birgit für diese Kundin wissen muss</h4><p>Behandlung, Zahlung, Nachpflege und Kommunikation in einem Arbeitsbild.</p></div>
+        <div class="customer-workflow-buttons"><button type="button" class="soft-button" data-customer-followup="${customerId}">＋ Wiedervorlage</button><button type="button" class="primary-action" data-customer-treatment="${customerId}">＋ Behandlung dokumentieren</button></div>
       </div>
-      ${last?.result?`<div class="customer-last-note"><span>Letzter Behandlungsvermerk</span><p>${escapeHTML(last.result)}</p></div>`:''}
+
+      <article class="customer-next-step ${nextAction.kind==='none'?'is-clear':'is-active'}">
+        <div class="customer-next-step-mark">${nextAction.kind==='none'?'✓':'→'}</div>
+        <div><span>Was ist als Nächstes zu tun?</span><strong>${escapeHTML(nextAction.title)}</strong><small>${escapeHTML(nextAction.detail)}</small></div>
+        ${nextAction.kind==='none'?'<span class="customer-workfile-clear">Nichts fällig</span>':`<button type="button" class="primary-action" data-customer-work-next="${nextAction.kind}" data-communication-id="${escapeHTML(nextAction.communicationId||'')}" data-appointment-id="${escapeHTML(nextAction.appointmentId||'')}">${escapeHTML(nextAction.label)}</button>`}
+      </article>
+
+      <div class="customer-workfile-grid">
+        <article><span>Letzte Behandlung</span><strong>${last?escapeHTML(last.service):'Noch keine'}</strong><small>${last?`${safeDate(last.date)} · ${escapeHTML(last.material||'Material nicht notiert')}`:'Beim Abschluss automatisch dokumentieren'}</small></article>
+        <article><span>Dokumentation</span><strong>${escapeHTML(photoStatus)}</strong><small>${last?.aftercare?'Nachpflege erklärt':'Nachpflege nicht markiert'}</small></article>
+        <article class="${openTotal>0?'is-attention':''}"><span>Finanzen</span><strong>${openTotal>0?money(openTotal)+' offen':'Alles ausgeglichen'}</strong><small>${openAppointments.length?openAppointments.length+' Termin(e) mit Restbetrag':'Keine offenen Beträge'}</small></article>
+        <article><span>Nächste Nachpflege</span><strong>${nextTask?escapeHTML(nextTask.title):'Nichts geplant'}</strong><small>${nextTask?'fällig '+safeDate(nextTask.dueDate):'Keine offene Wiedervorlage'}</small></article>
+        <article><span>Kommunikation</span><strong>${escapeHTML(communicationStatus)}</strong><small>${lastCommunication?`${escapeHTML(communicationTypeLabel(lastCommunication.type))} · ${communicationDate(lastCommunication)}`:'Noch kein Verlauf'}</small></article>
+        <article><span>Warteliste</span><strong>${waiting.length?escapeHTML(waiting[0].service):'Nicht vorgemerkt'}</strong><small>${waiting.length?`ab ${safeDate(waiting[0].earliest)} · ${escapeHTML(waiting[0].daypart||'Flexibel')}`:'Kein kurzfristiger Terminwunsch'}</small></article>
+      </div>
+
+      ${last?`<div class="customer-workfile-detail">
+        <div class="customer-treatment-summary"><span>Letzter Behandlungsvermerk</span><strong>${escapeHTML(last.material||'Material / Technik nicht notiert')}</strong><p>${escapeHTML(last.result||'Kein Ergebnisvermerk hinterlegt.')}</p><small>${escapeHTML(photoStatus)} · ${last.aftercare?'Nachpflege erklärt':'Nachpflege nicht markiert'}</small></div>
+        <div class="customer-treatment-timeline"><span>Behandlungsverlauf</span>${records.slice(0,3).map(record=>`<div><time>${safeDate(record.date)}</time><strong>${escapeHTML(record.service)}</strong><small>${escapeHTML(record.material||'ohne Materialnotiz')}</small></div>`).join('')}</div>
+      </div>`:''}
+
+      <div class="customer-workfile-communications">
+        <div class="customer-workfile-section-head"><div><span class="panel-kicker">Kontaktverlauf</span><h5>Was wurde wann vorbereitet?</h5></div>${communications.length?'<span>'+communications.length+'</span>':''}</div>
+        <div class="customer-communication-history">${communications.length?communications.slice(0,4).map(item=>`<div><span class="customer-communication-type">${escapeHTML(communicationTypeLabel(item.type))}</span><strong>${escapeHTML(item.title||communicationTypeLabel(item.type))}</strong><small>${communicationDate(item)} · ${item.status==='handed_off'?'an WhatsApp übergeben':item.status==='done'?'erledigt':item.dueDate<=t?'fällig':'geplant'}</small></div>`).join(''):'<p>Noch keine Kommunikation protokolliert.</p>'}</div>
+      </div>
     </section>`;
   }
 
