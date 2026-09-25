@@ -128,8 +128,8 @@
     return services[0];
   }
 
-  function findSlot(db,target,service,preferredTimes,avoidDate=''){
-    const latest=addDays(new Date(),95);
+  function findSlot(db,target,service,preferredTimes,avoidDate='',latestDate=''){
+    const latest=latestDate?new Date(`${latestDate}T12:00:00`):addDays(new Date(),95);
     for(let offset=0;offset<12;offset++){
       const d=addDays(target,offset);if(d>latest)break;const date=isoDate(d);if(date===avoidDate)continue;
       const candidates=[...(timeSets[preferredTimes]||[]),'09:00','10:30','11:30','13:30','14:30','16:00'];
@@ -188,15 +188,41 @@
     return {depositExpected,payments,paidAmount,paymentStatus};
   }
 
-  function createDemoAppointment(db,row,index,seq,count,id,target,phase){
+  function createDemoAppointment(db,row,index,seq,count,id,target,phase,latestDate=''){
     const customer=db.customers.find(c=>c.name===row[0]);if(!customer)return null;
     const wanted=phase==='Beratung'?'Beratung':row[6];
     const service=serviceForName(db,wanted)||serviceForName(db,'Beratung');if(!service)return null;
     const effectiveDuration=phase==='Nachbehandlung'&&wanted!=='Beratung'?Math.min(Number(service.duration||60),60):Number(service.duration||30);
-    const slot=findSlot(db,target,{...service,duration:effectiveDuration},row[4],isoDate(new Date()));if(!slot)return null;
+    const slot=findSlot(db,target,{...service,duration:effectiveDuration},row[4],'',latestDate);if(!slot)return null;
     const today=isoDate(new Date()),status=statusFor(index,seq,slot.date,today),source=(index+seq)%3===0?'online-demo':'studio',finalPrice=priceFor(service,phase);
     const pay=paymentState({status,source,service,finalPrice,index,seq,date:slot.date});
     return {id,date:slot.date,time:slot.time,duration:effectiveDuration,service:service.name,serviceDescription:service.description||'',customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status,payment:source==='online-demo'&&pay.depositExpected>0?'Online-Anzahlung':'Im Studio',paymentPreference:source==='online-demo'&&pay.depositExpected>0?'Online-Anzahlung':'Im Studio',source,phase,note:`${phase}: ${row[7]}`,listPrice:Number(service.price||0),finalPrice,discount:Math.max(0,Number(service.price||0)-finalPrice),...pay,isDemoBooking:true,demoSimulation:true};
+  }
+
+  function customerHasNearbyAppointment(db,customerId,date,days=20){
+    const target=new Date(`${date}T12:00:00`).getTime(),span=days*86400000;
+    return (db.appointments||[]).some(a=>a.customerId===customerId&&a.status!=='cancelled'&&Math.abs(new Date(`${a.date}T12:00:00`).getTime()-target)<span);
+  }
+
+  function ensureWeeklyDensity(db){
+    const now=new Date(),targets=[13,12,14,12,13,11,14,12,13,12,14,11,13];
+    targets.forEach((targetCount,week)=>{
+      const start=addDays(now,week*7),end=addDays(start,6),startISO=isoDate(start),endISO=isoDate(end);
+      let current=(db.appointments||[]).filter(a=>a.status!=='cancelled'&&a.date>=startISO&&a.date<=endISO).length;
+      const used=new Set((db.appointments||[]).filter(a=>a.status!=='cancelled'&&a.date>=startISO&&a.date<=endISO).map(a=>a.customerId));
+      for(let attempt=0;current<targetCount&&attempt<500;attempt++){
+        const index=(week*17+attempt*11+7)%allProfiles.length,row=allProfiles[index],customer=db.customers.find(c=>c.name===row[0]);if(!customer)continue;
+        if(used.has(customer.id))continue;
+        const preferredTarget=addDays(start,(attempt*2+week)%7),candidateISO=isoDate(preferredTarget);
+        if(customerHasNearbyAppointment(db,customer.id,candidateISO,20))continue;
+        const previous=(db.appointments||[]).filter(a=>a.customerId===customer.id&&a.status!=='cancelled'&&a.date<candidateISO&&!/Beratung/i.test(a.service)).sort((a,b)=>b.date.localeCompare(a.date))[0];
+        const phase=previous?'Nachbehandlung':(attempt%6===0?'Beratung':'Erstbehandlung');
+        const appointment=createDemoAppointment(db,row,index,week,1,`demo_sim_week_${String(week+1).padStart(2,'0')}_${String(attempt+1).padStart(3,'0')}`,preferredTarget,phase,endISO);
+        if(!appointment||appointment.date<startISO||appointment.date>endISO)continue;
+        appointment.status=(week===0&&current===targetCount-1&&attempt%3===0)?'pending':'confirmed';
+        db.appointments.push(appointment);used.add(customer.id);current++;
+      }
+    });
   }
 
   function ensureAppointments(db){
@@ -220,6 +246,7 @@
       appointment.status=attempt%23===0?'pending':'confirmed';
       db.appointments.push(appointment);generated++;
     }
+    ensureWeeklyDensity(db);
   }
 
   function treatmentMaterial(service,index){
