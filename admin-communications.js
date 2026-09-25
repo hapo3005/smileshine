@@ -33,7 +33,7 @@
       followUpId:input.followUpId||'',waitlistId:input.waitlistId||'',dueDate:input.dueDate||today(),status:input.status||'due',
       title:input.title||'',note:input.note||'',slot:input.slot||null,createdAt:input.createdAt||new Date().toISOString()
     };
-    if(item){Object.assign(item,base);return item}
+    if(item){const previousStatus=item.status;Object.assign(item,base);if(['handed_off','done'].includes(previousStatus))item.status=previousStatus;return item}
     item={id:uid('communication'),...base};A.db.communications.push(item);return item;
   }
 
@@ -90,6 +90,10 @@
       if(item.waitlistId){
         const entry=(A.db.waitlist||[]).find(x=>x.id===item.waitlistId);
         if(!entry||entry.status!=='waiting')item.status='cancelled';
+      }
+      if(item.followUpId){
+        const task=(A.db.followUps||[]).find(x=>x.id===item.followUpId);
+        if(!task||['done','cancelled'].includes(task.status))item.status='cancelled';
       }
     });
   }
@@ -174,15 +178,26 @@
     A.openWhatsAppChooser?.(virtual.id,{...options,cleanupAppointmentId:virtual.id});
   }
 
+  function resolveLinked(item){
+    if(item.followUpId){
+      const task=(A.db.followUps||[]).find(x=>x.id===item.followUpId);
+      if(task&&task.status!=='done'){task.status='done';task.completedAt=new Date().toISOString()}
+    }
+    if(item.waitlistId){
+      const entry=(A.db.waitlist||[]).find(x=>x.id===item.waitlistId);
+      if(entry){entry.lastContactedAt=new Date().toISOString();entry.lastContactedSlot=item.slot||null}
+    }
+  }
+
   function markHandedOff(id){
     const item=ensureData().find(x=>x.id===id);if(!item)return;
-    item.status='handed_off';item.handedOffAt=new Date().toISOString();A.save();A.renderDashboardWorkflow?.();
+    item.status='handed_off';item.handedOffAt=new Date().toISOString();resolveLinked(item);A.save();A.renderDashboardWorkflow?.();
     if($('#communicationCenterDialog')?.open)setTab($('#communicationCenterDialog').dataset.tab||'due');
   }
 
   function skip(id){
     const item=ensureData().find(x=>x.id===id);if(!item)return;
-    item.status='done';item.completedAt=new Date().toISOString();A.save('Nachricht als nicht nötig markiert.');A.renderDashboardWorkflow?.();setTab($('#communicationCenterDialog')?.dataset.tab||'due');
+    item.status='done';item.completedAt=new Date().toISOString();resolveLinked(item);A.save('Nachricht als nicht nötig markiert.');A.renderDashboardWorkflow?.();setTab($('#communicationCenterDialog')?.dataset.tab||'due');
   }
 
   function communicationForAppointment(type,appointmentId,dueDate=today(),extra={}){
