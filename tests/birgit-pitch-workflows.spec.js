@@ -280,3 +280,97 @@ test('intelligent communication creates due reminder and tracks WhatsApp handoff
   expect(state.status).toBe('handed_off');
   expect(state.handedOffAt).toBe(true);
 });
+
+
+test('customer workfile consolidates treatment, money, aftercare and communication', async ({ page }) => {
+  await reset(page, 'customers');
+
+  await page.evaluate(() => {
+    const A = window.SSAdmin;
+    const today = A.isoDate(new Date());
+    const future = A.isoDate(A.addDays(new Date(), 10));
+    const customer = {
+      id: 'qa_workfile_customer',
+      name: 'Leonie Arbeitsakte',
+      firstName: 'Leonie',
+      lastName: 'Arbeitsakte',
+      phone: '0176 55550999',
+      email: 'leonie@example.test',
+      created: today
+    };
+    A.db.customers.push(customer);
+    A.db.appointments.push({
+      id: 'qa_workfile_appointment',
+      date: today,
+      time: '10:00',
+      duration: 90,
+      service: 'Augenbrauen',
+      customerId: customer.id,
+      customerName: customer.name,
+      phone: customer.phone,
+      email: customer.email,
+      status: 'completed',
+      payment: 'Im Studio',
+      paymentPreference: 'Im Studio',
+      source: 'studio',
+      listPrice: 289,
+      finalPrice: 289,
+      paidAmount: 100,
+      payments: [{id:'qa_workfile_payment',amount:100,method:'Bar',createdAt:new Date().toISOString()}],
+      paymentStatus: 'partial'
+    });
+    A.db.treatmentRecords = A.db.treatmentRecords || [];
+    A.db.treatmentRecords.push({
+      id: 'qa_workfile_record',
+      customerId: customer.id,
+      appointmentId: 'qa_workfile_appointment',
+      date: today,
+      service: 'Augenbrauen',
+      material: 'Soft Brown · QA',
+      result: 'Natürliches Ergebnis mit klarer Form.',
+      beforePhoto: true,
+      afterPhoto: true,
+      aftercare: true,
+      createdAt: new Date().toISOString()
+    });
+    A.db.followUps = A.db.followUps || [];
+    A.db.followUps.push({
+      id: 'qa_workfile_followup',
+      customerId: customer.id,
+      title: 'Heilungsverlauf prüfen',
+      dueDate: future,
+      type: 'aftercare',
+      status: 'open',
+      note: 'QA Nachpflege'
+    });
+    A.db.communications = A.db.communications || [];
+    A.db.communications.push({
+      id: 'qa_workfile_comm',
+      key: 'qa-workfile-history',
+      type: 'confirm',
+      customerId: customer.id,
+      appointmentId: 'qa_workfile_appointment',
+      dueDate: today,
+      status: 'handed_off',
+      title: 'Terminbestätigung',
+      handedOffAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
+    });
+    A.save();
+    A.renderCustomerDetail(customer.id);
+  });
+
+  await expect(page.locator('#customerDetailModal')).toBeVisible();
+  const workfile = page.locator('.customer-workfile');
+  await expect(workfile).toBeVisible();
+  await expect(workfile).toContainText('Soft Brown · QA');
+  await expect(workfile).toContainText('Vorher & Nachher vorhanden');
+  await expect(workfile).toContainText('189,00 € offen');
+  await expect(workfile).toContainText('Heilungsverlauf prüfen');
+  await expect(workfile).toContainText('Terminbestätigung');
+  await expect(workfile.locator('.customer-next-step')).toContainText('Zahlung noch offen');
+
+  await workfile.locator('[data-customer-work-next="payment"]').click();
+  await expect(page.locator('#paymentModal')).toBeVisible();
+  await expect(page.locator('.payment-open strong')).toHaveText('189,00 €');
+});
