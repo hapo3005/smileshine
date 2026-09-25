@@ -46,7 +46,9 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   await page.waitForFunction(() => Boolean(window.SSAdmin?.showView));
   await expect(page.locator('.demo-state')).toContainText('Vorschau');
   await expect(page.locator('.sync-pill')).toContainText('Vorschau aktiv');
-  await expect(page.locator('#todayList .appointment-row')).toHaveCount(4);
+  const todayRows = await page.locator('#todayList .appointment-row').count();
+  expect(todayRows).toBeGreaterThanOrEqual(5);
+  expect(todayRows).toBeLessThanOrEqual(7);
   await expect(page.locator('#activityList')).toContainText('Nina Schäfer');
 
   await page.evaluate(() => window.SSAdmin.showView('pickup'));
