@@ -10,7 +10,7 @@
   };
 
   function migrateDescriptions(){let changed=false;(A.db.services||[]).forEach(s=>{if(s.description===undefined){s.description=defaults[s.name]||'';changed=true}});if(changed){if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db))}}
-  function ensureStyles(){if(document.querySelector('link[data-service-manager-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='admin-services-manager.css';l.dataset.serviceManagerStyle='true';document.head.appendChild(l)}
+  function ensureStyles(){if(document.querySelector('link[data-service-manager-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='admin-services-manager.css?v=20260925-services6';l.dataset.serviceManagerStyle='true';document.head.appendChild(l)}
 
   function ensureUI(){
     ensureStyles();migrateDescriptions();
