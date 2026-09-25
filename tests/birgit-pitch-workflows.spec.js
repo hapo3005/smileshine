@@ -116,8 +116,20 @@ test('reset restores the realistic three-month studio simulation', async ({ page
     simulated.forEach(a => perCustomer.set(a.customerId, (perCustomer.get(a.customerId) || 0) + 1));
     const services = [...new Set(simulated.map(a => a.service))];
     const dates = simulated.map(a => a.date).sort();
-    const today = A.isoDate(new Date()), weekEnd = A.isoDate(A.addDays(new Date(), 7));
+    const today = A.isoDate(new Date()), weekEnd = A.isoDate(A.addDays(new Date(), 6));
     const weekApps = A.db.appointments.filter(a => a.status !== 'cancelled' && a.date >= today && a.date <= weekEnd);
+    const refillByCustomer = new Map();
+    simulated.filter(a => /Auffüllen/i.test(a.service) && a.status !== 'cancelled').forEach(a => {
+      const list = refillByCustomer.get(a.customerId) || [];
+      list.push(a.date); refillByCustomer.set(a.customerId, list);
+    });
+    const refillGaps = [];
+    for (const dates of refillByCustomer.values()) {
+      dates.sort();
+      for (let i=1;i<dates.length;i++) refillGaps.push(Math.round((new Date(dates[i]+'T12:00:00')-new Date(dates[i-1]+'T12:00:00'))/86400000));
+    }
+    refillGaps.sort((a,b)=>a-b);
+    const medianRefillGap = refillGaps.length ? refillGaps[Math.floor(refillGaps.length/2)] : 0;
     return {
       customers: A.db.customers.filter(c => c.isDemoProfile).length,
       generatedAppointments: simulated.length,
@@ -134,6 +146,9 @@ test('reset restores the realistic three-month studio simulation', async ({ page
       nailAppointments: simulated.filter(a => /Nageldesign|Maniküre/i.test(a.service)).length,
       nailShare: A.db.demoSimulation?.nailShare || 0,
       openingHours: A.db.demoSimulation?.openingHours || '',
+      medianRefillGap,
+      refillRepeatCustomers: [...refillByCustomer.values()].filter(list => list.length >= 2).length,
+      specialSaturdays: simulated.filter(a => a.specialOpening).length,
       rangeStart: dates[0],
       rangeEnd: dates[dates.length - 1],
       simulation: A.db.demoSimulation
@@ -163,6 +178,10 @@ test('reset restores the realistic three-month studio simulation', async ({ page
   expect(state.nailShare).toBeGreaterThanOrEqual(60);
   expect(state.nailShare).toBeLessThanOrEqual(75);
   expect(state.openingHours).toBe('Mo–Fr 09:00–19:00');
+  expect(state.medianRefillGap).toBeGreaterThanOrEqual(20);
+  expect(state.medianRefillGap).toBeLessThanOrEqual(35);
+  expect(state.refillRepeatCustomers).toBeGreaterThanOrEqual(30);
+  expect(state.specialSaturdays).toBeGreaterThanOrEqual(4);
   expect(new Date(state.rangeEnd + 'T12:00:00').getTime() - new Date(state.rangeStart + 'T12:00:00').getTime()).toBeGreaterThan(100 * 86400000);
 });
 
