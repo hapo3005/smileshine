@@ -93,4 +93,13 @@
   refreshCheckout();
 })();
 
-import('./service-carousel.js?v=20260923-birgit-final2-carousel1');
+(async()=>{
+  let lastError;
+  for(let attempt=0;attempt<3;attempt++){
+    const base='./service-carousel.js?v=20260923-birgit-final2-carousel1';
+    const specifier=attempt?base+'&retry='+attempt+'-'+Date.now():base;
+    try{await import(specifier);return}
+    catch(error){lastError=error;if(attempt<2)await new Promise(resolve=>setTimeout(resolve,180*(attempt+1)))}
+  }
+  console.error('Smile & Shine: Service-Modul konnte nicht geladen werden.',lastError);
+})();
