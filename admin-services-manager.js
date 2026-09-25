@@ -17,12 +17,20 @@
     const view=$('.view[data-view-panel="services"]');if(!view)return;
     const heading=$('.view-heading',view);
     if(heading&&!$('[data-action="newService"]',heading)){const btn=document.createElement('button');btn.type='button';btn.className='primary-action';btn.dataset.action='newService';btn.textContent='＋ Neue Leistung';heading.appendChild(btn)}
+    if(!$('#serviceDemoGuidance',view)){const guide=document.createElement('div');guide.id='serviceDemoGuidance';guide.className='service-demo-guidance';heading?.insertAdjacentElement('afterend',guide)}
+    renderGuidance();
     if(!$('#serviceModal')){
       const dialog=document.createElement('dialog');dialog.className='modal';dialog.id='serviceModal';
       dialog.innerHTML=`<form class="modal-card" id="serviceForm"><div class="modal-head"><div><span class="panel-kicker">Leistungsverwaltung</span><h3>Neue Leistung</h3></div><button type="button" class="modal-close" data-close-service aria-label="Schließen">×</button></div><div class="modal-body"><label><span>Name der Leistung</span><input name="name" required maxlength="80" placeholder="z. B. Powder Brows"></label><label><span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" required placeholder="Kurze, verständliche Beschreibung für Kundinnen und Kunden"></textarea><small class="service-field-hint">Wird auch in der Online-Buchung angezeigt.</small></label><div class="form-row"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="60" required></label><label><span>Preis · €</span><input name="price" type="number" min="0" step="0.01" value="0" required></label></div><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" step="0.01" value="0"></label><label class="service-active-row"><span><strong>Sofort online buchbar</strong><small>Kann später jederzeit vorübergehend pausiert werden.</small></span><span class="switch"><input name="active" type="checkbox" checked><span></span></span></label></div><div class="modal-actions"><button type="button" class="soft-button" data-close-service>Abbrechen</button><button type="submit" class="primary-action">Leistung anlegen</button></div></form>`;
       document.body.appendChild(dialog);
     }
     bindModal();decorateCards();
+  }
+
+  function renderGuidance(){
+    const host=$('#serviceDemoGuidance');if(!host)return;
+    const services=A.db.services||[],market=services.filter(s=>s.verification==='market').length,confirmed=services.filter(s=>s.verification==='studio'||s.verification==='verified').length;
+    host.innerHTML=`<div><span class="service-demo-guidance-kicker">Preis- & Leistungscheck</span><strong>Marktnahe Demo – Birgit behält die Kontrolle.</strong><p>Preise mit „Demo-Wert“ sind bewusst nur marktgestützte Arbeitswerte. Die bereits festgelegten Terminlängen bleiben bestehen. Sobald Birgit Preis, Anzahlung oder Leistungsdaten prüft und speichert, markieren wir die Leistung als „Studio bestätigt“.</p></div><div class="service-demo-guidance-stats"><span><b>${market}</b> noch bestätigen</span><span><b>${confirmed}</b> Studio bestätigt</span></div>`;
   }
 
   function bindModal(){
@@ -51,7 +59,7 @@
         status.textContent=!s.active?'Pausiert':s.demoOnly?'Studio aktiv':CORE_SERVICE_IDS.has(s.id)?'Öffentlich buchbar':'Im Leistungsstamm';
         top.insertBefore(status,top.lastElementChild);
         if(toggle)toggle.setAttribute('aria-label',s.active?'Leistung pausieren':'Leistung aktivieren');
-        if(s.verification&&!CORE_SERVICE_IDS.has(s.id)){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Noch bestätigen':'Studio';top.insertBefore(v,status)}
+        if(s.verification){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Demo-Wert':'Studio bestätigt';top.insertBefore(v,status)}
       }
       if(h3){const nameLabel=document.createElement('label');nameLabel.className='service-name-field';nameLabel.innerHTML=`<span>Name</span><input name="serviceName" maxlength="80" value="${escapeHTML(s.name)}">`;h3.replaceWith(nameLabel)}
       if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${!s.active?'Vorübergehend pausiert.':s.demoOnly?'Nur für Studio/Demo – nicht öffentlich buchbar.':CORE_SERVICE_IDS.has(s.id)?'In der öffentlichen Buchung sichtbar.':'Im internen Leistungsstamm – Angebot noch mit Birgit bestätigen.'}</small>`;p.replaceWith(desc)}
@@ -72,7 +80,8 @@
         if(A.db.services.some(x=>x.id!==s.id&&x.name.toLowerCase()===name.toLowerCase()))return A.toast('Dieser Leistungsname wird bereits verwendet.');
         const price=Math.max(0,Number($('[name=price]',card)?.value||0)),deposit=Math.max(0,Number($('[name=deposit]',card)?.value||0));if(deposit>price&&price>0)return A.toast('Die Anzahlung kann nicht höher als der Preis sein.');
         s.name=name;s.description=description;s.duration=Math.max(15,Number($('[name=duration]',card)?.value||s.duration));s.price=price;s.deposit=deposit;
-        A.addActivity('setting',`${oldName}: Leistungseinstellungen aktualisiert.`);A.save(`${name} gespeichert.`);A.renderServices?.();
+        s.verification='studio';s.confirmedAt=new Date().toISOString();s.internalNote='Von Birgit bzw. im Studio individuell geprüft und im Adminbereich bestätigt.';
+        A.addActivity('setting',`${oldName}: Leistungseinstellungen geprüft und als Studio bestätigt.`);A.save(`${name} gespeichert und als Studio bestätigt.`);A.renderServices?.();renderGuidance();
       };
       const del=$('[data-delete-service]',card);if(del)del.onclick=()=>deleteService(del.dataset.deleteService);
     });
@@ -80,7 +89,7 @@
 
   function deleteService(id){const s=A.db.services.find(x=>x.id===id);if(!s)return;const appointments=A.db.appointments.filter(a=>a.service===s.name).length;const message=appointments?`„${s.name}“ wirklich löschen? ${appointments} bestehende Termin${appointments===1?' bleibt':'e bleiben'} mit eingefrorenem Namen und Preis erhalten.`:`„${s.name}“ wirklich löschen?`;if(!confirm(message))return;A.db.services=A.db.services.filter(x=>x.id!==id);A.addActivity('setting',`Leistung gelöscht: ${s.name}.`);A.save(`${s.name} wurde gelöscht.`);A.renderServices?.()}
 
-  function initServiceManager(){ensureUI();A.bindServiceActions=bindServiceActions;const grid=$('#servicesGrid');if(grid)new MutationObserver(()=>{decorateCards();bindServiceActions()}).observe(grid,{childList:true});const baseShow=A.showView;A.showView=name=>{baseShow(name);if(name==='services'){ensureUI();decorateCards();bindServiceActions()}};A.renderServices?.();decorateCards();bindServiceActions()}
+  function initServiceManager(){ensureUI();A.bindServiceActions=bindServiceActions;const grid=$('#servicesGrid');if(grid)new MutationObserver(()=>{decorateCards();bindServiceActions();renderGuidance()}).observe(grid,{childList:true});const baseShow=A.showView;A.showView=name=>{baseShow(name);if(name==='services'){ensureUI();decorateCards();bindServiceActions();renderGuidance()}};A.renderServices?.();decorateCards();bindServiceActions();renderGuidance()}
 
   Object.assign(A,{initServiceManager,bindServiceActions});
 })();
