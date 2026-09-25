@@ -65,7 +65,7 @@
   }
 
   function deriveActions(){
-    const t=today(),items=[];
+    const t=today(),items=[],communications=A.getDueCommunications?.()||[];
     const todays=(A.db.appointments||[]).filter(a=>a.date===t&&a.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
     todays.forEach(a=>{
       if(a.status==='pending')items.push({key:'confirm-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · ${a.customerName}`,detail:'Termin ist noch offen und sollte bestätigt werden.',action:'Termin öffnen'});
@@ -74,8 +74,13 @@
       if(f.open>0&&a.status==='completed')items.push({key:'pay-'+a.id,priority:3,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Zahlung im Blick`,detail:`${a.customerName} · ${money(f.open)} offen`,action:'Termin öffnen'});
     });
     dueFollowUps().forEach(x=>{
+      if(x.type==='aftercare'&&communications.some(item=>item.followUpId===x.id))return;
       const c=customerFor(x.customerId);
       items.push({key:'task-'+x.id,priority:x.type==='aftercare'?2:3,kind:'task',taskId:x.id,customerId:x.customerId,title:x.title,detail:`${c?.name||'Kunde'} · fällig ${safeDate(x.dueDate)}`,action:'Erledigt'});
+    });
+    communications.forEach(item=>{
+      const a=appointmentFor(item.appointmentId),c=customerFor(item.customerId),label=({confirm:'Bestätigung',change:'Terminänderung',reminder:'Erinnerung',aftercare:'Nachpflege',healing:'Heilungsverlauf',waitlist:'Freier Termin'})[item.type]||'Nachricht';
+      items.push({key:'communication-'+item.id,priority:item.type==='change'||item.type==='reminder'?1:2,kind:'communication',communicationId:item.id,appointmentId:item.appointmentId||'',customerId:item.customerId||'',title:`${label} · ${a?.customerName||c?.name||'Kunde'}`,detail:item.note||'Nachricht ist fällig.',action:'Nachricht'});
     });
     return items.sort((a,b)=>a.priority-b.priority||a.title.localeCompare(b.title,'de'));
   }
@@ -93,7 +98,7 @@
   function renderDashboardWorkflow(){
     ensureData();
     const root=dashboardRoot();if(!root)return;
-    const actions=deriveActions(),waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,follow=(A.db.followUps||[]).filter(x=>x.status!=='done').length;
+    const actions=deriveActions(),waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,follow=(A.db.followUps||[]).filter(x=>x.status!=='done').length,messages=(A.getDueCommunications?.()||[]).length;
     const treatmentDue=(A.db.followUps||[]).filter(x=>x.status!=='done'&&x.type==='aftercare').length;
     root.innerHTML=`
       <div class="workflow-head">
@@ -106,13 +111,14 @@
             <article class="workflow-action priority-${item.priority}">
               <span class="workflow-order">${String(index+1).padStart(2,'0')}</span>
               <div class="workflow-action-copy"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></div>
-              <button type="button" data-workflow-action="${escapeHTML(item.kind)}" data-task-id="${escapeHTML(item.taskId||'')}" data-appointment-id="${escapeHTML(item.appointmentId||'')}" data-customer-id="${escapeHTML(item.customerId||'')}">${escapeHTML(item.action)}</button>
+              <button type="button" data-workflow-action="${escapeHTML(item.kind)}" data-task-id="${escapeHTML(item.taskId||'')}" data-communication-id="${escapeHTML(item.communicationId||'')}" data-appointment-id="${escapeHTML(item.appointmentId||'')}" data-customer-id="${escapeHTML(item.customerId||'')}">${escapeHTML(item.action)}</button>
             </article>`).join(''):`<div class="workflow-clear"><span>✓</span><div><strong>Der Studiotag ist vorbereitet.</strong><small>Neue Buchungen und Wiedervorlagen erscheinen automatisch hier.</small></div></div>`}
         </div>
-        <div class="workflow-mini-grid">
+        <div class="workflow-mini-grid communication-enabled">
           <button type="button" data-open-workflow-center data-workflow-tab="waitlist"><span>Warteliste</span><strong>${waiting}</strong><small>Kundinnen warten</small></button>
           <button type="button" data-open-workflow-center data-workflow-tab="followups"><span>Wiedervorlagen</span><strong>${follow}</strong><small>offene Aufgaben</small></button>
           <button type="button" data-open-workflow-center data-workflow-tab="aftercare"><span>Nachpflege</span><strong>${treatmentDue}</strong><small>aktive Rückfragen</small></button>
+          <button type="button" data-open-communication-center><span>Nachrichten</span><strong>${messages}</strong><small>heute fällig</small></button>
         </div>
       </div>`;
   }
@@ -315,6 +321,7 @@
       const action=event.target.closest('[data-workflow-action]');
       if(action){
         if(action.dataset.workflowAction==='task'){completeTask(action.dataset.taskId);return}
+        if(action.dataset.workflowAction==='communication'){A.openCommunication?.(action.dataset.communicationId);return}
         if(action.dataset.appointmentId){A.openAppointmentDetail?.(action.dataset.appointmentId);return}
         if(action.dataset.customerId)A.renderCustomerDetail?.(action.dataset.customerId);
         return;
