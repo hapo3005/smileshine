@@ -106,8 +106,8 @@
   function refreshPreview(){
     const {id,type,tone,customText}=currentSelection(),a=appointment(id),textarea=$('#waMessagePreview');if(!a||!textarea)return;
     textarea.value=customText||message(type,a,tone);updateCharacterCount();
-    $('[data-wa-template]', $('#whatsappDialog')).forEach(btn=>btn.classList.toggle('active',btn.dataset.waTemplate===type));
-    $('[data-wa-tone]', $('#whatsappDialog')).forEach(btn=>btn.classList.toggle('active',btn.dataset.waTone===tone));
+    $$('[data-wa-template]', $('#whatsappDialog')).forEach(btn=>btn.classList.toggle('active',btn.dataset.waTemplate===type));
+    $$('[data-wa-tone]', $('#whatsappDialog')).forEach(btn=>btn.classList.toggle('active',btn.dataset.waTone===tone));
   }
 
   function openChooser(id,options={}){
