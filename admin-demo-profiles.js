@@ -262,8 +262,8 @@
     generated.filter(a=>a.status==='completed').slice(0,12).forEach(a=>{
       db.communications.push({id:`demo_sim_comm_${++commIndex}`,key:`demo-history-aftercare-${a.id}`,type:'aftercare',appointmentId:a.id,customerId:a.customerId,dueDate:a.date,status:'done',title:'Nachpflege',note:'Nachpflegehinweise nach Behandlung.',createdAt:new Date(`${a.date}T18:15:00`).toISOString(),completedAt:new Date(addDays(new Date(`${a.date}T18:15:00`),1)).toISOString()});
     });
-    generated.filter(a=>['confirmed','pending'].includes(a.status)&&a.date>today).slice(0,18).forEach(a=>{
-      const created=isoDate(addDays(new Date(`${a.date}T12:00:00`),-10));
+    generated.filter(a=>a.status==='confirmed'&&a.date>today).slice(0,18).forEach(a=>{
+      const created=isoDate(addDays(new Date(),-(1+(commIndex%8))));
       db.communications.push({id:`demo_sim_comm_${++commIndex}`,key:`demo-history-confirm-${a.id}`,type:'confirm',appointmentId:a.id,customerId:a.customerId,dueDate:created,status:'handed_off',title:'Terminbestätigung',note:`${a.service} · ${a.time} Uhr`,createdAt:new Date(`${created}T10:00:00`).toISOString(),handedOffAt:new Date(`${created}T10:03:00`).toISOString()});
     });
 
