@@ -6,7 +6,7 @@
 
   function ensureStyles(){
     if(document.querySelector('link[data-customer-media-style]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-media.css?v=20260925-media1';link.dataset.customerMediaStyle='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-media.css?v=20260925-demoapp2';link.dataset.customerMediaStyle='true';document.head.appendChild(link);
   }
 
   function kindLabel(kind){return kind==='before'?'Vorher':kind==='after'?'Nachher':'Foto'}
