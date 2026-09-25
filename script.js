@@ -214,5 +214,5 @@ if(waitlistToggle&&waitlistForm){
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
 updateSummary();
 import('./checkout-enhancements.js?v=20260923-birgit-final2-carousel1');
-import('./booking-admin-sync.js?v=20260925-realistic4');
+import('./booking-admin-sync.js?v=20260925-hours5');
 import('./cnc-products-carousel.js?v=20260923-birgit-final2');
