@@ -286,9 +286,9 @@ test('service catalog uses the agreed realistic appointment lengths', async ({ p
   expect(services['pmu-followup']).toBeUndefined();
   expect(services['demo-pmu-followup']).toBeUndefined();
 
-  await expect(page.locator('#servicesGrid')).toContainText('Studioleistung · nicht öffentlich');
-  await expect(page.locator('#servicesGrid')).toContainText('Öffentliche Buchung');
-  await expect(page.locator('#servicesGrid')).toContainText('Leistungsstamm · noch bestätigen');
+  await expect(page.locator('#servicesGrid')).toContainText('Nur für Studio/Demo – nicht öffentlich buchbar.');
+  await expect(page.locator('#servicesGrid')).toContainText('In der öffentlichen Buchung sichtbar.');
+  await expect(page.locator('#servicesGrid')).toContainText('mit Birgit final bestätigen');
   await expect(page.locator('.service-card-admin[data-service-id="demo-nail-refill"] input[name="duration"]')).toHaveValue('60');
   await expect(page.locator('.service-card-admin[data-service-id="lip-pmu"] input[name="duration"]')).toHaveValue('150');
   await expect(page.locator('.service-card-admin[data-service-id="pmu-followup-lips"] input[name="duration"]')).toHaveValue('90');
