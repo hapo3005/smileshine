@@ -202,7 +202,7 @@
     DEMO_SERVICE_DEFS.forEach(def=>{
       const existing=db.services.find(s=>s.id===def.id||s.name===def.name);
       if(existing){
-        existing.demoOnly=Boolean(def.demoOnly);existing.verification=def.verification;existing.category=def.category;existing.description=def.description;existing.internalNote=def.internalNote;
+        existing.name=def.name;existing.demoOnly=Boolean(def.demoOnly);existing.verification=def.verification;existing.category=def.category;existing.description=def.description;existing.internalNote=def.internalNote;
         if(rebuild){
           existing.duration=def.duration;
           if(def.price>0||existing.price===undefined||existing.price===null)existing.price=def.price;
