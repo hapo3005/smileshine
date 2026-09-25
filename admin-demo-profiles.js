@@ -2,7 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=1;
+  const VERSION=2;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -47,6 +47,31 @@
     ['Rita Scherer','1954-10-29','sehr freundlich, geduldig','Telefon','vormittags','zeitlos dezent','Augenbrauen','Gesicht etwas mehr Kontur geben']
   ];
 
+  const extraNames=[
+    'Stefanie Berg','Anja Kaiser','Jennifer Jung','Silke Werner','Bianca Hahn','Nadine Kranz','Yvonne Scholz','Franziska Beck',
+    'Alexandra Winter','Sandra Kuhn','Dagmar Vogt','Anke Schulte','Jessica Haas','Cornelia Maurer','Ines Horn','Kerstin Ludwig',
+    'Michaela Böhm','Sonja Buschmann','Annika Conrad','Britta Ebert','Verena Fröhlich','Melanie Günther','Isabel Henning','Saskia Jansen',
+    'Diana Kirsch','Maike Lehmann','Patricia Marx','Jasmin Otto','Susanne Pohl','Rebecca Quast','Theresa Reuter','Heidi Simon',
+    'Andreas Thiel','Sven Ulrich','Michael Vetter','Daniel Weiß','Stefan Ziegler','Lena Arnold','Marie Bender','Johanna Dietz'
+  ];
+  const personalityCycle=['freundlich, verbindlich','ruhig, detailorientiert','spontan, herzlich','strukturiert, zuverlässig','offen, kommunikativ','zurückhaltend, angenehm'];
+  const communicationCycle=['WhatsApp','Telefon','WhatsApp, kurz und direkt','E-Mail','Telefon oder WhatsApp'];
+  const preferenceCycle=['vormittags','mittags','früher Nachmittag','später Nachmittag','abends'];
+  const styleCycle=['sehr natürlich','klassisch gepflegt','soft und feminin','clean und modern','elegant und dezent','hochwertig natürlich'];
+  const favoriteCycle=['Augenbrauen','Lid & Wimpernkranz','Lippen','Augenbrauen','Beratung'];
+  const wishes={
+    'Augenbrauen':['weiche Form ohne harten Effekt','kleine Lücken natürlich ausgleichen','mehr Symmetrie bei dezenter Intensität'],
+    'Lid & Wimpernkranz':['dezente Verdichtung am Wimpernansatz','klarerer Blick ohne sichtbaren Lidstrich','weniger täglicher Schminkaufwand'],
+    'Lippen':['harmonische Kontur und natürlicher Farbton','Farbunterschiede sanft ausgleichen','frische Nude-Nuance ohne harte Kontur'],
+    'Beratung':['Ablauf und Möglichkeiten in Ruhe besprechen','erst eine persönliche Empfehlung erhalten','Behandlungsoptionen vor einer Entscheidung vergleichen']
+  };
+  const extraProfiles=extraNames.map((name,index)=>{
+    const favorite=favoriteCycle[index%favoriteCycle.length],list=wishes[favorite]||wishes.Beratung;
+    const year=1958+((index*7)%43),month=String((index%12)+1).padStart(2,'0'),day=String(((index*5)%27)+1).padStart(2,'0');
+    return [name,`${year}-${month}-${day}`,personalityCycle[index%personalityCycle.length],communicationCycle[index%communicationCycle.length],preferenceCycle[index%preferenceCycle.length],styleCycle[index%styleCycle.length],favorite,list[index%list.length]];
+  });
+  const allProfiles=[...profiles,...extraProfiles];
+
   const serviceCycle=['Augenbrauen','Lid & Wimpernkranz','Lippen','Beratung'];
   const timeSets={
     'vormittags':['09:00','10:30','11:00'],
@@ -70,7 +95,7 @@
 
   function ensureProfiles(db){
     db.customers=Array.isArray(db.customers)?db.customers:[];
-    profiles.forEach((row,index)=>{
+    allProfiles.forEach((row,index)=>{
       const name=row[0],email=index<5?null:`testkunde${String(index+1).padStart(2,'0')}@example.de`;
       let customer=db.customers.find(c=>c.name===name)||(email?db.customers.find(c=>c.email===email):null);
       if(!customer){
@@ -108,7 +133,7 @@
     db.appointments=(Array.isArray(db.appointments)?db.appointments:[]).filter(a=>!String(a.id||'').startsWith('demo_2026_'));
     const services=db.services||[],serviceIds={'Augenbrauen':'brows-pmu','Lid & Wimpernkranz':'lashline','Lippen':'lip-pmu','Beratung':'consult'};
     const start=new Date('2026-09-21T12:00:00'),end=new Date('2026-12-30T12:00:00'),span=Math.round((end-start)/86400000);
-    profiles.forEach((row,index)=>{
+    allProfiles.forEach((row,index)=>{
       const customer=db.customers.find(c=>c.name===row[0]);if(!customer)return;
       const bookingCount=index%5===0?3:index%2===0?2:1;
       for(let seq=0;seq<bookingCount;seq++){
