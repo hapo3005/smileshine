@@ -120,3 +120,34 @@ test('public treatment CTA opens booking with matching service selected', async 
   await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
   await expect(page.locator('#summaryService')).toContainText('Lippen');
 });
+
+
+test('waitlist booking closes the entry and prepares confirmation automatically', async ({ page }) => {
+  await reset(page, 'dashboard');
+  await page.evaluate(() => window.SSAdmin.openWorkflowCenter('waitlist'));
+  await expect(page.locator('#workflowCenterDialog')).toBeVisible();
+
+  const firstEntry = page.locator('.waitlist-list article').first();
+  await expect(firstEntry).toBeVisible();
+  await firstEntry.locator('[data-book-waitlist]').click();
+
+  await expect(page.locator('#appointmentModal')).toBeVisible();
+  await page.locator('#appointmentForm button[type="submit"]').click();
+
+  await expect(page.locator('#whatsappDialog')).toBeVisible();
+  await expect(page.locator('#waMessagePreview')).toHaveValue(/dein Termin bei Smile & Shine ist bestätigt/i);
+
+  const state = await page.evaluate(() => {
+    const booked = window.SSAdmin.db.waitlist.find(entry => entry.status === 'booked' && entry.bookedAppointmentId);
+    const appointment = booked && window.SSAdmin.db.appointments.find(item => item.id === booked.bookedAppointmentId);
+    return {
+      waitlistStatus: booked?.status || '',
+      appointmentSource: appointment?.source || '',
+      appointmentStatus: appointment?.status || ''
+    };
+  });
+
+  expect(state.waitlistStatus).toBe('booked');
+  expect(state.appointmentSource).toBe('waitlist');
+  expect(state.appointmentStatus).toBe('confirmed');
+});
