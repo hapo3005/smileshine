@@ -74,7 +74,13 @@ test('appointment payment records a partial payment and updates actual revenue',
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() ? sum + Number(p.amount || 0) : sum;
     }, 0)), 0);
   });
-  const card = page.locator('.appointment-card').first();
+  const appointmentId = await page.evaluate(() => {
+    const A = window.SSAdmin, today = A.isoDate(new Date());
+    const item = A.db.appointments.find(a => a.date >= today && a.status !== 'cancelled' && A.appointmentFinancials(a).paid === 0 && A.appointmentFinancials(a).open > 0);
+    return item?.id || '';
+  });
+  expect(appointmentId).not.toBe('');
+  const card = page.locator(`.appointment-card[data-id="${appointmentId}"]`);
   await expect(card).toBeVisible();
   await card.locator('[data-payment-id]').click();
   await expect(page.locator('#paymentModal')).toBeVisible();
