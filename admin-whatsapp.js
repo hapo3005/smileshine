@@ -84,8 +84,13 @@
     const dialog=document.createElement('dialog');dialog.id='whatsappDialog';dialog.className='wa-dialog';
     dialog.innerHTML=`<div class="wa-dialog-card"><div class="wa-dialog-head"><div><span class="panel-kicker">Kostenlos über WhatsApp</span><h3>Nachricht vorbereiten</h3></div><button type="button" class="wa-dialog-close" data-close-whatsapp aria-label="Schließen">×</button></div><div class="wa-dialog-body"><div class="wa-appointment-summary" id="waAppointmentSummary"></div><div class="wa-template-grid"><button type="button" class="wa-template-button active" data-wa-template="confirm"><strong>Terminbestätigung</strong><small>Bestätigt Leistung, Datum und Uhrzeit.</small></button><button type="button" class="wa-template-button" data-wa-template="reminder"><strong>Erinnerung</strong><small>Freundliche Erinnerung vor dem Termin.</small></button><button type="button" class="wa-template-button" data-wa-template="change"><strong>Terminänderung</strong><small>Teilt den aktuell eingetragenen neuen Termin mit.</small></button></div><section class="wa-preview"><div class="wa-preview-head"><div><strong>Nachrichtenvorschau</strong><small>Genau dieser Text wird an WhatsApp übergeben.</small></div><div class="wa-tone-switch" aria-label="Ton der Nachricht"><button type="button" class="active" data-wa-tone="friendly">Freundlich</button><button type="button" data-wa-tone="short">Kurz</button><button type="button" data-wa-tone="personal">Persönlich</button></div></div><textarea id="waMessagePreview" aria-label="WhatsApp-Nachricht bearbeiten"></textarea><div class="wa-preview-actions"><span class="wa-character-count" id="waCharacterCount"></span><button type="button" class="wa-open-button" id="waOpenButton" data-open-whatsapp>In WhatsApp öffnen ↗</button></div></section><p class="wa-hint">Der Text kann hier frei geändert werden. Verschickt wird trotzdem erst, wenn Birgit anschließend in WhatsApp selbst auf „Senden“ tippt.</p></div></div>`;
     document.body.appendChild(dialog);
-    dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
+    dialog.addEventListener('click',event=>{if(event.target===dialog){cleanupVirtual();dialog.close()}});
     $('#waMessagePreview')?.addEventListener('input',updateCharacterCount);
+  }
+
+  function cleanupVirtual(){
+    const dialog=$('#whatsappDialog'),id=dialog?.dataset.cleanupAppointmentId||'';if(!id)return;
+    A.db.appointments=A.db.appointments.filter(item=>item.id!==id);delete dialog.dataset.cleanupAppointmentId;
   }
 
   function updateCharacterCount(){
@@ -123,8 +128,8 @@
     const text=$('#waMessagePreview')?.value?.trim();if(!text)return A.toast('Bitte einen Nachrichtentext eingeben.');
     const url=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
     window.open(url,'_blank','noopener,noreferrer');
+    if(cleanupAppointmentId){A.db.appointments=A.db.appointments.filter(item=>item.id!==cleanupAppointmentId);const dialog=$('#whatsappDialog');if(dialog)delete dialog.dataset.cleanupAppointmentId;}
     if(communicationId)A.markCommunicationHandedOff?.(communicationId);
-    if(cleanupAppointmentId)A.db.appointments=A.db.appointments.filter(item=>item.id!==cleanupAppointmentId);
     $('#whatsappDialog')?.close();
   }
 
@@ -157,7 +162,7 @@
       const template=event.target.closest('[data-wa-template]');if(template){event.preventDefault();const dialog=$('#whatsappDialog');if(dialog){dialog.dataset.template=template.dataset.waTemplate;dialog._customText='';refreshPreview()}return}
       const tone=event.target.closest('[data-wa-tone]');if(tone){event.preventDefault();const dialog=$('#whatsappDialog');if(dialog){dialog.dataset.tone=tone.dataset.waTone;if(!dialog._customText)refreshPreview()}return}
       const open=event.target.closest('[data-open-whatsapp]');if(open){event.preventDefault();openMessage();return}
-      const close=event.target.closest('[data-close-whatsapp]');if(close){event.preventDefault();$('#whatsappDialog')?.close()}
+      const close=event.target.closest('[data-close-whatsapp]');if(close){event.preventDefault();cleanupVirtual();$('#whatsappDialog')?.close()}
     });
     const appointments=$('#appointmentsList');if(appointments)new MutationObserver(()=>queueMicrotask(decorateAppointments)).observe(appointments,{childList:true,subtree:true});
     const detail=$('#customerDetailBody');if(detail)new MutationObserver(()=>queueMicrotask(decorateCustomerDetail)).observe(detail,{childList:true,subtree:true});
