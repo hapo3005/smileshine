@@ -1,6 +1,9 @@
 const { test, expect } = require('@playwright/test');
+const fs = require('fs');
+const path = require('path');
 
-const BUILD = '20260923-birgit-final2';
+const ADMIN_SOURCE = fs.readFileSync(path.join(__dirname, '..', 'admin.html'), 'utf8');
+const BUILD = ADMIN_SOURCE.match(/<meta name="smileshine-build" content="([^"]+)"/)?.[1] || '';
 const browserName = process.env.PW_BROWSER || 'chromium';
 const profile = process.env.QA_PROFILE || 'desktop';
 const label = process.env.QA_LABEL || `${process.platform} / ${browserName} / ${profile}`;
@@ -63,12 +66,13 @@ function monitorErrors(page) {
 async function waitForPublishedBuild(page) {
   let seen = '';
   for (let attempt = 0; attempt < 30; attempt++) {
-    await page.goto(`index.html?crossqa=${Date.now()}-${attempt}`, { waitUntil: 'domcontentloaded' });
-    seen = await page.locator('meta[name="smileshine-build"]').getAttribute('content').catch(() => '');
-    if (seen === BUILD) return;
+    const response = await page.request.get(`admin.html?crossqa-build=${Date.now()}-${attempt}`, { failOnStatusCode: false });
+    const html = response.ok() ? await response.text() : '';
+    seen = html.match(/<meta name="smileshine-build" content="([^"]+)"/)?.[1] || '';
+    if (BUILD && seen === BUILD) return;
     await page.waitForTimeout(5000);
   }
-  throw new Error(`Expected published build ${BUILD}, saw ${seen || 'none'}`);
+  throw new Error(`Expected published admin build ${BUILD}, saw ${seen || 'none'}`);
 }
 
 async function assertNoUnexpectedOverflow(page, context) {
@@ -108,6 +112,7 @@ test(`public storefront cross-platform smoke — ${label}`, async ({ page }, tes
   test.setTimeout(120000);
   const errors = monitorErrors(page);
   await waitForPublishedBuild(page);
+  await page.goto(`index.html?crossqa=${Date.now()}`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
