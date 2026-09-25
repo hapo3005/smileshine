@@ -85,7 +85,7 @@ test('appointment payment records a partial payment and updates actual revenue',
   await expect(page.locator('#kpiGrid .kpi-card').nth(3)).toContainText('50,00 €');
 });
 
-test('reset restores the complete pitch customer set', async ({ page }) => {
+test('reset restores the realistic three-month studio simulation', async ({ page }) => {
   await reset(page, 'settings');
   await page.evaluate(() => {
     window.SSAdmin.db.customers = window.SSAdmin.db.customers.slice(0, 2);
@@ -93,13 +93,45 @@ test('reset restores the complete pitch customer set', async ({ page }) => {
   });
   page.once('dialog', dialog => dialog.accept());
   await page.locator('#resetDemo').click();
-  await page.waitForFunction(() => window.SSAdmin.db.customers.length >= 40);
-  const state = await page.evaluate(() => ({
-    customers: window.SSAdmin.db.customers.length,
-    demoServices: [...new Set(window.SSAdmin.db.appointments.filter(a => String(a.id).startsWith('demo_2026_')).map(a => a.service))]
-  }));
-  expect(state.customers).toBeGreaterThanOrEqual(40);
-  expect(state.demoServices.every(name => /Augenbrauen|Wimpernkranz|Lippen|Beratung/.test(name))).toBe(true);
+  await page.waitForFunction(() => window.SSAdmin.db.customers.length >= 75);
+
+  const state = await page.evaluate(() => {
+    const A = window.SSAdmin, simulated = A.db.appointments.filter(a => a.demoSimulation);
+    const perCustomer = new Map();
+    simulated.forEach(a => perCustomer.set(a.customerId, (perCustomer.get(a.customerId) || 0) + 1));
+    const services = [...new Set(simulated.map(a => a.service))];
+    const dates = simulated.map(a => a.date).sort();
+    return {
+      customers: A.db.customers.filter(c => c.isDemoProfile).length,
+      generatedAppointments: simulated.length,
+      totalAppointments: A.db.appointments.length,
+      services,
+      repeatCustomers: [...perCustomer.values()].filter(count => count >= 2).length,
+      completed: simulated.filter(a => a.status === 'completed').length,
+      futureConfirmed: simulated.filter(a => a.status === 'confirmed' && a.date > A.isoDate(new Date())).length,
+      waitlist: (A.db.waitlist || []).filter(x => x.status === 'waiting').length,
+      treatmentRecords: (A.db.treatmentRecords || []).filter(x => String(x.id).startsWith('demo_sim_record_')).length,
+      rangeStart: dates[0],
+      rangeEnd: dates[dates.length - 1],
+      simulation: A.db.demoSimulation
+    };
+  });
+
+  expect(state.customers).toBe(80);
+  expect(state.generatedAppointments).toBeGreaterThanOrEqual(120);
+  expect(state.totalAppointments).toBeGreaterThanOrEqual(130);
+  expect(state.totalAppointments).toBeLessThanOrEqual(140);
+  expect(state.services.some(name => /Augenbrauen/i.test(name))).toBe(true);
+  expect(state.services.some(name => /Wimpernkranz|Lid/i.test(name))).toBe(true);
+  expect(state.services.some(name => /Lippen/i.test(name))).toBe(true);
+  expect(state.services.some(name => /Beratung/i.test(name))).toBe(true);
+  expect(state.repeatCustomers).toBeGreaterThanOrEqual(25);
+  expect(state.completed).toBeGreaterThanOrEqual(15);
+  expect(state.futureConfirmed).toBeGreaterThanOrEqual(50);
+  expect(state.waitlist).toBeGreaterThanOrEqual(4);
+  expect(state.treatmentRecords).toBeGreaterThanOrEqual(10);
+  expect(state.simulation?.customerTarget).toBe(80);
+  expect(new Date(state.rangeEnd + 'T12:00:00').getTime() - new Date(state.rangeStart + 'T12:00:00').getTime()).toBeGreaterThan(100 * 86400000);
 });
 
 test('mobile More opens actual studio navigation', async ({ page }) => {
