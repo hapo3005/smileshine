@@ -225,5 +225,5 @@ async function importPublicModule(url,attempts=3){
   return null;
 }
 importPublicModule('./checkout-enhancements.js?v=20260925-hours5-retry');
-importPublicModule('./booking-admin-sync.js?v=20260925-hours5');
+importPublicModule('./booking-admin-sync.js?v=20260925-services6');
 importPublicModule('./cnc-products-carousel.js?v=20260923-birgit-final2');
