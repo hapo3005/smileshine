@@ -71,7 +71,7 @@
       if(a.status==='pending')items.push({key:'confirm-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · ${a.customerName}`,detail:'Termin ist noch offen und sollte bestätigt werden.',action:'Termin öffnen'});
       if(a.preparation?.status==='open')items.push({key:'prep-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Vorbereitung fehlt`,detail:`${a.customerName} · ${a.service}`,action:'Vorbereitung prüfen'});
       const f=financials(a);
-      if(f.open>0&&a.status==='confirmed')items.push({key:'pay-'+a.id,priority:3,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Zahlung im Blick`,detail:`${a.customerName} · ${money(f.open)} offen`,action:'Termin öffnen'});
+      if(f.open>0&&a.status==='completed')items.push({key:'pay-'+a.id,priority:3,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Zahlung im Blick`,detail:`${a.customerName} · ${money(f.open)} offen`,action:'Termin öffnen'});
     });
     dueFollowUps().forEach(x=>{
       const c=customerFor(x.customerId);
@@ -282,6 +282,23 @@
     anchor.insertAdjacentHTML('beforebegin',customerWorkflowSection(customer.id));
   }
 
+  function decorateAppointmentDetail(){
+    const body=$('#appointmentDetailBody'),dialog=$('#appointmentDetailModal');if(!body||!dialog||$('[data-appointment-prep]',body))return;
+    const a=appointmentFor(dialog.dataset.appointmentId);if(!a)return;
+    const prep=a.preparation||{status:'open',consent:false,photos:false,note:'Vorbereitung noch nicht vollständig.'};
+    const complete=prep.status==='complete';
+    const section=document.createElement('section');section.className='appointment-detail-section appointment-prep-section';section.dataset.appointmentPrep=a.id;
+    section.innerHTML=`
+      <div class="appointment-section-head"><div><span class="panel-kicker">Vorbereitung</span><h4>${complete?'Startklar für den Termin':'Vor dem Termin noch prüfen'}</h4></div><span class="prep-status ${complete?'is-complete':'is-open'}">${complete?'Vollständig':'Offen'}</span></div>
+      <div class="prep-check-grid">
+        <div class="${a.status==='confirmed'||a.status==='completed'?'done':''}"><span>✓</span><div><strong>Terminstatus</strong><small>${a.status==='confirmed'||a.status==='completed'?'bestätigt':'noch offen'}</small></div></div>
+        <div class="${prep.consent?'done':''}"><span>✓</span><div><strong>Hinweise & Einwilligung</strong><small>${prep.consent?'erledigt':'noch offen'}</small></div></div>
+        <div class="${prep.photos?'done':''}"><span>✓</span><div><strong>Dokumentation vorbereitet</strong><small>${prep.photos?'eingeplant':'noch offen'}</small></div></div>
+      </div>
+      <div class="prep-actions"><p>${escapeHTML(prep.note||'')}</p><button type="button" class="${complete?'soft-button':'primary-action'}" data-prep-${complete?'reset':'complete'}="${a.id}">${complete?'Wieder öffnen':'Als vorbereitet markieren'}</button></div>`;
+    const form=$('#appointmentDetailForm',body);if(form)form.insertAdjacentElement('beforebegin',section);else body.appendChild(section);
+  }
+
   function completeTask(id){
     const task=(A.db.followUps||[]).find(x=>x.id===id);if(!task)return;
     task.status='done';task.completedAt=new Date().toISOString();
@@ -302,6 +319,8 @@
         if(action.dataset.customerId)A.renderCustomerDetail?.(action.dataset.customerId);
         return;
       }
+      const prepDone=event.target.closest('[data-prep-complete]');if(prepDone){const a=appointmentFor(prepDone.dataset.prepComplete);if(a){a.preparation={status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'};A.addActivity('booking',`${a.customerName}: Terminvorbereitung abgeschlossen.`);A.save('Vorbereitung als vollständig markiert.');A.openAppointmentDetail?.(a.id)}return}
+      const prepReset=event.target.closest('[data-prep-reset]');if(prepReset){const a=appointmentFor(prepReset.dataset.prepReset);if(a){a.preparation={status:'open',consent:false,photos:false,note:'Vorbereitung erneut prüfen.'};A.save('Vorbereitung wieder geöffnet.');A.openAppointmentDetail?.(a.id)}return}
       const complete=event.target.closest('[data-complete-followup]');if(complete){completeTask(complete.dataset.completeFollowup);return}
       const openCustomer=event.target.closest('[data-open-workflow-customer]');if(openCustomer){ensureCenter().close();A.renderCustomerDetail?.(openCustomer.dataset.openWorkflowCustomer);return}
       if(event.target.closest('[data-new-followup]')){openFollowup();return}
@@ -346,13 +365,16 @@
     if(!A.workflowRenderWrapped){
       A.workflowRenderWrapped=true;
       const original=A.renderAll?.bind(A);
-      if(original)A.renderAll=()=>{ensureData();original();renderDashboardWorkflow();queueMicrotask(decorateCustomerDetail)};
+      if(original)A.renderAll=()=>{ensureData();original();renderDashboardWorkflow();queueMicrotask(()=>{decorateCustomerDetail();decorateAppointmentDetail()})};
     }
 
     renderDashboardWorkflow();
     const detail=$('#customerDetailBody');
     if(detail)new MutationObserver(()=>queueMicrotask(decorateCustomerDetail)).observe(detail,{childList:true,subtree:false});
     decorateCustomerDetail();
+    const appointmentDetail=$('#appointmentDetailBody');
+    if(appointmentDetail)new MutationObserver(()=>queueMicrotask(decorateAppointmentDetail)).observe(appointmentDetail,{childList:true,subtree:false});
+    decorateAppointmentDetail();
 
     const settings=$('.settings-grid');
     if(settings&&!$('[data-workflow-setting]',settings)){
