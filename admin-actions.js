@@ -64,9 +64,10 @@
       const entry=(A.db.waitlist||[]).find(x=>x.id===waitlistId);
       if(entry){entry.status='booked';entry.bookedAppointmentId=appointmentId;entry.bookedAt=new Date().toISOString();}
     }
+    const confirmation=A.queueAppointmentCommunication?.('confirm',appointmentId,isoDate(new Date()),{title:'Terminbestätigung'});
     A.addActivity('booking',waitlistId?`${name}: Wartelistenplatz übernommen · ${service.name} am ${dateShort(date)} um ${time} Uhr bestätigt.`:`${name}: ${service.name} am ${dateShort(date)} um ${time} Uhr eingetragen.`);
-    closeModal();delete form.dataset.waitlistId;A.save(waitlistId?'Termin aus Warteliste bestätigt.':'Termin gespeichert.');A.refreshPaymentUI?.();A.showView('appointments');
-    if(waitlistId)queueMicrotask(()=>A.openWhatsAppChooser?.(appointmentId));
+    closeModal();delete form.dataset.waitlistId;A.save(waitlistId?'Termin aus Warteliste bestätigt.':'Termin gespeichert.');A.refreshPaymentUI?.();A.renderDashboardWorkflow?.();A.showView('appointments');
+    if(waitlistId)queueMicrotask(()=>A.openWhatsAppChooser?.(appointmentId,{type:'confirm',communicationId:confirmation?.id||''}));
   }
 
   function bindDynamicAppointmentActions(){
