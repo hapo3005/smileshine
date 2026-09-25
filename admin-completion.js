@@ -207,7 +207,8 @@
     A.save('Termin vollständig abgeschlossen.');
     A.refreshPaymentUI?.();A.renderDashboardWorkflow?.();
     dialog.close();
-    A.openAppointmentDetail?.(a.id);
+    A.showView?.('dashboard');
+    queueMicrotask(()=>A.renderDashboardWorkflow?.());
   }
 
   function openCompletion(id){
