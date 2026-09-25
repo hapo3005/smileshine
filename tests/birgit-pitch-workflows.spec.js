@@ -143,13 +143,15 @@ test('waitlist booking closes the entry and prepares confirmation automatically'
     return {
       waitlistStatus: booked?.status || '',
       appointmentSource: appointment?.source || '',
-      appointmentStatus: appointment?.status || ''
+      appointmentStatus: appointment?.status || '',
+      confirmationQueued: Boolean(appointment && window.SSAdmin.db.communications?.some(item => item.type === 'confirm' && item.appointmentId === appointment.id))
     };
   });
 
   expect(state.waitlistStatus).toBe('booked');
   expect(state.appointmentSource).toBe('waitlist');
   expect(state.appointmentStatus).toBe('confirmed');
+  expect(state.confirmationQueued).toBe(true);
 });
 
 
@@ -199,7 +201,8 @@ test('guided completion closes treatment, payment and follow-up in one flow', as
       result: record?.result || '',
       followUp: Boolean(followUp),
       open: finance?.open ?? -1,
-      completedAt: Boolean(appointment?.completedAt)
+      completedAt: Boolean(appointment?.completedAt),
+      aftercareQueued: Boolean(window.SSAdmin.db.communications?.some(item => item.type === 'aftercare' && item.appointmentId === appointmentId))
     };
   }, id);
 
@@ -209,4 +212,71 @@ test('guided completion closes treatment, payment and follow-up in one flow', as
   expect(state.followUp).toBe(true);
   expect(state.open).toBe(0);
   expect(state.completedAt).toBe(true);
+  expect(state.aftercareQueued).toBe(true);
+});
+
+
+test('intelligent communication creates due reminder and tracks WhatsApp handoff', async ({ page }) => {
+  await reset(page, 'dashboard');
+
+  await page.evaluate(() => {
+    const A = window.SSAdmin;
+    const tomorrow = A.isoDate(A.addDays(new Date(), 1));
+    const service = A.db.services.find(item => item.active) || A.db.services[0];
+    const customer = {
+      id: 'qa_comm_customer',
+      name: 'Mara Kommunikation',
+      firstName: 'Mara',
+      lastName: 'Kommunikation',
+      phone: '0176 55550123',
+      email: 'mara@example.test',
+      created: A.isoDate(new Date())
+    };
+    A.db.customers.push(customer);
+    A.db.appointments.push({
+      id: 'qa_comm_appointment',
+      date: tomorrow,
+      time: '08:30',
+      duration: Number(service.duration || 30),
+      service: service.name,
+      customerId: customer.id,
+      customerName: customer.name,
+      phone: customer.phone,
+      email: customer.email,
+      status: 'confirmed',
+      payment: 'Im Studio',
+      paymentPreference: 'Im Studio',
+      source: 'studio',
+      listPrice: Number(service.price || 0),
+      finalPrice: Number(service.price || 0),
+      paidAmount: 0,
+      payments: [],
+      paymentStatus: Number(service.price || 0) > 0 ? 'open' : 'paid'
+    });
+    A.syncCommunications();
+    A.renderDashboardWorkflow();
+  });
+
+  const due = await page.evaluate(() => window.SSAdmin.getDueCommunications().find(item => item.type === 'reminder' && item.appointmentId === 'qa_comm_appointment'));
+  expect(due).toBeTruthy();
+  await expect(page.locator('#workflowTodayPanel')).toContainText('Mara Kommunikation');
+
+  await page.evaluate(() => window.SSAdmin.openCommunicationCenter('due'));
+  const row = page.locator('.communication-row').filter({hasText:'Mara Kommunikation'});
+  await expect(row).toContainText('Terminerinnerung');
+  await row.locator('[data-open-communication]').click();
+
+  await expect(page.locator('#whatsappDialog')).toBeVisible();
+  await expect(page.locator('#waMessagePreview')).toHaveValue(/Erinnerung an deinen Termin|kleine Erinnerung/i);
+  await expect(page.locator('#waOpenButton')).toBeEnabled();
+
+  await page.evaluate(() => { window.open = () => null; });
+  await page.locator('#waOpenButton').click();
+
+  const state = await page.evaluate(() => {
+    const item = window.SSAdmin.db.communications.find(entry => entry.type === 'reminder' && entry.appointmentId === 'qa_comm_appointment');
+    return {status:item?.status || '', handedOffAt:Boolean(item?.handedOffAt)};
+  });
+  expect(state.status).toBe('handed_off');
+  expect(state.handedOffAt).toBe(true);
 });
