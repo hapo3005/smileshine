@@ -94,20 +94,22 @@
   }
 
   function currentSelection(){
-    const dialog=$('#whatsappDialog');return {id:dialog?.dataset.appointmentId||'',type:dialog?.dataset.template||'confirm',tone:dialog?.dataset.tone||'friendly'};
+    const dialog=$('#whatsappDialog');return {id:dialog?.dataset.appointmentId||'',type:dialog?.dataset.template||'confirm',tone:dialog?.dataset.tone||'friendly',communicationId:dialog?.dataset.communicationId||'',cleanupAppointmentId:dialog?.dataset.cleanupAppointmentId||'',customText:dialog?._customText||''};
   }
 
   function refreshPreview(){
-    const {id,type,tone}=currentSelection(),a=appointment(id),textarea=$('#waMessagePreview');if(!a||!textarea)return;
-    textarea.value=message(type,a,tone);updateCharacterCount();
-    $$('[data-wa-template]', $('#whatsappDialog')).forEach(btn=>btn.classList.toggle('active',btn.dataset.waTemplate===type));
-    $$('[data-wa-tone]', $('#whatsappDialog')).forEach(btn=>btn.classList.toggle('active',btn.dataset.waTone===tone));
+    const {id,type,tone,customText}=currentSelection(),a=appointment(id),textarea=$('#waMessagePreview');if(!a||!textarea)return;
+    textarea.value=customText||message(type,a,tone);updateCharacterCount();
+    $('[data-wa-template]', $('#whatsappDialog')).forEach(btn=>btn.classList.toggle('active',btn.dataset.waTemplate===type));
+    $('[data-wa-tone]', $('#whatsappDialog')).forEach(btn=>btn.classList.toggle('active',btn.dataset.waTone===tone));
   }
 
-  function openChooser(id){
+  function openChooser(id,options={}){
     ensureDialog();const a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
     const phone=phoneFor(a);if(!phone)return A.toast('Für diesen Kunden ist keine Telefonnummer hinterlegt.');
-    const dialog=$('#whatsappDialog');dialog.dataset.appointmentId=id;dialog.dataset.template='confirm';dialog.dataset.tone='friendly';
+    const dialog=$('#whatsappDialog');
+    dialog.dataset.appointmentId=id;dialog.dataset.template=options.type||'confirm';dialog.dataset.tone=options.tone||'friendly';
+    dialog.dataset.communicationId=options.communicationId||'';dialog.dataset.cleanupAppointmentId=options.cleanupAppointmentId||'';dialog._customText=options.customText||'';
     const demo=isDemoContact(a),warning=demo?'<small class="wa-demo-warning">Beispielprofil · Vorschau ist aktiv, echter WhatsApp-Versand bleibt gesperrt.</small>':'';
     $('#waAppointmentSummary').innerHTML=`<strong>${escapeHTML(a.customerName)} · ${escapeHTML(phone)}</strong><small>${escapeHTML(longDate(a.date))} · ${escapeHTML(a.time)} Uhr · ${escapeHTML(a.service)}</small>${warning}`;
     const open=$('#waOpenButton');if(open){open.disabled=demo;open.textContent=demo?'Beispielprofil – Versand gesperrt':'In WhatsApp öffnen ↗'}
@@ -115,12 +117,14 @@
   }
 
   function openMessage(){
-    const {id}=currentSelection(),a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
+    const {id,communicationId,cleanupAppointmentId}=currentSelection(),a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
     if(isDemoContact(a))return A.toast('Beispielprofil: WhatsApp wird aus Sicherheitsgründen nicht geöffnet.');
     const phone=normalizePhone(phoneFor(a));if(!phone)return A.toast('Die Telefonnummer kann nicht für WhatsApp verwendet werden.');
     const text=$('#waMessagePreview')?.value?.trim();if(!text)return A.toast('Bitte einen Nachrichtentext eingeben.');
     const url=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
     window.open(url,'_blank','noopener,noreferrer');
+    if(communicationId)A.markCommunicationHandedOff?.(communicationId);
+    if(cleanupAppointmentId)A.db.appointments=A.db.appointments.filter(item=>item.id!==cleanupAppointmentId);
     $('#whatsappDialog')?.close();
   }
 
@@ -150,8 +154,8 @@
     document.addEventListener('click',event=>{
       const quick=event.target.closest('[data-whatsapp-appointment]');if(quick){event.preventDefault();openChooser(quick.dataset.whatsappAppointment);return}
       const customer=event.target.closest('[data-customer-whatsapp]');if(customer){event.preventDefault();event.stopPropagation();openChooser(customer.dataset.customerWhatsapp);return}
-      const template=event.target.closest('[data-wa-template]');if(template){event.preventDefault();const dialog=$('#whatsappDialog');if(dialog){dialog.dataset.template=template.dataset.waTemplate;refreshPreview()}return}
-      const tone=event.target.closest('[data-wa-tone]');if(tone){event.preventDefault();const dialog=$('#whatsappDialog');if(dialog){dialog.dataset.tone=tone.dataset.waTone;refreshPreview()}return}
+      const template=event.target.closest('[data-wa-template]');if(template){event.preventDefault();const dialog=$('#whatsappDialog');if(dialog){dialog.dataset.template=template.dataset.waTemplate;dialog._customText='';refreshPreview()}return}
+      const tone=event.target.closest('[data-wa-tone]');if(tone){event.preventDefault();const dialog=$('#whatsappDialog');if(dialog){dialog.dataset.tone=tone.dataset.waTone;if(!dialog._customText)refreshPreview()}return}
       const open=event.target.closest('[data-open-whatsapp]');if(open){event.preventDefault();openMessage();return}
       const close=event.target.closest('[data-close-whatsapp]');if(close){event.preventDefault();$('#whatsappDialog')?.close()}
     });
