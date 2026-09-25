@@ -223,7 +223,7 @@
   function decorateTodayAgenda(){
     const root=$('#todayList');if(!root)return;
     const now=nowMinutes();
-    $('.appointment-row[data-appointment-id]',root).forEach(row=>{
+    $$('.appointment-row[data-appointment-id]',root).forEach(row=>{
       if($('.today-context-action',row))return;
       const a=appointmentFor(row.dataset.appointmentId);if(!a)return;
       const ended=appointmentEnd(a)<=now,f=financials(a);
