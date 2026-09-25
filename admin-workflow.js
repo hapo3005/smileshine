@@ -374,6 +374,14 @@
       const center=event.target.closest('[data-open-workflow-center]');if(center){event.preventDefault();openCenter(center.dataset.workflowTab||'followups');return}
       const tab=event.target.closest('[data-workflow-tab-button]');if(tab){setCenterTab(tab.dataset.workflowTabButton);return}
       if(event.target.closest('[data-close-workflow]')){ensureCenter().close();return}
+      const workNext=event.target.closest('[data-customer-work-next]');
+      if(workNext){
+        const kind=workNext.dataset.customerWorkNext;
+        if(kind==='communication'){ $('#customerDetailModal')?.close();A.openCommunication?.(workNext.dataset.communicationId);return }
+        if(kind==='payment'){ A.openPaymentModal?.(workNext.dataset.appointmentId);return }
+        if(kind==='appointment'){ $('#customerDetailModal')?.close();A.openAppointmentDetail?.(workNext.dataset.appointmentId);return }
+        if(kind==='followup'){ $('#customerDetailModal')?.close();A.openWorkflowCenter?.('followups');return }
+      }
       const action=event.target.closest('[data-workflow-action]');
       if(action){
         if(action.dataset.workflowAction==='task'){completeTask(action.dataset.taskId);return}
