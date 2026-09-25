@@ -40,13 +40,12 @@
   function isHandled(item){return ['handed_off','done','cancelled'].includes(item.status)}
 
   function syncAppointmentReminders(){
-    const t=today();
+    const t=today(),horizon=isoDate(addDays(new Date(),30)),now=new Date(),nowMinutes=now.getHours()*60+now.getMinutes();
     (A.db.appointments||[]).forEach(a=>{
-      if(['cancelled','no_show','completed'].includes(a.status))return;
+      if(['cancelled','no_show','completed'].includes(a.status)||a.date<t||a.date>horizon)return;
+      if(a.date===t&&A.minutesOf(a.time)<=nowMinutes)return;
       const due=isoShift(a.date,-1);
-      if(due<=t&&a.date>=t){
-        queueCommunication({key:`reminder:${a.id}:${a.date}`,type:'reminder',appointmentId:a.id,customerId:a.customerId,dueDate:due,title:`Termin morgen erinnern`,note:`${a.customerName} · ${a.service} · ${a.time} Uhr`});
-      }
+      queueCommunication({key:`reminder:${a.id}:${a.date}`,type:'reminder',appointmentId:a.id,customerId:a.customerId,dueDate:due,title:'Terminerinnerung',note:`${a.customerName} · ${a.service} · ${a.time} Uhr`});
     });
   }
 
@@ -80,8 +79,23 @@
     });
   }
 
+  function cancelStale(){
+    (A.db.communications||[]).forEach(item=>{
+      if(isHandled(item))return;
+      if(item.appointmentId){
+        const a=appointment(item.appointmentId);
+        if(!a||['cancelled','no_show'].includes(a.status)||(item.type==='reminder'&&a.status==='completed')){item.status='cancelled';return}
+        if(item.type==='reminder'&&item.key!==`reminder:${a.id}:${a.date}`)item.status='cancelled';
+      }
+      if(item.waitlistId){
+        const entry=(A.db.waitlist||[]).find(x=>x.id===item.waitlistId);
+        if(!entry||entry.status!=='waiting')item.status='cancelled';
+      }
+    });
+  }
+
   function syncCommunications(){
-    ensureData();syncAppointmentReminders();syncHealingFollowUps();syncWaitlist();return A.db.communications;
+    ensureData();cancelStale();syncAppointmentReminders();syncHealingFollowUps();syncWaitlist();return A.db.communications;
   }
 
   function dueCommunications(){
@@ -173,7 +187,8 @@
 
   function communicationForAppointment(type,appointmentId,dueDate=today(),extra={}){
     const a=appointment(appointmentId);if(!a)return null;
-    return queueCommunication({key:`${type}:${appointmentId}:${a.date}:${a.time}`,type,appointmentId,customerId:a.customerId,dueDate,title:extra.title||TYPE_LABELS[type],note:extra.note||''});
+    const key=type==='reminder'?`${type}:${appointmentId}:${a.date}`:`${type}:${appointmentId}`;
+    return queueCommunication({key,type,appointmentId,customerId:a.customerId,dueDate,title:extra.title||TYPE_LABELS[type],note:extra.note||''});
   }
 
   function bind(){
