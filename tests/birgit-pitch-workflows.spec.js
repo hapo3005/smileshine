@@ -292,7 +292,7 @@ test('guided completion closes treatment, payment and follow-up in one flow', as
   await reset(page, 'appointments');
 
   const id = await page.evaluate(() => {
-    const item = window.SSAdmin.db.appointments.find(a => a.status === 'confirmed' && window.SSAdmin.appointmentFinancials(a).open > 0);
+    const item = window.SSAdmin.db.appointments.find(a => a.status === 'confirmed' && /Augenbrauen|Wimpernkranz|Lid|Lippen|PMU|Permanent/i.test(a.service) && window.SSAdmin.appointmentFinancials(a).open > 0);
     return item?.id || '';
   });
   expect(id).not.toBe('');
@@ -348,6 +348,161 @@ test('guided completion closes treatment, payment and follow-up in one flow', as
   expect(state.aftercareQueued).toBe(true);
 });
 
+
+
+test('nail completion creates refill rhythm without PMU aftercare', async ({ page }) => {
+  await reset(page, 'dashboard');
+
+  const id = await page.evaluate(() => {
+    const A = window.SSAdmin, customer = A.db.customers.find(c => c.segment === 'nail-regular') || A.db.customers[0], today = A.isoDate(new Date());
+    const service = A.db.services.find(s => /Auffüllen/i.test(s.name));
+    const id = 'qa_nail_completion';
+    A.db.appointments.push({
+      id,date:today,time:'09:00',duration:Number(service?.duration||60),service:service?.name||'Nageldesign · Auffüllen',
+      customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status:'confirmed',
+      payment:'Im Studio',paymentPreference:'Im Studio',source:'studio',listPrice:Number(service?.price||55),finalPrice:Number(service?.price||55),
+      discount:0,paidAmount:0,payments:[],paymentStatus:'open',preparation:{status:'complete',consent:true,photos:false,note:'Startklar.'}
+    });
+    A.renderAll(); A.renderDashboardWorkflow();
+    return id;
+  });
+
+  await page.evaluate(appointmentId => window.SSAdmin.openCompletion(appointmentId), id);
+  await expect(page.locator('#completionDialog')).toBeVisible();
+  await expect(page.locator('#completionForm')).toContainText('Farbe / Form / Material');
+  await expect(page.locator('#completionForm')).toContainText('Pflegehinweis besprochen');
+  await page.locator('#completionForm input[name="material"]').fill('Milky Nude · kurz oval');
+  await page.locator('#completionForm textarea[name="result"]').fill('Form beibehalten; nächstes Mal etwas kürzer.');
+  await page.locator('#completionForm button[type="submit"]').click();
+  await page.locator('#completionForm button[type="submit"]').click();
+
+  await expect(page.locator('[data-completion-progress="3"]')).toHaveClass(/active/);
+  await expect(page.locator('#completionForm')).toContainText('Nächster Termin');
+  await expect(page.locator('#completionForm input[name="followupTitle"]')).toHaveValue('Nächsten Nageltermin vereinbaren');
+  const followupDate = await page.locator('#completionForm input[name="followupDate"]').inputValue();
+  await page.locator('#completionForm button[type="submit"]').click();
+  await page.locator('#completionForm button[type="submit"]').click();
+
+  const state = await page.evaluate(({appointmentId,followupDate}) => {
+    const A = window.SSAdmin, appointment = A.db.appointments.find(a => a.id === appointmentId);
+    const task = A.db.followUps.find(x => x.sourceAppointmentId === appointmentId && x.status === 'open');
+    const aftercare = A.db.communications?.some(x => x.type === 'aftercare' && x.appointmentId === appointmentId);
+    const days = Math.round((new Date(followupDate+'T12:00:00') - new Date(appointment.date+'T12:00:00')) / 86400000);
+    return {status:appointment.status,taskType:task?.type||'',taskTitle:task?.title||'',aftercare:Boolean(aftercare),days,open:A.appointmentFinancials(appointment).open};
+  }, {appointmentId:id,followupDate});
+
+  expect(state.status).toBe('completed');
+  expect(state.taskType).toBe('maintenance');
+  expect(state.taskTitle).toBe('Nächsten Nageltermin vereinbaren');
+  expect(state.aftercare).toBe(false);
+  expect(state.days).toBeGreaterThanOrEqual(21);
+  expect(state.days).toBeLessThanOrEqual(28);
+  expect(state.open).toBe(0);
+});
+
+test('same-day gap surfaces matching waitlist customer and books exact slot', async ({ page }) => {
+  await reset(page, 'dashboard');
+
+  const setup = await page.evaluate(() => {
+    const A = window.SSAdmin, today = A.isoDate(new Date()), nail = A.db.services.find(s => /Auffüllen/i.test(s.name));
+    const customer = A.db.customers.find(c => c.segment === 'nail-regular') || A.db.customers[0];
+    const waitCustomer = A.db.customers.find(c => c.id !== customer.id && c.segment === 'nail-regular') || A.db.customers[1];
+    const entryId = 'qa_gap_waitlist';
+    A.db.waitlist = (A.db.waitlist || []).filter(x => x.id !== entryId);
+    A.db.waitlist.push({id:entryId,customerId:waitCustomer.id,service:nail.name,earliest:today,daypart:'Flexibel',note:'Kann kurzfristig kommen.',status:'waiting'});
+    A.save();
+    return {entryId,service:nail.name};
+  });
+
+  await page.evaluate(() => window.SSAdmin.openWorkflowCenter('waitlist', {start:'15:00',minutes:90}));
+  await expect(page.locator('#workflowCenterDialog')).toBeVisible();
+  const match = page.locator('.waitlist-list article.is-gap-match').filter({hasText:setup.service}).first();
+  await expect(match).toBeVisible();
+  await expect(match).toContainText('Passt in die aktuelle Lücke');
+  await expect(match).toContainText('15:00');
+  await match.locator('[data-book-waitlist]').click();
+
+  await expect(page.locator('#appointmentModal')).toBeVisible();
+  await expect(page.locator('#appointmentForm input[name="time"]')).toHaveValue('15:00');
+  await page.locator('#appointmentForm button[type="submit"]').click();
+  await expect(page.locator('#whatsappDialog')).toBeVisible();
+
+  const state = await page.evaluate(entryId => {
+    const A = window.SSAdmin, entry = A.db.waitlist.find(x => x.id === entryId), appointment = entry && A.db.appointments.find(a => a.id === entry.bookedAppointmentId);
+    return {status:entry?.status||'',time:appointment?.time||'',source:appointment?.source||''};
+  }, setup.entryId);
+  expect(state.status).toBe('booked');
+  expect(state.time).toBe('15:00');
+  expect(state.source).toBe('waitlist');
+});
+
+test('Birgit full workday path stays coherent from preparation to follow-up', async ({ page }) => {
+  await reset(page, 'dashboard');
+
+  const ids = await page.evaluate(() => {
+    const A = window.SSAdmin, today = A.isoDate(new Date()), nail = A.db.services.find(s => /Auffüllen/i.test(s.name)), pmu = A.db.services.find(s => /Augenbrauen/i.test(s.name));
+    const nailCustomer = A.db.customers.find(c => c.segment === 'nail-regular') || A.db.customers[0];
+    const pmuCustomer = A.db.customers.find(c => c.segment === 'pmu') || A.db.customers[2];
+    const make=(id,time,service,customer)=>({
+      id,date:today,time,duration:Number(service.duration||60),service:service.name,customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,
+      status:'confirmed',payment:'Im Studio',paymentPreference:'Im Studio',source:'studio',listPrice:Number(service.price||0),finalPrice:Number(service.price||0),discount:0,
+      paidAmount:0,payments:[],paymentStatus:Number(service.price||0)>0?'open':'paid',preparation:{status:'complete',consent:true,photos:false,note:'Vorbereitet.'}
+    });
+    A.db.appointments = A.db.appointments.filter(a => a.date !== today || a.id.startsWith('qa_workday_'));
+    A.db.appointments.push(make('qa_workday_nail','09:00',nail,nailCustomer),make('qa_workday_pmu','14:00',pmu,pmuCustomer));
+    A.save(); A.renderAll(); A.renderDashboardWorkflow();
+    return {nail:'qa_workday_nail',pmu:'qa_workday_pmu'};
+  });
+
+  await expect(page.locator('.day-cockpit')).toBeVisible();
+  await expect(page.locator('.day-cockpit-brief')).toContainText(/Wunsch|Zuletzt|Startklar/);
+
+  await page.evaluate(id => window.SSAdmin.openCompletion(id), ids.nail);
+  await page.locator('#completionForm input[name="material"]').fill('Soft Nude · kurz');
+  await page.locator('#completionForm textarea[name="result"]').fill('Routine-Refill ohne Besonderheiten.');
+  await page.locator('#completionForm button[type="submit"]').click();
+  await page.locator('#completionForm button[type="submit"]').click();
+  await expect(page.locator('#completionForm input[name="followupTitle"]')).toHaveValue('Nächsten Nageltermin vereinbaren');
+  await page.locator('#completionForm button[type="submit"]').click();
+  await page.locator('#completionForm button[type="submit"]').click();
+  await page.locator('[data-close-appointment-detail]').first().click();
+
+  await page.evaluate(id => window.SSAdmin.openCompletion(id), ids.pmu);
+  await page.locator('#completionForm input[name="material"]').fill('Soft Brown');
+  await page.locator('#completionForm textarea[name="result"]').fill('Natürlich und typgerecht.');
+  await page.locator('#completionForm input[name="beforePhoto"]').check();
+  await page.locator('#completionForm input[name="afterPhoto"]').check();
+  await page.locator('#completionForm button[type="submit"]').click();
+  await page.locator('#completionForm button[type="submit"]').click();
+  await expect(page.locator('#completionForm')).toContainText('Nachbehandlung');
+  await page.locator('#completionForm button[type="submit"]').click();
+  await page.locator('#completionForm button[type="submit"]').click();
+
+  const state = await page.evaluate(ids => {
+    const A = window.SSAdmin;
+    const nailTask = A.db.followUps.find(x => x.sourceAppointmentId === ids.nail && x.status === 'open');
+    const pmuTask = A.db.followUps.find(x => x.sourceAppointmentId === ids.pmu && x.status === 'open');
+    const pmuAftercare = A.db.communications?.find(x => x.type === 'aftercare' && x.appointmentId === ids.pmu);
+    const nailAftercare = A.db.communications?.find(x => x.type === 'aftercare' && x.appointmentId === ids.nail);
+    return {
+      nailStatus:A.db.appointments.find(a=>a.id===ids.nail)?.status,
+      pmuStatus:A.db.appointments.find(a=>a.id===ids.pmu)?.status,
+      nailTaskType:nailTask?.type||'',pmuTaskType:pmuTask?.type||'',
+      pmuAftercare:Boolean(pmuAftercare),nailAftercare:Boolean(nailAftercare),
+      nailOpen:A.appointmentFinancials(A.db.appointments.find(a=>a.id===ids.nail)).open,
+      pmuOpen:A.appointmentFinancials(A.db.appointments.find(a=>a.id===ids.pmu)).open
+    };
+  }, ids);
+
+  expect(state.nailStatus).toBe('completed');
+  expect(state.pmuStatus).toBe('completed');
+  expect(state.nailTaskType).toBe('maintenance');
+  expect(state.pmuTaskType).toBe('aftercare');
+  expect(state.pmuAftercare).toBe(true);
+  expect(state.nailAftercare).toBe(false);
+  expect(state.nailOpen).toBe(0);
+  expect(state.pmuOpen).toBe(0);
+});
 
 test('intelligent communication creates due reminder and tracks WhatsApp handoff', async ({ page }) => {
   await reset(page, 'dashboard');
