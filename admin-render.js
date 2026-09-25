@@ -19,7 +19,7 @@
     const weekEnd=isoDate(addDays(today,7));
     const weekApps=A.activeAppointments().filter(a=>a.date>=todayISO&&a.date<=weekEnd);
     const monthApps=A.activeAppointments().filter(a=>{const d=new Date(`${a.date}T12:00:00`);return d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear()});
-    const revenue=monthApps.reduce((sum,a)=>sum+Number(a.finalPrice??a.listPrice??A.db.services.find(s=>s.name===a.service)?.price||0),0);
+    const revenue=monthApps.reduce((sum,a)=>sum+Number((a.finalPrice??a.listPrice??A.db.services.find(s=>s.name===a.service)?.price)||0),0);
     const unique=new Set(weekApps.map(a=>a.customerId||a.email||a.customerName)).size;
     if($('#todaySubline'))$('#todaySubline').textContent=new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(today);
     const kpis=[
