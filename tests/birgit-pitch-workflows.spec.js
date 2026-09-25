@@ -151,3 +151,62 @@ test('waitlist booking closes the entry and prepares confirmation automatically'
   expect(state.appointmentSource).toBe('waitlist');
   expect(state.appointmentStatus).toBe('confirmed');
 });
+
+
+test('guided completion closes treatment, payment and follow-up in one flow', async ({ page }) => {
+  await reset(page, 'appointments');
+
+  const id = await page.evaluate(() => {
+    const item = window.SSAdmin.db.appointments.find(a => a.status === 'confirmed' && window.SSAdmin.appointmentFinancials(a).open > 0);
+    return item?.id || '';
+  });
+  expect(id).not.toBe('');
+
+  await page.evaluate(appointmentId => window.SSAdmin.openAppointmentDetail(appointmentId), id);
+  await expect(page.locator('#appointmentDetailModal')).toBeVisible();
+  await expect(page.locator('[data-start-completion]')).toBeVisible();
+  await page.locator('[data-start-completion]').click();
+
+  await expect(page.locator('#completionDialog')).toBeVisible();
+  await page.locator('#completionForm input[name="material"]').fill('QA Soft Brown');
+  await page.locator('#completionForm textarea[name="result"]').fill('QA Behandlung sauber dokumentiert.');
+  await page.locator('#completionForm input[name="beforePhoto"]').check();
+  await page.locator('#completionForm input[name="afterPhoto"]').check();
+  await page.locator('#completionForm button[type="submit"]').click();
+
+  await expect(page.locator('[data-completion-progress="2"]')).toHaveClass(/active/);
+  await expect(page.locator('#completionForm input[name="recordPayment"]')).toBeChecked();
+  await page.locator('#completionForm button[type="submit"]').click();
+
+  await expect(page.locator('[data-completion-progress="3"]')).toHaveClass(/active/);
+  await expect(page.locator('#completionForm input[name="createFollowup"]')).toBeChecked();
+  await page.locator('#completionForm button[type="submit"]').click();
+
+  await expect(page.locator('[data-completion-progress="4"]')).toHaveClass(/active/);
+  await page.locator('#completionForm button[type="submit"]').click();
+
+  await expect(page.locator('#appointmentDetailModal')).toBeVisible();
+  await expect(page.locator('.completion-done-badge')).toContainText('Abgeschlossen');
+
+  const state = await page.evaluate(appointmentId => {
+    const appointment = window.SSAdmin.db.appointments.find(a => a.id === appointmentId);
+    const record = window.SSAdmin.db.treatmentRecords.find(r => r.appointmentId === appointmentId);
+    const followUp = window.SSAdmin.db.followUps.find(r => r.sourceAppointmentId === appointmentId && r.status === 'open');
+    const finance = window.SSAdmin.appointmentFinancials(appointment);
+    return {
+      status: appointment?.status || '',
+      material: record?.material || '',
+      result: record?.result || '',
+      followUp: Boolean(followUp),
+      open: finance?.open ?? -1,
+      completedAt: Boolean(appointment?.completedAt)
+    };
+  }, id);
+
+  expect(state.status).toBe('completed');
+  expect(state.material).toBe('QA Soft Brown');
+  expect(state.result).toContain('sauber dokumentiert');
+  expect(state.followUp).toBe(true);
+  expect(state.open).toBe(0);
+  expect(state.completedAt).toBe(true);
+});
