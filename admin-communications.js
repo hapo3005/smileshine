@@ -14,7 +14,7 @@
 
   function ensureStyles(){
     if(document.querySelector('link[data-communication-style]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-communications.css?v=20260925-communications1';link.dataset.communicationStyle='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-communications.css?v=20260925-communications2';link.dataset.communicationStyle='true';document.head.appendChild(link);
   }
 
   function ensureData(){
