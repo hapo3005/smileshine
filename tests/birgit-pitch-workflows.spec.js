@@ -253,6 +253,47 @@ test('reset restores the realistic three-month studio simulation', async ({ page
   expect(new Date(state.rangeEnd + 'T12:00:00').getTime() - new Date(state.rangeStart + 'T12:00:00').getTime()).toBeGreaterThan(100 * 86400000);
 });
 
+
+test('service catalog uses the agreed realistic appointment lengths', async ({ page }) => {
+  await reset(page, 'services');
+
+  const services = await page.evaluate(() => Object.fromEntries((window.SSAdmin.db.services || []).map(s => [s.id, {name:s.name,duration:Number(s.duration),demoOnly:Boolean(s.demoOnly),verification:s.verification}])));
+  const expected = {
+    'demo-nail-refill':60,
+    'demo-nail-refill-design':75,
+    'demo-nail-new':90,
+    'demo-nail-strengthen':60,
+    'demo-nail-care':45,
+    'demo-nail-shellac':60,
+    'demo-nail-remove':30,
+    'demo-nail-repair':15,
+    'brows-pmu':120,
+    'lashline':90,
+    'lip-pmu':150,
+    'consult':30,
+    'pmu-followup-brows':60,
+    'pmu-followup-lash':60,
+    'pmu-followup-lips':90,
+    'brows-refresh':90,
+    'lashline-refresh':90,
+    'lip-refresh':120
+  };
+
+  for (const [id,duration] of Object.entries(expected)) {
+    expect(services[id], id).toBeTruthy();
+    expect(services[id].duration, id).toBe(duration);
+  }
+  expect(services['pmu-followup']).toBeUndefined();
+  expect(services['demo-pmu-followup']).toBeUndefined();
+
+  await expect(page.locator('#servicesGrid')).toContainText('Studioleistung · nicht öffentlich');
+  await expect(page.locator('#servicesGrid')).toContainText('Öffentliche Buchung');
+  await expect(page.locator('#servicesGrid')).toContainText('Leistungsstamm · noch bestätigen');
+  await expect(page.locator('.service-card-admin[data-service-id="demo-nail-refill"] input[name="duration"]')).toHaveValue('60');
+  await expect(page.locator('.service-card-admin[data-service-id="lip-pmu"] input[name="duration"]')).toHaveValue('150');
+  await expect(page.locator('.service-card-admin[data-service-id="pmu-followup-lips"] input[name="duration"]')).toHaveValue('90');
+});
+
 test('mobile More opens actual studio navigation', async ({ page }) => {
   await page.setViewportSize({width:390,height:844});
   await reset(page, 'dashboard');
