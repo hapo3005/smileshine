@@ -90,7 +90,13 @@
   }
 
   function renderServices(){
-    const root=$('#servicesGrid');if(!root)return;const core=new Set(['brows-pmu','lashline','lip-pmu','consult']);const visible=A.db.services.filter(s=>core.has(s.id)||!s.verification||s.verification==='studio');root.innerHTML=visible.map((s,i)=>`<article class="panel service-card-admin" data-service-id="${s.id}"><div class="service-card-top"><span class="service-number">${String(i+1).padStart(2,'0')}</span><label class="switch"><input type="checkbox" name="active" ${s.active?'checked':''}><span></span></label></div><h3>${escapeHTML(s.name)}</h3><p>${s.active?'Online buchbar':'Derzeit nicht online buchbar'}</p><div class="service-fields"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="${s.duration}"></label><label><span>Preis · €</span><input name="price" type="number" min="0" value="${s.price}"></label><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" value="${s.deposit}"></label></div><button class="soft-button service-save" type="button">Änderungen speichern</button></article>`).join('');A.bindServiceActions?.();
+    const root=$('#servicesGrid');if(!root)return;
+    const publicIds=new Set(['brows-pmu','lashline','lip-pmu','consult']);
+    const visible=[...(A.db.services||[])].sort((a,b)=>String(a.category||'').localeCompare(String(b.category||''),'de')||String(a.name||'').localeCompare(String(b.name||''),'de'));
+    root.innerHTML=visible.map(s=>{
+      const scope=!s.active?'Pausiert':s.demoOnly?'Studioleistung · nicht öffentlich':publicIds.has(s.id)?'Öffentliche Buchung':'Leistungsstamm · noch bestätigen';
+      return `<article class="panel service-card-admin" data-service-id="${s.id}"><div class="service-card-top"><span class="service-category">${escapeHTML(s.category||'Weitere Leistungen')}</span><label class="switch"><input type="checkbox" name="active" ${s.active?'checked':''}><span></span></label></div><h3>${escapeHTML(s.name)}</h3><p>${escapeHTML(scope)}</p><div class="service-fields"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="${s.duration}"></label><label><span>Preis · €</span><input name="price" type="number" min="0" value="${s.price}"></label><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" value="${s.deposit}"></label></div><button class="soft-button service-save" type="button">Änderungen speichern</button></article>`;
+    }).join('');A.bindServiceActions?.();
   }
 
   function renderWorkingHours(){
