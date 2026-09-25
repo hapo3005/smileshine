@@ -299,11 +299,12 @@
 
   function createAppointment(db,{date,time,key,seed,customer,service,specialOpening=false}){
     const status=appointmentStatus(date,time,service.duration,seed),source=seed%3===0?'online-demo':'studio',finance=appointmentFinance(service,status,source,date,seed);
-    return {id:`demo_sim_v3_${String(seed).padStart(4,'0')}`,date,time,duration:Number(service.duration||30),service:service.name,serviceDescription:service.description||'',customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status,payment:source==='online-demo'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',paymentPreference:source==='online-demo'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',source,phase:key==='nail-refill'?'Auffüllen':key==='nail-new'?'Neumodellage':key==='nail-care'?'Maniküre':key==='pmu-followup'?'Nachbehandlung':key==='consult'?'Beratung':'Erstbehandlung',note:`Demo-Simulation · ${customer.wishes||service.name}`,...finance,isDemoBooking:true,demoSimulation:true,specialOpening};
+    const phase=key.startsWith('nail-refill')?'Auffüllen':key==='nail-new'?'Neumodellage':key==='nail-strengthen'?'Naturnagelverstärkung':key==='nail-care'||key==='nail-shellac'?'Maniküre':key==='nail-remove'?'Entfernung':key==='nail-repair'?'Reparatur':key.startsWith('pmu-followup')?'Nachbehandlung':key==='consult'?'Beratung':'Erstbehandlung';
+    return {id:`demo_sim_v3_${String(seed).padStart(4,'0')}`,date,time,duration:Number(service.duration||30),service:service.name,serviceDescription:service.description||'',customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status,payment:source==='online-demo'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',paymentPreference:source==='online-demo'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',source,phase,note:`Demo-Simulation · ${customer.wishes||service.name}`,...finance,isDemoBooking:true,demoSimulation:true,specialOpening};
   }
 
   function simulationMaterial(a,seed){
-    if(/Auffüllen|Neumodellage|Maniküre/i.test(a.service))return `${NAIL_COLORS[seed%NAIL_COLORS.length]} · ${seed%3===0?'kurz oval':seed%3===1?'soft square':'mandelförmig'}`;
+    if(/Nageldesign|Auffüllen|Neumodellage|Maniküre|Naturnagel|Modellage|Nagelreparatur/i.test(a.service))return `${NAIL_COLORS[seed%NAIL_COLORS.length]} · ${seed%3===0?'kurz oval':seed%3===1?'soft square':'mandelförmig'}`;
     if(/Augenbrauen/i.test(a.service))return ['Soft Brown','Ash Brown','Warm Brown'][seed%3]+' · natürlich aufgebaut';
     if(/Lid|Wimpernkranz/i.test(a.service))return ['Black Brown','Graphite','Dark Brown'][seed%3]+' · feine Verdichtung';
     if(/Lippen/i.test(a.service))return ['Rose Nude','Dusty Rose','Coral Nude'][seed%3]+' · weiche Kontur';
@@ -338,8 +339,9 @@
         let customer=null;
         if(key==='pmu-followup'){
           const dueIndex=pmuDue.findIndex(x=>!x.used&&x.dueDate<=date&&!used.has(x.customer.id));
-          if(dueIndex>=0){customer=pmuDue[dueIndex].customer;pmuDue[dueIndex].used=true;used.add(customer.id);lastSeen.set(customer.id,date)}
-          else customer=chooseCustomer(pools.pmu,date,28,lastSeen,used,seed);
+          if(dueIndex>=0){
+            const due=pmuDue[dueIndex];customer=due.customer;service=db.services.find(s=>s.id===due.followupServiceId)||service;due.used=true;used.add(customer.id);lastSeen.set(customer.id,date);
+          } else customer=chooseCustomer(pools.pmu,date,28,lastSeen,used,seed);
         }else if(key==='pmu'){
           customer=chooseCustomer(pools.pmu,date,70,lastSeen,used,seed);
         }else if(key==='consult'){
@@ -354,14 +356,14 @@
         if(minute+Number(service.duration||30)>latestEnd)break;
         const time=timeOf(minute),appointment=createAppointment(db,{date,time,key,seed,customer,service,specialOpening:specialSaturday});
         db.appointments.push(appointment);
-        if(key==='pmu')pmuDue.push({customer,dueDate:isoDate(addDays(cursor,42)),used:false});
+        if(key==='pmu')pmuDue.push({customer,dueDate:isoDate(addDays(cursor,42)),followupServiceId:FOLLOWUP_SERVICE_BY_PRIMARY[service.id]||'pmu-followup-brows',used:false});
         minute+=Number(service.duration||30)+10;seed++;
       }
     }
 
     const completed=db.appointments.filter(a=>a.demoSimulation&&a.status==='completed');
     completed.forEach((a,index)=>{
-      const nail=/Auffüllen|Neumodellage|Maniküre/i.test(a.service),pmu=!nail&&!/Beratung/i.test(a.service);
+      const nail=/Nageldesign|Auffüllen|Neumodellage|Maniküre|Naturnagel|Modellage|Nagelreparatur/i.test(a.service),pmu=!nail&&!/Beratung/i.test(a.service);
       if(!/Beratung/i.test(a.service)){
         db.treatmentRecords.push({id:`demo_sim_record_${String(index+1).padStart(4,'0')}`,seedKey:`demo-sim-record-${a.id}`,customerId:a.customerId,appointmentId:a.id,date:a.date,service:a.service,material:simulationMaterial(a,index),result:nail?'Form, Länge und Farbe wie besprochen umgesetzt.':'Natürliches Ergebnis, Intensität bewusst typgerecht gehalten.',beforePhoto:pmu&&index%3!==0,afterPhoto:pmu&&index%4!==0,aftercare:pmu,createdAt:new Date(`${a.date}T18:50:00`).toISOString()});
       }
@@ -373,12 +375,12 @@
 
     const waitCandidates=[...pools.refill.slice(0,3),...pools.pmu.slice(0,3)];
     waitCandidates.forEach((customer,index)=>{
-      const nail=index<3,service=nail?'Nageldesign · Auffüllen':PMU_NAMES[index%PMU_NAMES.length];
+      const nail=index<3,service=nail?(db.services.find(s=>s.id==='demo-nail-refill')?.name||'Nageldesign · Auffüllen Standard'):(db.services.find(s=>s.id===['brows-pmu','lashline','lip-pmu'][index%3])?.name||'Beratung / Vorbesprechung');
       db.waitlist.push({id:`demo_sim_wait_${index+1}`,seedKey:`demo-sim-wait-${index+1}`,customerId:customer.id,service,earliest:isoDate(addDays(new Date(),index%3)),daypart:index%2?'Nachmittag':'Vormittag',note:index%2?'Würde gern einen früheren Termin übernehmen.':'Kann bei Ausfall kurzfristig kommen.',status:'waiting'});
     });
 
     let comm=0;
-    completed.slice(-24).forEach(a=>db.communications.push({id:`demo_sim_comm_${++comm}`,key:`demo-history-${a.id}`,type:/Auffüllen|Neumodellage|Maniküre/i.test(a.service)?'confirm':'aftercare',appointmentId:a.id,customerId:a.customerId,dueDate:a.date,status:'done',title:/Auffüllen|Neumodellage|Maniküre/i.test(a.service)?'Terminbestätigung':'Nachpflege',note:a.service,createdAt:new Date(`${a.date}T18:00:00`).toISOString(),completedAt:new Date(`${a.date}T18:05:00`).toISOString()}));
+    completed.slice(-24).forEach(a=>{const nail=/Nageldesign|Auffüllen|Neumodellage|Maniküre|Naturnagel|Modellage|Nagelreparatur/i.test(a.service);db.communications.push({id:`demo_sim_comm_${++comm}`,key:`demo-history-${a.id}`,type:nail?'confirm':'aftercare',appointmentId:a.id,customerId:a.customerId,dueDate:a.date,status:'done',title:nail?'Terminbestätigung':'Nachpflege',note:a.service,createdAt:new Date(`${a.date}T18:00:00`).toISOString(),completedAt:new Date(`${a.date}T18:05:00`).toISOString()})});
 
     const recent=[
       ['booking','Nina Schäfer: Termin bestätigt.'],
