@@ -19,7 +19,7 @@
     const weekEnd=isoDate(addDays(today,7));
     const weekApps=A.activeAppointments().filter(a=>a.date>=todayISO&&a.date<=weekEnd);
     const monthApps=A.activeAppointments().filter(a=>{const d=new Date(`${a.date}T12:00:00`);return d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear()});
-    const revenue=monthApps.reduce((sum,a)=>sum+(A.db.services.find(s=>s.name===a.service)?.price||0),0);
+    const revenue=monthApps.reduce((sum,a)=>sum+Number(a.finalPrice??a.listPrice??A.db.services.find(s=>s.name===a.service)?.price||0),0);
     const unique=new Set(weekApps.map(a=>a.customerId||a.email||a.customerName)).size;
     if($('#todaySubline'))$('#todaySubline').textContent=new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(today);
     const kpis=[
@@ -36,8 +36,8 @@
     const values=[],start=new Date();
     for(let i=0;i<7&&values.length<6;i++){
       const d=addDays(start,i);if(d.getDay()===0)continue;const date=isoDate(d),wh=A.db.workingHours[d.getDay()]||{enabled:false,start:'09:00',end:'18:00'};
-      const available=wh.enabled?Math.max(1,minutesOf(wh.end)-minutesOf(wh.start)):1;
       const apps=A.activeAppointments().filter(a=>a.date===date),used=apps.reduce((s,a)=>s+Number(a.duration||0),0);
+      const available=wh.enabled?Math.max(1,minutesOf(wh.end)-minutesOf(wh.start)):apps.some(a=>a.specialOpening)?Math.max(240,used+60):1;
       values.push({d,percent:Math.min(100,Math.round(used/available*100)),count:apps.length});
     }
     if($('#weekBars'))$('#weekBars').innerHTML=values.map(v=>`<div class="week-bar"><div class="week-bar-track"><span class="week-bar-fill" style="height:${Math.max(5,v.percent)}%"></span></div><strong>${SHORT_DAYS[v.d.getDay()]}</strong><small>${v.percent}%</small></div>`).join('');
@@ -52,12 +52,13 @@
   }
 
   function renderCalendar(){
-    const date=isoDate(A.calendarCursor),wh=A.db.workingHours[A.calendarCursor.getDay()]||{enabled:false,start:'09:00',end:'18:00'};
+    const date=isoDate(A.calendarCursor),wh=A.db.workingHours[A.calendarCursor.getDay()]||{enabled:false,start:'09:00',end:'18:00'},special=A.activeAppointments().filter(a=>a.date===date&&a.specialOpening);
     if($('#calendarWeekday'))$('#calendarWeekday').textContent=DAY_NAMES[A.calendarCursor.getDay()];
     if($('#calendarDate'))$('#calendarDate').textContent=new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'long',year:'numeric'}).format(A.calendarCursor);
     const root=$('#daySchedule');if(!root)return;
-    if(!wh.enabled){root.innerHTML='<div class="empty-state"><strong>Studio geschlossen.</strong>Für diesen Wochentag sind keine regulären Arbeitszeiten aktiviert.</div>';return}
-    const start=Math.floor(minutesOf(wh.start)/60)*60,end=Math.ceil(minutesOf(wh.end)/60)*60;root.innerHTML='';
+    if(!wh.enabled&&!special.length){root.innerHTML='<div class="empty-state"><strong>Studio geschlossen.</strong>Für diesen Wochentag sind keine regulären Arbeitszeiten aktiviert.</div>';return}
+    const specialStart=special.length?Math.min(...special.map(a=>minutesOf(a.time))):540,specialEnd=special.length?Math.max(...special.map(a=>minutesOf(a.time)+Number(a.duration||30))):780;
+    const start=wh.enabled?Math.floor(minutesOf(wh.start)/60)*60:Math.floor(specialStart/60)*60,end=wh.enabled?Math.ceil(minutesOf(wh.end)/60)*60:Math.ceil(specialEnd/60)*60;root.innerHTML='';
     for(let min=start;min<end;min+=60){
       const row=document.createElement('div');row.className='schedule-row';row.innerHTML=`<div class="schedule-time">${timeOf(min)}</div><div class="schedule-lane"></div>`;const lane=$('.schedule-lane',row);
       const events=[
