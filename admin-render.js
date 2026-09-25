@@ -16,7 +16,7 @@
 
   function renderDashboard(){
     const today=new Date(),todayISO=isoDate(today),todays=A.activeAppointments().filter(a=>a.date===todayISO).sort((a,b)=>a.time.localeCompare(b.time));
-    const weekEnd=isoDate(addDays(today,7));
+    const weekEnd=isoDate(addDays(today,6));
     const weekApps=A.activeAppointments().filter(a=>a.date>=todayISO&&a.date<=weekEnd);
     const monthApps=A.activeAppointments().filter(a=>{const d=new Date(`${a.date}T12:00:00`);return d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear()});
     const revenue=monthApps.reduce((sum,a)=>sum+Number((a.finalPrice??a.listPrice??A.db.services.find(s=>s.name===a.service)?.price)||0),0);
