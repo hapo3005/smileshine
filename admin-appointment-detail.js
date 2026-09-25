@@ -156,7 +156,9 @@
     if(customer){customer.name=name;customer.phone=phone;customer.email=email}
     const moved=old.date!==date||old.time!==time,changedService=old.service!==a.service,statusChanged=old.status!==a.status;
     const summary=moved?`${name}: Termin auf ${dateShort(date)} um ${time} Uhr verschoben.`:changedService?`${name}: Leistung auf ${a.service} geändert.`:statusChanged?`${name}: Terminstatus auf „${statusLabel(a.status)}“ geändert.`:`${name}: Termindetails aktualisiert.`;
-    A.addActivity('booking',summary);A.save('Termin aktualisiert.');A.refreshPaymentUI?.();dialog.close();
+    if(moved||changedService)A.queueAppointmentCommunication?.('change',a.id,A.isoDate(new Date()),{title:'Terminänderung'});
+    else if(old.status!=='confirmed'&&a.status==='confirmed')A.queueAppointmentCommunication?.('confirm',a.id,A.isoDate(new Date()),{title:'Terminbestätigung'});
+    A.addActivity('booking',summary);A.save('Termin aktualisiert.');A.refreshPaymentUI?.();A.renderDashboardWorkflow?.();dialog.close();
   }
 
   function deleteAppointment(id,dialog){
