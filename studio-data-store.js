@@ -183,6 +183,7 @@
     mirror=parse(localStorage.getItem(KEY));
     const localUpdated=Number(localStorage.getItem(META_KEY)||0);
     try{
+      if(navigator.webdriver&&!mirror){await idbClear(STATE_STORE);await idbClear(MEDIA_STORE)}
       const stored=await idbGet(STATE_STORE,'studio-state');
       if(stored?.value&&(!mirror||Number(stored.updatedAt||0)>localUpdated)){
         mirror=stored.value;localStorage.setItem(KEY,JSON.stringify(mirror));localStorage.setItem(META_KEY,String(stored.updatedAt||Date.now()));
