@@ -97,7 +97,7 @@
     const treatmentDue=(A.db.followUps||[]).filter(x=>x.status!=='done'&&x.type==='aftercare').length;
     root.innerHTML=`
       <div class="workflow-head">
-        <div><span class="panel-kicker">Heute wichtig</span><h3>${actions.length?'${actions.length} Dinge brauchen deine Aufmerksamkeit.':'Alles vorbereitet.'}</h3><p>${actions.length?'Nur das, was heute wirklich erledigt werden sollte.':'Für heute gibt es keine offenen Hinweise.'}</p></div>
+        <div><span class="panel-kicker">Heute wichtig</span><h3>${actions.length?`${actions.length} Dinge brauchen deine Aufmerksamkeit.`:'Alles vorbereitet.'}</h3><p>${actions.length?'Nur das, was heute wirklich erledigt werden sollte.':'Für heute gibt es keine offenen Hinweise.'}</p></div>
         <button type="button" class="soft-button" data-open-workflow-center>Organisation öffnen</button>
       </div>
       <div class="workflow-layout">
@@ -143,7 +143,19 @@
   }
 
   function nextSlotFor(entry){
-    const service=serviceFor(entry.service);return A.findNextFreeSlot?.(Number(service?.duration||30))||null;
+    const service=serviceFor(entry.service),duration=Number(service?.duration||30),startDate=entry.earliest&&entry.earliest>today()?new Date(`${entry.earliest}T12:00:00`):new Date();
+    const daypart=String(entry.daypart||'Flexibel');
+    for(let offset=0;offset<30;offset++){
+      const d=addDays(startDate,offset),hours=A.db.workingHours?.[d.getDay()];if(!hours?.enabled)continue;
+      const date=isoDate(d),start=A.minutesOf(hours.start),end=A.minutesOf(hours.end),step=Number(A.db.slotInterval||30);
+      for(let m=start;m+duration<=end;m+=step){
+        if(daypart==='Vormittag'&&m>=12*60)continue;
+        if(daypart==='Nachmittag'&&(m<12*60||m>=17*60))continue;
+        if(daypart==='Abend'&&m<17*60)continue;
+        const time=A.timeOf(m);if(A.isSlotFree(date,time,duration))return {date,time};
+      }
+    }
+    return null;
   }
 
   function renderWaitlist(){
