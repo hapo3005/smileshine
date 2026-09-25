@@ -224,6 +224,6 @@ async function importPublicModule(url,attempts=3){
   console.error('Smile & Shine: Modul konnte nicht geladen werden.',url,lastError);
   return null;
 }
-importPublicModule('./checkout-enhancements.js?v=20260923-birgit-final2-carousel1');
+importPublicModule('./checkout-enhancements.js?v=20260925-hours5-retry');
 importPublicModule('./booking-admin-sync.js?v=20260925-hours5');
 importPublicModule('./cnc-products-carousel.js?v=20260923-birgit-final2');
