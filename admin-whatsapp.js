@@ -75,6 +75,7 @@
       .wa-open-button:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}
       .wa-hint{font-size:10px;line-height:1.5;color:var(--muted);margin:0}
       .status-tag.whatsapp-active{background:var(--rose-soft);color:var(--rose-deep)}
+      .wa-dialog.custom-mode .wa-template-grid,.wa-dialog.custom-mode .wa-tone-switch{display:none}
       @media(max-width:720px){.wa-dialog-head,.wa-dialog-body{padding-left:18px;padding-right:18px}.wa-template-grid{grid-template-columns:1fr}.wa-preview-head,.wa-preview-actions{align-items:stretch;flex-direction:column}.wa-tone-switch{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.wa-open-button{width:100%}}
     `;document.head.appendChild(style);
   }
@@ -113,6 +114,7 @@
     ensureDialog();const a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
     const phone=phoneFor(a);if(!phone)return A.toast('Für diesen Kunden ist keine Telefonnummer hinterlegt.');
     const dialog=$('#whatsappDialog');
+    dialog.classList.toggle('custom-mode',Boolean(options.customText));
     dialog.dataset.appointmentId=id;dialog.dataset.template=options.type||'confirm';dialog.dataset.tone=options.tone||'friendly';
     dialog.dataset.communicationId=options.communicationId||'';dialog.dataset.cleanupAppointmentId=options.cleanupAppointmentId||'';dialog._customText=options.customText||'';
     const demo=isDemoContact(a),warning=demo?'<small class="wa-demo-warning">Beispielprofil · Vorschau ist aktiv, echter WhatsApp-Versand bleibt gesperrt.</small>':'';
