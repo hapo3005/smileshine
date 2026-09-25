@@ -3,27 +3,19 @@
 
   const STORE=window.SmileShineDataStore;
   const KEY=STORE?.key||'smileshine_studio_v1';
-  const CATALOG_VERSION=4;
+  const CATALOG_VERSION=5;
   const CATALOG=[
-    {id:'pmu',category:'Beratung & Grundlagen',name:'Permanent Make-up',description:'Individuelle Pigmentierung für ein dauerhaft gepflegtes Erscheinungsbild.',duration:120,price:0,deposit:0,active:true,verification:'verified',internalNote:'Öffentlich für Smile & Shine verifiziert; konkrete Technik und Dauer je Bereich auswählen.'},
-    {id:'cosmetic',category:'Beratung & Grundlagen',name:'Kosmetische Behandlung',description:'Individuell abgestimmte kosmetische Behandlung im Studio.',duration:60,price:0,deposit:0,active:true,verification:'verified',internalNote:'Öffentlich für Smile & Shine verifiziert; konkrete Leistung mit Birgit final bestätigen.'},
     {id:'consult',category:'Beratung & Grundlagen',name:'Beratung / Vorbesprechung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',duration:30,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 30 Min. als professioneller Ausgangswert; mit Birgit final bestätigen.'},
 
     {id:'brows-pmu',category:'Permanent Make-up · Augenbrauen',name:'Augenbrauen Permanent Make-up',description:'Dauerhafte Betonung und harmonische Formgebung der Augenbrauen.',duration:120,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 120 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'brows-hair',category:'Permanent Make-up · Augenbrauen',name:'Härchenzeichnung Augenbrauen',description:'Feine, natürlich wirkende Härchenoptik für mehr Definition und Fülle.',duration:120,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 120 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'powder-brows',category:'Permanent Make-up · Augenbrauen',name:'Powder Brows',description:'Sanft schattierte Augenbrauen mit weichem, pudrigem Finish.',duration:120,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 120 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
     {id:'brows-refresh',category:'Permanent Make-up · Augenbrauen',name:'Augenbrauen-Auffrischung',description:'Auffrischung einer bestehenden Augenbrauenpigmentierung.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
     {id:'pmu-followup-brows',category:'Permanent Make-up · Augenbrauen',name:'PMU-Nachbehandlung · Augenbrauen',description:'Kontrolle und gezielte Nachpigmentierung der Augenbrauen nach der Erstbehandlung.',duration:60,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 60 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
 
-    {id:'eyeliner',category:'Permanent Make-up · Augen',name:'Lidstrich',description:'Präzise Pigmentierung für eine dauerhaft definierte Augenpartie.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
     {id:'lashline',category:'Permanent Make-up · Augen',name:'Wimpernkranzverdichtung',description:'Dezente Pigmentierung am Wimpernansatz für einen dichteren Ausdruck.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'shaded-eyeliner',category:'Permanent Make-up · Augen',name:'Modellierter Lidstrich / Eyeliner',description:'Individuell geformte Lidpigmentierung mit stärkerer Definition.',duration:105,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 105 Min. als Ausgangswert für die aufwendigere Technik; mit Birgit final bestätigen.'},
     {id:'lashline-refresh',category:'Permanent Make-up · Augen',name:'Wimpernkranz-Auffrischung',description:'Auffrischung einer bestehenden Pigmentierung am Wimpernkranz.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
     {id:'pmu-followup-lash',category:'Permanent Make-up · Augen',name:'PMU-Nachbehandlung · Wimpernkranz',description:'Kontrolle und gezielte Nachpigmentierung des Wimpernkranzes.',duration:60,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 60 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
 
     {id:'lip-pmu',category:'Permanent Make-up · Lippen',name:'Lippenpigmentierung',description:'Natürlich wirkende Pigmentierung für Kontur, Farbe und Frische.',duration:150,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 150 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'lip-contour',category:'Permanent Make-up · Lippen',name:'Lippenkontur',description:'Präzise Betonung und Harmonisierung der natürlichen Lippenkontur.',duration:120,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 120 Min. als Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'lip-full',category:'Permanent Make-up · Lippen',name:'Lippen-Vollzeichnung',description:'Gleichmäßige Pigmentierung der gesamten Lippenfläche.',duration:150,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 150 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
     {id:'lip-refresh',category:'Permanent Make-up · Lippen',name:'Lippen-Auffrischung',description:'Auffrischung einer bestehenden Lippenpigmentierung.',duration:120,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 120 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
     {id:'pmu-followup-lips',category:'Permanent Make-up · Lippen',name:'PMU-Nachbehandlung · Lippen',description:'Kontrolle und gezielte Nachpigmentierung der Lippen nach der Erstbehandlung.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'}
   ];
@@ -44,7 +36,7 @@
     const current=new Map(db.services.map(s=>[String(s.id),s]));
     const needsMigration=Number(db.catalogVersion||0)<CATALOG_VERSION||db.services.length<15;
     if(!needsMigration)return db;
-    const deprecated=new Set(['pmu-refresh','pmu-followup']);
+    const deprecated=new Set(['pmu-refresh','pmu-followup','brows','eyes','lips','pmu','cosmetic','brows-hair','powder-brows','eyeliner','shaded-eyeliner','lip-contour','lip-full']);
     const extras=db.services.filter(service=>!CATALOG.some(base=>base.id===service.id)&&!deprecated.has(service.id));
     db.services=[...CATALOG.map(base=>{
       const old=current.get(base.id);
