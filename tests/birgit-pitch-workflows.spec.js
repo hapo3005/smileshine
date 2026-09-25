@@ -108,7 +108,7 @@ test('reset restores the realistic three-month studio simulation', async ({ page
   });
   page.once('dialog', dialog => dialog.accept());
   await page.locator('#resetDemo').click();
-  await page.waitForFunction(() => window.SSAdmin.db.customers.length >= 75);
+  await page.waitForFunction(() => window.SSAdmin.db.customers.length >= 145);
 
   const state = await page.evaluate(() => {
     const A = window.SSAdmin, simulated = A.db.appointments.filter(a => a.demoSimulation);
@@ -137,25 +137,25 @@ test('reset restores the realistic three-month studio simulation', async ({ page
     };
   });
 
-  expect(state.customers).toBe(80);
-  expect(state.generatedAppointments).toBeGreaterThanOrEqual(160);
-  expect(state.totalAppointments).toBeGreaterThanOrEqual(170);
-  expect(state.totalAppointments).toBeLessThanOrEqual(230);
+  expect(state.customers).toBe(150);
+  expect(state.generatedAppointments).toBeGreaterThanOrEqual(450);
+  expect(state.totalAppointments).toBeGreaterThanOrEqual(450);
+  expect(state.totalAppointments).toBeLessThanOrEqual(580);
   expect(state.services.some(name => /Augenbrauen/i.test(name))).toBe(true);
   expect(state.services.some(name => /Wimpernkranz|Lid/i.test(name))).toBe(true);
   expect(state.services.some(name => /Lippen/i.test(name))).toBe(true);
   expect(state.services.some(name => /Beratung/i.test(name))).toBe(true);
   expect(state.repeatCustomers).toBeGreaterThanOrEqual(25);
   expect(state.completed).toBeGreaterThanOrEqual(15);
-  expect(state.futureConfirmed).toBeGreaterThanOrEqual(95);
-  expect(state.todayAppointments).toBeGreaterThanOrEqual(2);
-  expect(state.todayAppointments).toBeLessThanOrEqual(4);
-  expect(state.weekAppointments).toBeGreaterThanOrEqual(11);
-  expect(state.weekAppointments).toBeLessThanOrEqual(17);
-  expect(state.weekCustomers).toBeGreaterThanOrEqual(10);
+  expect(state.futureConfirmed).toBeGreaterThanOrEqual(320);
+  expect(state.todayAppointments).toBeGreaterThanOrEqual(5);
+  expect(state.todayAppointments).toBeLessThanOrEqual(7);
+  expect(state.weekAppointments).toBeGreaterThanOrEqual(27);
+  expect(state.weekAppointments).toBeLessThanOrEqual(35);
+  expect(state.weekCustomers).toBeGreaterThanOrEqual(24);
   expect(state.waitlist).toBeGreaterThanOrEqual(4);
   expect(state.treatmentRecords).toBeGreaterThanOrEqual(10);
-  expect(state.simulation?.customerTarget).toBe(80);
+  expect(state.simulation?.customerTarget).toBe(150);
   expect(new Date(state.rangeEnd + 'T12:00:00').getTime() - new Date(state.rangeStart + 'T12:00:00').getTime()).toBeGreaterThan(100 * 86400000);
 });
 
