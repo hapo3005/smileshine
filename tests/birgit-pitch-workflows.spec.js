@@ -110,6 +110,13 @@ test('daily cockpit turns studio work into direct actions', async ({ page }) => 
   await reset(page, 'dashboard');
   await expect(page.locator('.day-cockpit')).toBeVisible();
   await expect(page.locator('.day-cockpit-stats > div')).toHaveCount(3);
+  await expect(page.locator('.day-cockpit-brief')).toBeVisible();
+  await expect(page.locator('.day-cockpit-brief')).toContainText('Wunsch');
+  await expect(page.locator('.day-cockpit-brief')).toContainText('Zuletzt');
+  await expect(page.locator('.day-cockpit-brief')).toContainText('Startklar?');
+  const contextActions = page.locator('#todayList .today-context-action');
+  await expect(contextActions.first()).toBeVisible();
+  expect(await contextActions.count()).toBeGreaterThanOrEqual(5);
 
   await page.evaluate(() => {
     const A = window.SSAdmin, today = A.isoDate(new Date());
