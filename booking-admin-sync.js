@@ -3,21 +3,21 @@
 
   const STORE=window.SmileShineDataStore;
   const KEY=STORE?.key||'smileshine_studio_v1';
-  const CATALOG_VERSION=5;
+  const CATALOG_VERSION=6;
   const CATALOG=[
-    {id:'consult',category:'Beratung & Grundlagen',name:'Beratung / Vorbesprechung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',duration:30,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 30 Min. als professioneller Ausgangswert; mit Birgit final bestätigen.'},
+    {id:'consult',category:'Beratung & Grundlagen',name:'Beratung / Vorbesprechung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',duration:30,price:0,deposit:0,active:true,verification:'market',internalNote:'Terminlänge bereits festgelegt. Demo-Preis 0 € für die Präsentation; mit Birgit final bestätigen.'},
 
-    {id:'brows-pmu',category:'Permanent Make-up · Augenbrauen',name:'Augenbrauen Permanent Make-up',description:'Dauerhafte Betonung und harmonische Formgebung der Augenbrauen.',duration:120,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 120 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'brows-refresh',category:'Permanent Make-up · Augenbrauen',name:'Augenbrauen-Auffrischung',description:'Auffrischung einer bestehenden Augenbrauenpigmentierung.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'pmu-followup-brows',category:'Permanent Make-up · Augenbrauen',name:'PMU-Nachbehandlung · Augenbrauen',description:'Kontrolle und gezielte Nachpigmentierung der Augenbrauen nach der Erstbehandlung.',duration:60,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 60 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
+    {id:'brows-pmu',category:'Permanent Make-up · Augenbrauen',name:'Augenbrauen Permanent Make-up',description:'Dauerhafte Betonung und harmonische Formgebung der Augenbrauen.',duration:120,price:299,deposit:50,active:true,verification:'market',internalNote:'Marktbasierter Demo-Preis 299 € · Anzahlung 50 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
+    {id:'brows-refresh',category:'Permanent Make-up · Augenbrauen',name:'Augenbrauen-Auffrischung',description:'Auffrischung einer bestehenden Augenbrauenpigmentierung.',duration:90,price:169,deposit:30,active:true,verification:'market',internalNote:'Marktbasierter Demo-Preis 169 € · Anzahlung 30 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
+    {id:'pmu-followup-brows',category:'Permanent Make-up · Augenbrauen',name:'PMU-Nachbehandlung · Augenbrauen',description:'Kontrolle und gezielte Nachpigmentierung der Augenbrauen nach der Erstbehandlung.',duration:60,price:0,deposit:0,active:true,verification:'market',internalNote:'Preis bewusst offen: mit Birgit klären, ob die Nachbehandlung enthalten oder separat berechnet wird. Terminlänge bereits festgelegt.'},
 
-    {id:'lashline',category:'Permanent Make-up · Augen',name:'Wimpernkranzverdichtung',description:'Dezente Pigmentierung am Wimpernansatz für einen dichteren Ausdruck.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'lashline-refresh',category:'Permanent Make-up · Augen',name:'Wimpernkranz-Auffrischung',description:'Auffrischung einer bestehenden Pigmentierung am Wimpernkranz.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'pmu-followup-lash',category:'Permanent Make-up · Augen',name:'PMU-Nachbehandlung · Wimpernkranz',description:'Kontrolle und gezielte Nachpigmentierung des Wimpernkranzes.',duration:60,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 60 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
+    {id:'lashline',category:'Permanent Make-up · Augen',name:'Wimpernkranzverdichtung',description:'Dezente Pigmentierung am Wimpernansatz für einen dichteren Ausdruck.',duration:90,price:249,deposit:50,active:true,verification:'market',internalNote:'Marktbasierter Demo-Preis 249 € · Anzahlung 50 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
+    {id:'lashline-refresh',category:'Permanent Make-up · Augen',name:'Wimpernkranz-Auffrischung',description:'Auffrischung einer bestehenden Pigmentierung am Wimpernkranz.',duration:90,price:149,deposit:30,active:true,verification:'market',internalNote:'Marktbasierter Demo-Preis 149 € · Anzahlung 30 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
+    {id:'pmu-followup-lash',category:'Permanent Make-up · Augen',name:'PMU-Nachbehandlung · Wimpernkranz',description:'Kontrolle und gezielte Nachpigmentierung des Wimpernkranzes.',duration:60,price:0,deposit:0,active:true,verification:'market',internalNote:'Preis bewusst offen: mit Birgit klären, ob die Nachbehandlung enthalten oder separat berechnet wird. Terminlänge bereits festgelegt.'},
 
-    {id:'lip-pmu',category:'Permanent Make-up · Lippen',name:'Lippenpigmentierung',description:'Natürlich wirkende Pigmentierung für Kontur, Farbe und Frische.',duration:150,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 150 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'lip-refresh',category:'Permanent Make-up · Lippen',name:'Lippen-Auffrischung',description:'Auffrischung einer bestehenden Lippenpigmentierung.',duration:120,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 120 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'pmu-followup-lips',category:'Permanent Make-up · Lippen',name:'PMU-Nachbehandlung · Lippen',description:'Kontrolle und gezielte Nachpigmentierung der Lippen nach der Erstbehandlung.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Buchungszeit 90 Min. als marktgerechter Ausgangswert; mit Birgit final bestätigen.'}
+    {id:'lip-pmu',category:'Permanent Make-up · Lippen',name:'Lippenpigmentierung',description:'Natürlich wirkende Pigmentierung für Kontur, Farbe und Frische.',duration:150,price:349,deposit:75,active:true,verification:'market',internalNote:'Marktbasierter Demo-Preis 349 € · Anzahlung 75 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
+    {id:'lip-refresh',category:'Permanent Make-up · Lippen',name:'Lippen-Auffrischung',description:'Auffrischung einer bestehenden Lippenpigmentierung.',duration:120,price:199,deposit:40,active:true,verification:'market',internalNote:'Marktbasierter Demo-Preis 199 € · Anzahlung 40 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
+    {id:'pmu-followup-lips',category:'Permanent Make-up · Lippen',name:'PMU-Nachbehandlung · Lippen',description:'Kontrolle und gezielte Nachpigmentierung der Lippen nach der Erstbehandlung.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Preis bewusst offen: mit Birgit klären, ob die Nachbehandlung enthalten oder separat berechnet wird. Terminlänge bereits festgelegt.'}
   ];
 
   const $=(s,r=document)=>r.querySelector(s);
@@ -40,8 +40,18 @@
     const extras=db.services.filter(service=>!CATALOG.some(base=>base.id===service.id)&&!deprecated.has(service.id));
     db.services=[...CATALOG.map(base=>{
       const old=current.get(base.id);
-      if(!old)return {...base};
-      return {...base,...old,name:base.name,description:base.description,category:base.category,duration:base.duration,verification:base.verification,internalNote:base.internalNote};
+      if(!old)return {...base,demoPricingVersion:CATALOG_VERSION};
+      const studioConfirmed=old.verification==='studio'||old.verification==='verified';
+      const seedDemoPrice=db.presentationMode===true&&!studioConfirmed&&Number(old.price||0)===0&&Number(base.price||0)>0;
+      return {...base,...old,
+        name:base.name,description:base.description,category:base.category,
+        duration:studioConfirmed?Number(old.duration||base.duration):base.duration,
+        price:seedDemoPrice?base.price:Number(old.price??base.price),
+        deposit:seedDemoPrice?base.deposit:Number(old.deposit??base.deposit),
+        verification:studioConfirmed?old.verification:base.verification,
+        internalNote:studioConfirmed?(old.internalNote||'Vom Studio bestätigt.'):base.internalNote,
+        demoPricingVersion:CATALOG_VERSION
+      };
     }),...extras];
     db.catalogVersion=CATALOG_VERSION;
     return db;
