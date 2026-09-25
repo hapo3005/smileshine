@@ -72,11 +72,17 @@
     return (A.db.appointments||[]).reduce((sum,a)=>sum+(a.payments||[]).reduce((part,p)=>String(p.createdAt||'').slice(0,10)===t?part+Number(p.amount||0):part,0),0);
   }
   function nextUsefulGap(todays){
-    const day=new Date(),wh=A.db.workingHours?.[day.getDay()];if(!wh?.enabled)return null;
+    const day=new Date(),date=today(),wh=A.db.workingHours?.[day.getDay()];if(!wh?.enabled)return null;
     let cursor=Math.max(A.minutesOf(wh.start),nowMinutes()),end=A.minutesOf(wh.end);
-    for(const a of todays.filter(a=>!['cancelled','no_show'].includes(a.status)).sort((a,b)=>a.time.localeCompare(b.time))){
-      const start=appointmentMinutes(a);if(start>cursor&&start-cursor>=60)return {start:A.timeOf(cursor),minutes:start-cursor};
-      cursor=Math.max(cursor,appointmentEnd(a));
+    const buffer=Number(A.db.buffer||0);
+    const busy=[
+      ...todays.filter(a=>!['cancelled','no_show'].includes(a.status)).map(a=>({start:appointmentMinutes(a),end:appointmentEnd(a)+buffer})),
+      ...(A.db.blocked||[]).filter(b=>b.date===date).map(b=>({start:A.minutesOf(b.start),end:A.minutesOf(b.end)}))
+    ].sort((a,b)=>a.start-b.start);
+    for(const item of busy){
+      if(item.end<=cursor)continue;
+      if(item.start>cursor&&item.start-cursor>=60)return {start:A.timeOf(cursor),minutes:item.start-cursor};
+      cursor=Math.max(cursor,item.end);
     }
     if(end>cursor&&end-cursor>=60)return {start:A.timeOf(cursor),minutes:end-cursor};
     return null;
