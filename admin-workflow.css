@@ -130,3 +130,29 @@
 @media(max-width:400px){
   .customer-workfile-head .customer-workflow-buttons{display:grid;grid-template-columns:1fr}
 }
+
+
+/* Birgit Tageszentrale · 2026-09-25 */
+.day-cockpit-brief{display:grid;grid-template-columns:1.1fr 1.2fr .85fr;gap:8px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(217,199,191,.72)}
+.day-cockpit-brief>div{min-width:0;padding:9px 10px;border-radius:12px;background:rgba(255,255,255,.7);border:1px solid rgba(231,218,211,.8)}
+.day-cockpit-brief span{display:block;font-size:7px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.day-cockpit-brief strong{display:block;font-size:9px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.day-cockpit-brief small{display:block;font-size:8px;color:var(--muted);margin-top:3px}
+.day-gap-card.has-match{border-color:#cbdcc9;background:linear-gradient(135deg,#f5faf4,#fff)}
+.day-gap-card.has-match .day-gap-icon{background:#e4f0e2;color:#587a5d}
+#todayList .appointment-row{grid-template-columns:58px minmax(0,1fr) auto auto}
+.today-context-action{border:1px solid var(--line);background:#fffaf8;color:var(--ink);border-radius:999px;padding:7px 10px;font-size:8px;font-weight:800;cursor:pointer;white-space:nowrap}
+.today-context-action:hover{border-color:#d1b6ae;background:#fff}
+#todayList .appointment-row.needs-attention .today-context-action{background:var(--rose-soft);border-color:#e4c7c2;color:var(--rose-deep)}
+#todayList .appointment-row.is-complete{opacity:.72}
+#todayList .appointment-row.is-complete .appointment-main strong{text-decoration:none}
+@media(max-width:760px){
+  .day-cockpit-brief{grid-template-columns:1fr;gap:6px}
+  .day-cockpit-brief>div{padding:8px 9px}
+  #todayList .appointment-row{grid-template-columns:46px minmax(0,1fr) auto}
+  #todayList .appointment-status{display:none}
+  .today-context-action{padding:7px 9px}
+}
+@media(max-width:400px){
+  .today-context-action{font-size:7px;padding:7px 8px}
+}
