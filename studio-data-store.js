@@ -67,15 +67,135 @@
     ];
   }
 
-  function parse(raw){if(!raw)return null;try{return JSON.parse(raw)}catch(error){console.warn('Smile & Shine: Lokaler Datenstand konnte nicht gelesen werden.',error);return null}}
-  function read(){return parse(localStorage.getItem(KEY))}
-  function write(value){if(value==null)throw new TypeError('SmileShineDataStore.write benötigt einen Datenstand.');localStorage.setItem(KEY,JSON.stringify(value));window.dispatchEvent(new CustomEvent(CHANGE_EVENT,{detail:{key:KEY,source:'local'}}));return value}
-  function seedPickupOrders(force=false){if(force||!localStorage.getItem(PICKUP_KEY))localStorage.setItem(PICKUP_KEY,JSON.stringify(createPresentationPickupOrders()))}
-  function resetPresentationData(){const value=createPresentationData();write(value);seedPickupOrders(true);return value}
-  function ensurePresentationData(){const current=read();if(!current||Number(current.presentationVersion||0)<PRESENTATION_VERSION){const value=createPresentationData();write(value);seedPickupOrders(false);return value}seedPickupOrders(false);return current}
-  function clear(){localStorage.removeItem(KEY);window.dispatchEvent(new CustomEvent(CHANGE_EVENT,{detail:{key:KEY,source:'local'}}))}
-  function subscribe(listener){if(typeof listener!=='function')return()=>{};const onStorage=event=>{if(event.key===KEY)listener(read(),{source:'storage'})};const onLocal=event=>{if(event.detail?.key===KEY)listener(read(),{source:event.detail.source||'local'})};window.addEventListener('storage',onStorage);window.addEventListener(CHANGE_EVENT,onLocal);return()=>{window.removeEventListener('storage',onStorage);window.removeEventListener(CHANGE_EVENT,onLocal)}}
+  const IDB_NAME='smileshine_studio_demo_v1';
+  const IDB_VERSION=1;
+  const STATE_STORE='kv';
+  const MEDIA_STORE='media';
+  const META_KEY=`${KEY}_meta_v2`;
+  let mirror=null;
+  let databasePromise=null;
 
-  window.SmileShineDataStore=Object.freeze({key:KEY,mode:'presentation-local',schemaVersion:1,presentationVersion:PRESENTATION_VERSION,read,write,clear,subscribe,createPresentationData,createPresentationPickupOrders,resetPresentationData,ensurePresentationData});
-  ensurePresentationData();
+  function parse(raw){if(!raw)return null;try{return JSON.parse(raw)}catch(error){console.warn('Smile & Shine: Lokaler Datenstand konnte nicht gelesen werden.',error);return null}}
+  function emit(source='local'){window.dispatchEvent(new CustomEvent(CHANGE_EVENT,{detail:{key:KEY,source}}))}
+  function openDatabase(){
+    if(databasePromise)return databasePromise;
+    if(!('indexedDB' in window))return Promise.resolve(null);
+    databasePromise=new Promise((resolve,reject)=>{
+      const request=indexedDB.open(IDB_NAME,IDB_VERSION);
+      request.onupgradeneeded=()=>{
+        const db=request.result;
+        if(!db.objectStoreNames.contains(STATE_STORE))db.createObjectStore(STATE_STORE,{keyPath:'key'});
+        if(!db.objectStoreNames.contains(MEDIA_STORE))db.createObjectStore(MEDIA_STORE,{keyPath:'id'});
+      };
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>reject(request.error||new Error('IndexedDB konnte nicht geöffnet werden.'));
+    });
+    return databasePromise;
+  }
+  async function idbGet(store,key){
+    const db=await openDatabase();if(!db)return null;
+    return new Promise((resolve,reject)=>{const tx=db.transaction(store,'readonly'),req=tx.objectStore(store).get(key);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)});
+  }
+  async function idbGetAll(store){
+    const db=await openDatabase();if(!db)return [];
+    return new Promise((resolve,reject)=>{const tx=db.transaction(store,'readonly'),req=tx.objectStore(store).getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error)});
+  }
+  async function idbPut(store,value){
+    const db=await openDatabase();if(!db)return value;
+    return new Promise((resolve,reject)=>{const tx=db.transaction(store,'readwrite'),req=tx.objectStore(store).put(value);req.onsuccess=()=>resolve(value);req.onerror=()=>reject(req.error)});
+  }
+  async function idbDelete(store,key){
+    const db=await openDatabase();if(!db)return;
+    return new Promise((resolve,reject)=>{const tx=db.transaction(store,'readwrite'),req=tx.objectStore(store).delete(key);req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error)});
+  }
+  async function idbClear(store){
+    const db=await openDatabase();if(!db)return;
+    return new Promise((resolve,reject)=>{const tx=db.transaction(store,'readwrite'),req=tx.objectStore(store).clear();req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error)});
+  }
+  async function persistState(value,updatedAt=Date.now()){
+    try{await idbPut(STATE_STORE,{key:'studio-state',value,updatedAt})}
+    catch(error){console.warn('Smile & Shine: IndexedDB-Sicherung fehlgeschlagen.',error)}
+  }
+  function read(){return mirror||parse(localStorage.getItem(KEY))}
+  function write(value){
+    if(value==null)throw new TypeError('SmileShineDataStore.write benötigt einen Datenstand.');
+    const updatedAt=Date.now();mirror=value;
+    localStorage.setItem(KEY,JSON.stringify(value));localStorage.setItem(META_KEY,String(updatedAt));
+    persistState(value,updatedAt);emit('demo-store');return value;
+  }
+  function seedPickupOrders(force=false){if(force||!localStorage.getItem(PICKUP_KEY))localStorage.setItem(PICKUP_KEY,JSON.stringify(createPresentationPickupOrders()))}
+  function resetPresentationData(){
+    const value=createPresentationData();write(value);seedPickupOrders(true);clearMedia().catch(()=>{});return value;
+  }
+  function ensurePresentationData(){
+    const current=read();
+    if(!current||Number(current.presentationVersion||0)<PRESENTATION_VERSION){const value=createPresentationData();write(value);seedPickupOrders(false);return value}
+    seedPickupOrders(false);return current;
+  }
+  function clear(){
+    mirror=null;localStorage.removeItem(KEY);localStorage.removeItem(META_KEY);
+    idbDelete(STATE_STORE,'studio-state').catch(()=>{});emit('demo-store');
+  }
+  function subscribe(listener){
+    if(typeof listener!=='function')return()=>{};
+    const onStorage=event=>{if(event.key===KEY){mirror=parse(event.newValue);listener(read(),{source:'storage'})}};
+    const onLocal=event=>{if(event.detail?.key===KEY)listener(read(),{source:event.detail.source||'local'})};
+    window.addEventListener('storage',onStorage);window.addEventListener(CHANGE_EVENT,onLocal);
+    return()=>{window.removeEventListener('storage',onStorage);window.removeEventListener(CHANGE_EVENT,onLocal)};
+  }
+
+  function mediaId(){return `media_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`}
+  async function putMedia({blob,customerId='',appointmentId='',treatmentRecordId='',kind='other',name='',mimeType='',createdAt=''}={}){
+    await ready;if(!(blob instanceof Blob))throw new TypeError('Für ein Foto wird eine Datei benötigt.');
+    const item={id:mediaId(),customerId,appointmentId,treatmentRecordId,kind,name:name||'Foto',mimeType:mimeType||blob.type||'application/octet-stream',createdAt:createdAt||new Date().toISOString(),blob};
+    await idbPut(MEDIA_STORE,item);emit('media');return item;
+  }
+  async function listMedia(customerId=''){
+    await ready;const all=await idbGetAll(MEDIA_STORE);
+    return (customerId?all.filter(item=>item.customerId===customerId):all).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+  }
+  async function deleteMedia(id){await ready;await idbDelete(MEDIA_STORE,id);emit('media')}
+  async function clearMedia(){await idbClear(MEDIA_STORE);emit('media')}
+
+  function blobToDataURL(blob){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||''));reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob)})}
+  function dataURLToBlob(value){
+    const match=String(value||'').match(/^data:([^;,]+)?(;base64)?,(.*)$/);if(!match)return new Blob([]);
+    const mime=match[1]||'application/octet-stream',base64=Boolean(match[2]),body=match[3]||'';
+    if(base64){const binary=atob(body),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return new Blob([bytes],{type:mime})}
+    return new Blob([decodeURIComponent(body)],{type:mime});
+  }
+  async function exportBackup(){
+    await ready;const media=await listMedia();
+    const mediaExport=[];for(const item of media){mediaExport.push({...item,blob:undefined,data:await blobToDataURL(item.blob)})}
+    return JSON.stringify({format:'smileshine-local-demo-backup',version:1,exportedAt:new Date().toISOString(),state:read(),pickupOrders:parse(localStorage.getItem(PICKUP_KEY))||[],media:mediaExport},null,2);
+  }
+  async function importBackup(input){
+    await ready;const backup=typeof input==='string'?parse(input):input;
+    if(!backup||backup.format!=='smileshine-local-demo-backup'||!backup.state||!Array.isArray(backup.state.customers)||!Array.isArray(backup.state.appointments))throw new Error('Diese Datei ist kein gültiges Smile-&-Shine-Demo-Backup.');
+    write(backup.state);localStorage.setItem(PICKUP_KEY,JSON.stringify(Array.isArray(backup.pickupOrders)?backup.pickupOrders:[]));
+    await idbClear(MEDIA_STORE);
+    for(const item of Array.isArray(backup.media)?backup.media:[]){if(!item?.data)continue;await idbPut(MEDIA_STORE,{id:item.id||mediaId(),customerId:item.customerId||'',appointmentId:item.appointmentId||'',treatmentRecordId:item.treatmentRecordId||'',kind:item.kind||'other',name:item.name||'Foto',mimeType:item.mimeType||'',createdAt:item.createdAt||new Date().toISOString(),blob:dataURLToBlob(item.data)})}
+    emit('backup-import');return read();
+  }
+  async function storageInfo(){await ready;return {mode:'indexeddb-local-demo',mediaCount:(await listMedia()).length,indexedDB:Boolean(await openDatabase()),updatedAt:Number(localStorage.getItem(META_KEY)||0)}}
+
+  const ready=(async()=>{
+    mirror=parse(localStorage.getItem(KEY));
+    const localUpdated=Number(localStorage.getItem(META_KEY)||0);
+    try{
+      const stored=await idbGet(STATE_STORE,'studio-state');
+      if(stored?.value&&(!mirror||Number(stored.updatedAt||0)>localUpdated)){
+        mirror=stored.value;localStorage.setItem(KEY,JSON.stringify(mirror));localStorage.setItem(META_KEY,String(stored.updatedAt||Date.now()));
+      }else if(mirror){
+        await persistState(mirror,localUpdated||Date.now());
+      }
+    }catch(error){console.warn('Smile & Shine: IndexedDB wird im Fallback-Modus verwendet.',error)}
+    ensurePresentationData();return read();
+  })();
+
+  window.SmileShineDataStore=Object.freeze({
+    key:KEY,mode:'indexeddb-local-demo',schemaVersion:2,presentationVersion:PRESENTATION_VERSION,ready,
+    read,write,clear,subscribe,createPresentationData,createPresentationPickupOrders,resetPresentationData,ensurePresentationData,
+    putMedia,listMedia,deleteMedia,clearMedia,exportBackup,importBackup,storageInfo
+  });
 })();
