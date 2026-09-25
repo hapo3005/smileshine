@@ -78,18 +78,22 @@
     $('#completionSubtitle').textContent=`${dateShort(a.date)} · ${a.time} Uhr · ${a.service}`;
 
     if(s.step===1){
+      const kind=serviceKind(a),isConsult=kind==='consult',isNails=kind==='nails';
+      const materialLabel=isConsult?'Thema / gewünschte Behandlung':isNails?'Farbe / Form / Material':'Farbton / Material / Technik';
+      const materialPlaceholder=isConsult?'z. B. Powder Brows besprochen':isNails?'z. B. Milky Nude · kurz oval':'z. B. Soft Brown';
+      const resultLabel=isConsult?'Besprochene Optionen / offene Fragen':isNails?'Besonderheiten für den nächsten Termin':'Ergebnis / Besonderheiten';
       form.innerHTML=`
         <section class="completion-step">
-          <div class="completion-step-intro"><span class="panel-kicker">Schritt 1 von 4</span><h4>Behandlung dokumentieren</h4><p>Nur die Informationen, die Birgit beim nächsten Termin wirklich helfen.</p></div>
+          <div class="completion-step-intro"><span class="panel-kicker">Schritt 1 von 4</span><h4>${isConsult?'Beratung kurz dokumentieren':'Behandlung dokumentieren'}</h4><p>Nur die Informationen, die Birgit beim nächsten Termin wirklich helfen.</p></div>
           <div class="completion-field-grid">
-            <label><span>Farbton / Material / Technik</span><input name="material" value="${escapeHTML(s.material??record?.material??'')}" placeholder="z. B. Soft Brown"></label>
-            <label class="wide"><span>Ergebnis / Besonderheiten</span><textarea name="result" rows="4" placeholder="Kurzer Behandlungsvermerk">${escapeHTML(s.result??record?.result??'')}</textarea></label>
+            <label><span>${escapeHTML(materialLabel)}</span><input name="material" value="${escapeHTML(s.material??record?.material??'')}" placeholder="${escapeHTML(materialPlaceholder)}"></label>
+            <label class="wide"><span>${escapeHTML(resultLabel)}</span><textarea name="result" rows="4" placeholder="Kurzer, praktischer Vermerk">${escapeHTML(s.result??record?.result??'')}</textarea></label>
           </div>
-          <div class="completion-checks">
+          ${!isConsult?`<div class="completion-checks">
             <label><input type="checkbox" name="beforePhoto" ${(s.beforePhoto??record?.beforePhoto)?'checked':''}><span><strong>Vorher-Foto</strong><small>Dokumentation vorhanden</small></span></label>
             <label><input type="checkbox" name="afterPhoto" ${(s.afterPhoto??record?.afterPhoto)?'checked':''}><span><strong>Nachher-Foto</strong><small>Dokumentation vorhanden</small></span></label>
-            <label><input type="checkbox" name="aftercare" ${(s.aftercare??record?.aftercare??true)?'checked':''}><span><strong>Nachpflege erklärt</strong><small>Kundin informiert</small></span></label>
-          </div>
+            <label><input type="checkbox" name="aftercare" ${(s.aftercare??record?.aftercare??false)?'checked':''}><span><strong>${isNails?'Pflegehinweis besprochen':'Nachpflege erklärt'}</strong><small>Kundin informiert</small></span></label>
+          </div>`:''}
         </section>
         ${footer(1)}`;
     } else if(s.step===2){
@@ -192,7 +196,7 @@
     A.db.followUps=A.db.followUps||[];
     const previous=A.db.followUps.find(x=>x.sourceAppointmentId===a.id&&x.status!=='done');
     if(s.createFollowup!==false){
-      const task={customerId:a.customerId||'',title:s.followupTitle,dueDate:s.followupDate,type:'aftercare',status:'open',note:s.followupNote||'',sourceAppointmentId:a.id};
+      const kind=serviceKind(a),task={customerId:a.customerId||'',title:s.followupTitle,dueDate:s.followupDate,type:kind==='pmu'?'aftercare':kind==='nails'?'maintenance':'general',status:'open',note:s.followupNote||'',sourceAppointmentId:a.id};
       if(previous)Object.assign(previous,task);
       else A.db.followUps.push({id:uid('followup'),...task});
     } else if(previous)previous.status='cancelled';
@@ -212,7 +216,7 @@
     const dialog=ensureDialog(),f=financials(a),record=existingRecord(a),defaults=followupDefaults(a);
     dialog._completionState={
       step:1,appointmentId:id,
-      material:record?.material||'',result:record?.result||'',beforePhoto:Boolean(record?.beforePhoto),afterPhoto:Boolean(record?.afterPhoto),aftercare:record?.aftercare!==false,
+      material:record?.material||'',result:record?.result||'',beforePhoto:Boolean(record?.beforePhoto),afterPhoto:Boolean(record?.afterPhoto),aftercare:record?record.aftercare===true:serviceKind(a)==='pmu',
       recordPayment:f.open>0,paymentAmount:f.open,paymentMethod:'Bar',paymentNote:'',
       createFollowup:defaults.enabled,followupDate:defaults.date,followupTitle:defaults.title,followupNote:defaults.note
     };
