@@ -25,7 +25,7 @@
         {id:'lips',name:'Lippen',description:'Kontur, Farbe und Frische mit natürlichem Ergebnis.',duration:120,price:329,deposit:60,active:true},
         {id:'consult',name:'Beratung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',duration:30,price:0,deposit:0,active:true}
       ],
-      workingHours:{1:{enabled:true,start:'09:00',end:'18:00'},2:{enabled:true,start:'09:00',end:'18:00'},3:{enabled:true,start:'09:00',end:'18:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'18:00'},6:{enabled:true,start:'09:00',end:'14:00'},0:{enabled:false,start:'09:00',end:'14:00'}},
+      workingHours:{1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}},
       customers:[
         {id:'c1',name:'Anna Müller',firstName:'Anna',lastName:'Müller',phone:'0176 12345678',email:'anna.mueller@example.de',notes:'Wünscht ein sehr natürliches Ergebnis. Bevorzugt Termine am Vormittag.',created:dm21},
         {id:'c2',name:'Petra Schmidt',firstName:'Petra',lastName:'Schmidt',phone:'0151 30495512',email:'petra.schmidt@example.de',notes:'Bestandskundin. Lippenfarbe eher zurückhaltend und alltagstauglich.',created:dm12},
