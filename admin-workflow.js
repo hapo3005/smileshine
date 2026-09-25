@@ -34,12 +34,12 @@
       if(julia)db.followUps.push({id:uid('followup'),seedKey:'consult-julia',customerId:julia.id,title:'Beratung vorbereiten',dueDate:today(),type:'preparation',status:'open',note:'Wunsch und offene Fragen vor dem Termin noch einmal prüfen.'});
     }
     if(!db.waitlist.some(x=>x.seedKey==='wait-anna')){
-      const anna=(db.customers||[]).find(c=>c.name==='Anna Müller');
-      if(anna)db.waitlist.push({id:uid('wait'),seedKey:'wait-anna',customerId:anna.id,service:'Augenbrauen',earliest:isoDate(addDays(new Date(),1)),daypart:'Vormittag',note:'Gern auch kurzfristig.',status:'waiting'});
+      const anna=(db.customers||[]).find(c=>c.name==='Anna Müller'),service=(db.services||[]).find(s=>s.id==='brows-pmu');
+      if(anna)db.waitlist.push({id:uid('wait'),seedKey:'wait-anna',customerId:anna.id,service:service?.name||'Augenbrauen Permanent Make-up',earliest:isoDate(addDays(new Date(),1)),daypart:'Vormittag',note:'Gern auch kurzfristig.',status:'waiting'});
     }
     if(!db.waitlist.some(x=>x.seedKey==='wait-laura')){
-      const laura=(db.customers||[]).find(c=>c.name==='Laura Becker');
-      if(laura)db.waitlist.push({id:uid('wait'),seedKey:'wait-laura',customerId:laura.id,service:'Beratung',earliest:today(),daypart:'Flexibel',note:'Kann bei frei gewordenem Termin spontan kommen.',status:'waiting'});
+      const laura=(db.customers||[]).find(c=>c.name==='Laura Becker'),service=(db.services||[]).find(s=>s.id==='consult');
+      if(laura)db.waitlist.push({id:uid('wait'),seedKey:'wait-laura',customerId:laura.id,service:service?.name||'Beratung / Vorbesprechung',earliest:today(),daypart:'Flexibel',note:'Kann bei frei gewordenem Termin spontan kommen.',status:'waiting'});
     }
     if(!db.treatmentRecords.some(x=>x.seedKey==='record-anna')){
       const anna=(db.customers||[]).find(c=>c.name==='Anna Müller');
