@@ -2,7 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=3;
+  const VERSION=4;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -154,6 +154,15 @@
 
   function ensureDemoServices(db,rebuild){
     db.services=Array.isArray(db.services)?db.services:[];
+    if(rebuild){
+      const baseline={'Augenbrauen':90,'Lid & Wimpernkranz':75,'Lippen':120,'Beratung':30};
+      db.services.forEach(service=>{
+        if(!service.demoAssumption)return;
+        const key=Object.keys(baseline).find(name=>service.name===name||(name==='Augenbrauen'&&/Augenbrauen/i.test(service.name))||(name==='Lid & Wimpernkranz'&&/Wimpernkranz|Lid/i.test(service.name))||(name==='Lippen'&&/Lippen/i.test(service.name))||(name==='Beratung'&&/Beratung/i.test(service.name)));
+        if(key)service.duration=baseline[key];
+        delete service.demoAssumption;
+      });
+    }
     DEMO_SERVICE_DEFS.forEach(def=>{
       const existing=db.services.find(s=>s.id===def.id||s.name===def.name);
       if(existing){existing.demoOnly=true;existing.verification='studio';if(rebuild){existing.duration=def.duration;existing.price=def.price;existing.deposit=def.deposit}}
