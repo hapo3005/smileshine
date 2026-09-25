@@ -2,7 +2,7 @@
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,isoDate,addDays,minutesOf,dateShort,uid}=A;
   const CORE_SERVICE_IDS=new Set(['brows-pmu','lashline','lip-pmu','consult']);
-  const visibleServices=()=>A.db.services.filter(s=>s.active&&(CORE_SERVICE_IDS.has(s.id)||!s.verification));
+  const visibleServices=()=>A.db.services.filter(s=>s.active&&(CORE_SERVICE_IDS.has(s.id)||!s.verification||s.verification==='studio'||s.demoOnly));
 
   function openModal(prefill={}){
     const modal=$('#appointmentModal'),form=$('#appointmentForm');if(!modal||!form)return;
