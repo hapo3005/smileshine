@@ -159,12 +159,6 @@
       if(existing){existing.demoOnly=true;existing.verification='studio';if(rebuild){existing.duration=def.duration;existing.price=def.price;existing.deposit=def.deposit}}
       else db.services.push({...def});
     });
-    Object.entries(CORE_ASSUMPTIONS).forEach(([name,assumption])=>{
-      const service=db.services.find(s=>s.name===name||(
-        name==='Augenbrauen'&&/Augenbrauen/i.test(s.name)
-      )||(name==='Lid & Wimpernkranz'&&/Wimpernkranz|Lid/i.test(s.name))||(name==='Lippen'&&/Lippen/i.test(s.name))||(name==='Beratung'&&/Beratung/i.test(s.name)));
-      if(service&&rebuild){service.duration=assumption.duration;service.price=assumption.price;service.deposit=assumption.deposit;service.demoAssumption=true}
-    });
     if(rebuild){
       db.slotInterval=15;db.buffer=10;
       db.workingHours={
@@ -174,15 +168,21 @@
     }
   }
 
+  function simulationService(base,label){
+    if(!base)return null;const assumption=CORE_ASSUMPTIONS[label];return assumption?{...base,duration:assumption.duration,price:assumption.price,deposit:assumption.deposit,demoSimulationAssumption:true}:base;
+  }
   function serviceByKey(db,key,seed=0){
     if(key==='nail-refill')return db.services.find(s=>s.id==='demo-nail-refill');
     if(key==='nail-new')return db.services.find(s=>s.id==='demo-nail-new');
     if(key==='nail-care')return db.services.find(s=>s.id==='demo-nail-care');
     if(key==='pmu-followup')return db.services.find(s=>s.id==='demo-pmu-followup');
-    if(key==='consult')return db.services.find(s=>s.name==='Beratung'||/Beratung/i.test(s.name));
+    if(key==='consult'){
+      const base=db.services.find(s=>s.name==='Beratung'||/Beratung/i.test(s.name));return simulationService(base,'Beratung');
+    }
     if(key==='pmu'){
       const wanted=PMU_NAMES[seed%PMU_NAMES.length];
-      return db.services.find(s=>s.name===wanted)||(wanted==='Lid & Wimpernkranz'?db.services.find(s=>/Wimpernkranz|Lid/i.test(s.name)):db.services.find(s=>new RegExp(wanted,'i').test(s.name)));
+      const base=db.services.find(s=>s.name===wanted)||(wanted==='Lid & Wimpernkranz'?db.services.find(s=>/Wimpernkranz|Lid/i.test(s.name)):db.services.find(s=>new RegExp(wanted,'i').test(s.name)));
+      return simulationService(base,wanted);
     }
     return null;
   }
