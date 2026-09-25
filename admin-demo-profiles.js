@@ -2,7 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=6;
+  const VERSION=7;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -160,6 +160,7 @@
 
     {id:'consult',name:'Beratung / Vorbesprechung',category:'Beratung & Grundlagen',duration:30,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',internalNote:'Terminlänge 30 Min. festgelegt; mit Birgit final bestätigen.'}
   ];
+  const RETIRED_SERVICE_IDS=new Set(['brows','eyes','lips','pmu','cosmetic','brows-hair','powder-brows','eyeliner','shaded-eyeliner','lip-contour','lip-full','demo-pmu-followup','pmu-followup','pmu-refresh']);
   const CORE_ASSUMPTIONS={
     'Augenbrauen':{duration:120,price:289,deposit:50},
     'Lid & Wimpernkranz':{duration:90,price:249,deposit:40},
@@ -198,8 +199,8 @@
         delete service.demoAssumption;
       });
     }
-    if(rebuild)db.services=db.services.filter(s=>!['demo-pmu-followup','pmu-followup','pmu-refresh'].includes(s.id));
-    DEMO_SERVICE_DEFS.forEach(def=>{
+    if(rebuild)db.services=db.services.filter(s=>!RETIRED_SERVICE_IDS.has(s.id));
+    DEMO_SERVICE_DEFS.filter(def=>!RETIRED_SERVICE_IDS.has(def.id)).forEach(def=>{
       const existing=db.services.find(s=>s.id===def.id||s.name===def.name);
       if(existing){
         existing.name=def.name;existing.demoOnly=Boolean(def.demoOnly);existing.verification=def.verification;existing.category=def.category;existing.description=def.description;existing.internalNote=def.internalNote;
