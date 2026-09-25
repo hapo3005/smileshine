@@ -48,6 +48,20 @@
   function existingRecord(a){
     return (A.db.treatmentRecords||[]).find(r=>r.appointmentId===a.id);
   }
+  function serviceKind(a){
+    const name=String(a?.service||'');
+    if(/Nageldesign|Auffüllen|Neumodellage|Maniküre|Naturnagel/i.test(name))return 'nails';
+    if(/Augenbrauen|Wimpernkranz|Lid|Lippen|PMU|Permanent/i.test(name))return 'pmu';
+    if(/Beratung/i.test(name))return 'consult';
+    return 'general';
+  }
+  function followupDefaults(a){
+    const kind=serviceKind(a),base=new Date(`${a.date}T12:00:00`);
+    if(kind==='nails')return {enabled:true,date:isoDate(addDays(base,24)),title:'Nächsten Nageltermin vereinbaren',note:'Auffüllen bzw. Pflege nach etwa 3–4 Wochen einplanen.',label:'Nächster Termin',copy:'Damit der regelmäßige Rhythmus nicht verloren geht.'};
+    if(kind==='pmu')return {enabled:true,date:isoDate(addDays(base,42)),title:`Nachbehandlung / Verlauf nach ${a.service}`,note:'Heilungsverlauf prüfen und gegebenenfalls Nachbehandlung abstimmen.',label:'Nachbehandlung',copy:'Nachpflege wird direkt vorbereitet; die spätere Kontrolle bleibt im Blick.'};
+    if(kind==='consult')return {enabled:true,date:isoDate(addDays(base,7)),title:'Nach Beratung kurz nachfassen',note:'Offene Fragen klären und bei Interesse Behandlungstermin abstimmen.',label:'Rückmeldung',copy:'Falls die Kundin noch überlegen möchte, geht die Rückmeldung nicht unter.'};
+    return {enabled:true,date:isoDate(addDays(base,14)),title:`Verlauf nach ${a.service}`,note:'Kurze Rückmeldung zum Termin einholen.',label:'Wiedervorlage',copy:'Damit nichts im Kopf behalten werden muss.'};
+  }
 
   function setProgress(step){
     $$('[data-completion-progress]', $('#completionDialog')).forEach(node=>{
@@ -101,15 +115,15 @@
       const sync=()=>{const enabled=Boolean(toggle?.checked);$$('.payment-fields input,.payment-fields select',form).forEach(el=>el.disabled=!enabled)};
       toggle?.addEventListener('change',sync);sync();
     } else if(s.step===3){
-      const defaultDate=isoDate(addDays(new Date(`${a.date}T12:00:00`),42));
+      const defaults=followupDefaults(a);
       form.innerHTML=`
         <section class="completion-step">
-          <div class="completion-step-intro"><span class="panel-kicker">Schritt 3 von 4</span><h4>Nachpflege & Wiedervorlage</h4><p>Damit nach dem Termin nichts im Kopf behalten werden muss.</p></div>
-          <label class="completion-toggle prominent"><input type="checkbox" name="createFollowup" ${s.createFollowup!==false?'checked':''}><span><strong>Wiedervorlage automatisch anlegen</strong><small>Birgit bekommt die Aufgabe später wieder auf „Heute wichtig“ angezeigt.</small></span></label>
+          <div class="completion-step-intro"><span class="panel-kicker">Schritt 3 von 4</span><h4>${escapeHTML(defaults.label)} im Blick behalten</h4><p>${escapeHTML(defaults.copy)}</p></div>
+          <label class="completion-toggle prominent"><input type="checkbox" name="createFollowup" ${s.createFollowup!==false?'checked':''}><span><strong>${serviceKind(a)==='nails'?'Folgetermin vormerken':'Wiedervorlage automatisch anlegen'}</strong><small>Die Aufgabe erscheint zum passenden Zeitpunkt wieder auf „Heute wichtig“.</small></span></label>
           <div class="completion-field-grid followup-fields">
-            <label><span>Wiedervorlage am</span><input name="followupDate" type="date" value="${escapeHTML(s.followupDate||defaultDate)}"></label>
-            <label><span>Aufgabe</span><input name="followupTitle" value="${escapeHTML(s.followupTitle||`Nachpflege / Verlauf nach ${a.service}`)}"></label>
-            <label class="wide"><span>Hinweis</span><textarea name="followupNote" rows="3">${escapeHTML(s.followupNote||'Kurze persönliche Rückmeldung zum Heilungsverlauf.')}</textarea></label>
+            <label><span>Fällig am</span><input name="followupDate" type="date" value="${escapeHTML(s.followupDate||defaults.date)}"></label>
+            <label><span>Aufgabe</span><input name="followupTitle" value="${escapeHTML(s.followupTitle||defaults.title)}"></label>
+            <label class="wide"><span>Hinweis</span><textarea name="followupNote" rows="3">${escapeHTML(s.followupNote||defaults.note)}</textarea></label>
           </div>
         </section>
         ${footer(3)}`;
@@ -184,7 +198,7 @@
     } else if(previous)previous.status='cancelled';
 
     a.status='completed';a.completedAt=new Date().toISOString();a.preparation={status:'complete',consent:true,photos:Boolean(s.beforePhoto||s.afterPhoto),note:'Termin abgeschlossen.'};
-    A.queueAppointmentCommunication?.('aftercare',a.id,isoDate(new Date()),{title:'Nachpflege senden'});
+    if(serviceKind(a)==='pmu')A.queueAppointmentCommunication?.('aftercare',a.id,isoDate(new Date()),{title:'Nachpflege senden'});
     A.addActivity('booking',`${a.customerName}: ${a.service} abgeschlossen und dokumentiert.`);
     A.save('Termin vollständig abgeschlossen.');
     A.refreshPaymentUI?.();A.renderDashboardWorkflow?.();
@@ -195,12 +209,12 @@
   function openCompletion(id){
     const a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
     if(a.status==='cancelled'||a.status==='no_show')return A.toast('Dieser Termin kann nicht als Behandlung abgeschlossen werden.');
-    const dialog=ensureDialog(),f=financials(a),record=existingRecord(a);
+    const dialog=ensureDialog(),f=financials(a),record=existingRecord(a),defaults=followupDefaults(a);
     dialog._completionState={
       step:1,appointmentId:id,
       material:record?.material||'',result:record?.result||'',beforePhoto:Boolean(record?.beforePhoto),afterPhoto:Boolean(record?.afterPhoto),aftercare:record?.aftercare!==false,
       recordPayment:f.open>0,paymentAmount:f.open,paymentMethod:'Bar',paymentNote:'',
-      createFollowup:true,followupDate:isoDate(addDays(new Date(`${a.date}T12:00:00`),42)),followupTitle:`Nachpflege / Verlauf nach ${a.service}`,followupNote:'Kurze persönliche Rückmeldung zum Heilungsverlauf.'
+      createFollowup:defaults.enabled,followupDate:defaults.date,followupTitle:defaults.title,followupNote:defaults.note
     };
     render();if(!dialog.open)dialog.showModal();
   }
