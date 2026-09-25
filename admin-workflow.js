@@ -134,7 +134,7 @@
     const todays=(A.db.appointments||[]).filter(a=>a.date===t&&a.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
     todays.forEach(a=>{
       const ended=appointmentEnd(a)<=nowMinutes();
-      if(a.status==='pending')items.push({key:'confirm-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · ${a.customerName}`,detail:'Termin ist noch offen und sollte bestätigt werden.',action:'Termin öffnen'});
+      if(a.status==='pending')items.push({key:'confirm-'+a.id,priority:1,kind:'confirm',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · ${a.customerName}`,detail:'Termin ist noch offen und sollte bestätigt werden.',action:'Bestätigen'});
       if(a.status==='confirmed'&&ended)items.push({key:'finish-'+a.id,priority:1,kind:'completion',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Abschluss offen`,detail:`${a.customerName} · ${a.service} ist zeitlich beendet.`,action:'Abschließen'});
       if(a.preparation?.status==='open'&&!ended)items.push({key:'prep-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Vorbereitung fehlt`,detail:`${a.customerName} · ${a.service}`,action:'Vorbereitung prüfen'});
       const f=financials(a);
@@ -228,7 +228,7 @@
       const a=appointmentFor(row.dataset.appointmentId);if(!a)return;
       const ended=appointmentEnd(a)<=now,f=financials(a);
       let label='Öffnen',kind='open';
-      if(a.status==='pending'){label='Bestätigen';kind='open'}
+      if(a.status==='pending'){label='Bestätigen';kind='confirm'}
       else if(a.status==='confirmed'&&ended){label='Abschließen';kind='complete'}
       else if(a.status==='completed'&&f.open>0){label='Zahlung';kind='payment'}
       const btn=document.createElement('button');btn.type='button';btn.className='today-context-action';btn.dataset.todayAction=kind;btn.dataset.appointmentId=a.id;btn.textContent=label;
@@ -483,6 +483,16 @@
     const form=$('#appointmentDetailForm',body);if(form)form.insertAdjacentElement('beforebegin',section);else body.appendChild(section);
   }
 
+  function confirmAppointment(id){
+    const a=appointmentFor(id);if(!a||a.status!=='pending')return;
+    a.status='confirmed';
+    const communication=A.queueAppointmentCommunication?.('confirm',a.id,today(),{title:'Terminbestätigung'});
+    A.addActivity('booking',`${a.customerName}: Termin um ${a.time} Uhr bestätigt.`);
+    A.save('Termin bestätigt.');
+    A.renderDashboardWorkflow?.();
+    queueMicrotask(()=>A.openWhatsAppChooser?.(a.id,{type:'confirm',communicationId:communication?.id||''}));
+  }
+
   function completeTask(id){
     const task=(A.db.followUps||[]).find(x=>x.id===id);if(!task)return;
     task.status='done';task.completedAt=new Date().toISOString();
@@ -510,6 +520,7 @@
         const id=todayAction.dataset.appointmentId,kind=todayAction.dataset.todayAction;
         if(kind==='complete')A.openCompletion?.(id);
         else if(kind==='payment')A.openPaymentModal?.(id);
+        else if(kind==='confirm')confirmAppointment(id);
         else A.openAppointmentDetail?.(id);
         return;
       }
@@ -521,6 +532,7 @@
       if(action){
         if(action.dataset.workflowAction==='task'){completeTask(action.dataset.taskId);return}
         if(action.dataset.workflowAction==='communication'){A.openCommunication?.(action.dataset.communicationId);return}
+        if(action.dataset.workflowAction==='confirm'){confirmAppointment(action.dataset.appointmentId);return}
         if(action.dataset.workflowAction==='completion'){A.openCompletion?.(action.dataset.appointmentId);return}
         if(action.dataset.workflowAction==='payment'){A.openPaymentModal?.(action.dataset.appointmentId);return}
         if(action.dataset.appointmentId){A.openAppointmentDetail?.(action.dataset.appointmentId);return}
