@@ -292,6 +292,13 @@ test('service catalog uses the agreed realistic appointment lengths', async ({ p
   await expect(page.locator('.service-card-admin[data-service-id="demo-nail-refill"] input[name="duration"]')).toHaveValue('60');
   await expect(page.locator('.service-card-admin[data-service-id="lip-pmu"] input[name="duration"]')).toHaveValue('150');
   await expect(page.locator('.service-card-admin[data-service-id="pmu-followup-lips"] input[name="duration"]')).toHaveValue('90');
+
+  await page.goto('index.html?service-duration-qa='+Date.now(), {waitUntil:'networkidle'});
+  const publicDurations = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.service-option[data-service-id]')].map(node => [node.dataset.serviceId, Number(node.dataset.duration)])));
+  expect(publicDurations['brows-pmu']).toBe(120);
+  expect(publicDurations['lashline']).toBe(90);
+  expect(publicDurations['lip-pmu']).toBe(150);
+  expect(publicDurations['consult']).toBe(30);
 });
 
 test('mobile More opens actual studio navigation', async ({ page }) => {
