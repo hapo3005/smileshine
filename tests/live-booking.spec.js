@@ -24,7 +24,11 @@ test('published booking flow stays in sync with admin services', async ({ page }
     const key = 'smileshine_studio_v1';
     const db = JSON.parse(localStorage.getItem(key));
     const date = new Date();
-    date.setDate(date.getDate() + 1);
+    for (let offset=1;offset<=7;offset++) {
+      date.setTime(Date.now());
+      date.setDate(date.getDate() + offset);
+      if (db.workingHours?.[date.getDay()]?.enabled) break;
+    }
     date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
     const iso = date.toISOString().slice(0, 10);
     db.appointments.push({ id: 'qa_occupied', date: iso, time: '09:00', duration: 90, service: 'Augenbrauen Permanent Make-up', status: 'confirmed' });
