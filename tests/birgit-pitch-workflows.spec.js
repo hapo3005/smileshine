@@ -116,6 +116,8 @@ test('reset restores the realistic three-month studio simulation', async ({ page
     simulated.forEach(a => perCustomer.set(a.customerId, (perCustomer.get(a.customerId) || 0) + 1));
     const services = [...new Set(simulated.map(a => a.service))];
     const dates = simulated.map(a => a.date).sort();
+    const today = A.isoDate(new Date()), weekEnd = A.isoDate(A.addDays(new Date(), 7));
+    const weekApps = A.db.appointments.filter(a => a.status !== 'cancelled' && a.date >= today && a.date <= weekEnd);
     return {
       customers: A.db.customers.filter(c => c.isDemoProfile).length,
       generatedAppointments: simulated.length,
@@ -126,6 +128,9 @@ test('reset restores the realistic three-month studio simulation', async ({ page
       futureConfirmed: simulated.filter(a => a.status === 'confirmed' && a.date > A.isoDate(new Date())).length,
       waitlist: (A.db.waitlist || []).filter(x => x.status === 'waiting').length,
       treatmentRecords: (A.db.treatmentRecords || []).filter(x => String(x.id).startsWith('demo_sim_record_')).length,
+      todayAppointments: A.db.appointments.filter(a => a.status !== 'cancelled' && a.date === today).length,
+      weekAppointments: weekApps.length,
+      weekCustomers: new Set(weekApps.map(a => a.customerId || a.email || a.customerName)).size,
       rangeStart: dates[0],
       rangeEnd: dates[dates.length - 1],
       simulation: A.db.demoSimulation
@@ -133,16 +138,21 @@ test('reset restores the realistic three-month studio simulation', async ({ page
   });
 
   expect(state.customers).toBe(80);
-  expect(state.generatedAppointments).toBeGreaterThanOrEqual(120);
-  expect(state.totalAppointments).toBeGreaterThanOrEqual(130);
-  expect(state.totalAppointments).toBeLessThanOrEqual(140);
+  expect(state.generatedAppointments).toBeGreaterThanOrEqual(160);
+  expect(state.totalAppointments).toBeGreaterThanOrEqual(170);
+  expect(state.totalAppointments).toBeLessThanOrEqual(230);
   expect(state.services.some(name => /Augenbrauen/i.test(name))).toBe(true);
   expect(state.services.some(name => /Wimpernkranz|Lid/i.test(name))).toBe(true);
   expect(state.services.some(name => /Lippen/i.test(name))).toBe(true);
   expect(state.services.some(name => /Beratung/i.test(name))).toBe(true);
   expect(state.repeatCustomers).toBeGreaterThanOrEqual(25);
   expect(state.completed).toBeGreaterThanOrEqual(15);
-  expect(state.futureConfirmed).toBeGreaterThanOrEqual(50);
+  expect(state.futureConfirmed).toBeGreaterThanOrEqual(95);
+  expect(state.todayAppointments).toBeGreaterThanOrEqual(2);
+  expect(state.todayAppointments).toBeLessThanOrEqual(4);
+  expect(state.weekAppointments).toBeGreaterThanOrEqual(11);
+  expect(state.weekAppointments).toBeLessThanOrEqual(17);
+  expect(state.weekCustomers).toBeGreaterThanOrEqual(10);
   expect(state.waitlist).toBeGreaterThanOrEqual(4);
   expect(state.treatmentRecords).toBeGreaterThanOrEqual(10);
   expect(state.simulation?.customerTarget).toBe(80);
