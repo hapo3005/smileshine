@@ -22,9 +22,9 @@ const waitlistToggle=document.querySelector('#waitlistToggle');
 const waitlistForm=document.querySelector('#waitlistForm');
 
 const serviceCatalog=[
-  {group:'Permanent Make-up',name:'Augenbrauen',duration:90,serviceId:'brows-pmu'},
-  {group:'Permanent Make-up',name:'Lid & Wimpernkranz',duration:75,serviceId:'lashline'},
-  {group:'Permanent Make-up',name:'Lippen',duration:120,serviceId:'lip-pmu'},
+  {group:'Permanent Make-up',name:'Augenbrauen',duration:120,serviceId:'brows-pmu'},
+  {group:'Permanent Make-up',name:'Lid & Wimpernkranz',duration:90,serviceId:'lashline'},
+  {group:'Permanent Make-up',name:'Lippen',duration:150,serviceId:'lip-pmu'},
   {group:'Beratung',name:'Beratung',duration:30,serviceId:'consult'}
 ]
 
@@ -225,5 +225,5 @@ async function importPublicModule(url,attempts=3){
   return null;
 }
 importPublicModule('./checkout-enhancements.js?v=20260925-hours5-retry');
-importPublicModule('./booking-admin-sync.js?v=20260925-services8');
+importPublicModule('./booking-admin-sync.js?v=20260925-services9');
 importPublicModule('./cnc-products-carousel.js?v=20260923-birgit-final2');
