@@ -162,7 +162,7 @@
     const list=(A.db.waitlist||[]).filter(x=>x.status==='waiting');
     return `<section class="workflow-center-section">
       <div class="workflow-center-title"><div><span class="panel-kicker">Warteliste</span><h4>Freie Zeiten schneller nachbesetzen</h4></div><button type="button" class="soft-button" data-new-waitlist>＋ Eintrag</button></div>
-      <div class="workflow-center-list waitlist-list">${list.length?list.map(x=>{const c=customerFor(x.customerId),slot=nextSlotFor(x);return `<article><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>ab ${safeDate(x.earliest)} · ${escapeHTML(x.daypart||'Flexibel')}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}</div><div class="waitlist-match">${slot?`<span>Nächster Slot<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}">Termin anlegen</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`}).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
+      <div class="workflow-center-list waitlist-list">${list.length?list.map(x=>{const c=customerFor(x.customerId),slot=nextSlotFor(x);return `<article><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>ab ${safeDate(x.earliest)} · ${escapeHTML(x.daypart||'Flexibel')}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}</div><div class="waitlist-match">${slot?`<span>Nächster Slot<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}">Termin übernehmen</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`}).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
     </section>`;
   }
 
@@ -328,7 +328,7 @@
       const book=event.target.closest('[data-book-waitlist]');
       if(book){
         const entry=(A.db.waitlist||[]).find(x=>x.id===book.dataset.bookWaitlist),c=customerFor(entry?.customerId),slot=entry&&nextSlotFor(entry);
-        if(entry&&c&&slot){ensureCenter().close();A.openModal?.({customerId:c.id,customerName:c.name,phone:c.phone||'',email:c.email||'',service:entry.service,date:slot.date,time:slot.time});}
+        if(entry&&c&&slot){ensureCenter().close();A.openModal?.({customerId:c.id,customerName:c.name,phone:c.phone||'',email:c.email||'',service:entry.service,date:slot.date,time:slot.time,waitlistId:entry.id});}
         return;
       }
       const treatment=event.target.closest('[data-customer-treatment]');if(treatment){openTreatment(treatment.dataset.customerTreatment);return}
