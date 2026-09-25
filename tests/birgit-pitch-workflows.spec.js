@@ -374,3 +374,70 @@ test('customer workfile consolidates treatment, money, aftercare and communicati
   await expect(page.locator('#paymentModal')).toBeVisible();
   await expect(page.locator('.payment-open strong')).toHaveText('189,00 €');
 });
+
+
+test('local demo login gates the studio and opens with Birgit PIN', async ({ page }) => {
+  await page.goto('admin.html?show-login=1&login-qa='+Date.now(), {waitUntil:'networkidle'});
+  await page.evaluate(() => { sessionStorage.clear(); localStorage.removeItem('smileshine_demo_remember_v1'); });
+  await page.reload({waitUntil:'networkidle'});
+
+  await expect(page.locator('#demoLoginOverlay')).toBeVisible();
+  await expect(page.locator('.demo-login-access')).toContainText('PIN 2026');
+  await page.locator('#demoLoginForm input[name="pin"]').fill('2026');
+  await page.locator('#demoLoginForm button[type="submit"]').click();
+
+  await page.waitForFunction(() => Boolean(window.SSAdmin?.ready));
+  await expect(page.locator('#demoLoginOverlay')).toHaveCount(0);
+  await expect(page.locator('.sync-pill')).toContainText('Lokaler Demo-Speicher');
+});
+
+test('IndexedDB demo store restores state from exported backup', async ({ page }) => {
+  await reset(page, 'customers');
+
+  const state = await page.evaluate(async () => {
+    const store = window.SmileShineDataStore;
+    await store.ready;
+    const original = window.SSAdmin.db.customers[0].name;
+    const backup = await store.exportBackup();
+
+    window.SSAdmin.db.customers[0].name = 'Temporär geändert';
+    window.SSAdmin.save();
+    await store.importBackup(backup);
+
+    return {
+      mode: store.mode,
+      restored: store.read().customers[0].name,
+      original,
+      format: JSON.parse(backup).format
+    };
+  });
+
+  expect(state.mode).toBe('indexeddb-local-demo');
+  expect(state.format).toBe('smileshine-local-demo-backup');
+  expect(state.restored).toBe(state.original);
+});
+
+test('customer workfile stores local before photo and includes it in backup', async ({ page }) => {
+  await reset(page, 'customers');
+  await page.evaluate(() => window.SSAdmin.renderCustomerDetail('c1'));
+  await expect(page.locator('#customerDetailModal')).toBeVisible();
+
+  const chooserPromise = page.waitForEvent('filechooser');
+  await page.locator('[data-add-customer-photo="before"]').click();
+  const chooser = await chooserPromise;
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZQmcAAAAASUVORK5CYII=', 'base64');
+  await chooser.setFiles({name:'qa-before.png',mimeType:'image/png',buffer:png});
+
+  await expect(page.locator('.customer-media-card')).toHaveCount(1);
+  await expect(page.locator('.customer-media-card')).toContainText('Vorher');
+
+  const stored = await page.evaluate(async () => {
+    const store = window.SmileShineDataStore;
+    const media = await store.listMedia('c1');
+    const backup = JSON.parse(await store.exportBackup());
+    return {mediaCount:media.length,backupMedia:backup.media.length,kind:media[0]?.kind||''};
+  });
+  expect(stored.mediaCount).toBe(1);
+  expect(stored.backupMedia).toBeGreaterThanOrEqual(1);
+  expect(stored.kind).toBe('before');
+});
