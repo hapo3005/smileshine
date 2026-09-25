@@ -67,6 +67,13 @@ test('recurring blocked time supports one-day exceptions and restore', async ({ 
 
 test('appointment payment records a partial payment and updates actual revenue', async ({ page }) => {
   await reset(page, 'appointments');
+  const baselineRevenue = await page.evaluate(() => {
+    const now = new Date();
+    return (window.SSAdmin.db.appointments || []).reduce((total, a) => total + (a.status === 'cancelled' ? 0 : (a.payments || []).reduce((sum, p) => {
+      const d = new Date(p.createdAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() ? sum + Number(p.amount || 0) : sum;
+    }, 0)), 0);
+  });
   const card = page.locator('.appointment-card').first();
   await expect(card).toBeVisible();
   await card.locator('[data-payment-id]').click();
@@ -82,7 +89,15 @@ test('appointment payment records a partial payment and updates actual revenue',
   await expect(page.locator('.payment-history')).toContainText('50,00 €');
   await page.locator('[data-close-payment]').click();
   await page.evaluate(() => window.SSAdmin.showView('dashboard'));
-  await expect(page.locator('#kpiGrid .kpi-card').nth(3)).toContainText('50,00 €');
+  const currentRevenue = await page.evaluate(() => {
+    const now = new Date();
+    return (window.SSAdmin.db.appointments || []).reduce((total, a) => total + (a.status === 'cancelled' ? 0 : (a.payments || []).reduce((sum, p) => {
+      const d = new Date(p.createdAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() ? sum + Number(p.amount || 0) : sum;
+    }, 0)), 0);
+  });
+  expect(currentRevenue).toBeCloseTo(baselineRevenue + 50, 2);
+  await expect(page.locator('#kpiGrid .kpi-card').nth(3)).toContainText('Tatsächlich bezahlt');
 });
 
 test('reset restores the realistic three-month studio simulation', async ({ page }) => {
