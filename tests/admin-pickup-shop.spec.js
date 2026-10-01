@@ -22,8 +22,8 @@ test('admin manages online product purchases strictly as pickup orders', async (
       payment:'Online bezahlen',
       fulfillment:'pickup',
       pickupAddress:'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',
-      demo:true,
-      buyerType:'guest',
+      presentation:true,
+      buyerType:'new',
       status:'new'
     }]));
   });
@@ -36,7 +36,7 @@ test('admin manages online product purchases strictly as pickup orders', async (
   await expect(page.locator('[data-pickup-order="pickup_qa_1"]')).toBeVisible();
   await expect(page.locator('[data-pickup-order="pickup_qa_1"]')).toContainText('Nur Studio-Abholung');
   await expect(page.locator('[data-pickup-order="pickup_qa_1"]')).toContainText('Raiffeisenstraße 4');
-  await expect(page.locator('[data-pickup-order="pickup_qa_1"]')).toContainText('Gastbestellung');
+  await expect(page.locator('[data-pickup-order="pickup_qa_1"]')).toContainText('Neue Kundin');
 
   await page.locator('[data-pickup-order="pickup_qa_1"] [data-pickup-status="ready"]').click();
   await expect(page.locator('[data-pickup-order="pickup_qa_1"]')).toContainText('Abholbereit');
