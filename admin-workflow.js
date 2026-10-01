@@ -14,7 +14,7 @@
   function ensureStyles(){
     if(document.querySelector('link[data-workflow-style]'))return;
     const link=document.createElement('link');
-    link.rel='stylesheet';link.href='admin-workflow.css?v=20261001-birthday-rc2';link.dataset.workflowStyle='true';
+    link.rel='stylesheet';link.href='admin-workflow.css?v=20261001-admin-mobile-rc1';link.dataset.workflowStyle='true';
     document.head.appendChild(link);
   }
 
@@ -164,7 +164,7 @@
     let root=$('#workflowTodayPanel');
     if(!root){
       root=document.createElement('section');root.id='workflowTodayPanel';root.className='workflow-today panel';
-      kpi.insertAdjacentElement('afterend',root);
+      kpi.insertAdjacentElement('beforebegin',root);
     }
     return root;
   }
