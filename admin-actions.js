@@ -71,7 +71,7 @@
   }
 
   function bindDynamicAppointmentActions(){
-    $$('[data-status-id]').forEach(sel=>sel.onchange=()=>{const item=A.db.appointments.find(a=>a.id===sel.dataset.statusId);if(!item)return;item.status=sel.value;A.addActivity('booking',`${item.customerName}: Terminstatus auf „${A.STATUS_LABELS[sel.value]}“ geändert.`);A.save('Terminstatus aktualisiert.')});
+    $('[data-status-id]').forEach(sel=>sel.onchange=()=>{const item=A.db.appointments.find(a=>a.id===sel.dataset.statusId);if(!item)return;const previous=item.status,next=sel.value;if(next==='completed'){sel.value=previous;return A.toast('Bitte „Termin abschließen“ verwenden.')}item.status=next;if(previous==='pending'&&next==='confirmed'){if(!item.preparation)item.preparation={status:'open',consent:false,photos:false,note:'Vorbereitung vor dem Termin prüfen.'};A.queueAppointmentCommunication?.('confirm',item.id,isoDate(new Date()),{title:'Terminbestätigung'});}A.addActivity('booking',`${item.customerName}: Terminstatus auf „${A.STATUS_LABELS[next]}“ geändert.`);A.save('Terminstatus aktualisiert.');A.renderDashboardWorkflow?.()});
     $$('[data-delete-id]').forEach(btn=>btn.onclick=()=>{const item=A.db.appointments.find(a=>a.id===btn.dataset.deleteId);if(!item||!confirm(`Termin von ${item.customerName} wirklich löschen?`))return;A.db.appointments=A.db.appointments.filter(a=>a.id!==item.id);A.addActivity('booking',`Termin von ${item.customerName} wurde gelöscht.`);A.save('Termin gelöscht.')});
     $$('[data-show-calendar]').forEach(btn=>btn.onclick=()=>{A.calendarCursor=new Date(`${btn.dataset.showCalendar}T12:00:00`);A.showView('calendar')});
   }
