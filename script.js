@@ -90,15 +90,28 @@ function slotProfile(date,service){
 function buildDates(){
   if(!dateScroller)return;
   dateScroller.innerHTML='';
+  const availability=window.SmileShineBookingData;
+  if(!availability?.availableSlots){
+    const attempts=Number(buildDates.attempts||0);
+    if(attempts<12){
+      buildDates.attempts=attempts+1;
+      dateScroller.innerHTML='<div class="time-placeholder">Verfügbarkeiten werden geladen …</div>';
+      if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">Einen Moment – der Studiokalender wird vorbereitet.</div>';
+      clearTimeout(buildDates.retryTimer);buildDates.retryTimer=setTimeout(buildDates,180);
+    }else{
+      dateScroller.innerHTML='<div class="time-placeholder">Die Online-Verfügbarkeit konnte gerade nicht geladen werden.</div>';
+      if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">Bitte versuche es erneut oder kontaktiere das Studio direkt.</div>';
+    }
+    return;
+  }
+  buildDates.attempts=0;
   const weekdays=['So','Mo','Di','Mi','Do','Fr','Sa'];
   const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   const start=new Date();
-  const availability=window.SmileShineBookingData;
   for(let offset=1;offset<=30;offset++){
     const d=new Date(start);d.setHours(12,0,0,0);d.setDate(start.getDate()+offset);
     const iso=d.toISOString().slice(0,10);
-    if(availability?.availableSlots&&!availability.availableSlots(iso,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)).length)continue;
-    if(!availability?.availableSlots&&d.getDay()===0)continue;
+    if(!availability.availableSlots(iso,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)).length)continue;
     const btn=document.createElement('button');btn.type='button';btn.className='date-option';btn.dataset.iso=iso;btn.dataset.label=formatDate(d);
     btn.innerHTML=`<small>${weekdays[d.getDay()]}</small><strong>${String(d.getDate()).padStart(2,'0')}</strong><span>${months[d.getMonth()]}</span>`;
     btn.addEventListener('click',()=>selectDate(btn));dateScroller.appendChild(btn);
@@ -123,7 +136,7 @@ function buildTimes(){
   if(!timeSlots)return;
   const d=bookingState.date?new Date(`${bookingState.date}T12:00:00`):new Date();
   const availability=window.SmileShineBookingData;
-  const slots=availability?.availableSlots?availability.availableSlots(bookingState.date,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)):slotProfile(d,bookingState.serviceId||bookingState.service);
+  const slots=availability?.availableSlots?availability.availableSlots(bookingState.date,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)):[];
   timeSlots.innerHTML='';
   if(!slots.length){timeSlots.innerHTML='<div class="time-placeholder">An diesem Tag ist aktuell keine passende Zeit frei.</div>';return;}
   slots.forEach(time=>{
