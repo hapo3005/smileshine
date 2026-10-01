@@ -72,17 +72,6 @@
   try{
     for(const url of adminModules)await importWithRetry(url);
     api.initDemoProfiles?.();api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.initRecurringBlocks?.();api.initPickupShop?.();api.initCommunication?.();api.initWorkflowHub?.();api.renderAll();api.refreshPaymentUI?.();api.initWhatsApp?.();api.initCompletion?.();api.initCustomerMedia?.();api.bindCustomerDetailRows?.();await window.SmileShineDemoApp?.init?.(api);api.showView(location.hash.replace('#','')||'dashboard');
-    if(STORE?.subscribe&&!api.storeUnsubscribe){
-      api.storeUnsubscribe=STORE.subscribe((next,meta)=>{
-        if(meta?.source!=='storage'||!next)return;
-        api.db=next;
-        api.renderAll?.();
-        api.refreshPaymentUI?.();
-        api.renderDashboardWorkflow?.();
-        api.renderPickupOrders?.();
-        api.toast?.('Neue Daten aus der Kundenseite wurden übernommen.');
-      });
-    }
     api.ready=true;document.documentElement.dataset.adminReady='true';
   }catch(error){
     api.initError=String(error?.stack||error||'Unbekannter Initialisierungsfehler');console.error(error);api.toast('Die Studioversion konnte nicht vollständig geladen werden.');
