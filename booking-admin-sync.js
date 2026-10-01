@@ -140,7 +140,7 @@
 
     root.innerHTML='';
     if(!rows.length){
-      root.innerHTML='<div class="time-placeholder sync-services-empty">Aktuell sind keine Leistungen online buchbar. Bitte kontaktiere das Studio direkt.</div>';
+      root.innerHTML='<div class="time-placeholder sync-services-empty">Aktuell sind keine Leistungen online anfragbar. Bitte kontaktiere das Studio direkt.</div>';
       return;
     }
 
