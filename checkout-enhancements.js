@@ -97,7 +97,7 @@
 (async()=>{
   let lastError;
   for(let attempt=0;attempt<3;attempt++){
-    const base='./service-carousel.js?v=20260923-birgit-final2-carousel1';
+    const base='./service-carousel.js?v=20261001-birthday-rc2';
     const specifier=attempt?base+'&retry='+attempt+'-'+Date.now():base;
     try{await import(specifier);return}
     catch(error){lastError=error;if(attempt<2)await new Promise(resolve=>setTimeout(resolve,180*(attempt+1)))}
