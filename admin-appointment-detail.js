@@ -76,6 +76,18 @@
 
   function renderAppointment(a){
     const dialog=ensureModal(),body=$('#appointmentDetailBody'),customer=linkedCustomer(a),f=financials(a),selectedStatus=a.status||'pending';
+    const precheck=a.precheck&&typeof a.precheck==='object'?a.precheck:{};
+    const precheckItems=[
+      ['Wunsch / Ziel',precheck.goal,false],
+      ['Frühere Pigmentierung',precheck.previous,false],
+      ['Allergien / Unverträglichkeiten',precheck.allergy,precheck.allergy==='Ja'],
+      ['Relevante Medikamente',precheck.medication,precheck.medication==='Ja'],
+      ['Zusätzliche Information',precheck.precheckNote,false]
+    ].filter(([,value])=>String(value||'').trim());
+    const precheckBlock=precheckItems.length?`<section class="appointment-detail-section appointment-precheck-section">
+      <div class="appointment-section-head"><div><span class="panel-kicker">Vorabfragen</span><h4>Angaben vor dem Termin</h4></div><small>Von der Kundin vorab angegeben · persönlich prüfen.</small></div>
+      <div class="appointment-precheck-grid">${precheckItems.map(([label,value,attention])=>`<div class="appointment-precheck-item ${attention?'is-attention':''}"><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join('')}</div>
+    </section>`:'';
     dialog.dataset.appointmentId=a.id;dialog.dataset.selectedStatus=selectedStatus;
     $('#appointmentDetailTitle').textContent=a.customerName||'Termin';
     $('#appointmentDetailSubtitle').textContent=`${dateLong(a.date)} · ${a.time} Uhr`;
@@ -95,6 +107,8 @@
           ${STATUS_ORDER.map(status=>`<button type="button" class="appointment-status-choice status-${status} ${status===selectedStatus?'active':''}" data-appointment-status-value="${status}" aria-pressed="${status===selectedStatus?'true':'false'}"><span></span>${escapeHTML(statusLabel(status))}</button>`).join('')}
         </div>
       </section>
+
+      ${precheckBlock}
 
       <form id="appointmentDetailForm" class="appointment-detail-form">
         <section class="appointment-detail-section">
