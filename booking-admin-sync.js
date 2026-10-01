@@ -226,7 +226,7 @@
 
     const payment=state?.payment||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
     db.appointments=db.appointments||[];
-    db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,contactPreference,reminderOptIn,status:'pending',payment,paymentPreference:payment,source:'online',presentation:true,note,precheck:state?.precheck||{},listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
+    db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:s.name||serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,contactPreference,reminderOptIn,status:'pending',payment,paymentPreference:payment,source:'online',presentation:true,note,precheck:state?.precheck||{},listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
     db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Online-Terminanfrage: ${name}, ${serviceName}.`,date:new Date().toISOString()});
     save(db);button.disabled=true;button.textContent='✓ Anfrage gespeichert';message(panel,'Die Terminanfrage ist lokal gespeichert und erscheint als offene Anfrage in Birgits Studioansicht.',false,'Anfrage gespeichert');
   }
