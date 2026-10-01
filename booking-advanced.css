@@ -247,3 +247,24 @@ body.site-premium .booking-editorial .service-option.selected{
     padding-right:10%;
   }
 }
+
+
+/* Birthday release · mobile booking hardening · 2026-10-01 */
+@media(max-width:760px){
+  .booking-form input,.booking-form textarea,.precheck-form input,.precheck-form textarea,.precheck-form select,.waitlist-form select{
+    font-size:16px;
+  }
+  .booking-actions{
+    align-items:stretch;
+    gap:10px;
+  }
+  .booking-actions .button,.booking-actions .booking-back{
+    min-height:48px;
+  }
+  .booking-progress{
+    scrollbar-width:none;
+    scroll-snap-type:x proximity;
+  }
+  .booking-progress::-webkit-scrollbar{display:none}
+  .progress-step{scroll-snap-align:start}
+}
