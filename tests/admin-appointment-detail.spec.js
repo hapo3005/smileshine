@@ -32,7 +32,7 @@ test('admin appointment detail supports intuitive edit, reschedule and navigatio
   await page.locator(`.appointment-card[data-id="${appointment.id}"]`).click();
   await expect(page.locator('#appointmentDetailModal')).toBeVisible();
   await expect(page.locator('#appointmentDetailForm')).toBeVisible();
-  await expect(page.locator('[data-appointment-status-value="completed"]')).toBeVisible();
+  await expect(page.locator('[data-appointment-status-value="completed"]')).toHaveCount(0);
 
   await page.locator('[data-appointment-status-value="confirmed"]').click();
   await page.locator('#appointmentDetailForm textarea[name="note"]').fill('QA: Termin-Detail funktioniert.');
