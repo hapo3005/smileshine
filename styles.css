@@ -1853,3 +1853,228 @@ body.site-premium{
   html{scroll-behavior:auto}
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* Birthday RC3 · neutral editorial hero
+   Deliberately person-free and studio-neutral until Birgit's own imagery is available. */
+.site-premium .hero-refined.hero-cinematic{
+  min-height:min(820px,calc(100svh - 74px));
+  display:grid;
+  grid-template-columns:minmax(0,1.04fr) minmax(420px,.96fr);
+  align-items:stretch;
+  background:#f3eee8;
+  color:#2c2724;
+}
+.site-premium .hero-cinematic::before{
+  z-index:1;
+  background:
+    linear-gradient(90deg,rgba(248,244,239,.98) 0%,rgba(248,244,239,.96) 40%,rgba(248,244,239,.62) 52%,rgba(248,244,239,0) 68%),
+    radial-gradient(circle at 20% 18%,rgba(201,165,146,.12),transparent 30%);
+  mix-blend-mode:normal;
+}
+.site-premium .hero-cinematic::after{
+  z-index:1;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(38,31,27,.05));
+  mix-blend-mode:normal;
+}
+.site-premium .hero-cinematic .hero-copy{
+  grid-column:1;
+  grid-row:1;
+  width:100%;
+  max-width:none;
+  min-height:min(820px,calc(100svh - 74px));
+  margin:0;
+  padding:
+    clamp(92px,11vh,128px)
+    clamp(46px,6vw,92px)
+    clamp(72px,8vh,96px)
+    max(var(--page-gutter),calc((100vw - var(--content-max))/2 + var(--page-gutter)));
+  justify-content:center;
+  color:#2c2724;
+}
+.site-premium .hero-cinematic .hero-media{
+  position:relative;
+  grid-column:2;
+  grid-row:1;
+  inset:auto;
+  min-height:min(820px,calc(100svh - 74px));
+  margin:0;
+  border-radius:0;
+  background:
+    linear-gradient(180deg,rgba(247,242,237,.04),rgba(43,35,31,.08)),
+    url('https://images.pexels.com/photos/7446416/pexels-photo-7446416.jpeg?auto=compress&cs=tinysrgb&w=2000') center 46%/cover no-repeat;
+  filter:saturate(.70) contrast(.98) brightness(1.03);
+  box-shadow:inset 1px 0 rgba(67,54,47,.08);
+}
+.site-premium .hero-cinematic .hero-media::before{
+  background:
+    linear-gradient(90deg,rgba(243,238,232,.20),transparent 28%),
+    linear-gradient(180deg,transparent 58%,rgba(51,42,37,.16));
+}
+.site-premium .hero-cinematic .hero-media::after{
+  height:100%;
+  background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(35,29,26,.08));
+}
+.site-premium .hero-cinematic .eyebrow{
+  margin:0 0 22px;
+  color:#8d6f61;
+  text-shadow:none;
+}
+.site-premium .hero-cinematic h1{
+  max-width:760px;
+  color:#282320;
+  font-size:clamp(62px,6.1vw,96px);
+  line-height:.94;
+  letter-spacing:-.048em;
+  text-shadow:none;
+}
+.site-premium .hero-cinematic h1 em{
+  color:#a87968;
+}
+.site-premium .hero-cinematic .lead{
+  max-width:610px;
+  margin:30px 0 32px;
+  color:#655c56;
+  font-size:14px;
+  line-height:1.82;
+  text-shadow:none;
+}
+.site-premium .hero-cinematic .hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.site-premium .hero-cinematic .button{
+  min-height:52px;
+  padding:14px 24px;
+}
+.site-premium .hero-cinematic .button.primary{
+  background:#2f2926;
+  color:#fff;
+  box-shadow:0 14px 34px rgba(47,41,38,.14);
+}
+.site-premium .hero-cinematic .button.primary:hover{
+  background:#211d1a;
+  color:#fff;
+}
+.site-premium .hero-cinematic .button.ghost{
+  border-color:rgba(47,41,38,.18);
+  background:rgba(255,255,255,.40);
+  color:#332d29;
+  backdrop-filter:blur(10px);
+}
+.site-premium .hero-cinematic .button.ghost:hover{
+  background:#fff;
+  border-color:rgba(47,41,38,.28);
+}
+.site-premium .hero-cinematic .hero-meta{
+  margin-top:30px;
+  padding-top:18px;
+  border-top:1px solid rgba(65,53,47,.14);
+  color:#7a6f68;
+  font-size:9px;
+}
+.site-premium .hero-cinematic .hero-meta span:first-child{
+  color:#332d29;
+}
+.site-premium .hero-cinematic .hero-meta span+span::before{
+  background:#b58b79;
+}
+.site-premium .hero-cinematic .hero-media-caption{
+  left:30px;
+  right:30px;
+  bottom:28px;
+  width:auto;
+  max-width:390px;
+  padding:16px 18px;
+  border:1px solid rgba(255,255,255,.48);
+  border-radius:14px;
+  background:rgba(247,242,237,.80);
+  box-shadow:0 18px 46px rgba(44,36,31,.10);
+  backdrop-filter:blur(16px);
+  color:#312b27;
+}
+.site-premium .hero-cinematic .hero-media-caption span{
+  color:#8a756a;
+}
+.site-premium .hero-cinematic .hero-media-caption strong{
+  color:#312b27;
+  font-size:19px;
+  line-height:1.25;
+}
+.site-premium .hero-cinematic .hero-scroll-cue{
+  display:none;
+}
+
+@media(max-width:980px){
+  .site-premium .hero-refined.hero-cinematic{
+    grid-template-columns:minmax(0,1fr) minmax(330px,.82fr);
+  }
+  .site-premium .hero-cinematic .hero-copy{
+    padding-right:34px;
+  }
+  .site-premium .hero-cinematic h1{
+    font-size:clamp(56px,7.2vw,78px);
+  }
+}
+@media(max-width:760px){
+  .site-premium .hero-refined.hero-cinematic{
+    min-height:0;
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-rows:auto minmax(300px,42svh);
+    background:#f5f0ea;
+  }
+  .site-premium .hero-cinematic::before{
+    background:
+      radial-gradient(circle at 12% 10%,rgba(201,165,146,.12),transparent 30%),
+      linear-gradient(180deg,#f7f2ed 0%,#f3eee8 100%);
+  }
+  .site-premium .hero-cinematic::after{
+    display:none;
+  }
+  .site-premium .hero-cinematic .hero-copy{
+    grid-column:1;
+    grid-row:1;
+    min-height:0;
+    padding:52px 24px 42px;
+  }
+  .site-premium .hero-cinematic .hero-media{
+    grid-column:1;
+    grid-row:2;
+    min-height:clamp(320px,44svh,430px);
+    background-position:center 44%;
+    border-top:1px solid rgba(61,49,43,.08);
+    box-shadow:none;
+  }
+  .site-premium .hero-cinematic h1{
+    max-width:620px;
+    font-size:clamp(49px,13.8vw,66px);
+    line-height:.96;
+  }
+  .site-premium .hero-cinematic .lead{
+    margin:24px 0 26px;
+    font-size:13px;
+    line-height:1.72;
+  }
+  .site-premium .hero-cinematic .hero-actions{
+    display:grid;
+    grid-template-columns:1fr;
+    width:100%;
+  }
+  .site-premium .hero-cinematic .button{
+    width:100%;
+    justify-content:center;
+  }
+  .site-premium .hero-cinematic .hero-meta{
+    flex-wrap:wrap;
+    gap:8px 14px;
+    margin-top:24px;
+  }
+  .site-premium .hero-cinematic .hero-media-caption{
+    left:18px;
+    right:18px;
+    bottom:18px;
+    max-width:none;
+  }
+}
