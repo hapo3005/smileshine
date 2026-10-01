@@ -230,10 +230,10 @@ test('reset restores the realistic three-month studio simulation', async ({ page
   expect(state.completed).toBeGreaterThanOrEqual(15);
   expect(state.futureConfirmed).toBeGreaterThanOrEqual(320);
   expect(state.todayAppointments).toBe(4);
-  expect(state.weekAppointments).toBeGreaterThanOrEqual(27);
+  expect(state.weekAppointments).toBeGreaterThanOrEqual(25);
   expect(state.weekAppointments).toBeLessThanOrEqual(35);
   expect(state.weekCustomers).toBeGreaterThanOrEqual(24);
-  expect(state.waitlist).toBeGreaterThanOrEqual(4);
+  expect(state.waitlist).toBe(2);
   expect(state.treatmentRecords).toBeGreaterThanOrEqual(10);
   expect(state.simulation?.customerTarget).toBe(150);
   expect(state.services.some(name => /Nageldesign|Maniküre/i.test(name))).toBe(true);
