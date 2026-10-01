@@ -97,8 +97,8 @@
 
   async function decorate(api){
     ensureStyles();
-    const sync=document.querySelector('.sync-pill');if(sync){sync.innerHTML='<i></i> Vorschau aktiv · Lokaler Demo-Speicher';sync.classList.add('demo-storage-pill')}
-    const state=document.querySelector('.demo-state');if(state){state.innerHTML='<span></span><div><strong>Vorschau · lokale Demo aktiv</strong><small>IndexedDB · nur dieses Gerät</small></div>'}
+    const sync=document.querySelector('.sync-pill');if(sync){sync.innerHTML='<i></i> Präsentationsmodus · lokal gespeichert';sync.classList.add('demo-storage-pill')}
+    const state=document.querySelector('.demo-state');if(state){state.innerHTML='<span></span><div><strong>Präsentationsmodus</strong><small>Lokale Studioversion · dieses Gerät</small></div>'}
     const settings=document.querySelector('.settings-grid');
     if(settings&&!settings.querySelector('[data-demo-storage-card]')){
       const info=await STORE?.storageInfo?.().catch(()=>({mediaCount:0,indexedDB:false})),simulation=api.db?.demoSimulation;
