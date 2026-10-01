@@ -30,7 +30,7 @@
   function renderGuidance(){
     const host=$('#serviceDemoGuidance');if(!host)return;
     const services=A.db.services||[],market=services.filter(s=>s.verification==='market').length,confirmed=services.filter(s=>s.verification==='studio'||s.verification==='verified').length;
-    host.innerHTML=`<div><span class="service-demo-guidance-kicker">Preis- & Leistungscheck</span><strong>Marktnahe Demo – Birgit behält die Kontrolle.</strong><p>Preise mit „Demo-Wert“ sind bewusst nur marktgestützte Arbeitswerte. Die bereits festgelegten Terminlängen bleiben bestehen. Sobald Birgit Preis, Anzahlung oder Leistungsdaten prüft und speichert, markieren wir die Leistung als „Studio bestätigt“.</p></div><div class="service-demo-guidance-stats"><span><b>${market}</b> noch bestätigen</span><span><b>${confirmed}</b> Studio bestätigt</span></div>`;
+    host.innerHTML=`<div><span class="service-demo-guidance-kicker">Preis- & Leistungscheck</span><strong>Preis- & Leistungscheck – Birgit behält die Kontrolle.</strong><p>Preise mit „Arbeitswert“ sind bewusst nur marktgestützte Ausgangswerte. Die bereits festgelegten Terminlängen bleiben bestehen. Sobald Birgit Preis, Anzahlung oder Leistungsdaten prüft und speichert, markieren wir die Leistung als „Studio bestätigt“.</p></div><div class="service-demo-guidance-stats"><span><b>${market}</b> noch prüfen</span><span><b>${confirmed}</b> Studio bestätigt</span></div>`;
   }
 
   function bindModal(){
