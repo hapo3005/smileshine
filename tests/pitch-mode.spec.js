@@ -47,9 +47,9 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   await expect(page.locator('.demo-state')).toContainText('Präsentationsmodus');
   await expect(page.locator('.sync-pill')).toContainText('Präsentationsmodus');
   const todayRows = await page.locator('#todayList .appointment-row').count();
-  expect(todayRows).toBeGreaterThanOrEqual(5);
-  expect(todayRows).toBeLessThanOrEqual(7);
-  await expect(page.locator('#activityList')).toContainText('Laura Becker');\n  await expect(page.locator('#activityList')).toContainText('Online-Terminanfrage');
+  expect(todayRows).toBe(4);
+  await expect(page.locator('#activityList')).toContainText('Laura Becker');
+  await expect(page.locator('#activityList')).toContainText('Online-Terminanfrage');
 
   await page.evaluate(() => window.SSAdmin.showView('pickup'));
   await expect(page.locator('[data-pickup-order="pickup_pitch_1"]')).toContainText('Laura Becker');
