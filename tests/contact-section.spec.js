@@ -23,7 +23,7 @@ for (const viewport of [
 
     await expect(section.locator('.contact-benefit')).toHaveCount(4);
     await expect(section.locator('.contact-benefit-icon svg')).toHaveCount(4);
-    await expect(section).toContainText('Direkt online wählen');
+    await expect(section).toContainText('Direkt online anfragen');
     await expect(section).toContainText('Ohne Kundenkonto');
     await expect(section).toContainText('Persönlich vorbereitet');
     await expect(section).toContainText('Route sofort parat');
@@ -37,7 +37,7 @@ for (const viewport of [
     await expect(section.locator('.contact-booking-card')).toBeVisible();
     await expect(section.locator('.contact-booking-flow>div')).toHaveCount(3);
     await expect(section.locator('.contact-booking-flow svg')).toHaveCount(3);
-    await expect(section.getByRole('link',{name:/Termin online auswählen/})).toBeVisible();
+    await expect(section.getByRole('link',{name:/Termin anfragen/})).toBeVisible();
     await expect(section).toContainText('Keine Registrierung');
 
     const body=page.locator('body');
