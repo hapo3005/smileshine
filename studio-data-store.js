@@ -18,7 +18,7 @@
     const t=isoDate(now),dm21=isoDate(addDays(now,-21)),dm12=isoDate(addDays(now,-12)),dm7=isoDate(addDays(now,-7));
     const d1=isoDate(addDays(now,1)),d2=isoDate(addDays(now,2)),d3=isoDate(addDays(now,3)),d5=isoDate(addDays(now,5));
     return {
-      version:1,presentationVersion:PRESENTATION_VERSION,presentationMode:true,publicCatalogReady:false,slotInterval:30,buffer:15,
+      version:1,presentationVersion:PRESENTATION_VERSION,presentationMode:true,publicCatalogReady:false,slotInterval:15,buffer:10,
       services:[
         {id:'brows-pmu',name:'Augenbrauen Permanent Make-up',category:'Permanent Make-up · Augenbrauen',description:'Dauerhafte Betonung und harmonische Formgebung der Augenbrauen.',duration:120,price:299,deposit:50,active:true,verification:'market'},
         {id:'lashline',name:'Wimpernkranzverdichtung',category:'Permanent Make-up · Augen',description:'Dezente Pigmentierung am Wimpernansatz für einen dichteren Ausdruck.',duration:90,price:249,deposit:50,active:true,verification:'market'},
@@ -48,7 +48,7 @@
         {id:'a7',date:d3,time:'10:00',duration:30,service:'Beratung / Vorbesprechung',customerId:'c6',customerName:'Laura Becker',phone:'0176 44081273',email:'laura.becker@example.de',status:'pending',payment:'Im Studio',source:'online'},
         {id:'a8',date:d5,time:'11:30',duration:150,service:'Lippenpigmentierung',customerId:'c2',customerName:'Petra Schmidt',phone:'0151 30495512',email:'petra.schmidt@example.de',status:'confirmed',payment:'Im Studio',source:'online'}
       ],
-      blocked:[{id:'b1',date:t,start:'12:30',end:'13:15',label:'Mittagspause'},{id:'b2',date:d1,start:'15:00',end:'16:00',label:'Privater Termin'}],
+      blocked:[{id:'b1',date:t,start:'13:00',end:'13:45',label:'Mittagspause'},{id:'b2',date:d1,start:'15:00',end:'16:00',label:'Privater Termin'}],
       activity:[
         {id:'x1',type:'booking',text:'Laura Becker hat online eine Beratung angefragt.',date:new Date(now.getTime()-22*60000).toISOString()},
         {id:'x2',type:'booking',text:'Karin Hoffmann hat ihren Termin online gebucht.',date:new Date(now.getTime()-2*3600000).toISOString()},
