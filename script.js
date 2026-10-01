@@ -159,6 +159,11 @@ function selectServiceButton(btn){
   bookingState.service=service;
   bookingState.duration=duration;
   bookingState.date='';bookingState.dateLabel='';bookingState.time='';bookingState.precheck={};
+  bookingState.waitlist=false;bookingState.waitlistDetails=null;bookingState.payment='Im Studio';
+  if(waitlistForm)waitlistForm.hidden=true;
+  if(waitlistToggle){waitlistToggle.textContent='Warteliste';waitlistToggle.classList.remove('active')}
+  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Weiter zur Zahlweise';
+  paymentButtons.forEach(button=>{const studio=button.dataset.payment==='Im Studio';button.classList.toggle('selected',studio);const check=button.querySelector('.payment-check');if(check)check.textContent=studio?'✓':'○'});
   updateSummary();
   buildDates();
   setTimeout(()=>setStep(2),120);
