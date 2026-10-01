@@ -107,6 +107,27 @@ test('appointment payment records a partial payment without overwriting operatio
   await expect(page.locator('#kpiGrid .kpi-card').nth(3)).not.toContainText('Tatsächlich bezahlt');
 });
 
+test('central quick-create hub exposes Birgit\'s four everyday create actions', async ({ page }) => {
+  await reset(page, 'dashboard');
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('.mobile-nav-add').click();
+  const hub=page.locator('#quickCreateDialog');
+  await expect(hub).toBeVisible();
+  await expect(hub.locator('[data-quick-create]')).toHaveCount(4);
+  await expect(hub).toContainText('Termin');
+  await expect(hub).toContainText('Kundin / Kunde');
+  await expect(hub).toContainText('Zeit blockieren');
+  await expect(hub).toContainText('Warteliste');
+});
+
+test('mobile dashboard hides secondary information until Birgit asks for it', async ({ page }) => {
+  await reset(page, 'dashboard');
+  await page.setViewportSize({width:390,height:844});
+  await expect(page.locator('#dashboardDetails')).toBeHidden();
+  await page.locator('#dashboardDetailsToggle').click();
+  await expect(page.locator('#dashboardDetails')).toBeVisible();
+});
+
 test('daily cockpit turns studio work into direct actions', async ({ page }) => {
   await reset(page, 'dashboard');
   await expect(page.locator('.day-cockpit')).toBeVisible();
