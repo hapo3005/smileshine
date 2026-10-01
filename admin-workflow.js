@@ -210,7 +210,7 @@
               <span class="workflow-order">${String(index+1).padStart(2,'0')}</span>
               <div class="workflow-action-copy"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></div>
               <button type="button" data-workflow-action="${escapeHTML(item.kind)}" data-task-id="${escapeHTML(item.taskId||'')}" data-communication-id="${escapeHTML(item.communicationId||'')}" data-appointment-id="${escapeHTML(item.appointmentId||'')}" data-customer-id="${escapeHTML(item.customerId||'')}">${escapeHTML(item.action)}</button>
-            </article>`).join(''):`<div class="workflow-clear"><span>✓</span><div><strong>Der Studiotag ist vorbereitet.</strong><small>Neue Buchungen und Wiedervorlagen erscheinen automatisch hier.</small></div></div>`}
+            </article>`).join(''):`<div class="workflow-clear"><span>✓</span><div><strong>Der Studiotag ist vorbereitet.</strong><small>Neue Anfragen, Termine und Wiedervorlagen erscheinen automatisch hier.</small></div></div>`}
         </div>
         <div class="workflow-mini-grid communication-enabled">
           <button type="button" data-open-workflow-center data-workflow-tab="waitlist"><span>Warteliste</span><strong>${waiting}</strong><small>Kundinnen warten</small></button>
