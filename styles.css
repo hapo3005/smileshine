@@ -85,7 +85,7 @@ img{max-width:100%;display:block}
 .button.primary:hover{transform:translateY(-2px);background:#211f1d;box-shadow:0 20px 40px rgba(47,42,38,.22)}
 .button.ghost{border:1px solid rgba(65,57,52,.14);background:rgba(255,255,255,.38);backdrop-filter:blur(12px);color:#494440}
 .button.ghost:hover{background:rgba(255,255,255,.72)}
-.hero-media{position:relative;min-height:730px;overflow:hidden;border-radius:34px 34px 10px 34px;margin:0 0 34px;background:linear-gradient(180deg,rgba(244,239,235,.04),rgba(32,26,23,.18)),url('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=90') center 24%/cover no-repeat;box-shadow:var(--shadow-lg)}
+.hero-media{position:relative;min-height:730px;overflow:hidden;border-radius:34px 34px 10px 34px;margin:0 0 34px;background:linear-gradient(180deg,rgba(244,239,235,.03),rgba(32,26,23,.16)),url('https://images.pexels.com/photos/11966587/pexels-photo-11966587.jpeg?auto=compress&cs=tinysrgb&w=1600') center 44%/cover no-repeat;box-shadow:var(--shadow-lg)}
 .hero-media::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(241,235,230,.14),transparent 28%,transparent 72%,rgba(25,22,20,.06))}
 .hero-media::after{content:"";position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(180deg,transparent,rgba(24,20,18,.32))}
 .hero-glass-card,.glass-panel,.review-card,.cta-section address{background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.74);box-shadow:var(--shadow-sm);backdrop-filter:blur(20px) saturate(126%);-webkit-backdrop-filter:blur(20px) saturate(126%)}
@@ -129,7 +129,7 @@ img{max-width:100%;display:block}
 .about-copy{display:flex;flex-direction:column;justify-content:center;padding:50px 48px;border-radius:28px 8px 28px 8px;background:rgba(255,255,255,.46)}
 .about-copy p:not(.eyebrow){color:var(--muted);max-width:590px;font-size:14px}
 .text-link{display:inline-block;margin-top:18px;font-size:9px;font-weight:750;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-dark)}
-.about-image{min-height:570px;border-radius:8px 30px 8px 30px;background:url('https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1100&q=88') center/cover no-repeat;box-shadow:var(--shadow)}
+.about-image{min-height:570px;border-radius:8px 30px 8px 30px;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(64,50,43,.08)),url('https://images.pexels.com/photos/34939748/pexels-photo-34939748/free-photo-of-elegant-minimalist-skincare-product-flat-lay.jpeg?auto=compress&cs=tinysrgb&w=1200') center/cover no-repeat;box-shadow:var(--shadow)}
 .about-quote{display:flex;flex-direction:column;justify-content:flex-end;padding:36px 8px 18px 22px}
 .about-quote p{margin:0 0 18px;font-size:32px;line-height:1.32}
 .about-quote footer{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
@@ -1833,4 +1833,23 @@ body.site-premium{
   .site-premium .contact-direct-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
   .site-premium .contact-direct-actions .contact-route-button{justify-content:center}
   .site-premium .premium-footer .footer-meta{justify-content:flex-start}
+}
+
+
+/* Birthday release · interaction and accessibility polish · 2026-10-01 */
+:where(a,button,input,select,textarea):focus-visible{
+  outline:3px solid rgba(137,91,85,.34);
+  outline-offset:3px;
+}
+.button,.nav-cta,.text-link,.treatment-card a,.contact-route-button{
+  -webkit-tap-highlight-color:transparent;
+}
+@media(max-width:620px){
+  .hero-actions{display:grid;grid-template-columns:1fr}
+  .hero-actions .button{width:100%}
+  .booking-actions .button,.booking-actions .booking-back{min-height:48px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
