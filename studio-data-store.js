@@ -171,7 +171,7 @@
   }
   async function importBackup(input){
     await ready;const backup=typeof input==='string'?parse(input):input;
-    if(!backup||backup.format!=='smileshine-local-demo-backup'||!backup.state||!Array.isArray(backup.state.customers)||!Array.isArray(backup.state.appointments))throw new Error('Diese Datei ist kein gültiges Smile-&-Shine-Demo-Backup.');
+    if(!backup||backup.format!=='smileshine-local-demo-backup'||!backup.state||!Array.isArray(backup.state.customers)||!Array.isArray(backup.state.appointments))throw new Error('Diese Datei ist kein gültiges Smile-&-Shine-Präsentations-Backup.');
     write(backup.state);localStorage.setItem(PICKUP_KEY,JSON.stringify(Array.isArray(backup.pickupOrders)?backup.pickupOrders:[]));
     await idbClear(MEDIA_STORE);
     for(const item of Array.isArray(backup.media)?backup.media:[]){if(!item?.data)continue;await idbPut(MEDIA_STORE,{id:item.id||mediaId(),customerId:item.customerId||'',appointmentId:item.appointmentId||'',treatmentRecordId:item.treatmentRecordId||'',kind:item.kind||'other',name:item.name||'Foto',mimeType:item.mimeType||'',createdAt:item.createdAt||new Date().toISOString(),blob:dataURLToBlob(item.data)})}
