@@ -6,7 +6,7 @@ if(toggle&&nav){
 }
 const year=document.querySelector('#year');if(year)year.textContent=new Date().getFullYear();
 
-const bookingState={serviceId:'',service:'',duration:'',date:'',dateLabel:'',time:'',customer:null,payment:'Im Studio',waitlist:false,precheck:{}};
+const bookingState={serviceId:'',service:'',duration:'',date:'',dateLabel:'',time:'',customer:null,payment:'Im Studio',waitlist:false,waitlistDetails:null,precheck:{}};
 const panels=[...document.querySelectorAll('.booking-panel')];
 const progress=[...document.querySelectorAll('.progress-step')];
 const paymentButtons=[...document.querySelectorAll('.payment-option')];
@@ -52,8 +52,8 @@ function updateSummary(){
   const values={
     summaryService:bookingState.service||'Noch nicht gewählt',
     summaryDuration:bookingState.duration?`${bookingState.duration} Min.`:'–',
-    summaryDate:bookingState.dateLabel||'–',
-    summaryTime:bookingState.time||'–',
+    summaryDate:bookingState.waitlist?'Warteliste':(bookingState.dateLabel||'–'),
+    summaryTime:bookingState.waitlist?(bookingState.waitlistDetails?.period||'Flexibel'):(bookingState.time||'–'),
     summaryPayment:bookingState.payment||'–'
   };
   Object.entries(values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value});
@@ -102,7 +102,9 @@ function buildDates(){
 
 function selectDate(btn){
   document.querySelectorAll('.date-option').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');
+  bookingState.waitlist=false;bookingState.waitlistDetails=null;
   bookingState.date=btn.dataset.iso;bookingState.dateLabel=btn.dataset.label;bookingState.time='';
+  if(waitlistToggle){waitlistToggle.textContent='Warteliste';waitlistToggle.classList.remove('active')}
   if(selectedDateLabel)selectedDateLabel.textContent=bookingState.dateLabel;
   updateSummary();buildTimes();
 }
@@ -183,12 +185,38 @@ if(precheckForm){
   });
 }
 
+function fillConfirmation(){
+  const wait=bookingState.waitlist;
+  const details=bookingState.waitlistDetails||{};
+  const service=document.getElementById('confirmService');
+  const date=document.getElementById('confirmDate');
+  const customer=document.getElementById('confirmCustomer');
+  const payment=document.getElementById('confirmPayment');
+  const waitlist=document.getElementById('confirmWaitlist');
+  if(service)service.textContent=bookingState.service||'–';
+  if(date)date.textContent=wait
+    ? `Warteliste · ${details.period||'Flexibel'} · ${details.flex||'flexibel'}`
+    : `${bookingState.dateLabel} · ${bookingState.time} Uhr · ca. ${bookingState.duration} Min.`;
+  if(customer)customer.textContent=bookingState.customer?`${bookingState.customer.firstName} ${bookingState.customer.lastName} · ${bookingState.customer.email}`:'–';
+  if(payment)payment.textContent=wait?'Zahlung: erst bei bestätigtem Termin':`Zahlung: ${bookingState.payment}`;
+  if(waitlist)waitlist.textContent=wait?`Aktiv · ${details.period||'Flexibel'} · ${details.flex||'flexibel'}`:'Nicht aktiviert';
+  const finalButton=document.querySelector('.booking-panel[data-panel="6"] .button.primary');
+  if(finalButton)finalButton.textContent=wait?'Wartelistenwunsch speichern':'Terminanfrage vormerken';
+  const backButton=document.querySelector('.booking-panel[data-panel="6"] [data-back]');
+  if(backButton)backButton.dataset.back=wait?'4':'5';
+}
+
 if(bookingForm){
   bookingForm.addEventListener('submit',e=>{
     e.preventDefault();if(!bookingForm.reportValidity())return;
     const data=new FormData(bookingForm);
     bookingState.customer={firstName:data.get('firstName'),lastName:data.get('lastName'),email:data.get('email'),phone:data.get('phone'),note:data.get('note')};
-    setStep(5);
+    if(bookingState.waitlist){
+      bookingState.payment='Noch nicht erforderlich';
+      updateSummary();fillConfirmation();setStep(6);
+    }else{
+      setStep(5);
+    }
   });
 }
 
@@ -198,17 +226,13 @@ paymentButtons.forEach(btn=>btn.addEventListener('click',()=>{
 }));
 
 document.getElementById('paymentContinue')?.addEventListener('click',()=>{
-  document.getElementById('confirmService').textContent=bookingState.service;
-  document.getElementById('confirmDate').textContent=`${bookingState.dateLabel} · ${bookingState.time} Uhr · ca. ${bookingState.duration} Min.`;
-  document.getElementById('confirmCustomer').textContent=bookingState.customer?`${bookingState.customer.firstName} ${bookingState.customer.lastName} · ${bookingState.customer.email}`:'–';
-  document.getElementById('confirmPayment').textContent=`Zahlung: ${bookingState.payment}`;
-  document.getElementById('confirmWaitlist').textContent=bookingState.waitlist?'Vorgemerkt':'Nicht aktiviert';
+  fillConfirmation();
   setStep(6);
 });
 
 if(waitlistToggle&&waitlistForm){
   waitlistToggle.addEventListener('click',()=>{waitlistForm.hidden=!waitlistForm.hidden;waitlistToggle.textContent=waitlistForm.hidden?'Warteliste':'Schließen'});
-  waitlistForm.addEventListener('submit',e=>{e.preventDefault();bookingState.waitlist=true;waitlistForm.hidden=true;waitlistToggle.textContent='✓ Wunsch gespeichert';waitlistToggle.classList.add('active');(()=>{const confirmWaitlist=document.getElementById('confirmWaitlist');if(confirmWaitlist)confirmWaitlist.textContent='Wird mit deinen Kontaktdaten übermittelt'})()});
+  waitlistForm.addEventListener('submit',e=>{e.preventDefault();const data=new FormData(waitlistForm);bookingState.waitlist=true;bookingState.waitlistDetails={period:String(data.get('period')||'Flexibel'),flex:String(data.get('flex')||'Diese Woche')};bookingState.date='';bookingState.dateLabel='';bookingState.time='';waitlistForm.hidden=true;waitlistToggle.textContent='✓ Warteliste gewählt';waitlistToggle.classList.add('active');updateSummary();buildPrecheck();setStep(3)});
 }
 
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
@@ -225,5 +249,5 @@ async function importPublicModule(url,attempts=3){
   return null;
 }
 importPublicModule('./checkout-enhancements.js?v=20260925-hours5-retry');
-importPublicModule('./booking-admin-sync.js?v=20260925-services9');
+importPublicModule('./booking-admin-sync.js?v=20261001-birthday-release1');
 importPublicModule('./cnc-products-carousel.js?v=20260923-birgit-final2');
