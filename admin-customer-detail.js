@@ -109,7 +109,7 @@
     ].filter(Boolean).join('');
 
     const attention=[];
-    if(next?.status==='pending')attention.push('Nächster Termin ist noch offen.');
+    if(next?.status==='pending')attention.push(next.source==='online'?'Online-Terminanfrage prüfen.':'Nächster Termin ist noch offen.');
     if(openValue>0)attention.push(`${money(openValue)} sind noch offen.`);
     if(!customer.phone&&!customer.email)attention.push('Keine Kontaktmöglichkeit hinterlegt.');
 
@@ -160,6 +160,8 @@
             <p data-customer-number-line="true"><span>Kundennummer</span><strong>${escapeHTML(number)}</strong></p>
             <p><span>Telefon</span><strong>${escapeHTML(customer.phone||'–')}</strong></p>
             <p><span>E-Mail</span><strong>${escapeHTML(customer.email||'–')}</strong></p>
+            <p><span>Bevorzugter Kontakt</span><strong>${escapeHTML(customer.contactPreference||'–')}</strong></p>
+            <p><span>Terminerinnerung</span><strong>${customer.reminderOptIn===true?'Gewünscht':customer.reminderOptIn===false?'Nicht gewünscht':'–'}</strong></p>
             <p><span>Geburtsdatum</span><strong>${customer.birthday?dateShort(customer.birthday):'–'}</strong></p>
             <p><span>Letzter Termin</span><strong>${last?`${dateShort(last.date)} · ${last.service}`:'–'}</strong></p>
           </div>
