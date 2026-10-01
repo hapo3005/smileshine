@@ -45,6 +45,7 @@ on:
       - "tests/contact-section.spec.js"
       - "tests/pitch-mode.spec.js"
       - "tests/birgit-pitch-workflows.spec.js"
+      - "tests/three-month-simulation.spec.js"
       - "admin-whatsapp.js"
       - "admin-recurring-blocks.js"
       - "admin-demo-profiles.js"
@@ -84,7 +85,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Test published site in Chromium
-        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js tests/admin-appointment-detail.spec.js tests/admin-calendar-workspace.spec.js tests/admin-customer-workspace.spec.js tests/pickup-shop.spec.js tests/admin-pickup-shop.spec.js tests/contact-section.spec.js tests/pitch-mode.spec.js tests/birgit-pitch-workflows.spec.js --reporter=line
+        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js tests/admin-appointment-detail.spec.js tests/admin-calendar-workspace.spec.js tests/admin-customer-workspace.spec.js tests/pickup-shop.spec.js tests/admin-pickup-shop.spec.js tests/contact-section.spec.js tests/pitch-mode.spec.js tests/birgit-pitch-workflows.spec.js tests/three-month-simulation.spec.js --reporter=line
 
       - name: Upload Playwright diagnostics
         if: failure()
