@@ -157,6 +157,29 @@ test('three-month presentation dataset is structurally coherent day by day', asy
       if (!validDate(c.dueDate)) add('error','INVALID_COMMUNICATION_DATE','Ungültiges Kommunikationsdatum.',{communicationId:c.id,dueDate:c.dueDate});
     }
 
+    const pmuArea = name => /Augenbrauen/i.test(name||'') ? 'brows' : /Wimpernkranz|Lid/i.test(name||'') ? 'eyes' : /Lippen/i.test(name||'') ? 'lips' : '';
+    const dayDiff = (a,b) => Math.round((new Date(`${b}T12:00:00`) - new Date(`${a}T12:00:00`))/86400000);
+    const followupAppointments = active.filter(a=>a.phase==='Nachbehandlung'||/PMU-Nachbehandlung/i.test(a.service));
+    for (const followup of followupAppointments) {
+      const area=pmuArea(followup.service);
+      const priorAppointment=appointments.find(a=>a.customerId===followup.customerId && a.date<followup.date && !['cancelled','no_show'].includes(a.status) && a.phase==='Erstbehandlung' && pmuArea(a.service)===area && dayDiff(a.date,followup.date)>=21 && dayDiff(a.date,followup.date)<=90);
+      const priorRecord=(db.treatmentRecords||[]).find(rec=>rec.customerId===followup.customerId && rec.date<followup.date && pmuArea(rec.service)===area && dayDiff(rec.date,followup.date)>=21 && dayDiff(rec.date,followup.date)<=90);
+      if(!priorAppointment&&!priorRecord)add('error','FOLLOWUP_WITHOUT_PRIMARY','PMU-Nachbehandlung hat keine passende vorherige Erstbehandlung/Historie.',{appointmentId:followup.id,customerId:followup.customerId,service:followup.service,date:followup.date});
+    }
+
+    const refillByCustomer=new Map();
+    for(const a of active.filter(a=>/Auffüllen/i.test(a.service))){
+      const list=refillByCustomer.get(a.customerId)||[];list.push(a.date);refillByCustomer.set(a.customerId,list);
+    }
+    for(const [customerId,dates] of refillByCustomer){
+      dates.sort();
+      for(let i=1;i<dates.length;i++){
+        const gap=dayDiff(dates[i-1],dates[i]);
+        if(gap<14)add('error','REFILL_CADENCE_TOO_SHORT','Auffülltermine derselben Kundin liegen unrealistisch dicht beieinander.',{customerId,first:dates[i-1],second:dates[i],gapDays:gap});
+        else if(gap<18)add('warning','REFILL_CADENCE_TIGHT','Auffülltermine derselben Kundin liegen enger als der Zielrhythmus.',{customerId,first:dates[i-1],second:dates[i],gapDays:gap});
+      }
+    }
+
     const futureNonConsultCompleted = appointments.filter(a=>a.date<today && a.status==='completed' && !/Beratung/i.test(a.service));
     const recordsByAppointment = new Set((db.treatmentRecords||[]).map(r=>r.appointmentId).filter(Boolean));
     const missingRecords = futureNonConsultCompleted.filter(a=>a.demoSimulation && !recordsByAppointment.has(a.id));
