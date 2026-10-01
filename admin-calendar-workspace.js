@@ -130,7 +130,7 @@
       {label:"Termine",value:apps.length,meta:mode==="week"?"in dieser Woche":"in diesem Monat"},
       {label:"Noch offen",value:apps.filter(a=>a.status==="pending").length,meta:"Bestätigungen ausstehend"},
       {label:"Gebuchte Zeit",value:bookedText(booked),meta:"Behandlungszeit"},
-      {label:"Nächster Termin",value:nextLabel,meta:next?next.customerName:"keine kommende Buchung"}
+      {label:"Nächster Termin",value:nextLabel,meta:next?next.customerName:"kein kommender Termin"}
     ],mode==="week"?'<strong>Woche:</strong> Termin anklicken zum Bearbeiten. Datum anklicken für die Tagesansicht.':'<strong>Monat:</strong> Termin direkt öffnen oder auf ein Datum wechseln.');
   }
 
