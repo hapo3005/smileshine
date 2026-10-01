@@ -113,6 +113,8 @@
             <label class="appointment-field appointment-field-wide"><span>Name</span><input name="customerName" value="${escapeHTML(a.customerName||'')}" autocomplete="name" required></label>
             <label class="appointment-field"><span>Telefon</span><input name="phone" type="tel" value="${escapeHTML(a.phone||'')}" autocomplete="tel"></label>
             <label class="appointment-field"><span>E-Mail</span><input name="email" type="email" value="${escapeHTML(a.email||'')}" autocomplete="email"></label>
+            <label class="appointment-field"><span>Bevorzugter Kontakt</span><select name="contactPreference"><option value="E-Mail"${(a.contactPreference||customer?.contactPreference)==='E-Mail'?' selected':''}>E-Mail</option><option value="Telefon"${(a.contactPreference||customer?.contactPreference)==='Telefon'?' selected':''}>Telefon</option></select></label>
+            <label class="appointment-field"><span>Terminerinnerung</span><select name="reminderOptIn"><option value=""${(a.reminderOptIn??customer?.reminderOptIn)==null?' selected':''}>Nicht angegeben</option><option value="yes"${(a.reminderOptIn??customer?.reminderOptIn)===true?' selected':''}>Gewünscht</option><option value="no"${(a.reminderOptIn??customer?.reminderOptIn)===false?' selected':''}>Nicht gewünscht</option></select></label>
             <label class="appointment-field appointment-field-wide"><span>Interne Notiz</span><textarea name="note" rows="4" placeholder="z. B. Wunsch, Besonderheit oder Rückruf">${escapeHTML(a.note||'')}</textarea></label>
           </div>
         </section>
@@ -147,13 +149,13 @@
   function saveAppointment(id,form,dialog){
     const a=A.db.appointments.find(item=>item.id===id);if(!a)return;
     const data=new FormData(form),service=A.db.services.find(s=>s.name===data.get('service'))||{name:String(data.get('service')||a.service),duration:a.duration,price:a.listPrice||a.finalPrice||0};
-    const date=String(data.get('date')||''),time=String(data.get('time')||''),duration=Number(service.duration||a.duration||30),name=String(data.get('customerName')||'').trim(),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),note=String(data.get('note')||'').trim();
+    const date=String(data.get('date')||''),time=String(data.get('time')||''),duration=Number(service.duration||a.duration||30),name=String(data.get('customerName')||'').trim(),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),contactPreference=String(data.get('contactPreference')||''),reminderRaw=String(data.get('reminderOptIn')||''),reminderOptIn=reminderRaw==='yes'?true:reminderRaw==='no'?false:null,note=String(data.get('note')||'').trim();
     if(!name)return A.toast('Bitte einen Kundennamen eingeben.');
     if(!isSlotFreeFor(a,date,time,duration)){renderAvailability(a);return A.toast('Diese Zeit ist bereits belegt oder liegt außerhalb der Öffnungszeit.');}
     const old={date:a.date,time:a.time,service:a.service,status:a.status},customer=linkedCustomer(a),serviceChanged=service.name!==a.service,paid=Number(a.paidAmount||0);
-    a.date=date;a.time=time;a.duration=duration;a.service=service.name;a.customerName=name;a.phone=phone;a.email=email;a.note=note;a.status=dialog.dataset.selectedStatus||a.status||'pending';
+    a.date=date;a.time=time;a.duration=duration;a.service=service.name;a.customerName=name;a.phone=phone;a.email=email;a.contactPreference=contactPreference;a.reminderOptIn=reminderOptIn;a.note=note;a.status=dialog.dataset.selectedStatus||a.status||'pending';
     if(serviceChanged&&paid<=0){const price=Number(service.price||0);a.listPrice=price;a.finalPrice=price;a.discount=0;a.depositExpected=String(a.paymentPreference||a.payment||'').includes('Anzahlung')?Number(service.deposit||0):0;a.paymentStatus=price>0?'open':'paid'}
-    if(customer){customer.name=name;customer.phone=phone;customer.email=email}
+    if(customer){customer.name=name;customer.phone=phone;customer.email=email;customer.contactPreference=contactPreference||customer.contactPreference;customer.reminderOptIn=reminderOptIn}
     const moved=old.date!==date||old.time!==time,changedService=old.service!==a.service,statusChanged=old.status!==a.status;
     const summary=moved?`${name}: Termin auf ${dateShort(date)} um ${time} Uhr verschoben.`:changedService?`${name}: Leistung auf ${a.service} geändert.`:statusChanged?`${name}: Terminstatus auf „${statusLabel(a.status)}“ geändert.`:`${name}: Termindetails aktualisiert.`;
     if(moved||changedService)A.queueAppointmentCommunication?.('change',a.id,A.isoDate(new Date()),{title:'Terminänderung'});
