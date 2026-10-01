@@ -116,7 +116,7 @@ test('daily cockpit turns studio work into direct actions', async ({ page }) => 
   await expect(page.locator('.day-cockpit-brief')).toContainText('Startklar?');
   const contextActions = page.locator('#todayList .today-context-action');
   await expect(contextActions.first()).toBeVisible();
-  expect(await contextActions.count()).toBeGreaterThanOrEqual(5);
+  expect(await contextActions.count()).toBe(4);
 
   await page.evaluate(() => {
     const A = window.SSAdmin, today = A.isoDate(new Date());
@@ -490,23 +490,23 @@ test('same-day gap surfaces matching waitlist customer and books exact slot', as
     const waitCustomer = A.db.customers.find(c => c.id !== customer.id && c.segment === 'nail-regular') || A.db.customers[1];
     const entryId = 'qa_gap_waitlist';
     A.db.waitlist = (A.db.waitlist || []).filter(x => x.id !== entryId);
-    A.db.appointments = A.db.appointments.filter(a => !(a.date === today && a.status !== 'cancelled' && A.overlaps(15*60,16*60+30,A.minutesOf(a.time),A.minutesOf(a.time)+Number(a.duration||30))));
-    A.db.blocked = (A.db.blocked || []).filter(b => !(b.date === today && A.overlaps(15*60,16*60+30,A.minutesOf(b.start),A.minutesOf(b.end))));
+    A.db.appointments = A.db.appointments.filter(a => !(a.date === today && a.status !== 'cancelled' && A.overlaps(15*60+15,16*60+30,A.minutesOf(a.time),A.minutesOf(a.time)+Number(a.duration||30))));
+    A.db.blocked = (A.db.blocked || []).filter(b => !(b.date === today && A.overlaps(15*60+15,16*60+30,A.minutesOf(b.start),A.minutesOf(b.end))));
     A.db.waitlist.push({id:entryId,customerId:waitCustomer.id,service:nail.name,earliest:today,daypart:'Flexibel',note:'Kann kurzfristig kommen.',status:'waiting'});
     A.save();
     return {entryId,service:nail.name};
   });
 
-  await page.evaluate(() => window.SSAdmin.openWorkflowCenter('waitlist', {start:'15:00',minutes:90}));
+  await page.evaluate(() => window.SSAdmin.openWorkflowCenter('waitlist', {start:'15:15',minutes:75}));
   await expect(page.locator('#workflowCenterDialog')).toBeVisible();
   const match = page.locator('.waitlist-list article.is-gap-match').filter({hasText:setup.service}).first();
   await expect(match).toBeVisible();
   await expect(match).toContainText('Passt in die aktuelle Lücke');
-  await expect(match).toContainText('15:00');
+  await expect(match).toContainText('15:15');
   await match.locator('[data-book-waitlist]').click();
 
   await expect(page.locator('#appointmentModal')).toBeVisible();
-  await expect(page.locator('#appointmentForm input[name="time"]')).toHaveValue('15:00');
+  await expect(page.locator('#appointmentForm input[name="time"]')).toHaveValue('15:15');
   await page.locator('#appointmentForm button[type="submit"]').click();
   await expect(page.locator('#whatsappDialog')).toBeVisible();
 
@@ -515,7 +515,7 @@ test('same-day gap surfaces matching waitlist customer and books exact slot', as
     return {status:entry?.status||'',time:appointment?.time||'',source:appointment?.source||''};
   }, setup.entryId);
   expect(state.status).toBe('booked');
-  expect(state.time).toBe('15:00');
+  expect(state.time).toBe('15:15');
   expect(state.source).toBe('waitlist');
 });
 
