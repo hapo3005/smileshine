@@ -25,22 +25,24 @@
     if(!Array.isArray(db.waitlist))db.waitlist=[];
     if(!Array.isArray(db.treatmentRecords))db.treatmentRecords=[];
 
-    if(!db.followUps.some(x=>x.seedKey==='healing-petra')){
-      const petra=(db.customers||[]).find(c=>c.name==='Petra Schmidt');
-      if(petra)db.followUps.push({id:uid('followup'),seedKey:'healing-petra',customerId:petra.id,title:'Heilungsverlauf kurz nachfragen',dueDate:today(),type:'aftercare',status:'open',note:'Kurze persönliche Rückmeldung nach der letzten Behandlung.'});
-    }
-    if(!db.followUps.some(x=>x.seedKey==='consult-julia')){
-      const julia=(db.customers||[]).find(c=>c.name==='Julia Weber');
-      if(julia)db.followUps.push({id:uid('followup'),seedKey:'consult-julia',customerId:julia.id,title:'Beratung vorbereiten',dueDate:today(),type:'preparation',status:'open',note:'Wunsch und offene Fragen vor dem Termin noch einmal prüfen.'});
-    }
-    if(!db.waitlist.some(x=>x.seedKey==='wait-anna')){
-      const anna=(db.customers||[]).find(c=>c.name==='Anna Müller'),service=(db.services||[]).find(s=>s.id==='brows-pmu');
-      if(anna)db.waitlist.push({id:uid('wait'),seedKey:'wait-anna',customerId:anna.id,service:service?.name||'Augenbrauen Permanent Make-up',earliest:isoDate(addDays(new Date(),1)),daypart:'Vormittag',note:'Gern auch kurzfristig.',status:'waiting'});
-    }
-    if(!db.waitlist.some(x=>x.seedKey==='wait-laura')){
-      const laura=(db.customers||[]).find(c=>c.name==='Laura Becker'),service=(db.services||[]).find(s=>s.id==='consult');
-      if(laura)db.waitlist.push({id:uid('wait'),seedKey:'wait-laura',customerId:laura.id,service:service?.name||'Beratung / Vorbesprechung',earliest:today(),daypart:'Flexibel',note:'Kann bei frei gewordenem Termin spontan kommen.',status:'waiting'});
-    }
+    if(!db.presentationStory?.birthdayReady){
+      if(!db.followUps.some(x=>x.seedKey==='healing-petra')){
+        const petra=(db.customers||[]).find(c=>c.name==='Petra Schmidt');
+        if(petra)db.followUps.push({id:uid('followup'),seedKey:'healing-petra',customerId:petra.id,title:'Heilungsverlauf kurz nachfragen',dueDate:today(),type:'aftercare',status:'open',note:'Kurze persönliche Rückmeldung nach der letzten Behandlung.'});
+      }
+      if(!db.followUps.some(x=>x.seedKey==='consult-julia')){
+        const julia=(db.customers||[]).find(c=>c.name==='Julia Weber');
+        if(julia)db.followUps.push({id:uid('followup'),seedKey:'consult-julia',customerId:julia.id,title:'Beratung vorbereiten',dueDate:today(),type:'preparation',status:'open',note:'Wunsch und offene Fragen vor dem Termin noch einmal prüfen.'});
+      }
+      if(!db.waitlist.some(x=>x.seedKey==='wait-anna')){
+        const anna=(db.customers||[]).find(c=>c.name==='Anna Müller'),service=(db.services||[]).find(s=>s.id==='brows-pmu');
+        if(anna)db.waitlist.push({id:uid('wait'),seedKey:'wait-anna',customerId:anna.id,service:service?.name||'Augenbrauen Permanent Make-up',earliest:isoDate(addDays(new Date(),1)),daypart:'Vormittag',note:'Gern auch kurzfristig.',status:'waiting'});
+      }
+      if(!db.waitlist.some(x=>x.seedKey==='wait-laura')){
+        const laura=(db.customers||[]).find(c=>c.name==='Laura Becker'),service=(db.services||[]).find(s=>s.id==='consult');
+        if(laura)db.waitlist.push({id:uid('wait'),seedKey:'wait-laura',customerId:laura.id,service:service?.name||'Beratung / Vorbesprechung',earliest:today(),daypart:'Flexibel',note:'Kann bei frei gewordenem Termin spontan kommen.',status:'waiting'});
+      }
+      }
     if(!db.treatmentRecords.some(x=>x.seedKey==='record-anna')){
       const anna=(db.customers||[]).find(c=>c.name==='Anna Müller');
       const hist=(db.appointments||[]).find(a=>a.customerId===anna?.id&&a.status==='completed');
