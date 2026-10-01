@@ -31,7 +31,7 @@
         {id:'c2',name:'Petra Schmidt',firstName:'Petra',lastName:'Schmidt',phone:'0151 30495512',email:'petra.schmidt@example.de',notes:'Bestandskundin. Lippenfarbe eher zurückhaltend und alltagstauglich.',created:dm12},
         {id:'c3',name:'Julia Weber',firstName:'Julia',lastName:'Weber',phone:'0172 8842104',email:'julia.weber@example.de',notes:'Erstberatung. Möchte vor einer Entscheidung verschiedene Möglichkeiten besprechen.',created:dm7},
         {id:'c4',name:'Sabine Meier',firstName:'Sabine',lastName:'Meier',phone:'0160 2719461',email:'sabine.meier@example.de',notes:'Bevorzugt Nachmittags-Termine.',created:dm21},
-        {id:'c5',name:'Karin Hoffmann',firstName:'Karin',lastName:'Hoffmann',phone:'0170 7738112',email:'karin.hoffmann@example.de',notes:'Online-Buchung. Erinnerung per E-Mail bevorzugt.',created:dm12},
+        {id:'c5',name:'Karin Hoffmann',firstName:'Karin',lastName:'Hoffmann',phone:'0170 7738112',email:'karin.hoffmann@example.de',notes:'Online-Anfrage über die Website. Erinnerung per E-Mail bevorzugt.',created:dm12},
         {id:'c6',name:'Laura Becker',firstName:'Laura',lastName:'Becker',phone:'0176 44081273',email:'laura.becker@example.de',notes:'Neue Kundin über die Website. Interessiert sich zunächst für eine Beratung.',created:t},
         {id:'c7',name:'Monika Klein',firstName:'Monika',lastName:'Klein',phone:'0152 77190431',email:'monika.klein@example.de',notes:'Bestandskundin. Sehr zufrieden mit dezenter Betonung.',created:dm21}
       ],
