@@ -117,15 +117,15 @@
     dialog.classList.toggle('custom-mode',Boolean(options.customText));
     dialog.dataset.appointmentId=id;dialog.dataset.template=options.type||'confirm';dialog.dataset.tone=options.tone||'friendly';
     dialog.dataset.communicationId=options.communicationId||'';dialog.dataset.cleanupAppointmentId=options.cleanupAppointmentId||'';dialog._customText=options.customText||'';
-    const demo=isDemoContact(a),warning=demo?'<small class="wa-demo-warning">Beispielprofil · Vorschau ist aktiv, echter WhatsApp-Versand bleibt gesperrt.</small>':'';
+    const demo=isDemoContact(a),warning=demo?'<small class="wa-demo-warning">Testprofil · Präsentationsversion, echter WhatsApp-Versand bleibt gesperrt.</small>':'';
     $('#waAppointmentSummary').innerHTML=`<strong>${escapeHTML(a.customerName)} · ${escapeHTML(phone)}</strong><small>${escapeHTML(longDate(a.date))} · ${escapeHTML(a.time)} Uhr · ${escapeHTML(a.service)}</small>${warning}`;
-    const open=$('#waOpenButton');if(open){open.disabled=demo;open.textContent=demo?'Beispielprofil – Versand gesperrt':'In WhatsApp öffnen ↗'}
+    const open=$('#waOpenButton');if(open){open.disabled=demo;open.textContent=demo?'Testprofil – Versand gesperrt':'In WhatsApp öffnen ↗'}
     refreshPreview();dialog.showModal();
   }
 
   function openMessage(){
     const {id,communicationId,cleanupAppointmentId}=currentSelection(),a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
-    if(isDemoContact(a))return A.toast('Beispielprofil: WhatsApp wird aus Sicherheitsgründen nicht geöffnet.');
+    if(isDemoContact(a))return A.toast('Testprofil: WhatsApp wird aus Sicherheitsgründen nicht geöffnet.');
     const phone=normalizePhone(phoneFor(a));if(!phone)return A.toast('Die Telefonnummer kann nicht für WhatsApp verwendet werden.');
     const text=$('#waMessagePreview')?.value?.trim();if(!text)return A.toast('Bitte einen Nachrichtentext eingeben.');
     const url=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
