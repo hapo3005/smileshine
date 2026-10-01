@@ -124,8 +124,8 @@
       <section class="pickup-checkout-section"><h4>Bezahlung bei Abholung</h4><p>Die tatsächlichen Produktpreise werden mit Birgit abgestimmt. In der Vorschau wird deshalb keine Online-Zahlung vorgetäuscht.</p><div class="pickup-payment-options pickup-payment-single"><button class="pickup-payment-option active" type="button" data-pickup-payment="Bei Abholung bezahlen"><strong>Bei Abholung bezahlen</strong><small>Produkt im Studio bezahlen und direkt mitnehmen.</small></button></div><input type="hidden" name="payment" value="Bei Abholung bezahlen"></section>
       <section class="pickup-checkout-section"><h4>Wer holt die Bestellung ab?</h4><p>Wir brauchen nur die Daten, die für Bestätigung und Abholung nötig sind.</p><div class="pickup-contact-grid"><label class="pickup-field"><span>Vorname</span><input name="firstName" autocomplete="given-name" required></label><label class="pickup-field"><span>Nachname</span><input name="lastName" autocomplete="family-name" required></label><label class="pickup-field"><span>E-Mail</span><input name="email" type="email" autocomplete="email" required></label><label class="pickup-field"><span>Telefon <small>optional</small></span><input name="phone" type="tel" autocomplete="tel"></label><label class="pickup-field pickup-field-wide"><span>Hinweis <small>optional</small></span><textarea name="note" rows="2" placeholder="z. B. Abholung zusammen mit meinem Termin"></textarea></label></div></section>
       <div class="pickup-order-review"><div><span>Artikel</span><strong>${count}</strong></div><div><span>Abholung</span><strong>Smile &amp; Shine</strong></div><div><span>Preis</span><strong>Im Studio</strong></div></div>
-      <div class="pickup-demo-note"><strong>Interaktive Vorschau:</strong> Die Bestellung wird nur auf diesem Gerät gespeichert; es wird keine Zahlung ausgelöst.</div>
-      <div class="pickup-checkout-actions"><button type="button" class="pickup-clear" data-pickup-clear>Warenkorb leeren</button><button type="submit" class="pickup-submit">Bestellung simulieren</button></div>
+      <div class="pickup-demo-note"><strong>Präsentationsmodus:</strong> Die Vormerkung wird lokal gespeichert und erscheint in Birgits Abholshop. Eine Zahlung wird nicht ausgelöst.</div>
+      <div class="pickup-checkout-actions"><button type="button" class="pickup-clear" data-pickup-clear>Warenkorb leeren</button><button type="submit" class="pickup-submit">Abholung vormerken</button></div>
     </form>`;
   }
 
@@ -164,7 +164,7 @@
     };
     try{const old=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');localStorage.setItem(ORDERS_KEY,JSON.stringify([order,...(Array.isArray(old)?old:[])].slice(0,20)))}catch{}
     clearCart();
-    const body=document.getElementById('pickupCartBody');if(body)body.innerHTML=`<div class="pickup-success"><div class="pickup-success-mark">✓</div><h4>Bestellung vorgemerkt.</h4><p>Kein Konto nötig. In dieser Vorschau wurde die Bestellung nur lokal gespeichert und nicht an das Studio übermittelt.</p></div><div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen</small></div></div>`;
+    const body=document.getElementById('pickupCartBody');if(body)body.innerHTML=`<div class="pickup-success"><div class="pickup-success-mark">✓</div><h4>Abholung vorgemerkt.</h4><p>Die Vormerkung wurde lokal gespeichert und erscheint direkt in Birgits Abholshop der Studioversion.</p></div><div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen</small></div></div>`;
   }
 
   function render(){
