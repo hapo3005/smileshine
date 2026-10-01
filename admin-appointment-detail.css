@@ -25,3 +25,13 @@
 .status-completed{color:#497069}.status-no_show{color:#766761}
 @media(max-width:760px){.appointment-detail-card{width:min(100% - 18px,980px);max-height:calc(100dvh - 20px);margin:10px auto 86px}.appointment-detail-body{padding:12px}.appointment-detail-hero{grid-template-columns:74px minmax(0,1fr);padding:13px;gap:12px}.appointment-date-tile{height:72px}.appointment-date-tile strong{font-size:28px}.appointment-hero-main h4{font-size:22px}.appointment-hero-actions{grid-column:1/-1;grid-template-columns:1fr 1fr;min-width:0}.appointment-status-grid{grid-template-columns:1fr 1fr}.appointment-status-choice:last-child{grid-column:1/-1}.appointment-section-head{display:grid;gap:5px}.appointment-section-head>small{text-align:left;max-width:none}.appointment-form-grid,.appointment-form-grid-main{grid-template-columns:1fr}.appointment-field-wide{grid-column:auto}.appointment-payment-glance{grid-template-columns:1fr 1fr}.appointment-payment-glance>div{border-bottom:1px solid var(--line)}.appointment-payment-glance>div:nth-child(2){border-right:0}.appointment-payment-glance>div:last-child{grid-column:1/-1;border-bottom:0}.appointment-detail-footer{bottom:-12px;margin:0 -12px -12px;padding:11px 12px calc(11px + env(safe-area-inset-bottom));display:grid}.appointment-footer-secondary{justify-content:space-between}.appointment-footer-primary{display:grid;grid-template-columns:1fr 1fr}.appointment-footer-primary button{width:100%}}
 @media(max-width:420px){.appointment-detail-hero{grid-template-columns:64px minmax(0,1fr)}.appointment-date-tile{height:64px}.appointment-date-tile strong{font-size:25px}.appointment-hero-actions{grid-template-columns:1fr}.appointment-status-grid{grid-template-columns:1fr}.appointment-status-choice:last-child{grid-column:auto}.appointment-detail-section{padding:13px}.appointment-payment-glance{padding:0}}
+
+
+/* Birthday RC · customer intake visibility */
+.appointment-precheck-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.appointment-precheck-item{padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.52)}
+.appointment-precheck-item span{display:block;margin-bottom:5px;color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.appointment-precheck-item strong{display:block;font-size:13px;line-height:1.5}
+.appointment-precheck-item.is-attention{border-color:rgba(173,92,82,.38);background:rgba(173,92,82,.08)}
+.appointment-precheck-item.is-attention strong{color:#8b4038}
+@media(max-width:700px){.appointment-precheck-grid{grid-template-columns:1fr}}
