@@ -168,6 +168,7 @@
     if(!isSlotFreeFor(a,date,time,duration)){renderAvailability(a);return A.toast('Diese Zeit ist bereits belegt oder liegt außerhalb der Öffnungszeit.');}
     const old={date:a.date,time:a.time,service:a.service,status:a.status},customer=linkedCustomer(a),serviceChanged=service.name!==a.service,paid=Number(a.paidAmount||0);
     a.date=date;a.time=time;a.duration=duration;a.service=service.name;a.customerName=name;a.phone=phone;a.email=email;a.contactPreference=contactPreference;a.reminderOptIn=reminderOptIn;a.note=note;a.status=dialog.dataset.selectedStatus||a.status||'pending';
+    if(old.status!=='confirmed'&&a.status==='confirmed'&&!a.preparation)a.preparation={status:'open',consent:false,photos:false,note:'Vorbereitung vor dem Termin prüfen.'};
     if(serviceChanged&&paid<=0){const price=Number(service.price||0);a.listPrice=price;a.finalPrice=price;a.discount=0;a.depositExpected=String(a.paymentPreference||a.payment||'').includes('Anzahlung')?Number(service.deposit||0):0;a.paymentStatus=price>0?'open':'paid'}
     if(customer){customer.name=name;customer.phone=phone;customer.email=email;customer.contactPreference=contactPreference||customer.contactPreference;customer.reminderOptIn=reminderOptIn}
     const moved=old.date!==date||old.time!==time,changedService=old.service!==a.service,statusChanged=old.status!==a.status;
