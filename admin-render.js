@@ -27,11 +27,17 @@
       return sum+(Array.isArray(a.payments)?a.payments.reduce((part,p)=>part+Number(p.amount||0),0):0);
     },0);
     if($('#todaySubline'))$('#todaySubline').textContent=new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(today);
+    const kpiIcons={
+      today:'<svg class="kpi-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4.5 9h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="m9 14 2 2 4-5"/></svg>',
+      pending:'<svg class="kpi-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 3.5 19h17Z"/><path d="M12 9v4M12 16.5h.01"/></svg>',
+      week:'<svg class="kpi-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>',
+      money:'<svg class="kpi-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 7.5A6 6 0 1 0 17.5 16.5M5 10h8M5 14h7"/></svg>'
+    };
     const kpis=[
-      {icon:'□',label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
-      {icon:'!',label:'Offene Anfragen',value:pending.length,foot:'zu prüfen',delta:pending.length?'Bestätigung ausstehend':'Alles bearbeitet'},
-      {icon:'◷',label:'Diese Woche',value:weekApps.length,foot:'Termine',delta:`${unique} Kundinnen`},
-      {icon:'€',label:'Eingenommen · Monat',value:paidMonth>0?currency(paidMonth):'–',foot:paidMonth>0?'Erfasste Zahlungen':'Noch nichts erfasst',delta:`${monthApps.filter(a=>a.status==='completed').length} abgeschlossen`}];
+      {icon:kpiIcons.today,label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
+      {icon:kpiIcons.pending,label:'Offene Anfragen',value:pending.length,foot:'zu prüfen',delta:pending.length?'Bestätigung ausstehend':'Alles bearbeitet'},
+      {icon:kpiIcons.week,label:'Diese Woche',value:weekApps.length,foot:'Termine',delta:`${unique} Kundinnen`},
+      {icon:kpiIcons.money,label:'Eingenommen · Monat',value:paidMonth>0?currency(paidMonth):'–',foot:paidMonth>0?'Tatsächlich bezahlt':'Noch nichts erfasst',delta:`${monthApps.filter(a=>a.status==='completed').length} abgeschlossen`}];
     if($('#kpiGrid'))$('#kpiGrid').innerHTML=kpis.map(k=>`<article class="kpi-card"><div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon">${k.icon}</span></div><strong class="kpi-value">${k.value}</strong><div class="kpi-foot"><span>${k.foot}</span><span class="delta">${k.delta}</span></div></article>`).join('');
     if($('#todayList'))$('#todayList').innerHTML=todays.length?todays.map(a=>`<div class="appointment-row appointment-open-row" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="appointment-time">${a.time}</div><div class="appointment-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><span class="appointment-status status-${a.status}">${STATUS_LABELS[a.status]||a.status}</span><span class="appointment-row-arrow" aria-hidden="true">→</span></div>`).join(''):`<div class="empty-state"><strong>Heute ist noch frei.</strong>Über „Termin“ kannst du direkt einen Termin eintragen.</div>`;
     renderWeekBars();renderActivities();
