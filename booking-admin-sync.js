@@ -26,6 +26,16 @@
   const overlap=(a,b,c,d)=>a<d&&b>c;
   const uid=p=>`${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
   const today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+  const shiftDate=(iso,days)=>{const d=new Date(`${iso}T12:00:00`);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)};
+  function waitlistRange(details={}){
+    const base=details.date||today(),flex=String(details.flex||'Diese Woche');let earliest=base,latest='';
+    if(flex==='± 1 Tag'){earliest=shiftDate(base,-1);latest=shiftDate(base,1)}
+    else if(flex==='± 3 Tage'){earliest=shiftDate(base,-3);latest=shiftDate(base,3)}
+    else if(flex==='Nur gewählter Tag'){latest=base}
+    else if(flex==='Diese Woche'){const d=new Date(`${base}T12:00:00`),untilSunday=(7-d.getDay())%7;latest=shiftDate(base,untilSunday)}
+    const now=today();if(earliest<now)earliest=now;if(latest&&latest<earliest)latest=earliest;
+    return {preferredDate:base,earliest,latest};
+  }
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const money=v=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(v||0));
   const customerNumber=n=>`K-${String(Number(n)||0).padStart(5,'0')}`;
@@ -194,31 +204,34 @@
     if(!serviceName||!form||(!waitlist&&(!date||!time)))return;
     const s=service(db,serviceKey||serviceName);if(!s||s.active===false){message(panel,'Diese Leistung ist derzeit nicht online verfügbar.',true);return}
     if(!waitlist&&!free(db,date,time,s.id)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
-    const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),note=String(data.get('note')||'').trim();
+    const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),note=String(data.get('note')||'').trim(),contactPreference=String(state?.customer?.contactPreference||data.get('contactPreference')||'E-Mail'),reminderOptIn=Boolean(state?.customer?.reminderOptIn||data.get('reminderOptIn')==='on');
     let customer=(db.customers||[]).find(c=>(email&&c.email===email)||(phone&&c.phone===phone));
     if(!customer){
-      customer={id:uid('customer'),customerNumber:takeCustomerNumber(db),name,firstName:first,lastName:last,email,phone,created:today()};
+      customer={id:uid('customer'),customerNumber:takeCustomerNumber(db),name,firstName:first,lastName:last,email,phone,contactPreference,reminderOptIn,created:today()};
       db.customers=db.customers||[];db.customers.push(customer);
     }else{
-      customer.name=name||customer.name;customer.firstName=first||customer.firstName;customer.lastName=last||customer.lastName;customer.email=email||customer.email;customer.phone=phone||customer.phone;
+      customer.name=name||customer.name;customer.firstName=first||customer.firstName;customer.lastName=last||customer.lastName;customer.email=email||customer.email;customer.phone=phone||customer.phone;customer.contactPreference=contactPreference||customer.contactPreference;customer.reminderOptIn=reminderOptIn;
     }
 
     if(waitlist){
-      const details=state?.waitlistDetails||{};
+      const details=state?.waitlistDetails||{},range=waitlistRange(details);
       db.waitlist=Array.isArray(db.waitlist)?db.waitlist:[];
-      db.waitlist.push({id:uid('wait'),customerId:customer.id,service:s.name||serviceName,serviceId:s.id,earliest:today(),daypart:details.period||'Flexibel',flex:details.flex||'Diese Woche',note,precheck:state?.precheck||{},status:'waiting',source:'online',createdAt:new Date().toISOString()});
-      db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Wartelisten-Anfrage: ${name}, ${serviceName}.`,date:new Date().toISOString()});
-      save(db);button.disabled=true;button.textContent='✓ Wartelistenwunsch gespeichert';message(panel,'Der Wartelistenwunsch ist lokal gespeichert und erscheint direkt in Birgits Studioansicht.',false,'Warteliste gespeichert');return;
+      const existing=db.waitlist.find(item=>item.status==='waiting'&&item.customerId===customer.id&&(item.serviceId===s.id||item.service===s.name||item.service===serviceName));
+      const payload={customerId:customer.id,service:s.name||serviceName,serviceId:s.id,preferredDate:range.preferredDate,earliest:range.earliest,latest:range.latest,daypart:details.period||'Flexibel',daypartLabel:details.periodLabel||details.period||'Flexibel',flex:details.flex||'Diese Woche',contactPreference,reminderOptIn,note,precheck:state?.precheck||{},status:'waiting',source:'online',updatedAt:new Date().toISOString()};
+      if(existing)Object.assign(existing,payload);
+      else db.waitlist.push({id:uid('wait'),...payload,createdAt:new Date().toISOString()});
+      db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`${existing?'Wartelisten-Anfrage aktualisiert':'Neue Wartelisten-Anfrage'}: ${name}, ${serviceName}.`,date:new Date().toISOString()});
+      save(db);button.disabled=true;button.textContent=existing?'✓ Wartelistenwunsch aktualisiert':'✓ Wartelistenwunsch gespeichert';message(panel,existing?'Der Wartelistenwunsch wurde aktualisiert und ist in Birgits Studioansicht verfügbar.':'Der Wartelistenwunsch ist lokal gespeichert und erscheint direkt in Birgits Studioansicht.',false,existing?'Warteliste aktualisiert':'Warteliste gespeichert');return;
     }
 
     const payment=state?.payment||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
     db.appointments=db.appointments||[];
-    db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,status:'pending',payment,paymentPreference:payment,source:'online',presentation:true,note,precheck:state?.precheck||{},listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
+    db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,contactPreference,reminderOptIn,status:'pending',payment,paymentPreference:payment,source:'online',presentation:true,note,precheck:state?.precheck||{},listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
     db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Online-Terminanfrage: ${name}, ${serviceName}.`,date:new Date().toISOString()});
     save(db);button.disabled=true;button.textContent='✓ Anfrage gespeichert';message(panel,'Die Terminanfrage ist lokal gespeichert und erscheint als offene Anfrage in Birgits Studioansicht.',false,'Anfrage gespeichert');
   }
 
-  function message(panel,text,error,title='Gespeichert'){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';panel.querySelector('.booking-actions')?.before(box)}box.innerHTML=`<strong>${error?'Nicht verfügbar':title}</strong><span>${text}</span>`}
+  function message(panel,text,error,title='Gespeichert'){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';box.setAttribute('role','status');box.setAttribute('aria-live','polite');panel.querySelector('.booking-actions')?.before(box)}box.innerHTML=`<strong>${error?'Nicht verfügbar':title}</strong><span>${text}</span>`}
 
   window.SmileShineBookingData={availableSlots,getService:key=>service(load(),key),load,catalog:CATALOG};
   window.addEventListener('storage',e=>{if(e.key===KEY){syncServices();syncPublicServices();refreshDeposit();window.SmileShineBooking?.buildDates?.()}});
