@@ -1,7 +1,8 @@
-(() => {
+(async () => {
   'use strict';
 
   const STORE=window.SmileShineDataStore;
+  if(STORE?.ready)await STORE.ready;
   const KEY=STORE?.key||'smileshine_studio_v1';
   const CATALOG_VERSION=6;
   const CATALOG=[
@@ -236,6 +237,8 @@
   window.SmileShineBookingData={availableSlots,getService:key=>service(load(),key),load,catalog:CATALOG};
   window.addEventListener('storage',e=>{if(e.key===KEY){syncServices();syncPublicServices();refreshDeposit();window.SmileShineBooking?.buildDates?.()}});
 
+  const initialState=load();
+  save(initialState);
   syncServices();
   syncPublicServices();
   cleanCustomerCopy();
