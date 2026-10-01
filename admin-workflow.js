@@ -172,6 +172,7 @@
     const root=dashboardRoot();if(!root)return;
     const cockpit=dayCockpit(),actions=deriveActions(),waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,follow=(A.db.followUps||[]).filter(x=>x.status!=='done').length,messages=(A.getDueCommunications?.()||[]).length;
     const treatmentDue=(A.db.followUps||[]).filter(x=>x.status!=='done'&&x.type==='aftercare').length;
+    const visibleActions=Math.min(actions.length,5),moreActions=Math.max(0,actions.length-visibleActions);
     const focus=cockpit.focus,focusCustomer=focus&&customerFor(focus.customerId),focusFinancial=focus?financials(focus):null,focusInfo=focusSnapshot(focus);
     const focusLabel=cockpit.mode==='running'?'Läuft gerade':cockpit.mode==='next'?'Als Nächstes':cockpit.mode==='overdue'?'Abschluss offen':cockpit.mode==='done'?'Tag im Blick':'Heute';
     const focusCopy=cockpit.mode==='running'?'Der Termin läuft gerade.':cockpit.mode==='next'?(`Start um ${focus?.time||''} Uhr · ${Number(focus?.duration||0)} Min.`):cockpit.mode==='overdue'?'Der Termin ist zeitlich beendet und noch nicht abgeschlossen.':cockpit.mode==='done'?'Für heute ist kein weiterer Termin geplant.':'Heute sind keine Termine eingetragen.';
@@ -204,7 +205,7 @@
         </button>`:''}
       </div>
       <div class="workflow-head">
-        <div><span class="panel-kicker">Heute wichtig</span><h3>${actions.length?`${actions.length} Dinge brauchen deine Aufmerksamkeit.`:'Alles vorbereitet.'}</h3><p>${actions.length?'Nur das, was heute wirklich erledigt werden sollte.':'Für heute gibt es keine offenen Hinweise.'}</p></div>
+        <div><span class="panel-kicker">Heute wichtig</span><h3>${actions.length?'Deine nächsten Schritte.':'Alles vorbereitet.'}</h3><p>${actions.length?`${visibleActions} priorisiert${moreActions?` · ${moreActions} weitere unter Organisation`:''}.`:'Für heute gibt es keine offenen Hinweise.'}</p></div>
         <button type="button" class="soft-button" data-open-workflow-center>Organisation öffnen</button>
       </div>
       <div class="workflow-layout">
