@@ -77,6 +77,7 @@
   function renderAppointment(a){
     const dialog=ensureModal(),body=$('#appointmentDetailBody'),customer=linkedCustomer(a),f=financials(a),selectedStatus=a.status||'pending';
     const precheck=a.precheck&&typeof a.precheck==='object'?a.precheck:{};
+    const statusChoices=selectedStatus==='completed'?['completed']:STATUS_ORDER.filter(status=>status!=='completed');
     const precheckItems=[
       ['Wunsch / Ziel',precheck.goal,false],
       ['Frühere Pigmentierung',precheck.previous,false],
@@ -102,9 +103,9 @@
       </section>
 
       <section class="appointment-detail-section">
-        <div class="appointment-section-head"><div><span class="panel-kicker">Status</span><h4>Wo steht dieser Termin?</h4></div><small>Ein Klick wählt den Status. Gespeichert wird unten.</small></div>
+        <div class="appointment-section-head"><div><span class="panel-kicker">Status</span><h4>Wo steht dieser Termin?</h4></div><small>${selectedStatus==='completed'?'Der Termin wurde über den Abschluss-Workflow abgeschlossen.':'„Abgeschlossen“ wird ausschließlich über „Termin abschließen“ gesetzt.'}</small></div>
         <div class="appointment-status-grid" role="group" aria-label="Terminstatus">
-          ${STATUS_ORDER.map(status=>`<button type="button" class="appointment-status-choice status-${status} ${status===selectedStatus?'active':''}" data-appointment-status-value="${status}" aria-pressed="${status===selectedStatus?'true':'false'}"><span></span>${escapeHTML(statusLabel(status))}</button>`).join('')}
+          ${statusChoices.map(status=>`<button type="button" class="appointment-status-choice status-${status} ${status===selectedStatus?'active':''}" data-appointment-status-value="${status}" aria-pressed="${status===selectedStatus?'true':'false'}"><span></span>${escapeHTML(statusLabel(status))}</button>`).join('')}
         </div>
       </section>
 
