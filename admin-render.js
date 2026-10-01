@@ -7,7 +7,8 @@
     if(!views.includes(name))name='dashboard';
     $$('.view').forEach(v=>v.classList.toggle('active',v.dataset.viewPanel===name));
     $$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
-    const titles={dashboard:'Guten Tag, Birgit.',calendar:'Kalender',appointments:'Termine',customers:'Kunden',services:'Leistungen',availability:'Verfügbarkeit',pickup:'Abholshop',settings:'Einstellungen'};
+    const hour=new Date().getHours(),greeting=hour<12?'Guten Morgen, Birgit.':hour<18?'Guten Tag, Birgit.':'Guten Abend, Birgit.';
+    const titles={dashboard:greeting,calendar:'Kalender',appointments:'Termine',customers:'Kunden',services:'Leistungen',availability:'Verfügbarkeit',pickup:'Abholshop',settings:'Einstellungen'};
     if($('#pageTitle'))$('#pageTitle').textContent=titles[name];
     if(location.hash!==`#${name}`)history.replaceState(null,'',`#${name}`);
     window.scrollTo({top:0,behavior:'smooth'});
