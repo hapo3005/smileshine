@@ -39,10 +39,10 @@
         {id:'hist1',date:dm21,time:'10:00',duration:120,service:'Augenbrauen Permanent Make-up',customerId:'c1',customerName:'Anna Müller',phone:'0176 12345678',email:'anna.mueller@example.de',status:'completed',payment:'Im Studio',source:'studio'},
         {id:'hist2',date:dm12,time:'14:30',duration:150,service:'Lippenpigmentierung',customerId:'c2',customerName:'Petra Schmidt',phone:'0151 30495512',email:'petra.schmidt@example.de',status:'completed',payment:'Im Studio',source:'studio'},
         {id:'hist3',date:dm7,time:'11:30',duration:90,service:'Wimpernkranzverdichtung',customerId:'c7',customerName:'Monika Klein',phone:'0152 77190431',email:'monika.klein@example.de',status:'completed',payment:'Im Studio',source:'studio'},
-        {id:'a1',date:t,time:'09:00',duration:120,service:'Augenbrauen Permanent Make-up',customerId:'c1',customerName:'Anna Müller',phone:'0176 12345678',email:'anna.mueller@example.de',status:'confirmed',payment:'Im Studio',source:'studio'},
-        {id:'a2',date:t,time:'11:30',duration:90,service:'Wimpernkranzverdichtung',customerId:'c2',customerName:'Petra Schmidt',phone:'0151 30495512',email:'petra.schmidt@example.de',status:'confirmed',payment:'Im Studio',source:'studio'},
-        {id:'a3',date:t,time:'14:00',duration:30,service:'Beratung / Vorbesprechung',customerId:'c3',customerName:'Julia Weber',phone:'0172 8842104',email:'julia.weber@example.de',status:'pending',payment:'Im Studio',source:'online'},
-        {id:'a4',date:t,time:'16:00',duration:150,service:'Lippenpigmentierung',customerId:'c4',customerName:'Sabine Meier',phone:'0160 2719461',email:'sabine.meier@example.de',status:'confirmed',payment:'Im Studio',source:'studio'},
+        {id:'a1',date:t,time:'09:00',duration:120,service:'Augenbrauen Permanent Make-up',customerId:'c1',customerName:'Anna Müller',phone:'0176 12345678',email:'anna.mueller@example.de',status:'confirmed',payment:'Im Studio',source:'studio',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'}},
+        {id:'a2',date:t,time:'11:30',duration:90,service:'Wimpernkranzverdichtung',customerId:'c2',customerName:'Petra Schmidt',phone:'0151 30495512',email:'petra.schmidt@example.de',status:'confirmed',payment:'Im Studio',source:'studio',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'}},
+        {id:'a3',date:t,time:'14:00',duration:30,service:'Beratung / Vorbesprechung',customerId:'c3',customerName:'Julia Weber',phone:'0172 8842104',email:'julia.weber@example.de',status:'pending',payment:'Im Studio',source:'online',precheck:{goal:'Natürlichere Augenbrauen besprechen',previous:'Nein'},preparation:{status:'open',consent:false,photos:false,note:'Online-Anfrage prüfen und Beratung vorbereiten.'}},
+        {id:'a4',date:t,time:'16:00',duration:150,service:'Lippenpigmentierung',customerId:'c4',customerName:'Sabine Meier',phone:'0160 2719461',email:'sabine.meier@example.de',status:'confirmed',payment:'Im Studio',source:'studio',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'}},
         {id:'a5',date:d1,time:'09:30',duration:120,service:'Augenbrauen Permanent Make-up',customerId:'c5',customerName:'Karin Hoffmann',phone:'0170 7738112',email:'karin.hoffmann@example.de',status:'confirmed',payment:'Im Studio',source:'online'},
         {id:'a6',date:d2,time:'13:00',duration:90,service:'Wimpernkranzverdichtung',customerId:'c1',customerName:'Anna Müller',phone:'0176 12345678',email:'anna.mueller@example.de',status:'confirmed',payment:'Im Studio',source:'studio'},
         {id:'a7',date:d3,time:'10:00',duration:30,service:'Beratung / Vorbesprechung',customerId:'c6',customerName:'Laura Becker',phone:'0176 44081273',email:'laura.becker@example.de',status:'pending',payment:'Im Studio',source:'online'},
@@ -51,7 +51,7 @@
       blocked:[{id:'b1',date:t,start:'13:00',end:'13:45',label:'Mittagspause'},{id:'b2',date:d1,start:'15:00',end:'16:00',label:'Privater Termin'}],
       activity:[
         {id:'x1',type:'booking',text:'Laura Becker hat online eine Beratung angefragt.',date:new Date(now.getTime()-22*60000).toISOString()},
-        {id:'x2',type:'booking',text:'Karin Hoffmann hat ihren Termin online gebucht.',date:new Date(now.getTime()-2*3600000).toISOString()},
+        {id:'x2',type:'booking',text:'Karin Hoffmanns Online-Terminanfrage wurde bestätigt.',date:new Date(now.getTime()-2*3600000).toISOString()},
         {id:'x3',type:'customer',text:'Neue Kundin in der Kartei: Laura Becker.',date:new Date(now.getTime()-4*3600000).toISOString()},
         {id:'x4',type:'setting',text:'Arbeitszeiten für diese Woche wurden geprüft.',date:new Date(now.getTime()-24*3600000).toISOString()}
       ]
