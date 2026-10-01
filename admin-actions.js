@@ -112,12 +112,12 @@
     ensureCustomerUI();
     $$('[data-view]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.view)));
     $$('[data-jump]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.jump)));
-    $('[data-action="newAppointment"]').forEach(btn=>btn.addEventListener('click',()=>openModal()));
+    $$('[data-action="newAppointment"]').forEach(btn=>btn.addEventListener('click',()=>openModal()));
     $('#quickAdd')?.addEventListener('click',()=>openModal());
     $('[data-open-quick-create]')?.addEventListener('click',openQuickCreate);
-    $('[data-close-quick-create]').forEach(btn=>btn.addEventListener('click',closeQuickCreate));
+    $$('[data-close-quick-create]').forEach(btn=>btn.addEventListener('click',closeQuickCreate));
     $('#quickCreateDialog')?.addEventListener('click',event=>{if(event.target.id==='quickCreateDialog')closeQuickCreate()});
-    $('[data-quick-create]').forEach(btn=>btn.addEventListener('click',()=>{const kind=btn.dataset.quickCreate;closeQuickCreate();if(kind==='appointment')openModal();else if(kind==='customer')openCustomerModal();else if(kind==='block')focusBlockForm();else if(kind==='waitlist')A.openWaitlist?.()}));
+    $$('[data-quick-create]').forEach(btn=>btn.addEventListener('click',()=>{const kind=btn.dataset.quickCreate;closeQuickCreate();if(kind==='appointment')openModal();else if(kind==='customer')openCustomerModal();else if(kind==='block')focusBlockForm();else if(kind==='waitlist')A.openWaitlist?.()}));
     $('#dashboardDetailsToggle')?.addEventListener('click',()=>toggleDashboardDetails());
     const more=$('#mobileMoreDialog');
     $('[data-mobile-more]')?.addEventListener('click',()=>more?.showModal());

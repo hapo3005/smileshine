@@ -210,7 +210,8 @@ test(`Birgit admin cross-platform smoke — ${label}`, async ({ page }, testInfo
     await expect(page.locator('#workflowTodayPanel .workflow-head'), 'touch start must show day focus and next actions').toBeVisible();
   }
   await expect(page.locator('.day-cockpit-brief')).toBeVisible();
-  await expect(page.locator('#todayList .today-context-action').first()).toBeVisible();
+  if(width<=900) await expect(page.locator('#workflowTodayPanel .workflow-action').first()).toBeVisible();
+  else await expect(page.locator('#todayList .today-context-action').first()).toBeVisible();
   await assertNoUnexpectedOverflow(page, `${label} Birgit daily cockpit`);
   const addButton = width <= 900 ? page.locator('.mobile-nav-add') : page.locator('#quickAdd');
   await addButton.click();
