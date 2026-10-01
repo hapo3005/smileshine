@@ -44,7 +44,7 @@
         </div>
         <div class="topbar-actions">
           <span class="sync-pill"><i></i> Präsentationsmodus</span>
-          <a href="index.html#booking" class="topbar-link">Buchung ansehen</a>
+          <a href="index.html#booking" class="topbar-link">Terminanfrage ansehen</a>
           <button class="primary-action" id="quickAdd" type="button"><span>＋</span> Termin</button>
         </div>
       </header>
@@ -83,7 +83,7 @@
           <article class="panel quick-panel">
             <div class="panel-head"><div><span class="panel-kicker">Schnellzugriff</span><h3>Was möchtest du tun?</h3></div></div>
             <div class="quick-grid">
-              <button type="button" data-action="newAppointment"><span>＋</span><strong>Termin eintragen</strong><small>Manuelle Buchung</small></button>
+              <button type="button" data-action="newAppointment"><span>＋</span><strong>Termin eintragen</strong><small>Termin manuell eintragen</small></button>
               <button type="button" data-open-workflow-center data-workflow-tab="waitlist"><span>↔</span><strong>Warteliste</strong><small>Freie Lücken besetzen</small></button>
               <button type="button" data-jump="customers"><span>○</span><strong>Kunden öffnen</strong><small>Kontaktdaten & Historie</small></button>
               <button type="button" data-jump="availability"><span>◷</span><strong>Zeit blockieren</strong><small>Pause, Urlaub, privat</small></button>
@@ -99,7 +99,7 @@
 
       <section class="view" data-view-panel="calendar">
         <div class="view-heading">
-          <div><p class="eyebrow">Kalender</p><h2>Termine und freie Zeiten.</h2><p class="muted">Buchungen, Pausen und Sperrzeiten in einer Tagesansicht.</p></div>
+          <div><p class="eyebrow">Kalender</p><h2>Termine und freie Zeiten.</h2><p class="muted">Termine, Pausen und Sperrzeiten in einer Tagesansicht.</p></div>
           <div class="date-controls"><button id="prevDay" type="button" aria-label="Vorheriger Tag">←</button><button id="calendarToday" type="button">Heute</button><button id="nextDay" type="button" aria-label="Nächster Tag">→</button></div>
         </div>
         <article class="panel calendar-panel">
@@ -142,7 +142,7 @@
         <div class="settings-grid">
           <article class="panel setting-card"><span class="setting-icon">⌁</span><div><strong>Präsentationsdaten</strong><p>Die lokale Studioversion zeigt einen realistischen Arbeitsalltag. Änderungen bleiben auf diesem Gerät und können jederzeit auf den Ausgangsstand zurückgesetzt werden.</p></div><button class="soft-button" id="resetDemo" type="button">Ausgangsstand wiederherstellen</button></article>
           <article class="panel setting-card"><span class="setting-icon">🔒</span><div><strong>Login & Rechte</strong><p>Für den Livegang wird der Adminbereich geschützt. Zugriff erhält nur das Studio.</p></div><span class="status-tag planned">Vor Livegang</span></article>
-          <article class="panel setting-card"><span class="setting-icon">✉</span><div><strong>Bestätigungen & Erinnerungen</strong><p>E-Mail und optional SMS nach Buchung, vor dem Termin und bei Änderungen.</p></div><span class="status-tag planned">Geplant</span></article>
+          <article class="panel setting-card"><span class="setting-icon">✉</span><div><strong>Bestätigungen & Erinnerungen</strong><p>E-Mail und optional SMS nach Bestätigung, vor dem Termin und bei Änderungen.</p></div><span class="status-tag planned">Geplant</span></article>
           <article class="panel setting-card"><span class="setting-icon">€</span><div><strong>Online-Zahlung</strong><p>Anzahlungen je Leistung mit Stripe, Apple Pay und Google Pay.</p></div><span class="status-tag planned">Geplant</span></article>
         </div>
       </section>
@@ -161,8 +161,8 @@
     <div class="mobile-more-sheet">
       <div class="mobile-more-head"><div><span class="panel-kicker">Studio</span><h3 id="mobileMoreTitle">Mehr Funktionen</h3></div><button type="button" data-close-mobile-more aria-label="Schließen">×</button></div>
       <div class="mobile-more-grid">
-        <button type="button" data-mobile-more-view="appointments"><span>≡</span><strong>Termine</strong><small>Alle Buchungen</small></button>
-        <button type="button" data-mobile-more-view="services"><span>◇</span><strong>Leistungen</strong><small>Dauer & Buchbarkeit</small></button>
+        <button type="button" data-mobile-more-view="appointments"><span>≡</span><strong>Termine</strong><small>Alle Termine</small></button>
+        <button type="button" data-mobile-more-view="services"><span>◇</span><strong>Leistungen</strong><small>Dauer & Online-Status</small></button>
         <button type="button" data-mobile-more-view="availability"><span>◷</span><strong>Verfügbarkeit</strong><small>Arbeits- & Sperrzeiten</small></button>
         <button type="button" data-mobile-more-view="pickup"><span>▣</span><strong>Abholshop</strong><small>Bestellungen vorbereiten</small></button>
         <button type="button" data-mobile-more-view="settings"><span>⚙</span><strong>Einstellungen</strong><small>Studio & Präsentation</small></button>
