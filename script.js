@@ -46,7 +46,14 @@ function renderServiceCatalog(){
 
 function setStep(step){
   panels.forEach(p=>p.classList.toggle('active',Number(p.dataset.panel)===step));
-  progress.forEach((p,i)=>{p.classList.toggle('active',i+1===step);p.classList.toggle('done',i+1<step)});
+  progress.forEach((p,i)=>{
+    const waitlistPayment=bookingState.waitlist&&i===4&&step>=6;
+    p.classList.toggle('active',i+1===step);
+    p.classList.toggle('done',i+1<step&&!waitlistPayment);
+    p.classList.toggle('skipped',waitlistPayment);
+    const label=p.querySelector('strong');
+    if(label&&i===4)label.textContent=waitlistPayment?'entfällt':'Zahlweise';
+  });
   document.querySelector('#booking')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
