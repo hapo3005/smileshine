@@ -129,7 +129,17 @@
   }
   function ensurePresentationData(){
     const current=read();
-    if(!current||Number(current.presentationVersion||0)<PRESENTATION_VERSION){const value=createPresentationData();write(value);seedPickupOrders(true);clearMedia().catch(()=>{});return value}
+    if(!current){
+      const value=createPresentationData();write(value);seedPickupOrders(false);return value;
+    }
+    if(Number(current.presentationVersion||0)<PRESENTATION_VERSION){
+      const fresh=createPresentationData();
+      const value={...fresh,...current,presentationVersion:PRESENTATION_VERSION,presentationMode:true};
+      value.services=fresh.services.map(base=>({...base,...(current.services||[]).find(item=>item.id===base.id)}));
+      value.customers=Array.isArray(current.customers)&&current.customers.length?current.customers:fresh.customers;
+      value.appointments=Array.isArray(current.appointments)&&current.appointments.length?current.appointments:fresh.appointments;
+      write(value);seedPickupOrders(false);return value;
+    }
     seedPickupOrders(false);return current;
   }
   function clear(){
