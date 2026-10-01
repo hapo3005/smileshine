@@ -205,6 +205,10 @@ test(`Birgit admin cross-platform smoke — ${label}`, async ({ page }, testInfo
 
   await page.evaluate(() => window.SSAdmin.showView('dashboard'));
   await expect(page.locator('.day-cockpit')).toBeVisible();
+  if(width<=900){
+    await expect(page.locator('#dashboardDetails')).toBeHidden();
+    await expect(page.locator('#workflowTodayPanel .workflow-head'), 'touch start must show day focus and next actions').toBeVisible();
+  }
   await expect(page.locator('.day-cockpit-brief')).toBeVisible();
   await expect(page.locator('#todayList .today-context-action').first()).toBeVisible();
   await assertNoUnexpectedOverflow(page, `${label} Birgit daily cockpit`);

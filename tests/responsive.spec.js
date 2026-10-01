@@ -159,6 +159,9 @@ for (const viewport of viewports) {
       await expect(page.locator('.mobile-nav')).toBeVisible();
       await expect(page.locator('.sidebar')).toBeHidden();
       await expect(page.locator('#dashboardDetails')).toBeHidden();
+      await expect(page.locator('#dayFocusMount .day-cockpit')).toBeVisible();
+      await expect(page.locator('#workflowTodayPanel .workflow-head')).toBeVisible();
+      await expect(page.locator('#workflowTodayPanel .workflow-action').first(), 'simplified start must keep the day focus visible').toBeVisible();
       await page.locator('#dashboardDetailsToggle').click();
       await expect(page.locator('#dashboardDetails')).toBeVisible();
       await page.locator('#dashboardDetailsToggle').click();      const dock = await page.evaluate(() => {
