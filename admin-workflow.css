@@ -289,3 +289,29 @@
     grid-column:auto;
   }
 }
+
+
+/* Priority cockpit mount · 2026-10-01 */
+.day-focus-mount{margin:0 0 14px}
+.day-focus-mount:empty{display:none}
+.day-focus-mount .day-cockpit{margin:0;padding:0;border:0}
+
+@media(max-width:760px){
+  .day-focus-mount{margin-bottom:12px}
+  .day-focus-mount .day-cockpit{gap:7px}
+  .day-focus-mount .day-cockpit-focus{padding:14px 15px;border-radius:18px}
+  .day-focus-mount .day-cockpit-main{display:block;margin-top:10px}
+  .day-focus-mount .day-cockpit-main>div:first-child>strong{font-size:25px}
+  .day-focus-mount .day-cockpit-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
+  .day-focus-mount .day-cockpit-actions>*{width:100%;min-height:42px}
+  .day-focus-mount .day-cockpit-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .day-focus-mount .day-cockpit-stats>div{padding:9px 8px;border-radius:13px}
+  .day-focus-mount .day-cockpit-stats strong{font-size:18px;margin:4px 0 1px}
+  .day-focus-mount .day-cockpit-stats small{font-size:7px}
+  .workflow-today{margin-top:0}
+}
+@media(max-width:400px){
+  .day-focus-mount .day-cockpit-actions{grid-template-columns:1fr}
+  .day-focus-mount .day-cockpit-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .day-focus-mount .day-cockpit-stats>div:last-child{grid-column:auto}
+}
