@@ -42,6 +42,19 @@
   }
   function closeCustomerModal(){const modal=$('#customerModal');if(modal?.open)modal.close()}
 
+  function openQuickCreate(){const dialog=$('#quickCreateDialog');if(dialog&&!dialog.open)dialog.showModal()}
+  function closeQuickCreate(){const dialog=$('#quickCreateDialog');if(dialog?.open)dialog.close()}
+  function toggleDashboardDetails(force){
+    const details=$('#dashboardDetails'),button=$('#dashboardDetailsToggle');if(!details||!button)return;
+    const open=typeof force==='boolean'?force:!details.classList.contains('is-open');
+    details.classList.toggle('is-open',open);button.setAttribute('aria-expanded',String(open));
+    const state=$('b',button);if(state)state.textContent=open?'ausblenden':'anzeigen';
+  }
+  function focusBlockForm(){
+    A.showView('availability');
+    requestAnimationFrame(()=>{const form=$('#blockForm');form?.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>form?.elements?.date?.focus(),220)});
+  }
+
   function saveCustomer(form){
     const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),birthday=String(data.get('birthday')||'').trim(),notes=String(data.get('notes')||'').trim();
     if(!name)return A.toast('Bitte Vor- und Nachname eingeben.');
@@ -99,8 +112,13 @@
     ensureCustomerUI();
     $$('[data-view]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.view)));
     $$('[data-jump]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.jump)));
-    $$('[data-action="newAppointment"]').forEach(btn=>btn.addEventListener('click',()=>openModal()));
-    $('#quickAdd')?.addEventListener('click',()=>openModal());$('#mobileAdd')?.addEventListener('click',()=>openModal());
+    $('[data-action="newAppointment"]').forEach(btn=>btn.addEventListener('click',()=>openModal()));
+    $('#quickAdd')?.addEventListener('click',()=>openModal());
+    $('[data-open-quick-create]')?.addEventListener('click',openQuickCreate);
+    $('[data-close-quick-create]').forEach(btn=>btn.addEventListener('click',closeQuickCreate));
+    $('#quickCreateDialog')?.addEventListener('click',event=>{if(event.target.id==='quickCreateDialog')closeQuickCreate()});
+    $('[data-quick-create]').forEach(btn=>btn.addEventListener('click',()=>{const kind=btn.dataset.quickCreate;closeQuickCreate();if(kind==='appointment')openModal();else if(kind==='customer')openCustomerModal();else if(kind==='block')focusBlockForm();else if(kind==='waitlist')A.openWaitlist?.()}));
+    $('#dashboardDetailsToggle')?.addEventListener('click',()=>toggleDashboardDetails());
     const more=$('#mobileMoreDialog');
     $('[data-mobile-more]')?.addEventListener('click',()=>more?.showModal());
     $$('[data-close-mobile-more]').forEach(btn=>btn.addEventListener('click',()=>more?.close()));
@@ -120,5 +138,5 @@
     bindCustomerActions();
   }
 
-  Object.assign(A,{openModal,openCustomerModal,bindActions,bindCustomerActions,bindDynamicAppointmentActions,bindServiceActions,bindHourToggles,bindBlockActions});
+  Object.assign(A,{openModal,openCustomerModal,openQuickCreate,toggleDashboardDetails,bindActions,bindCustomerActions,bindDynamicAppointmentActions,bindServiceActions,bindHourToggles,bindBlockActions});
 })();

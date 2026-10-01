@@ -315,3 +315,19 @@
   .day-focus-mount .day-cockpit-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
   .day-focus-mount .day-cockpit-stats>div:last-child{grid-column:auto}
 }
+
+
+/* Simple daily workflow · 2026-10-01 */
+@media(max-width:900px){
+ .workflow-today{padding:14px;margin-bottom:12px}
+ .workflow-head p{font-size:8px}
+ .workflow-action{padding:10px 0}
+ .workflow-action-copy strong{font-size:10px}.workflow-action-copy small{font-size:8px}
+}
+@media(max-width:760px){
+ .workflow-today{padding:12px}
+ .workflow-action{grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center}
+ .workflow-order{width:27px;height:27px;border-radius:9px}
+ .workflow-action>button{grid-column:auto;justify-self:end;padding:8px 9px}
+ .workflow-action-copy small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+}

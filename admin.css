@@ -307,3 +307,42 @@ button,a{-webkit-tap-highlight-color:transparent}
 @media(max-width:400px){
   .admin-main{padding-bottom:112px}
 }
+
+
+/* Birgit simple mode · 2026-10-01 */
+.mobile-dashboard-toggle{display:none}
+.quick-create-dialog{border:0;padding:0;background:transparent;width:100%;height:100%;max-width:none}
+.quick-create-dialog::backdrop{background:rgba(41,31,28,.30);backdrop-filter:blur(5px)}
+.quick-create-sheet{position:absolute;left:14px;right:14px;bottom:max(88px,calc(env(safe-area-inset-bottom) + 82px));background:#fffdfb;border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 24px 70px rgba(49,36,30,.22)}
+.quick-create-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.quick-create-head h3{font:23px "Marcellus",serif;font-weight:400;margin:4px 0 0}
+.quick-create-head button{border:0;background:#f5efeb;border-radius:50%;width:34px;height:34px;font-size:20px}
+.quick-create-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.quick-create-grid>button{min-height:76px;border:1px solid var(--line);background:#fffaf8;border-radius:16px;padding:12px;display:flex;align-items:center;gap:11px;text-align:left;color:var(--ink)}
+.quick-create-grid>button>span{flex:0 0 34px;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--rose-soft);color:var(--rose-deep);font-weight:800}
+.quick-create-grid strong{display:block;font-size:11px}.quick-create-grid small{display:block;margin-top:3px;font-size:8px;color:var(--muted)}
+@media(max-width:900px){
+ .mobile-dashboard-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;margin:2px 0 12px;padding:12px 14px;border:1px solid var(--line);border-radius:15px;background:#fffaf8;color:var(--ink);text-align:left}
+ .mobile-dashboard-toggle strong{display:block;font-size:10px}.mobile-dashboard-toggle small{display:block;font-size:8px;color:var(--muted);margin-top:3px}.mobile-dashboard-toggle b{font-size:8px;color:var(--rose-deep);white-space:nowrap}
+ .dashboard-details{display:none}.dashboard-details.is-open{display:block}
+ #workflowTodayPanel .workflow-mini-grid{display:none}
+ #workflowTodayPanel .workflow-head{margin-bottom:10px}
+ #workflowTodayPanel .workflow-action-list{border-top:0}
+ #workflowTodayPanel .workflow-action:first-child{border-top:1px solid var(--line)}
+}
+@media(min-width:761px) and (max-width:900px){
+ body{background:#f7f3f1}
+ .sidebar,.topbar{display:none}
+ .admin-main{margin:0;padding:0 24px 118px;max-width:none}
+ .mobile-header{height:72px;display:flex;align-items:center;position:sticky;top:0;z-index:15;background:rgba(248,244,242,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(229,218,212,.72);margin:0 -24px;padding:0 24px}
+ .mobile-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+ .mobile-brand .admin-brand-mark{width:38px;height:38px;font-size:25px}
+ .mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:50%;transform:translateX(-50%);width:min(620px,calc(100vw - 32px));bottom:max(12px,env(safe-area-inset-bottom));height:68px;background:rgba(255,253,251,.97);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:22px;box-shadow:0 14px 45px rgba(65,45,38,.16);z-index:50;padding:6px}
+ .mobile-nav button{border:0;background:transparent;color:#716966;display:grid;place-items:center;align-content:center;gap:3px;border-radius:14px}.mobile-nav button.active{color:var(--rose-deep);background:#f8ece9}.mobile-nav small{font-size:8px;font-weight:700}
+ .mobile-nav-add{width:50px;height:50px;justify-self:center;border-radius:50%!important;background:var(--rose)!important;color:white!important;transform:translateY(-15px);box-shadow:0 8px 22px rgba(171,93,87,.28)}
+ .mobile-nav-add small{display:none}
+ .view{padding-top:24px}.welcome-row h2,.view-heading h2{font-size:31px}
+ .dashboard-grid,.secondary-grid{grid-template-columns:1fr}
+ .quick-create-sheet{left:50%;right:auto;width:min(600px,calc(100vw - 40px));transform:translateX(-50%);bottom:max(94px,calc(env(safe-area-inset-bottom) + 88px))}
+}
+@media(max-width:760px){.mobile-nav-add small{display:none}}
