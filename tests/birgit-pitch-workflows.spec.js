@@ -364,10 +364,19 @@ test('guided completion closes treatment, payment and follow-up in one flow', as
   await reset(page, 'appointments');
 
   const id = await page.evaluate(() => {
-    const item = window.SSAdmin.db.appointments.find(a => a.status === 'confirmed' && /Augenbrauen|Wimpernkranz|Lid|Lippen|PMU|Permanent/i.test(a.service) && window.SSAdmin.appointmentFinancials(a).open > 0);
-    return item?.id || '';
+    const A=window.SSAdmin,today=A.isoDate(new Date()),service=A.db.services.find(s=>s.id==='brows-pmu'||/Augenbrauen Permanent/i.test(s.name)),customer=A.db.customers[0];
+    const id='qa_guided_completion',price=Math.max(1,Number(service?.price||120));
+    A.db.appointments=A.db.appointments.filter(a=>a.id!==id);
+    A.db.appointments.push({
+      id,date:today,time:'00:00',duration:Number(service?.duration||120),service:service?.name||'Augenbrauen Permanent Make-up',
+      customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status:'confirmed',
+      payment:'Im Studio',paymentPreference:'Im Studio',source:'studio',listPrice:price,finalPrice:price,discount:0,
+      depositExpected:0,paidAmount:0,payments:[],paymentStatus:'open',
+      preparation:{status:'complete',consent:true,photos:true,note:'QA vorbereitet.'}
+    });
+    A.save();A.renderAll();
+    return id;
   });
-  expect(id).not.toBe('');
 
   await page.evaluate(appointmentId => window.SSAdmin.openAppointmentDetail(appointmentId), id);
   await expect(page.locator('#appointmentDetailModal')).toBeVisible();
