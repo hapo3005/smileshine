@@ -226,6 +226,8 @@
           <button type="button" data-open-communication-center><span>Nachrichten</span><strong>${messages}</strong><small>heute fällig</small></button>
         </div>
       </div>`;
+    const focusMount=$('#dayFocusMount'),cockpitNode=$('.day-cockpit',root);
+    if(focusMount&&cockpitNode)focusMount.replaceChildren(cockpitNode);
   }
 
   function decorateTodayAgenda(){
