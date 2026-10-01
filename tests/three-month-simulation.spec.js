@@ -206,10 +206,12 @@ test('three-month presentation dataset is structurally coherent day by day', asy
       followUpsOpen:(db.followUps||[]).filter(f=>f.status!=='done'&&f.status!=='cancelled').length,
       communicationsOpen:(db.communications||[]).filter(c=>!['done','cancelled','handed_off'].includes(c.status)).length,
       treatmentRecords:(db.treatmentRecords||[]).length,
-      appointmentsByMonth:months
+      appointmentsByMonth:months,
+      averageActiveAppointmentsPerWeek:Number((active.length/(91/7)).toFixed(1))
     };
 
     if (!db.demoSimulation || db.demoSimulation.rangeEnd < horizon) add('error','INSUFFICIENT_SIMULATION_RANGE','Simulation deckt die nächsten 90 Tage nicht vollständig ab.',{rangeEnd:db.demoSimulation?.rangeEnd,horizon});
+    if (metrics.averageActiveAppointmentsPerWeek < 26 || metrics.averageActiveAppointmentsPerWeek > 32) add('error','WEEKLY_VOLUME_OUT_OF_RANGE','Der durchschnittliche Wochenumfang liegt außerhalb des realistischen Zielkorridors.',{average:metrics.averageActiveAppointmentsPerWeek,target:'26–32'});
     if (future.length < 100) add('warning','LOW_APPOINTMENT_VOLUME','Die 90-Tage-Simulation enthält ungewöhnlich wenige Termine.',{count:future.length});
     if (dailyCounts.length < 45) add('warning','LOW_ACTIVE_DAY_COVERAGE','Weniger als 45 Tage im 90-Tage-Fenster enthalten Termine.',{days:dailyCounts.length});
 
