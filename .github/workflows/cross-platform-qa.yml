@@ -17,6 +17,7 @@ on:
       - "admin-*.css"
       - "admin-*.js"
       - "script.js"
+      - "studio-data-store.js"
       - "booking-admin-sync.js"
       - "checkout-enhancements.js"
       - "cnc-products-carousel.js"
