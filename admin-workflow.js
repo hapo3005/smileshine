@@ -286,14 +286,16 @@
     const list=(A.db.waitlist||[]).filter(x=>x.status==='waiting');
     const currentDate=today(),gapStart=gap?A.minutesOf(gap.start):0;
     const rows=list.map(x=>{
-      const c=customerFor(x.customerId),service=serviceFor(x.service),duration=Number(service?.duration||30);
+      const c=customerFor(x.customerId),service=serviceFor(x.service),duration=Number(service?.duration||30),pre=x.precheck||{};
       const fitsGap=Boolean(gap&&(!x.earliest||x.earliest<=currentDate)&&(!x.latest||x.latest>=currentDate)&&daypartMatches(x,gapStart)&&duration<=gap.minutes&&A.isSlotFree(currentDate,gap.start,duration));
       const slot=fitsGap?{date:currentDate,time:gap.start,isGap:true}:nextSlotFor(x);
-      return {x,c,slot,fitsGap};
+      const intake=[pre.previous?'Frühere Pigmentierung: '+pre.previous:'',pre.allergy?'Allergien: '+pre.allergy:'',pre.medication?'Medikamente: '+pre.medication:'',pre.goal?'Wunsch: '+pre.goal:''].filter(Boolean);
+      const intakeAttention=pre.allergy==='Ja'||pre.medication==='Ja';
+      return {x,c,slot,fitsGap,intake,intakeAttention};
     }).sort((a,b)=>Number(b.fitsGap)-Number(a.fitsGap)||String(a.c?.name||'').localeCompare(String(b.c?.name||''),'de'));
     return `<section class="workflow-center-section">
       <div class="workflow-center-title"><div><span class="panel-kicker">Warteliste</span><h4>${gap?`Lücke ab ${escapeHTML(gap.start)} Uhr gezielt besetzen`:'Freie Zeiten schneller nachbesetzen'}</h4>${gap?`<p class="waitlist-gap-intro">${gap.minutes} Minuten frei · passende Kundinnen stehen zuerst.</p>`:''}</div><button type="button" class="soft-button" data-new-waitlist>＋ Eintrag</button></div>
-      <div class="workflow-center-list waitlist-list">${rows.length?rows.map(({x,c,slot,fitsGap})=>`<article class="${fitsGap?'is-gap-match':''}"><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>${x.latest&&x.latest!==x.earliest?`${safeDate(x.earliest)}–${safeDate(x.latest)}`:`ab ${safeDate(x.earliest)}`} · ${escapeHTML(x.daypartLabel||x.daypart||'Flexibel')}${x.flex?` · ${escapeHTML(x.flex)}`:''}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}${fitsGap?'<em class="waitlist-gap-badge">Passt in die aktuelle Lücke</em>':''}</div><div class="waitlist-match">${slot?`<span>${fitsGap?'Freie Lücke':'Nächster Slot'}<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}" data-slot-date="${slot.date}" data-slot-time="${slot.time}">${fitsGap?'Lücke besetzen':'Termin übernehmen'}</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
+      <div class="workflow-center-list waitlist-list">${rows.length?rows.map(({x,c,slot,fitsGap,intake,intakeAttention})=>`<article class="${fitsGap?'is-gap-match':''}"><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>${x.latest&&x.latest!==x.earliest?`${safeDate(x.earliest)}–${safeDate(x.latest)}`:`ab ${safeDate(x.earliest)}`} · ${escapeHTML(x.daypartLabel||x.daypart||'Flexibel')}${x.flex?` · ${escapeHTML(x.flex)}`:''}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}${intake.length?`<p class="waitlist-intake ${intakeAttention?'is-attention':''}"><strong>Vorab:</strong> ${intake.map(escapeHTML).join(' · ')}</p>`:''}${fitsGap?'<em class="waitlist-gap-badge">Passt in die aktuelle Lücke</em>':''}</div><div class="waitlist-match">${slot?`<span>${fitsGap?'Freie Lücke':'Nächster Slot'}<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}" data-slot-date="${slot.date}" data-slot-time="${slot.time}">${fitsGap?'Lücke besetzen':'Termin übernehmen'}</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
     </section>`;
   }
 
