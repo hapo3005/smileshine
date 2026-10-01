@@ -291,7 +291,7 @@
       const amount=rare===0?0:rare===7?Math.round(finalPrice*.55):finalPrice;
       if(amount>0)payments.push({id:`demo_payment_${seed}`,amount,method:seed%2?'Karte':'Bar',note:amount<finalPrice?'Teilzahlung im Studio':'Bezahlt im Studio',createdAt:new Date(`${date}T18:45:00`).toISOString()});
     }else if(['confirmed','pending'].includes(status)&&depositExpected>0&&seed%2===0){
-      payments.push({id:`demo_deposit_${seed}`,amount:depositExpected,method:'Online',note:'Demo-Anzahlung',createdAt:new Date(addDays(new Date(`${date}T12:00:00`),-7)).toISOString()});
+      payments.push({id:`demo_deposit_${seed}`,amount:depositExpected,method:'Online',note:'Online-Anzahlung · Präsentationsdaten',createdAt:new Date(addDays(new Date(`${date}T12:00:00`),-7)).toISOString()});
     }
     const paidAmount=payments.reduce((sum,p)=>sum+Number(p.amount||0),0);
     const paymentStatus=finalPrice===0||paidAmount>=finalPrice-.005?'paid':paidAmount>0?'partial':depositExpected>0?'deposit-pending':'open';
@@ -301,7 +301,7 @@
   function createAppointment(db,{date,time,key,seed,customer,service,specialOpening=false}){
     const status=appointmentStatus(date,time,service.duration,seed),source=seed%3===0?'online-demo':'studio',finance=appointmentFinance(service,status,source,date,seed);
     const phase=key.startsWith('nail-refill')?'Auffüllen':key==='nail-new'?'Neumodellage':key==='nail-strengthen'?'Naturnagelverstärkung':key==='nail-care'||key==='nail-shellac'?'Maniküre':key==='nail-remove'?'Entfernung':key==='nail-repair'?'Reparatur':key.startsWith('pmu-followup')?'Nachbehandlung':key==='consult'?'Beratung':'Erstbehandlung';
-    return {id:`demo_sim_v3_${String(seed).padStart(4,'0')}`,date,time,duration:Number(service.duration||30),service:service.name,serviceDescription:service.description||'',customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status,payment:source==='online-demo'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',paymentPreference:source==='online-demo'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',source,phase,note:`Demo-Simulation · ${customer.wishes||service.name}`,...finance,isDemoBooking:true,demoSimulation:true,specialOpening};
+    return {id:`demo_sim_v3_${String(seed).padStart(4,'0')}`,date,time,duration:Number(service.duration||30),service:service.name,serviceDescription:service.description||'',customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status,payment:source==='online-demo'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',paymentPreference:source==='online-demo'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',source,phase,note:`Präsentationsdaten · ${customer.wishes||service.name}`,...finance,isDemoBooking:true,demoSimulation:true,specialOpening};
   }
 
   function simulationMaterial(a,seed){
