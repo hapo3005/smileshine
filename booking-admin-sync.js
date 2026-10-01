@@ -44,7 +44,7 @@
   function migrateCatalog(db){
     db.services=Array.isArray(db.services)?db.services:[];
     const current=new Map(db.services.map(s=>[String(s.id),s]));
-    const needsMigration=Number(db.catalogVersion||0)<CATALOG_VERSION||db.services.length<15;
+    const needsMigration=Number(db.catalogVersion||0)<CATALOG_VERSION||CATALOG.some(base=>!db.services.some(service=>service.id===base.id));
     if(!needsMigration)return db;
     const deprecated=new Set(['pmu-refresh','pmu-followup','brows','eyes','lips','pmu','cosmetic','brows-hair','powder-brows','eyeliner','shaded-eyeliner','lip-contour','lip-full']);
     const extras=db.services.filter(service=>!CATALOG.some(base=>base.id===service.id)&&!deprecated.has(service.id));
