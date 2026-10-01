@@ -2,7 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=9;
+  const VERSION=10;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -326,6 +326,14 @@
     db.activity=(db.activity||[]).filter(x=>!String(x.id||'').startsWith(prefix));
     db.blocked=(db.blocked||[]).filter(x=>x.id!=='b1'&&!String(x.id||'').startsWith(prefix));
 
+    const storyCustomerIds=new Set([anna,petra,laura,sabine,julia,sophie,monika].map(c=>c.id));
+    db.treatmentRecords=db.treatmentRecords.filter(x=>!(String(x.id||'').startsWith('demo_sim_record_')&&storyCustomerIds.has(x.customerId)));
+    db.appointments.forEach(a=>{
+      if(!a.demoSimulation)return;
+      if(a.date>=today&&a.status==='pending')a.status='confirmed';
+      a.reminderOptIn=false;
+    });
+
     const day=value=>new Date(`${today}T${value}:00`).toISOString();
     const depositDate=isoDate(addDays(new Date(`${today}T12:00:00`),-7));
     const storyAppointments=[
@@ -337,10 +345,14 @@
     db.appointments.push(...storyAppointments);
     db.blocked.push({id:prefix+'lunch',date:today,start:'13:45',end:'14:15',label:'Mittagspause'});
 
-    db.treatmentRecords.push({
-      id:prefix+'record_petra',seedKey:prefix+'record_petra',customerId:petra.id,appointmentId:prefix+'petra',date:today,service:lashline.name,
-      material:'Dark Brown · feine Verdichtung',result:'Wimpernansatz dezent und gleichmäßig betont.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:day('13:46')
-    });
+    const historyBase=new Date(`${today}T12:00:00`);
+    db.treatmentRecords.push(
+      {id:prefix+'record_anna',seedKey:prefix+'record_anna',customerId:anna.id,appointmentId:'',date:isoDate(addDays(historyBase,-56)),service:brows.name,material:'Soft Brown · natürlich aufgebaut',result:'Form weich ausgeglichen, Intensität bewusst dezent.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:new Date(addDays(historyBase,-56)).toISOString()},
+      {id:prefix+'record_sabine',seedKey:prefix+'record_sabine',customerId:sabine.id,appointmentId:'',date:isoDate(addDays(historyBase,-42)),service:brows.name,material:'Ash Brown · sanfte Formkorrektur',result:'Natürliches Ergebnis, kleine Asymmetrien ausgeglichen.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:new Date(addDays(historyBase,-42)).toISOString()},
+      {id:prefix+'record_petra',seedKey:prefix+'record_petra',customerId:petra.id,appointmentId:prefix+'petra',date:today,service:lashline.name,material:'Dark Brown · feine Verdichtung',result:'Wimpernansatz dezent und gleichmäßig betont.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:day('13:46')}
+    );
+
+    db.communications.push({id:prefix+'comm_sabine',key:`reminder:${prefix}sabine:${today}`,type:'reminder',appointmentId:prefix+'sabine',customerId:sabine.id,dueDate:today,status:'due',title:'Terminerinnerung',note:`${sabine.name} · ${followup.name} · 16:30 Uhr`,createdAt:new Date(now.getTime()-55*60000).toISOString()});
 
     db.followUps.push(
       {id:prefix+'followup_monika',seedKey:prefix+'followup_monika',customerId:monika.id,title:'Heilungsverlauf kurz nachfragen',dueDate:today,type:'aftercare',status:'open',note:'Kurze persönliche Rückmeldung nach der letzten PMU-Behandlung.'},
