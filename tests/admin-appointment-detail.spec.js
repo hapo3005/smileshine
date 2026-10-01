@@ -14,7 +14,7 @@ test('admin appointment detail supports intuitive edit, reschedule and navigatio
   await page.goto(`admin.html?appointment-detail=${Date.now()}#appointments`, { waitUntil: 'networkidle' });
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
-  await page.waitForFunction(() => Boolean(window.SSAdmin?.openAppointmentDetail));
+  await page.waitForFunction(() => window.SSAdmin?.ready === true && Boolean(window.SSAdmin?.openAppointmentDetail));
 
   const appointment = await page.evaluate(() => {
     const today = (() => {
