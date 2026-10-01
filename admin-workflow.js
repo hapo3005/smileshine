@@ -366,7 +366,7 @@
         <label><span>Ergebnis / Besonderheiten</span><textarea name="result" rows="4" placeholder="Was soll beim nächsten Termin sofort sichtbar sein?"></textarea></label>
         <div class="record-check-grid"><label><input type="checkbox" name="beforePhoto"> Vorher-Foto dokumentiert</label><label><input type="checkbox" name="afterPhoto"> Nachher-Foto dokumentiert</label><label><input type="checkbox" name="aftercare" checked> Nachpflege erklärt</label></div>
         <div class="record-followup"><label><input type="checkbox" name="createFollowup" checked> Wiedervorlage für Nachpflege anlegen</label><input name="followupDate" type="date"></div>
-        <p class="workflow-privacy-note">In der Vorschau werden nur Behandlungsnotizen gespeichert. Für echte sensible Kundendaten und Bilddateien braucht der Livebetrieb geschützte Speicherung und klare Zugriffsrechte.</p>
+        <p class="workflow-privacy-note">Im Präsentationsmodus werden Behandlungsnotizen lokal gespeichert. Für den Livebetrieb mit sensiblen Kundendaten und Bilddateien sind geschützte Speicherung, Anmeldung und klare Zugriffsrechte vorgesehen.</p>
       </div>
       <div class="modal-actions"><button type="button" class="soft-button" data-close-treatment>Abbrechen</button><button type="submit" class="primary-action">Dokumentation speichern</button></div>
     </form>`;
@@ -600,7 +600,7 @@
     const settings=$('.settings-grid');
     if(settings&&!$('[data-workflow-setting]',settings)){
       const card=document.createElement('article');card.className='panel setting-card';card.dataset.workflowSetting='true';
-      card.innerHTML='<span class="setting-icon">✓</span><div><strong>Arbeitsorganisation</strong><p>Heute-Fokus, Wiedervorlagen, Warteliste und Behandlungsakte sind in der Vorschau aktiv und miteinander verknüpft.</p></div><span class="status-tag workflow-active">Aktiv</span>';
+      card.innerHTML='<span class="setting-icon">✓</span><div><strong>Arbeitsorganisation</strong><p>Heute-Fokus, Wiedervorlagen, Warteliste und Behandlungsakte sind im Präsentationsmodus aktiv und miteinander verknüpft.</p></div><span class="status-tag workflow-active">Aktiv</span>';
       settings.appendChild(card);
     }
   }
