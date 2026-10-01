@@ -95,13 +95,14 @@
     const customer=customerFor(a.customerId),last=latestTreatmentFor(a.customerId,a.date),f=financials(a),prep=a.preparation||{status:'open'};
     const wish=customer?.wishes||customer?.favoriteServices?.[0]||'Kein besonderer Wunsch hinterlegt';
     const lastText=last?(`${last.service} · ${last.material||'ohne Materialnotiz'}`):'Noch keine Behandlung dokumentiert';
-    const prepText=prep.status==='complete'?'Vorbereitung vollständig':a.status==='pending'?'Termin noch bestätigen':'Vorbereitung noch prüfen';
+    const prepText=prep.status==='complete'?'Vorbereitung vollständig':a.status==='pending'?(a.source==='online'?'Online-Anfrage prüfen':'Termin noch bestätigen'):'Vorbereitung noch prüfen';
     const payText=f.open>0?`${money(f.open)} offen`:'ausgeglichen';
     return {customer,last,wish,lastText,prepText,payText};
   }
   function daypartMatches(entry,startMinutes){
-    const p=String(entry.daypart||'Flexibel');
+    const p=String(entry.daypart||'Flexibel').replace(/s$/,'');
     if(p==='Vormittag')return startMinutes<720;
+    if(p==='Mittag')return startMinutes>=660&&startMinutes<870;
     if(p==='Nachmittag')return startMinutes>=720&&startMinutes<1020;
     if(p==='Abend')return startMinutes>=1020;
     return true;
@@ -110,7 +111,7 @@
     if(!gap)return[];
     const start=A.minutesOf(gap.start);
     return (A.db.waitlist||[]).filter(entry=>{
-      if(entry.status!=='waiting'||(entry.earliest&&entry.earliest>today())||!daypartMatches(entry,start))return false;
+      if(entry.status!=='waiting'||(entry.earliest&&entry.earliest>today())||(entry.latest&&entry.latest<today())||!daypartMatches(entry,start))return false;
       const service=serviceFor(entry.service),duration=Number(service?.duration||30);
       return duration<=gap.minutes;
     }).map(entry=>({entry,customer:customerFor(entry.customerId),service:serviceFor(entry.service)}));
@@ -134,7 +135,7 @@
     const todays=(A.db.appointments||[]).filter(a=>a.date===t&&a.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
     todays.forEach(a=>{
       const ended=appointmentEnd(a)<=nowMinutes();
-      if(a.status==='pending')items.push({key:'confirm-'+a.id,priority:1,kind:'confirm',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · ${a.customerName}`,detail:'Termin ist noch offen und sollte bestätigt werden.',action:'Bestätigen'});
+      if(a.status==='pending')items.push({key:'confirm-'+a.id,priority:1,kind:'confirm',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · ${a.customerName}`,detail:a.source==='online'?'Online-Terminanfrage wartet auf deine Prüfung.':'Termin ist noch offen und sollte bestätigt werden.',action:a.source==='online'?'Prüfen':'Bestätigen'});
       if(a.status==='confirmed'&&ended)items.push({key:'finish-'+a.id,priority:1,kind:'completion',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Abschluss offen`,detail:`${a.customerName} · ${a.service} ist zeitlich beendet.`,action:'Abschließen'});
       if(a.preparation?.status==='open'&&!ended)items.push({key:'prep-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Vorbereitung fehlt`,detail:`${a.customerName} · ${a.service}`,action:'Vorbereitung prüfen'});
       const f=financials(a);
@@ -228,7 +229,7 @@
       const a=appointmentFor(row.dataset.appointmentId);if(!a)return;
       const ended=appointmentEnd(a)<=now,f=financials(a);
       let label='Öffnen',kind='open';
-      if(a.status==='pending'){label='Bestätigen';kind='confirm'}
+      if(a.status==='pending'){label=a.source==='online'?'Prüfen':'Bestätigen';kind='confirm'}
       else if(a.status==='confirmed'&&ended){label='Abschließen';kind='complete'}
       else if(a.status==='completed'&&f.open>0){label='Zahlung';kind='payment'}
       const btn=document.createElement('button');btn.type='button';btn.className='today-context-action';btn.dataset.todayAction=kind;btn.dataset.appointmentId=a.id;btn.textContent=label;
@@ -269,8 +270,10 @@
     for(let offset=0;offset<30;offset++){
       const d=addDays(startDate,offset),hours=A.db.workingHours?.[d.getDay()];if(!hours?.enabled)continue;
       const date=isoDate(d),start=A.minutesOf(hours.start),end=A.minutesOf(hours.end),step=Number(A.db.slotInterval||30);
+      if(entry.latest&&date>entry.latest)break;
       for(let m=start;m+duration<=end;m+=step){
         if(daypart==='Vormittag'&&m>=12*60)continue;
+        if(daypart==='Mittag'&&(m<11*60||m>=14.5*60))continue;
         if(daypart==='Nachmittag'&&(m<12*60||m>=17*60))continue;
         if(daypart==='Abend'&&m<17*60)continue;
         const time=A.timeOf(m);if(A.isSlotFree(date,time,duration))return {date,time};
@@ -284,13 +287,13 @@
     const currentDate=today(),gapStart=gap?A.minutesOf(gap.start):0;
     const rows=list.map(x=>{
       const c=customerFor(x.customerId),service=serviceFor(x.service),duration=Number(service?.duration||30);
-      const fitsGap=Boolean(gap&&(!x.earliest||x.earliest<=currentDate)&&daypartMatches(x,gapStart)&&duration<=gap.minutes&&A.isSlotFree(currentDate,gap.start,duration));
+      const fitsGap=Boolean(gap&&(!x.earliest||x.earliest<=currentDate)&&(!x.latest||x.latest>=currentDate)&&daypartMatches(x,gapStart)&&duration<=gap.minutes&&A.isSlotFree(currentDate,gap.start,duration));
       const slot=fitsGap?{date:currentDate,time:gap.start,isGap:true}:nextSlotFor(x);
       return {x,c,slot,fitsGap};
     }).sort((a,b)=>Number(b.fitsGap)-Number(a.fitsGap)||String(a.c?.name||'').localeCompare(String(b.c?.name||''),'de'));
     return `<section class="workflow-center-section">
       <div class="workflow-center-title"><div><span class="panel-kicker">Warteliste</span><h4>${gap?`Lücke ab ${escapeHTML(gap.start)} Uhr gezielt besetzen`:'Freie Zeiten schneller nachbesetzen'}</h4>${gap?`<p class="waitlist-gap-intro">${gap.minutes} Minuten frei · passende Kundinnen stehen zuerst.</p>`:''}</div><button type="button" class="soft-button" data-new-waitlist>＋ Eintrag</button></div>
-      <div class="workflow-center-list waitlist-list">${rows.length?rows.map(({x,c,slot,fitsGap})=>`<article class="${fitsGap?'is-gap-match':''}"><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>ab ${safeDate(x.earliest)} · ${escapeHTML(x.daypart||'Flexibel')}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}${fitsGap?'<em class="waitlist-gap-badge">Passt in die aktuelle Lücke</em>':''}</div><div class="waitlist-match">${slot?`<span>${fitsGap?'Freie Lücke':'Nächster Slot'}<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}" data-slot-date="${slot.date}" data-slot-time="${slot.time}">${fitsGap?'Lücke besetzen':'Termin übernehmen'}</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
+      <div class="workflow-center-list waitlist-list">${rows.length?rows.map(({x,c,slot,fitsGap})=>`<article class="${fitsGap?'is-gap-match':''}"><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>${x.latest&&x.latest!==x.earliest?`${safeDate(x.earliest)}–${safeDate(x.latest)}`:`ab ${safeDate(x.earliest)}`} · ${escapeHTML(x.daypartLabel||x.daypart||'Flexibel')}${x.flex?` · ${escapeHTML(x.flex)}`:''}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}${fitsGap?'<em class="waitlist-gap-badge">Passt in die aktuelle Lücke</em>':''}</div><div class="waitlist-match">${slot?`<span>${fitsGap?'Freie Lücke':'Nächster Slot'}<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}" data-slot-date="${slot.date}" data-slot-time="${slot.time}">${fitsGap?'Lücke besetzen':'Termin übernehmen'}</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
     </section>`;
   }
 
