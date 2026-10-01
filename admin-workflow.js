@@ -553,7 +553,7 @@
       if(book){
         const entry=(A.db.waitlist||[]).find(x=>x.id===book.dataset.bookWaitlist),c=customerFor(entry?.customerId);
         const slot=entry&&(book.dataset.slotDate&&book.dataset.slotTime?{date:book.dataset.slotDate,time:book.dataset.slotTime}:nextSlotFor(entry));
-        if(entry&&c&&slot){ensureCenter().close();A.openModal?.({customerId:c.id,customerName:c.name,phone:c.phone||'',email:c.email||'',service:entry.service,date:slot.date,time:slot.time,waitlistId:entry.id});}
+        if(entry&&c&&slot){ensureCenter().close();A.openModal?.({customerId:c.id,customerName:c.name,phone:c.phone||'',email:c.email||'',service:entry.service,date:slot.date,time:slot.time,waitlistId:entry.id,note:entry.note||''});}
         return;
       }
       const treatment=event.target.closest('[data-customer-treatment]');if(treatment){openTreatment(treatment.dataset.customerTreatment);return}
