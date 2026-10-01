@@ -278,6 +278,6 @@ async function importPublicModule(url,attempts=3){
   console.error('Smile & Shine: Modul konnte nicht geladen werden.',url,lastError);
   return null;
 }
-importPublicModule('./checkout-enhancements.js?v=20261001-birthday-rc2');
-importPublicModule('./booking-admin-sync.js?v=20261001-birthday-rc2');
-importPublicModule('./cnc-products-carousel.js?v=20261001-birthday-rc2');
+importPublicModule('./checkout-enhancements.js?v=20261001-birthday-rc3');
+importPublicModule('./booking-admin-sync.js?v=20261001-birthday-rc3');
+importPublicModule('./cnc-products-carousel.js?v=20261001-birthday-rc3');
