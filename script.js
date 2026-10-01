@@ -114,6 +114,7 @@ function selectDate(btn){
   bookingState.waitlist=false;bookingState.waitlistDetails=null;
   bookingState.date=btn.dataset.iso;bookingState.dateLabel=btn.dataset.label;bookingState.time='';
   if(waitlistToggle){waitlistToggle.textContent='Warteliste';waitlistToggle.classList.remove('active')}
+  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Weiter zur Zahlweise';
   if(selectedDateLabel)selectedDateLabel.textContent=bookingState.dateLabel;
   updateSummary();buildTimes();
 }
@@ -242,7 +243,8 @@ document.getElementById('paymentContinue')?.addEventListener('click',()=>{
 if(waitlistToggle&&waitlistForm){
   waitlistToggle.addEventListener('click',()=>{waitlistForm.hidden=!waitlistForm.hidden;waitlistToggle.textContent=waitlistForm.hidden?'Warteliste':'Schließen'});
   waitlistForm.elements.flex?.addEventListener('change',()=>waitlistForm.elements.flex.setCustomValidity(''));
-  waitlistForm.addEventListener('submit',e=>{e.preventDefault();const data=new FormData(waitlistForm),periodRaw=String(data.get('period')||'Flexibel'),flex=String(data.get('flex')||'Diese Woche'),flexField=waitlistForm.elements.flex,periodMap={Vormittags:'Vormittag',Mittags:'Mittag',Nachmittags:'Nachmittag',Abends:'Abend',Flexibel:'Flexibel'};if(flex==='Nur gewählter Tag'&&!bookingState.date){flexField?.setCustomValidity('Bitte wähle zuerst einen konkreten Tag oder einen flexibleren Zeitraum.');flexField?.reportValidity();return}flexField?.setCustomValidity('');bookingState.waitlist=true;bookingState.waitlistDetails={period:periodMap[periodRaw]||periodRaw,periodLabel:periodRaw,flex,date:bookingState.date,dateLabel:bookingState.dateLabel};bookingState.date='';bookingState.dateLabel='';bookingState.time='';waitlistForm.hidden=true;waitlistToggle.textContent='✓ Warteliste gewählt';waitlistToggle.classList.add('active');updateSummary();buildPrecheck();setStep(3)});
+  waitlistForm.addEventListener('submit',e=>{e.preventDefault();const data=new FormData(waitlistForm),periodRaw=String(data.get('period')||'Flexibel'),flex=String(data.get('flex')||'Diese Woche'),flexField=waitlistForm.elements.flex,periodMap={Vormittags:'Vormittag',Mittags:'Mittag',Nachmittags:'Nachmittag',Abends:'Abend',Flexibel:'Flexibel'};if(flex==='Nur gewählter Tag'&&!bookingState.date){flexField?.setCustomValidity('Bitte wähle zuerst einen konkreten Tag oder einen flexibleren Zeitraum.');flexField?.reportValidity();return}flexField?.setCustomValidity('');bookingState.waitlist=true;bookingState.waitlistDetails={period:periodMap[periodRaw]||periodRaw,periodLabel:periodRaw,flex,date:bookingState.date,dateLabel:bookingState.dateLabel};
+  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Wartelistenwunsch prüfen';bookingState.date='';bookingState.dateLabel='';bookingState.time='';waitlistForm.hidden=true;waitlistToggle.textContent='✓ Warteliste gewählt';waitlistToggle.classList.add('active');updateSummary();buildPrecheck();setStep(3)});
 }
 
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
