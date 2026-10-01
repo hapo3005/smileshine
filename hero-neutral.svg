@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Neutrales Beauty Editorial</title>
+  <desc id="desc">Abstrakte Anordnung stilisierter Beauty-Pinsel und feiner Formen in warmen Naturtönen.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8ddd2"/>
+      <stop offset=".52" stop-color="#cdbdac"/>
+      <stop offset="1" stop-color="#a99483"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".18" cy=".12" r=".8">
+      <stop offset="0" stop-color="#fffaf5" stop-opacity=".88"/>
+      <stop offset=".48" stop-color="#f2e8de" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#8d7667" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6f5a4f"/>
+      <stop offset=".3" stop-color="#c6aa98"/>
+      <stop offset=".55" stop-color="#7e6659"/>
+      <stop offset=".8" stop-color="#dbc8bb"/>
+      <stop offset="1" stop-color="#675146"/>
+    </linearGradient>
+    <linearGradient id="bristle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3c332f"/>
+      <stop offset=".55" stop-color="#6f6159"/>
+      <stop offset="1" stop-color="#c7b3a7"/>
+    </linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1200" fill="url(#bg)"/>
+  <rect width="1600" height="1200" fill="url(#glow)"/>
+  <ellipse cx="1190" cy="1010" rx="520" ry="115" fill="#463a34" opacity=".18" filter="url(#shadow)"/>
+  <ellipse cx="480" cy="238" rx="470" ry="330" fill="#fff" opacity=".10"/>
+
+  <g opacity=".28" fill="none" stroke="#f3e7dc" stroke-width="2">
+    <path d="M1090 88c85 88 145 180 174 284"/>
+    <path d="M1140 60c52 58 92 127 119 205"/>
+    <path d="M1046 118c55 40 96 87 130 142"/>
+  </g>
+  <g fill="#eee0d4" opacity=".62">
+    <ellipse cx="1122" cy="122" rx="13" ry="34" transform="rotate(-36 1122 122)"/>
+    <ellipse cx="1174" cy="178" rx="12" ry="31" transform="rotate(-28 1174 178)"/>
+    <ellipse cx="1222" cy="246" rx="10" ry="28" transform="rotate(-20 1222 246)"/>
+    <ellipse cx="1080" cy="166" rx="10" ry="27" transform="rotate(-44 1080 166)"/>
+  </g>
+
+  <g transform="translate(140 170) rotate(-9 700 500)">
+    <g transform="translate(160 50)">
+      <rect x="118" y="170" width="74" height="690" rx="37" fill="#eee8e2"/>
+      <rect x="126" y="210" width="58" height="650" rx="29" fill="#d7cbc2"/>
+      <ellipse cx="155" cy="156" rx="73" ry="112" fill="url(#bristle)"/>
+      <ellipse cx="155" cy="130" rx="64" ry="88" fill="#302a27" opacity=".68"/>
+    </g>
+    <g transform="translate(390 0)">
+      <rect x="120" y="195" width="58" height="695" rx="29" fill="#f2ece6"/>
+      <rect x="126" y="210" width="46" height="675" rx="23" fill="#cdbdb1"/>
+      <rect x="112" y="150" width="74" height="102" rx="28" fill="url(#metal)"/>
+      <path d="M104 145c7-86 37-139 48-139s44 53 49 139z" fill="url(#bristle)"/>
+    </g>
+    <g transform="translate(595 74)">
+      <rect x="125" y="180" width="66" height="650" rx="33" fill="#5a4941"/>
+      <rect x="135" y="210" width="46" height="610" rx="23" fill="url(#metal)"/>
+      <rect x="112" y="128" width="92" height="112" rx="34" fill="url(#metal)"/>
+      <ellipse cx="158" cy="104" rx="82" ry="122" fill="url(#bristle)"/>
+    </g>
+    <g transform="translate(815 28)">
+      <rect x="122" y="190" width="60" height="700" rx="30" fill="#efe8e1"/>
+      <rect x="130" y="210" width="44" height="665" rx="22" fill="#b8a89d"/>
+      <rect x="110" y="145" width="86" height="118" rx="31" fill="url(#metal)"/>
+      <ellipse cx="153" cy="108" rx="79" ry="126" fill="url(#bristle)"/>
+    </g>
+  </g>
+
+  <g transform="translate(1090 660) rotate(14)">
+    <rect x="0" y="0" width="300" height="170" rx="38" fill="#e8ddd3" opacity=".76"/>
+    <rect x="28" y="28" width="244" height="114" rx="27" fill="#f7f0e9" opacity=".78"/>
+    <circle cx="94" cy="84" r="35" fill="#c19783" opacity=".55"/>
+    <circle cx="160" cy="84" r="35" fill="#a77f6d" opacity=".52"/>
+    <circle cx="226" cy="84" r="35" fill="#7e6155" opacity=".44"/>
+  </g>
+
+  <path d="M0 1020c260-96 482-102 722-22 286 94 548 106 878-34v236H0z" fill="#7c6558" opacity=".12"/>
+</svg>
