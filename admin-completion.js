@@ -7,6 +7,13 @@
   const appointment=id=>(A.db.appointments||[]).find(a=>a.id===id);
   const customerFor=a=>(A.db.customers||[]).find(c=>c.id===a?.customerId)||(A.db.customers||[]).find(c=>a?.email&&c.email===a.email);
   const money=value=>currency(Number(value||0));
+  function hasStarted(a){
+    const today=isoDate(new Date());
+    if(String(a?.date||'')<today)return true;
+    if(String(a?.date||'')>today)return false;
+    const [h,m]=String(a?.time||'00:00').split(':').map(Number),now=new Date();
+    return now.getHours()*60+now.getMinutes()>=h*60+m;
+  }
 
   function ensureStyles(){
     if(document.querySelector('link[data-completion-style]'))return;
@@ -213,7 +220,11 @@
 
   function openCompletion(id){
     const a=appointment(id);if(!a)return A.toast('Termin nicht gefunden.');
+    if(a.status==='pending')return A.toast('Die Terminanfrage muss zuerst bestätigt werden.');
+    if(a.status==='completed')return A.toast('Dieser Termin ist bereits abgeschlossen.');
     if(a.status==='cancelled'||a.status==='no_show')return A.toast('Dieser Termin kann nicht als Behandlung abgeschlossen werden.');
+    if(a.status!=='confirmed')return A.toast('Bitte den Termin zuerst bestätigen.');
+    if(!hasStarted(a))return A.toast('Der Termin hat noch nicht begonnen.');
     const dialog=ensureDialog(),f=financials(a),record=existingRecord(a),defaults=followupDefaults(a);
     dialog._completionState={
       step:1,appointmentId:id,
@@ -234,7 +245,7 @@
       if(hero&&!$('.completion-done-badge',hero)){const badge=document.createElement('span');badge.className='completion-done-badge';badge.textContent='✓ Abgeschlossen';hero.prepend(badge)}
       return;
     }
-    if(['cancelled','no_show'].includes(a.status))return;
+    if(a.status!=='confirmed'||!hasStarted(a)){if(button)button.remove();return}
     if(!button){
       button=document.createElement('button');button.type='button';button.className='primary-action completion-start-button';button.dataset.startCompletion=id;button.textContent='✓ Termin abschließen';
       const hero=$('.appointment-hero-actions',body);hero?.prepend(button);
