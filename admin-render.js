@@ -19,14 +19,18 @@
     const weekEnd=isoDate(addDays(today,6));
     const weekApps=A.activeAppointments().filter(a=>a.date>=todayISO&&a.date<=weekEnd);
     const monthApps=A.activeAppointments().filter(a=>{const d=new Date(`${a.date}T12:00:00`);return d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear()});
-    const revenue=monthApps.reduce((sum,a)=>sum+Number((a.finalPrice??a.listPrice??A.db.services.find(s=>s.name===a.service)?.price)||0),0);
     const unique=new Set(weekApps.map(a=>a.customerId||a.email||a.customerName)).size;
+    const pending=A.activeAppointments().filter(a=>a.status==='pending'&&a.date>=todayISO);
+    const paidMonth=monthApps.reduce((sum,a)=>{
+      if(Number.isFinite(Number(a.paidAmount)))return sum+Number(a.paidAmount||0);
+      return sum+(Array.isArray(a.payments)?a.payments.reduce((part,p)=>part+Number(p.amount||0),0):0);
+    },0);
     if($('#todaySubline'))$('#todaySubline').textContent=new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(today);
     const kpis=[
       {icon:'□',label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
-      {icon:'◷',label:'Diese Woche',value:weekApps.length,foot:'Termine',delta:`${weekApps.filter(a=>a.status==='pending').length} offen`},
-      {icon:'○',label:'Kunden',value:unique,foot:'in 7 Tagen',delta:`${A.db.customers.length} gesamt`},
-      {icon:'€',label:'Umsatz · Monat',value:revenue>0?currency(revenue):'–',foot:revenue>0?'Geplante Leistungen':'Noch keine Zahlungen',delta:`${monthApps.length} Termine`}];
+      {icon:'!',label:'Offene Anfragen',value:pending.length,foot:'zu prüfen',delta:pending.length?'Bestätigung ausstehend':'Alles bearbeitet'},
+      {icon:'◷',label:'Diese Woche',value:weekApps.length,foot:'Termine',delta:`${unique} Kundinnen`},
+      {icon:'€',label:'Eingenommen · Monat',value:paidMonth>0?currency(paidMonth):'–',foot:paidMonth>0?'Erfasste Zahlungen':'Noch nichts erfasst',delta:`${monthApps.filter(a=>a.status==='completed').length} abgeschlossen`}];
     if($('#kpiGrid'))$('#kpiGrid').innerHTML=kpis.map(k=>`<article class="kpi-card"><div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon">${k.icon}</span></div><strong class="kpi-value">${k.value}</strong><div class="kpi-foot"><span>${k.foot}</span><span class="delta">${k.delta}</span></div></article>`).join('');
     if($('#todayList'))$('#todayList').innerHTML=todays.length?todays.map(a=>`<div class="appointment-row appointment-open-row" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="appointment-time">${a.time}</div><div class="appointment-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><span class="appointment-status status-${a.status}">${STATUS_LABELS[a.status]||a.status}</span><span class="appointment-row-arrow" aria-hidden="true">→</span></div>`).join(''):`<div class="empty-state"><strong>Heute ist noch frei.</strong>Über „Termin“ kannst du direkt eine Buchung eintragen.</div>`;
     renderWeekBars();renderActivities();
