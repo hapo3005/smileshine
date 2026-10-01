@@ -85,6 +85,6 @@
     }
     api.ready=true;document.documentElement.dataset.adminReady='true';
   }catch(error){
-    api.initError=String(error?.stack||error||'Unbekannter Initialisierungsfehler');console.error(error);api.toast('Die Studio-Vorschau konnte nicht vollständig geladen werden.');
+    api.initError=String(error?.stack||error||'Unbekannter Initialisierungsfehler');console.error(error);api.toast('Die Studioversion konnte nicht vollständig geladen werden.');
   }
 })();
