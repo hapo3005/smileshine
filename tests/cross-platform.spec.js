@@ -172,7 +172,7 @@ test(`Birgit admin cross-platform smoke — ${label}`, async ({ page }, testInfo
   await page.evaluate(() => document.fonts?.ready);
 
   const width = profiles[profile].viewport.width;
-  if (width <= 760) {
+  if (width <= 900) {
     await expect(page.locator('.mobile-header')).toBeVisible();
     await expect(page.locator('.mobile-nav')).toBeVisible();
     await expect(page.locator('.sidebar')).toBeHidden();
@@ -208,13 +208,17 @@ test(`Birgit admin cross-platform smoke — ${label}`, async ({ page }, testInfo
   await expect(page.locator('.day-cockpit-brief')).toBeVisible();
   await expect(page.locator('#todayList .today-context-action').first()).toBeVisible();
   await assertNoUnexpectedOverflow(page, `${label} Birgit daily cockpit`);
-  const addButton = width <= 760 ? page.locator('.mobile-nav-add') : page.locator('#quickAdd');
+  const addButton = width <= 900 ? page.locator('.mobile-nav-add') : page.locator('#quickAdd');
   await addButton.click();
+  if(width<=900){
+    await expect(page.locator('#quickCreateDialog')).toBeVisible();
+    await page.locator('[data-quick-create="appointment"]').click();
+  }
   await expect(page.locator('#appointmentModal')).toBeVisible();
   await assertNoUnexpectedOverflow(page, `${label} admin appointment modal`);
   await page.locator('[data-close-modal]').first().click();
 
-  if (width <= 760) {
+  if (width <= 900) {
     const mobileButtons = page.locator('.mobile-nav button');
     expect(await mobileButtons.count()).toBeGreaterThanOrEqual(4);
   }
