@@ -157,15 +157,13 @@ for (const viewport of viewports) {
     if (viewport.width <= 760) {
       await expect(page.locator('.mobile-header')).toBeVisible();
       await expect(page.locator('.mobile-nav')).toBeVisible();
-      await expect(page.locator('.sidebar')).toBeHidden();
-      const visualShell = await page.evaluate(() => {
-        const app = document.querySelector('.admin-app').getBoundingClientRect();
+      await expect(page.locator('.sidebar')).toBeHidden();      const dock = await page.evaluate(() => {
         const nav = document.querySelector('.mobile-nav').getBoundingClientRect();
         const visualHeight = window.visualViewport?.height || window.innerHeight;
-        return {appBottom: Math.round(app.bottom), navBottom: Math.round(nav.bottom), visualHeight: Math.round(visualHeight)};
+        return {position:getComputedStyle(document.querySelector('.mobile-nav')).position, navBottom:Math.round(nav.bottom), visualHeight:Math.round(visualHeight)};
       });
-      expect(Math.abs(visualShell.appBottom - visualShell.visualHeight), 'mobile app shell must match the visual viewport').toBeLessThanOrEqual(2);
-      expect(visualShell.visualHeight - visualShell.navBottom, 'bottom navigation must sit close to the usable viewport edge').toBeLessThanOrEqual(28);
+      expect(dock.position).toBe('fixed');
+      expect(dock.visualHeight - dock.navBottom, 'bottom navigation must hug the visible viewport').toBeLessThanOrEqual(28);
       await expect(page.locator('.kpi-card').nth(3).locator('.kpi-label')).toHaveText('Wiedervorlagen');
       const sabineWish = await page.evaluate(() => window.SSAdmin.db.customers.find(c => c.name === 'Sabine Meier')?.wishes || '');
       expect(sabineWish, 'Sabine Meier keeps her PMU wish').toContain('mehr Ausdruck');
@@ -174,8 +172,7 @@ for (const viewport of viewports) {
         const nav = document.querySelector('.mobile-nav').getBoundingClientRect();
         return { mainBottom: Math.round(main.bottom), navTop: Math.round(nav.top), navPosition: getComputedStyle(document.querySelector('.mobile-nav')).position };
       });
-      expect(mobileShell.navPosition).not.toBe('fixed');
-      expect(mobileShell.mainBottom, 'mobile content viewport must end before the bottom navigation').toBeLessThanOrEqual(mobileShell.navTop);
+      expect(mobileShell.navPosition).toBe('fixed');
     } else {
       await expect(page.locator('.sidebar')).toBeVisible();
       await expect(page.locator('.mobile-nav')).toBeHidden();
