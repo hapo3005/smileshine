@@ -2022,7 +2022,7 @@ body.site-premium{
     min-height:0;
     display:grid;
     grid-template-columns:1fr;
-    grid-template-rows:auto minmax(300px,42svh);
+    grid-template-rows:clamp(230px,31svh,285px) auto;
     background:#f5f0ea;
   }
   .site-premium .hero-cinematic::before{
@@ -2033,19 +2033,19 @@ body.site-premium{
   .site-premium .hero-cinematic::after{
     display:none;
   }
-  .site-premium .hero-cinematic .hero-copy{
+  .site-premium .hero-cinematic .hero-media{
     grid-column:1;
     grid-row:1;
     min-height:0;
-    padding:52px 24px 42px;
+    background-position:center 46%;
+    border-bottom:1px solid rgba(61,49,43,.08);
+    box-shadow:none;
   }
-  .site-premium .hero-cinematic .hero-media{
+  .site-premium .hero-cinematic .hero-copy{
     grid-column:1;
     grid-row:2;
-    min-height:clamp(320px,44svh,430px);
-    background-position:center 44%;
-    border-top:1px solid rgba(61,49,43,.08);
-    box-shadow:none;
+    min-height:0;
+    padding:36px 24px 42px;
   }
   .site-premium .hero-cinematic h1{
     max-width:620px;
@@ -2072,9 +2072,14 @@ body.site-premium{
     margin-top:24px;
   }
   .site-premium .hero-cinematic .hero-media-caption{
-    left:18px;
-    right:18px;
-    bottom:18px;
+    left:14px;
+    right:14px;
+    bottom:14px;
     max-width:none;
+    padding:11px 13px;
+    border-radius:11px;
+  }
+  .site-premium .hero-cinematic .hero-media-caption strong{
+    font-size:15px;
   }
 }
