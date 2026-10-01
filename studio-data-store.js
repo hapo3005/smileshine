@@ -3,7 +3,7 @@
 
   const KEY='smileshine_studio_v1';
   const CHANGE_EVENT='smileshine:data-store-change';
-  const PRESENTATION_VERSION=2;
+  const PRESENTATION_VERSION=3;
   const PICKUP_KEY='smileshine_pickup_orders_demo_v1';
 
   const isoDate=date=>{
@@ -129,7 +129,7 @@
   }
   function ensurePresentationData(){
     const current=read();
-    if(!current||Number(current.presentationVersion||0)<PRESENTATION_VERSION){const value=createPresentationData();write(value);seedPickupOrders(false);return value}
+    if(!current||Number(current.presentationVersion||0)<PRESENTATION_VERSION){const value=createPresentationData();write(value);seedPickupOrders(true);clearMedia().catch(()=>{});return value}
     seedPickupOrders(false);return current;
   }
   function clear(){
