@@ -29,7 +29,7 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
   await expect(page.locator('[data-pickup-count]').first()).toHaveText('1');
   await expect(page.locator('.pickup-cart-location')).toContainText('Raiffeisenstraße 4');
   await expect(page.locator('.pickup-cart-location')).toContainText('keine Versandkosten');
-  await expect(page.locator('.pickup-guest-banner')).toContainText('Bestellen ohne Konto');
+  await expect(page.locator('.pickup-guest-banner')).toContainText('Abholung ohne Konto vormerken');
 
   await page.locator('[data-pickup-plus]').first().click();
   await expect(page.locator('[data-pickup-count]').first()).toHaveText('2');
@@ -47,7 +47,7 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
   await form.locator('button[type="submit"]').click();
 
   await expect(page.locator('.pickup-success')).toBeVisible();
-  await expect(page.locator('.pickup-success')).toContainText('Bestellung vorgemerkt');
+  await expect(page.locator('.pickup-success')).toContainText('Abholung vorgemerkt');
 
   const saved=await page.evaluate(()=>{
     const orders=JSON.parse(localStorage.getItem('smileshine_pickup_orders_demo_v1')||'[]');
@@ -59,8 +59,8 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
   expect(saved.payment).toBe('Bei Abholung bezahlen');
   expect(saved.items[0].qty).toBe(2);
   expect(saved.shippingAddress).toBeUndefined();
-  expect(saved.buyerType).toBe('guest');
-  expect(saved.customerId).toBeNull();
+  expect(saved.buyerType).toBe('new');
+  expect(saved.customerId).toBeTruthy();
 
   expect(browserErrors).toEqual([]);
 });
@@ -72,10 +72,11 @@ test('known customer is linked internally without login or registration', async 
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'networkidle'});
   await page.evaluate(()=>{
-    const db=JSON.parse(localStorage.getItem('smileshine_studio_v1')||'{}');
+    const store=window.SmileShineDataStore;
+    const db=store.read();
     db.customers=Array.isArray(db.customers)?db.customers:[];
     db.customers.push({id:'cust_known_1',name:'Bekannte Kundin',email:'known@example.invalid',phone:'01701234567'});
-    localStorage.setItem('smileshine_studio_v1',JSON.stringify(db));
+    store.write(db);
   });
   await page.waitForFunction(()=>Boolean(window.SmileShinePickupShop));
 
