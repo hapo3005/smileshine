@@ -26,14 +26,14 @@
 
     if(!$('.view[data-view-panel="pickup"]')){
       const view=document.createElement('section');view.className='view';view.dataset.viewPanel='pickup';
-      view.innerHTML=`<div class="view-heading"><div><p class="eyebrow">Abholshop</p><h2>Online gekauft. Hier abgeholt.</h2><p class="muted">Keine Pakete und keine Lieferadressen: Birgit bereitet nur lokale Abholbestellungen vor.</p></div><a class="soft-button pickup-public-link" href="index.html#shop">Abholshop ansehen ↗</a></div><div id="pickupAdminSummary" class="pickup-admin-summary"></div><article class="panel pickup-orders-panel"><div class="panel-head"><div><span class="panel-kicker">Abholaufträge</span><h3>Was muss vorbereitet werden?</h3></div><div class="pickup-admin-filter"><button type="button" data-pickup-admin-filter="active" class="active">Offen</button><button type="button" data-pickup-admin-filter="all">Alle</button></div></div><div id="pickupOrdersList" class="pickup-orders-list"></div></article>`;
+      view.innerHTML=`<div class="view-heading"><div><p class="eyebrow">Abholshop</p><h2>Online ausgewählt. Im Studio vorbereitet.</h2><p class="muted">Keine Pakete und keine Lieferadressen: Birgit sieht offene Abholwünsche und bereitet sie für die Abholung vor.</p></div><a class="soft-button pickup-public-link" href="index.html#shop">Abholshop ansehen ↗</a></div><div id="pickupAdminSummary" class="pickup-admin-summary"></div><article class="panel pickup-orders-panel"><div class="panel-head"><div><span class="panel-kicker">Abholaufträge</span><h3>Was muss vorbereitet werden?</h3></div><div class="pickup-admin-filter"><button type="button" data-pickup-admin-filter="active" class="active">Offen</button><button type="button" data-pickup-admin-filter="all">Alle</button></div></div><div id="pickupOrdersList" class="pickup-orders-list"></div></article>`;
       const settingsView=$('.view[data-view-panel="settings"]');settingsView?.before(view);
     }
 
     const settingsGrid=$('.view[data-view-panel="settings"] .settings-grid');
     if(settingsGrid&&!$('[data-jump="pickup"]',settingsGrid)){
       const card=document.createElement('article');card.className='panel setting-card';
-      card.innerHTML='<span class="setting-icon">▣</span><div><strong>Abholshop</strong><p>Onlinekäufe werden ausschließlich im Studio abgeholt. Keine Versandabwicklung.</p></div><button class="soft-button" type="button" data-jump="pickup">Abholaufträge</button>';
+      card.innerHTML='<span class="setting-icon">▣</span><div><strong>Abholshop</strong><p>Online vorgemerkte Produkte werden im Studio vorbereitet und abgeholt. Keine Versandabwicklung.</p></div><button class="soft-button" type="button" data-jump="pickup">Abholaufträge</button>';
       settingsGrid.prepend(card);
     }
   }
