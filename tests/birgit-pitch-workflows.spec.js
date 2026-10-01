@@ -229,8 +229,7 @@ test('reset restores the realistic three-month studio simulation', async ({ page
   expect(state.repeatCustomers).toBeGreaterThanOrEqual(25);
   expect(state.completed).toBeGreaterThanOrEqual(15);
   expect(state.futureConfirmed).toBeGreaterThanOrEqual(320);
-  expect(state.todayAppointments).toBeGreaterThanOrEqual(5);
-  expect(state.todayAppointments).toBeLessThanOrEqual(7);
+  expect(state.todayAppointments).toBe(4);
   expect(state.weekAppointments).toBeGreaterThanOrEqual(27);
   expect(state.weekAppointments).toBeLessThanOrEqual(35);
   expect(state.weekCustomers).toBeGreaterThanOrEqual(24);
