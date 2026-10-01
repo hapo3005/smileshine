@@ -249,5 +249,5 @@ async function importPublicModule(url,attempts=3){
   return null;
 }
 importPublicModule('./checkout-enhancements.js?v=20260925-hours5-retry');
-importPublicModule('./booking-admin-sync.js?v=20261001-birthday-release1');
-importPublicModule('./cnc-products-carousel.js?v=20260923-birgit-final2');
+importPublicModule('./booking-admin-sync.js?v=20261001-birthday-release2');
+importPublicModule('./cnc-products-carousel.js?v=20261001-birthday-release2');
