@@ -49,7 +49,7 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   const todayRows = await page.locator('#todayList .appointment-row').count();
   expect(todayRows).toBeGreaterThanOrEqual(5);
   expect(todayRows).toBeLessThanOrEqual(7);
-  await expect(page.locator('#activityList')).toContainText('Nina Schäfer');
+  await expect(page.locator('#activityList')).toContainText('Laura Becker');\n  await expect(page.locator('#activityList')).toContainText('Online-Terminanfrage');
 
   await page.evaluate(() => window.SSAdmin.showView('pickup'));
   await expect(page.locator('[data-pickup-order="pickup_pitch_1"]')).toContainText('Laura Becker');
