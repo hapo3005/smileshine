@@ -225,7 +225,7 @@
     if(!occursOn(meta,date))return A.toast('Dieses Datum gehört nicht zum gewählten Zeitraum.');
     meta.exceptions=meta.exceptions||[];if(meta.exceptions.includes(date))return A.toast('Dieser Tag ist bereits ausgenommen.');
     meta.exceptions.push(date);A.db.blocked=A.db.blocked.filter(b=>!(b.seriesId===meta.id&&b.date===date));
-    A.addActivity('setting',`${meta.label}: ${dateShort(date)} aus dem Zeitraum ausgenommen.`);renderExceptionList(meta);A.save(`${dateShort(date)} ist für Buchungen wieder freigegeben.`);form.elements.date.value=nextOccurrence(meta);
+    A.addActivity('setting',`${meta.label}: ${dateShort(date)} aus dem Zeitraum ausgenommen.`);renderExceptionList(meta);A.save(`${dateShort(date)} ist für Termine wieder freigegeben.`);form.elements.date.value=nextOccurrence(meta);
   }
 
   function restoreException(seriesId,date){
