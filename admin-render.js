@@ -1,6 +1,12 @@
 (() => {
   const A=window.SSAdmin;if(!A)return;
-  const {$,$$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,escapeHTML,SHORT_DAYS,DAY_NAMES,STATUS_LABELS}=A;
+  const {$,$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,escapeHTML,SHORT_DAYS,DAY_NAMES,STATUS_LABELS}=A;
+  const iconSVG=name=>({
+    calendar:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M7.5 3v5M16.5 3v5M3.5 10h17"/></svg>',
+    alert:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 21 20H3L12 3.5Z"/><path d="M12 9v5M12 17.5h.01"/></svg>',
+    waitlist:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h11M4 12h8M4 17h6"/><path d="m16 14 4 4m0-4-4 4"/></svg>',
+    followup:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 1-2.3-5.7"/><path d="M20 4v6h-6"/><path d="M12 7.5V12l3 2"/></svg>'
+  }[name]||'');
 
   function showView(name){
     const views=['dashboard','calendar','appointments','customers','services','availability','pickup','settings'];
@@ -17,27 +23,15 @@
 
   function renderDashboard(){
     const today=new Date(),todayISO=isoDate(today),todays=A.activeAppointments().filter(a=>a.date===todayISO).sort((a,b)=>a.time.localeCompare(b.time));
-    const weekEnd=isoDate(addDays(today,6));
-    const weekApps=A.activeAppointments().filter(a=>a.date>=todayISO&&a.date<=weekEnd);
-    const monthApps=A.activeAppointments().filter(a=>{const d=new Date(`${a.date}T12:00:00`);return d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear()});
-    const unique=new Set(weekApps.map(a=>a.customerId||a.email||a.customerName)).size;
     const pending=A.activeAppointments().filter(a=>a.status==='pending'&&a.date>=todayISO);
-    const paidMonth=monthApps.reduce((sum,a)=>{
-      if(Number.isFinite(Number(a.paidAmount)))return sum+Number(a.paidAmount||0);
-      return sum+(Array.isArray(a.payments)?a.payments.reduce((part,p)=>part+Number(p.amount||0),0):0);
-    },0);
+    const waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting');
+    const followUps=(A.db.followUps||[]).filter(x=>x.status!=='done'&&x.status!=='cancelled'&&(!x.dueDate||x.dueDate<=todayISO));
     if($('#todaySubline'))$('#todaySubline').textContent=new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(today);
-    const kpiIcons={
-      today:'<svg class="kpi-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4.5 9h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="m9 14 2 2 4-5"/></svg>',
-      pending:'<svg class="kpi-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 3.5 19h17Z"/><path d="M12 9v4M12 16.5h.01"/></svg>',
-      week:'<svg class="kpi-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>',
-      money:'<svg class="kpi-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 7.5A6 6 0 1 0 17.5 16.5M5 10h8M5 14h7"/></svg>'
-    };
     const kpis=[
-      {icon:kpiIcons.today,label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
-      {icon:kpiIcons.pending,label:'Offene Anfragen',value:pending.length,foot:'zu prüfen',delta:pending.length?'Bestätigung ausstehend':'Alles bearbeitet'},
-      {icon:kpiIcons.week,label:'Diese Woche',value:weekApps.length,foot:'Termine',delta:`${unique} Kundinnen`},
-      {icon:kpiIcons.money,label:'Eingenommen · Monat',value:paidMonth>0?currency(paidMonth):'–',foot:paidMonth>0?'Tatsächlich bezahlt':'Noch nichts erfasst',delta:`${monthApps.filter(a=>a.status==='completed').length} abgeschlossen`}];
+      {icon:iconSVG('calendar'),label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
+      {icon:iconSVG('alert'),label:'Offene Anfragen',value:pending.length,foot:'zu prüfen',delta:pending.length?'Bestätigung ausstehend':'Alles bearbeitet'},
+      {icon:iconSVG('waitlist'),label:'Warteliste',value:waiting.length,foot:'Kundinnen',delta:waiting.length?'Lücken gezielt füllen':'Aktuell leer'},
+      {icon:iconSVG('followup'),label:'Wiedervorlagen',value:followUps.length,foot:'heute offen',delta:followUps.length?'Als Nächstes prüfen':'Alles erledigt'}];
     if($('#kpiGrid'))$('#kpiGrid').innerHTML=kpis.map(k=>`<article class="kpi-card"><div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon">${k.icon}</span></div><strong class="kpi-value">${k.value}</strong><div class="kpi-foot"><span>${k.foot}</span><span class="delta">${k.delta}</span></div></article>`).join('');
     if($('#todayList'))$('#todayList').innerHTML=todays.length?todays.map(a=>`<div class="appointment-row appointment-open-row" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="appointment-time">${a.time}</div><div class="appointment-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><span class="appointment-status status-${a.status}">${STATUS_LABELS[a.status]||a.status}</span><span class="appointment-row-arrow" aria-hidden="true">→</span></div>`).join(''):`<div class="empty-state"><strong>Heute ist noch frei.</strong>Über „Termin“ kannst du direkt einen Termin eintragen.</div>`;
     renderWeekBars();renderActivities();
@@ -91,7 +85,7 @@
     const root=$('#appointmentsList');if(!root)return;const q=($('#appointmentSearch')?.value||'').trim().toLowerCase(),filter=$('#appointmentFilter')?.value||'upcoming',today=isoDate(new Date());let list=[...A.db.appointments];
     if(filter==='upcoming')list=list.filter(a=>a.date>=today&&a.status!=='cancelled');else if(filter!=='all')list=list.filter(a=>a.status===filter);if(q)list=list.filter(a=>`${a.customerName} ${a.service}`.toLowerCase().includes(q));list.sort((a,b)=>`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
     if(!list.length){root.innerHTML='<div class="empty-state"><strong>Keine Termine gefunden.</strong>Ändere Filter oder Suchbegriff.</div>';return}
-    root.innerHTML=list.map(a=>`<div class="appointment-card appointment-open-card" data-id="${a.id}" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="date-block"><strong>${dateShort(a.date)}</strong><small>${a.time} Uhr</small></div><div class="card-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.phone||a.email||'Keine Kontaktdaten')}</small></div><div class="card-service"><strong>${escapeHTML(a.service)}</strong><small>${a.duration} Min. · ${a.source==='online'?'Online':'Studio'}</small></div><select class="status-select" data-status-id="${a.id}" aria-label="Terminstatus von ${escapeHTML(a.customerName)}" ${a.status==='completed'?'disabled':''}>${a.status==='completed'?'<option value="completed" selected>Abgeschlossen</option>':`<option value="confirmed" ${a.status==='confirmed'?'selected':''}>Bestätigt</option><option value="pending" ${a.status==='pending'?'selected':''}>Offen</option><option value="no_show" ${a.status==='no_show'?'selected':''}>Nicht erschienen</option><option value="cancelled" ${a.status==='cancelled'?'selected':''}>Abgesagt</option>`}</select><div class="row-menu"><button type="button" data-show-calendar="${a.date}" title="Im Kalender zeigen" aria-label="Im Kalender zeigen">□</button><button type="button" data-open-appointment="${a.id}" title="Termin öffnen" aria-label="Termin öffnen">→</button></div></div>`).join('');
+    root.innerHTML=list.map(a=>`<div class="appointment-card appointment-open-card" data-id="${a.id}" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="date-block"><strong>${dateShort(a.date)}</strong><small>${a.time} Uhr</small></div><div class="card-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.phone||a.email||'Keine Kontaktdaten')}</small></div><div class="card-service"><strong>${escapeHTML(a.service)}</strong><small>${a.duration} Min. · ${a.source==='online'?'Online':'Studio'}</small></div><select class="status-select" data-status-id="${a.id}" aria-label="Terminstatus von ${escapeHTML(a.customerName)}" ${a.status==='completed'?'disabled':''}>${a.status==='completed'?'<option value="completed" selected>Abgeschlossen</option>':`<option value="confirmed" ${a.status==='confirmed'?'selected':''}>Bestätigt</option><option value="pending" ${a.status==='pending'?'selected':''}>Offen</option><option value="no_show" ${a.status==='no_show'?'selected':''}>Nicht erschienen</option><option value="cancelled" ${a.status==='cancelled'?'selected':''}>Abgesagt</option>`}</select><div class="row-menu"><button type="button" data-show-calendar="${a.date}" title="Im Kalender zeigen" aria-label="Im Kalender zeigen">${iconSVG('calendar')}</button><button type="button" data-open-appointment="${a.id}" title="Termin öffnen" aria-label="Termin öffnen">→</button></div></div>`).join('');
     A.bindDynamicAppointmentActions?.();
   }
 
