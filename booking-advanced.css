@@ -268,3 +268,6 @@ body.site-premium .booking-editorial .service-option.selected{
   .booking-progress::-webkit-scrollbar{display:none}
   .progress-step{scroll-snap-align:start}
 }
+
+.progress-step.skipped{opacity:.48}
+.progress-step.skipped span{opacity:.72}
