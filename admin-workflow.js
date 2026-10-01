@@ -340,7 +340,8 @@
       <div class="modal-body">
         <label><span>Kundin / Kunde</span><select name="customerId" required></select></label>
         <label><span>Leistung</span><select name="service" required></select></label>
-        <div class="form-row"><label><span>Frühestens ab</span><input name="earliest" type="date" required></label><label><span>Tageszeit</span><select name="daypart"><option>Flexibel</option><option>Vormittag</option><option>Nachmittag</option><option>Abend</option></select></label></div>
+        <div class="form-row"><label><span>Frühestens ab</span><input name="earliest" type="date" required></label><label><span>Spätestens bis <small>optional</small></span><input name="latest" type="date"></label></div>
+        <label><span>Tageszeit</span><select name="daypart"><option>Flexibel</option><option>Vormittag</option><option>Mittag</option><option>Nachmittag</option><option>Abend</option></select></label>
         <label><span>Hinweis</span><textarea name="note" rows="3" placeholder="z. B. auch kurzfristig möglich"></textarea></label>
       </div>
       <div class="modal-actions"><button type="button" class="soft-button" data-close-waitlist>Abbrechen</button><button type="submit" class="primary-action">Vormerken</button></div>
@@ -353,7 +354,7 @@
     const dialog=ensureWaitlistDialog(),form=$('#waitlistForm',dialog);
     form.elements.customerId.innerHTML=(A.db.customers||[]).slice().sort((a,b)=>a.name.localeCompare(b.name,'de')).map(c=>`<option value="${c.id}">${escapeHTML(c.name)}</option>`).join('');
     form.elements.service.innerHTML=(A.db.services||[]).filter(s=>s.active).map(s=>`<option value="${escapeHTML(s.name)}">${escapeHTML(s.name)}</option>`).join('');
-    form.reset();form.elements.earliest.value=today();if(customerId)form.elements.customerId.value=customerId;
+    form.reset();form.elements.earliest.value=today();form.elements.latest.value='';if(customerId)form.elements.customerId.value=customerId;
     dialog.showModal();
   }
 
@@ -570,7 +571,7 @@
       }
       if(event.target.id==='waitlistForm'){
         event.preventDefault();const data=new FormData(event.target);
-        A.db.waitlist.push({id:uid('wait'),customerId:String(data.get('customerId')),service:String(data.get('service')),earliest:String(data.get('earliest')||today()),daypart:String(data.get('daypart')||'Flexibel'),note:String(data.get('note')||'').trim(),status:'waiting'});
+        const earliest=String(data.get('earliest')||today()),latest=String(data.get('latest')||'');A.db.waitlist.push({id:uid('wait'),customerId:String(data.get('customerId')),service:String(data.get('service')),preferredDate:earliest,earliest,latest:latest&&latest>=earliest?latest:'',daypart:String(data.get('daypart')||'Flexibel'),daypartLabel:String(data.get('daypart')||'Flexibel'),flex:latest?'Studio-Zeitraum':'Offen',note:String(data.get('note')||'').trim(),status:'waiting',source:'studio'});
         $('#waitlistDialog')?.close();A.save('Wartelisteneintrag gespeichert.');if($('#workflowCenterDialog')?.open)setCenterTab('waitlist');return;
       }
       if(event.target.id==='treatmentRecordForm'){
