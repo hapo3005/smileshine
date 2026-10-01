@@ -2,7 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=11;
+  const VERSION=12;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -94,10 +94,10 @@
 
   function segmentFor(index,row){
     if(index<profiles.length)return /Beratung/i.test(String(row?.[6]||''))?'consult':'pmu';
-    if(index<55)return 'nail-regular';
-    if(index<75)return 'nail-occasional';
-    if(index<120)return 'pmu';
-    if(index<145)return 'mixed';
+    if(index<95)return 'nail-regular';
+    if(index<115)return 'nail-occasional';
+    if(index<135)return 'pmu';
+    if(index<148)return 'mixed';
     return 'consult';
   }
   function simulationPreference(index,row){

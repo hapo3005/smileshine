@@ -65,7 +65,7 @@ test('recurring blocked time supports one-day exceptions and restore', async ({ 
   await expect(series.locator('.series-pill')).not.toContainText('Ausnahme');
 });
 
-test('appointment payment records a partial payment and updates actual revenue', async ({ page }) => {
+test('appointment payment records a partial payment without overwriting operational KPIs', async ({ page }) => {
   await reset(page, 'appointments');
   const baselineRevenue = await page.evaluate(() => {
     const now = new Date();
@@ -103,7 +103,8 @@ test('appointment payment records a partial payment and updates actual revenue',
     }, 0)), 0);
   });
   expect(currentRevenue).toBeCloseTo(baselineRevenue + 50, 2);
-  await expect(page.locator('#kpiGrid .kpi-card').nth(3)).toContainText('Tatsächlich bezahlt');
+  await expect(page.locator('#kpiGrid .kpi-card').nth(3)).toContainText('Wiedervorlagen');
+  await expect(page.locator('#kpiGrid .kpi-card').nth(3)).not.toContainText('Tatsächlich bezahlt');
 });
 
 test('daily cockpit turns studio work into direct actions', async ({ page }) => {
