@@ -41,9 +41,9 @@
 
   const payHead=paymentPanel.querySelector('.booking-panel-head');
   if(payHead){
-    payHead.querySelector('h3').textContent='Sicher bezahlen.';
+    payHead.querySelector('h3').textContent='Wie möchtest du später bezahlen?';
     const copy=payHead.querySelector('p');
-    if(copy)copy.textContent='Wähle zwischen Zahlung im Studio und einer möglichen Online-Anzahlung.';
+    if(copy)copy.textContent='Wähle die bevorzugte Zahlweise. In der Präsentationsversion wird keine Zahlung ausgelöst.';
   }
 
   const paymentOptions=paymentPanel.querySelector('.payment-options');
@@ -55,7 +55,7 @@
 
     const online=document.createElement('div');
     online.className='online-payment-box';online.id='onlinePaymentBox';online.hidden=true;
-    online.innerHTML='<div class="payment-security"><span>◇</span><p><strong>Online-Anzahlung</strong><small>In dieser Demo wird keine echte Zahlung ausgelöst.</small></p></div>';
+    online.innerHTML='<div class="payment-security"><span>◇</span><p><strong>Online-Anzahlung</strong><small>Für den späteren Livebetrieb vorbereitet · hier nur als Zahlungswunsch.</small></p></div>';
     paymentOptions.after(online);
 
     const deposit=paymentPanel.querySelector('.deposit-card');
@@ -64,7 +64,7 @@
       const text=deposit.querySelector('p');if(text)text.id='depositText';
       const notice=document.createElement('div');
       notice.className='checkout-notice';
-      notice.innerHTML='<span>i</span><p><strong>Demo-Modus.</strong><small>Es wird keine echte Zahlung ausgelöst.</small></p>';
+      notice.innerHTML='<span>i</span><p><strong>Präsentationsmodus.</strong><small>Die gewünschte Zahlweise wird nur lokal vorgemerkt; es findet keine Transaktion statt.</small></p>';
       deposit.after(notice);
     }
   }
@@ -80,7 +80,7 @@
     const dateEl=document.getElementById('checkoutDate');if(dateEl)dateEl.textContent=date==='–'?'–':`${date} · ${time} Uhr`;
     const depEl=document.getElementById('checkoutDeposit');if(depEl)depEl.textContent=amount?`${amount.toFixed(2).replace('.',',')} €`:'Keine Anzahlung';
     const depAmount=document.getElementById('depositAmount');if(depAmount)depAmount.textContent=amount?`${amount.toFixed(2).replace('.',',')} € Anzahlung`:'Für Beratung keine Anzahlung';
-    const depText=document.getElementById('depositText');if(depText)depText.textContent=amount?'Die Anzahlung wird bei der Terminbuchung berücksichtigt.':'Für diese Leistung ist keine Anzahlung vorgesehen.';
+    const depText=document.getElementById('depositText');if(depText)depText.textContent=amount?'Im späteren Livebetrieb kann dieser Betrag als Anzahlung vorgesehen werden.':'Für diese Leistung ist aktuell keine Anzahlung vorgesehen.';
   }
 
   paymentPanel.querySelectorAll('.payment-option').forEach(btn=>btn.addEventListener('click',()=>{
