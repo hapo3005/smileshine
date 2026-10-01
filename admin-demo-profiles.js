@@ -2,7 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=10;
+  const VERSION=11;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -304,6 +304,21 @@
     return {id:`demo_sim_v3_${String(seed).padStart(4,'0')}`,date,time,duration:Number(service.duration||30),service:service.name,serviceDescription:service.description||'',customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status,payment:source==='online'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',paymentPreference:source==='online'&&finance.depositExpected>0?'Online-Anzahlung':'Im Studio',source,phase,note:`Präsentationsdaten · ${customer.wishes||service.name}`,...finance,isDemoBooking:true,demoSimulation:true,specialOpening};
   }
 
+  function simulationSlotFree(db,date,start,duration){
+    const buffer=Number(db.buffer||0),end=start+Number(duration||30)+buffer;
+    const overlap=(sa,ea,sb,eb)=>sa<eb&&ea>sb;
+    const appointments=(db.appointments||[]).filter(a=>a.date===date&&a.status!=='cancelled');
+    if(appointments.some(a=>overlap(start,end,minutesOf(a.time),minutesOf(a.time)+Number(a.duration||30)+buffer)))return false;
+    return !(db.blocked||[]).filter(b=>b.date===date).some(b=>overlap(start,end,minutesOf(b.start),minutesOf(b.end)));
+  }
+  function nextSimulationMinute(db,date,start,duration,latestEnd){
+    const step=Math.max(15,Number(db.slotInterval||15)),first=Math.ceil(start/step)*step;
+    for(let minute=first;minute+Number(duration||30)<=latestEnd;minute+=step){
+      if(simulationSlotFree(db,date,minute,duration))return minute;
+    }
+    return null;
+  }
+
   function simulationMaterial(a,seed){
     if(/Nageldesign|Auffüllen|Neumodellage|Maniküre|Naturnagel|Modellage|Nagelreparatur/i.test(a.service))return `${NAIL_COLORS[seed%NAIL_COLORS.length]} · ${seed%3===0?'kurz oval':seed%3===1?'soft square':'mandelförmig'}`;
     if(/Augenbrauen/i.test(a.service))return ['Soft Brown','Ash Brown','Warm Brown'][seed%3]+' · natürlich aufgebaut';
@@ -315,8 +330,8 @@
   function applyBirthdayStory(db,today){
     const prefix='birthday_story_',now=new Date(),customer=name=>(db.customers||[]).find(c=>c.name===name),service=id=>(db.services||[]).find(s=>s.id===id);
     const [anna,petra,laura,sabine,julia,sophie,monika]=['Anna Müller','Petra Schmidt','Laura Becker','Sabine Meier','Julia Weber','Sophie Wagner','Monika Klein'].map(customer);
-    const brows=service('brows-pmu'),lashline=service('lashline'),consult=service('consult'),followup=service('pmu-followup-brows');
-    if(!anna||!petra||!laura||!sabine||!julia||!sophie||!monika||!brows||!lashline||!consult||!followup)return;
+    const brows=service('brows-pmu'),lashline=service('lashline'),consult=service('consult'),followupBrows=service('pmu-followup-brows'),followupLash=service('pmu-followup-lash');
+    if(!anna||!petra||!laura||!sabine||!julia||!sophie||!monika||!brows||!lashline||!consult||!followupBrows||!followupLash)return;
 
     db.appointments=(db.appointments||[]).filter(x=>!String(x.id||'').startsWith(prefix));
     db.treatmentRecords=(db.treatmentRecords||[]).filter(x=>!String(x.id||'').startsWith(prefix));
@@ -327,7 +342,20 @@
     db.blocked=(db.blocked||[]).filter(x=>x.id!=='b1'&&!String(x.id||'').startsWith(prefix));
 
     const storyCustomerIds=new Set([anna,petra,laura,sabine,julia,sophie,monika].map(c=>c.id));
-    db.treatmentRecords=db.treatmentRecords.filter(x=>!(String(x.id||'').startsWith('demo_sim_record_')&&storyCustomerIds.has(x.customerId)));
+    Object.assign(anna,{segment:'pmu',favoriteServices:[brows.name],wishes:'weiche, symmetrische Brauen ohne harten Effekt'});
+    Object.assign(petra,{segment:'pmu',favoriteServices:[lashline.name],wishes:'dezent definierter Wimpernkranz'});
+    Object.assign(laura,{segment:'pmu',favoriteServices:['Lippenpigmentierung'],wishes:'sichtbares, aber natürliches Lippen-Ergebnis ohne harte Kontur'});
+    Object.assign(sabine,{segment:'pmu',favoriteServices:[brows.name],wishes:'mehr Ausdruck bei möglichst natürlicher Augenbrauenform'});
+    Object.assign(julia,{segment:'pmu',favoriteServices:['Lippenpigmentierung'],wishes:'frische Lippenfarbe, aber nicht zu kräftig'});
+    Object.assign(sophie,{segment:'pmu',favoriteServices:[lashline.name],wishes:'wacherer Blick durch eine feine Wimpernkranzverdichtung'});
+    Object.assign(monika,{segment:'pmu',favoriteServices:[lashline.name],wishes:'dezente, klassische Betonung der Augenpartie'});
+
+    const removedAppointmentIds=new Set((db.appointments||[]).filter(a=>a.demoSimulation&&storyCustomerIds.has(a.customerId)).map(a=>a.id));
+    db.appointments=(db.appointments||[]).filter(a=>!removedAppointmentIds.has(a.id));
+    db.treatmentRecords=(db.treatmentRecords||[]).filter(x=>!removedAppointmentIds.has(x.appointmentId)&&!(String(x.id||'').startsWith('demo_sim_record_')&&storyCustomerIds.has(x.customerId)));
+    db.followUps=(db.followUps||[]).filter(x=>!(String(x.id||'').startsWith('demo_sim_followup_')&&storyCustomerIds.has(x.customerId)));
+    db.communications=(db.communications||[]).filter(x=>!removedAppointmentIds.has(x.appointmentId)&&!(String(x.id||'').startsWith('demo_sim_comm_')&&storyCustomerIds.has(x.customerId)));
+
     db.appointments.forEach(a=>{
       if(!a.demoSimulation)return;
       if(a.date>=today&&a.status==='pending')a.status='confirmed';
@@ -340,19 +368,20 @@
       {id:prefix+'anna',date:today,time:'09:00',duration:120,service:brows.name,customerId:anna.id,customerName:anna.name,phone:anna.phone,email:anna.email,status:'confirmed',source:'studio',phase:'Erstbehandlung',payment:'Online-Anzahlung',paymentPreference:'Online-Anzahlung',note:'Sehr natürliches Ergebnis gewünscht · vorhandene Form erhalten.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung, Einverständnis und Ausgangsfotos geprüft.'},listPrice:299,finalPrice:299,discount:0,depositExpected:50,paidAmount:50,payments:[{id:prefix+'pay_anna_deposit',amount:50,method:'Online',note:'Anzahlung erfasst · Präsentationsdaten',createdAt:new Date(`${depositDate}T12:00:00`).toISOString()}],paymentStatus:'partial',isDemoBooking:true,presentationStory:true},
       {id:prefix+'petra',date:today,time:'12:15',duration:90,service:lashline.name,customerId:petra.id,customerName:petra.name,phone:petra.phone,email:petra.email,status:'completed',source:'studio',phase:'Erstbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Feine, unauffällige Verdichtung am Wimpernansatz.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'},listPrice:249,finalPrice:249,discount:0,depositExpected:0,paidAmount:249,payments:[{id:prefix+'pay_petra',amount:249,method:'Karte',note:'Bezahlt im Studio · Präsentationsdaten',createdAt:day('13:48')}],paymentStatus:'paid',isDemoBooking:true,presentationStory:true},
       {id:prefix+'laura',date:today,time:'14:30',duration:30,service:consult.name,customerId:laura.id,customerName:laura.name,phone:laura.phone,email:laura.email,status:'pending',source:'online',phase:'Beratung',payment:'Im Studio',paymentPreference:'Im Studio',contactPreference:'WhatsApp',reminderOptIn:true,note:'Online-Anfrage · möchte Lippenpigmentierung besprechen.',precheck:{goal:'Natürlich frischer Lippenfarbton ohne harte Kontur',previous:'Nein',allergy:'Nein',medication:'Nein',precheckNote:'Möglichst natürlich und alltagstauglich.'},preparation:{status:'open',consent:false,photos:false,note:'Online-Anfrage prüfen und Beratung vorbereiten.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true},
-      {id:prefix+'sabine',date:today,time:'16:30',duration:60,service:followup.name,customerId:sabine.id,customerName:sabine.name,phone:sabine.phone,email:sabine.email,status:'confirmed',source:'studio',phase:'Nachbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Nachbehandlung Augenbrauen · Form und Heilungsverlauf kontrollieren.',preparation:{status:'open',consent:false,photos:false,note:'Ausgangsfotos und Behandlungsnotiz vor Termin noch prüfen.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true}
+      {id:prefix+'sabine',date:today,time:'16:30',duration:60,service:followupBrows.name,customerId:sabine.id,customerName:sabine.name,phone:sabine.phone,email:sabine.email,status:'confirmed',source:'studio',phase:'Nachbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Nachbehandlung Augenbrauen · Form und Heilungsverlauf kontrollieren.',preparation:{status:'open',consent:false,photos:false,note:'Ausgangsfotos und Behandlungsnotiz vor Termin noch prüfen.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true}
     ];
     db.appointments.push(...storyAppointments);
-    db.blocked.push({id:prefix+'lunch',date:today,start:'13:45',end:'14:15',label:'Mittagspause'});
+    db.blocked.push({id:prefix+'lunch',date:today,start:'13:55',end:'14:20',label:'Mittagspause'});
 
     const historyBase=new Date(`${today}T12:00:00`);
     db.treatmentRecords.push(
       {id:prefix+'record_anna',seedKey:prefix+'record_anna',customerId:anna.id,appointmentId:'',date:isoDate(addDays(historyBase,-56)),service:brows.name,material:'Soft Brown · natürlich aufgebaut',result:'Form weich ausgeglichen, Intensität bewusst dezent.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:new Date(addDays(historyBase,-56)).toISOString()},
       {id:prefix+'record_sabine',seedKey:prefix+'record_sabine',customerId:sabine.id,appointmentId:'',date:isoDate(addDays(historyBase,-42)),service:brows.name,material:'Ash Brown · sanfte Formkorrektur',result:'Natürliches Ergebnis, kleine Asymmetrien ausgeglichen.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:new Date(addDays(historyBase,-42)).toISOString()},
+      {id:prefix+'record_monika',seedKey:prefix+'record_monika',customerId:monika.id,appointmentId:'',date:isoDate(addDays(historyBase,-7)),service:lashline.name,material:'Black Brown · feine Verdichtung',result:'Wimpernansatz sehr dezent und gleichmäßig betont.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:new Date(addDays(historyBase,-7)).toISOString()},
       {id:prefix+'record_petra',seedKey:prefix+'record_petra',customerId:petra.id,appointmentId:prefix+'petra',date:today,service:lashline.name,material:'Dark Brown · feine Verdichtung',result:'Wimpernansatz dezent und gleichmäßig betont.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:day('13:46')}
     );
 
-    db.communications.push({id:prefix+'comm_sabine',key:`reminder:${prefix}sabine:${today}`,type:'reminder',appointmentId:prefix+'sabine',customerId:sabine.id,dueDate:today,status:'due',title:'Terminerinnerung',note:`${sabine.name} · ${followup.name} · 16:30 Uhr`,createdAt:new Date(now.getTime()-55*60000).toISOString()});
+    db.communications.push({id:prefix+'comm_sabine',key:`reminder:${prefix}sabine:${today}`,type:'reminder',appointmentId:prefix+'sabine',customerId:sabine.id,dueDate:today,status:'due',title:'Terminerinnerung',note:`${sabine.name} · ${followupBrows.name} · 16:30 Uhr`,createdAt:new Date(now.getTime()-55*60000).toISOString()});
 
     db.followUps.push(
       {id:prefix+'followup_monika',seedKey:prefix+'followup_monika',customerId:monika.id,title:'Heilungsverlauf kurz nachfragen',dueDate:today,type:'aftercare',status:'open',note:'Kurze persönliche Rückmeldung nach der letzten PMU-Behandlung.'},
@@ -361,7 +390,7 @@
 
     db.waitlist.push(
       {id:prefix+'wait_julia',seedKey:prefix+'wait_julia',customerId:julia.id,service:consult.name,serviceId:consult.id,earliest:today,latest:today,daypart:'Flexibel',daypartLabel:'Flexibel',flex:'Heute kurzfristig',note:'Kann heute spontan kommen und möchte Lippenpigmentierung besprechen.',status:'waiting',source:'studio'},
-      {id:prefix+'wait_sophie',seedKey:prefix+'wait_sophie',customerId:sophie.id,service:followup.name,serviceId:followup.id,earliest:today,latest:today,daypart:'Nachmittag',daypartLabel:'Nachmittag',flex:'Heute kurzfristig',note:'Kann bei einer frei gewordenen Stunde kurzfristig übernehmen.',status:'waiting',source:'studio'}
+      {id:prefix+'wait_sophie',seedKey:prefix+'wait_sophie',customerId:sophie.id,service:followupLash.name,serviceId:followupLash.id,earliest:today,latest:today,daypart:'Nachmittag',daypartLabel:'Nachmittag',flex:'Heute kurzfristig',note:'Kann bei einer frei gewordenen Stunde kurzfristig übernehmen.',status:'waiting',source:'studio'}
     );
 
     const activity=[
@@ -399,13 +428,16 @@
       for(let i=0;i<pattern.length;i++){
         const key=pattern[i];
         if(i===3&&minute<810)minute=810;
-        let service=serviceByKey(db,key,seed);if(!service)continue;
+        let service=serviceByKey(db,key,seed);if(!service){seed++;continue}
+        const latestEnd=specialSaturday?780:1140,slotMinute=nextSimulationMinute(db,date,minute,Number(service.duration||30),latestEnd);
+        if(slotMinute===null){seed++;continue}
+        minute=slotMinute;
         let customer=null;
         if(key==='pmu-followup'){
           const dueIndex=pmuDue.findIndex(x=>!x.used&&x.dueDate<=date&&!used.has(x.customer.id));
           if(dueIndex>=0){
             const due=pmuDue[dueIndex];customer=due.customer;service=db.services.find(s=>s.id===due.followupServiceId)||service;due.used=true;used.add(customer.id);lastSeen.set(customer.id,date);
-          } else customer=chooseCustomer(pools.pmu,date,28,lastSeen,used,seed);
+          } else {seed++;continue}
         }else if(key==='pmu'){
           customer=chooseCustomer(pools.pmu,date,70,lastSeen,used,seed);
         }else if(key==='consult'){
@@ -415,9 +447,8 @@
         }else{
           customer=chooseCustomer(pools.nail,date,14,lastSeen,used,seed);
         }
-        if(!customer)continue;
-        const latestEnd=specialSaturday?780:1140;
-        if(minute+Number(service.duration||30)>latestEnd)break;
+        if(!customer){seed++;continue}
+        if(minute+Number(service.duration||30)>latestEnd){seed++;continue}
         const time=timeOf(minute),appointment=createAppointment(db,{date,time,key,seed,customer,service,specialOpening:specialSaturday});
         db.appointments.push(appointment);
         if(key==='pmu')pmuDue.push({customer,dueDate:isoDate(addDays(cursor,42)),followupServiceId:FOLLOWUP_SERVICE_BY_PRIMARY[service.id]||'pmu-followup-brows',used:false});
