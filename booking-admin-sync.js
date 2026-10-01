@@ -55,7 +55,9 @@
       const studioConfirmed=old.verification==='studio'||old.verification==='verified';
       const seedDemoPrice=db.presentationMode===true&&!studioConfirmed&&Number(old.price||0)===0&&Number(base.price||0)>0;
       return {...base,...old,
-        name:base.name,description:base.description,category:base.category,
+        name:studioConfirmed?(old.name||base.name):base.name,
+        description:studioConfirmed?(old.description||base.description):base.description,
+        category:studioConfirmed?(old.category||base.category):base.category,
         duration:studioConfirmed?Number(old.duration||base.duration):base.duration,
         price:seedDemoPrice?base.price:Number(old.price??base.price),
         deposit:seedDemoPrice?base.deposit:Number(old.deposit??base.deposit),
@@ -79,7 +81,7 @@
 
   function takeCustomerNumber(db){ensureCustomerNumbers(db);let next=Math.max(1,Number(db.nextCustomerNumber)||1);const used=new Set((db.customers||[]).map(c=>customerNumberValue(c.customerNumber)).filter(Boolean));while(used.has(next))next++;const value=customerNumber(next);db.nextCustomerNumber=next+1;return value}
 
-  function fallback(){return migrateCatalog({version:1,catalogVersion:CATALOG_VERSION,slotInterval:30,buffer:15,nextCustomerNumber:1,services:CATALOG.map(x=>({...x})),workingHours:{1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}},customers:[],appointments:[],blocked:[],activity:[]})}
+  function fallback(){return migrateCatalog({version:1,catalogVersion:CATALOG_VERSION,slotInterval:15,buffer:10,nextCustomerNumber:1,services:CATALOG.map(x=>({...x})),workingHours:{1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}},customers:[],appointments:[],blocked:[],activity:[]})}
 
   function load(){
     try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x){migrateCatalog(x);ensureCustomerNumbers(x);localStorage.setItem(KEY,JSON.stringify(x));return x}}catch(e){}
