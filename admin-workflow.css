@@ -168,3 +168,124 @@
 .waitlist-intake{margin:9px 0 0!important;padding:8px 10px;border-radius:9px;background:rgba(96,111,100,.07);font-size:10px!important;line-height:1.5}
 .waitlist-intake strong{display:inline!important;font-size:inherit!important}
 .waitlist-intake.is-attention{background:rgba(173,92,82,.10);color:#85433c}
+
+
+/* Birgit mobile day-cockpit priority · 2026-10-01 */
+@media(max-width:760px){
+  .workflow-today{
+    padding:12px;
+    border-radius:18px;
+    overflow:visible;
+  }
+  .day-cockpit{
+    gap:8px;
+    margin-bottom:14px;
+    padding-bottom:14px;
+  }
+  .day-cockpit-focus{
+    padding:13px 13px 12px;
+    border-radius:16px;
+  }
+  .day-cockpit-label{
+    font-size:8px;
+    letter-spacing:.11em;
+  }
+  .day-cockpit-main{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:10px;
+    margin-top:10px;
+  }
+  .day-cockpit-main>div:first-child>strong{
+    font-size:25px;
+    line-height:1.02;
+  }
+  .day-cockpit-main>div:first-child>small{
+    margin-top:5px;
+    font-size:10px;
+  }
+  .day-cockpit-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+    margin-top:0;
+  }
+  .day-cockpit-actions .primary-action,
+  .day-cockpit-actions .soft-button{
+    min-height:42px;
+    width:100%;
+    padding:9px 10px;
+    font-size:9px;
+  }
+  .day-cockpit-focus>p{
+    margin-top:8px;
+    font-size:8px;
+  }
+
+  .day-cockpit-brief{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:5px;
+    margin-top:10px;
+    padding-top:10px;
+  }
+  .day-cockpit-brief>div{
+    padding:7px 7px 8px;
+    border-radius:10px;
+  }
+  .day-cockpit-brief span{
+    font-size:6px;
+    margin-bottom:3px;
+  }
+  .day-cockpit-brief strong{
+    font-size:8px;
+    line-height:1.3;
+    white-space:normal;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    overflow:hidden;
+  }
+  .day-cockpit-brief small{
+    font-size:7px;
+    line-height:1.3;
+  }
+
+  .day-cockpit-stats{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:5px;
+  }
+  .day-cockpit-stats>div{
+    padding:9px 8px;
+    border-radius:12px;
+  }
+  .day-cockpit-stats span{font-size:7px}
+  .day-cockpit-stats strong{
+    margin:4px 0 2px;
+    font-size:18px;
+  }
+  .day-cockpit-stats small{font-size:6.5px}
+
+  .workflow-head{
+    margin-bottom:12px;
+  }
+  .workflow-head h3{
+    font-size:20px;
+  }
+}
+@media(max-width:400px){
+  .day-cockpit-actions{
+    grid-template-columns:1fr;
+  }
+  .day-cockpit-brief{
+    grid-template-columns:1fr 1fr;
+  }
+  .day-cockpit-brief>div:last-child{
+    grid-column:1/-1;
+  }
+  .day-cockpit-stats{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .day-cockpit-stats>div:last-child{
+    grid-column:auto;
+  }
+}
