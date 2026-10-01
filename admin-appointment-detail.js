@@ -5,7 +5,7 @@
   const STATUS_ORDER=['pending','confirmed','completed','no_show','cancelled'];
   const money=value=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(value||0));
   const statusLabel=value=>A.STATUS_LABELS[value]||value;
-  const sourceLabel=value=>value==='online'?'Online-Buchung':value==='studio'?'Im Studio':'Termin';
+  const sourceLabel=value=>value==='online'||value==='online-demo'?'Online-Anfrage':value==='studio'?'Im Studio':'Termin';
 
   function ensureStyles(){
     if(document.querySelector('link[data-appointment-detail-style]'))return;
