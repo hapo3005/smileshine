@@ -13,8 +13,8 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
 
   await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', /.+/);
   await page.locator('#booking').scrollIntoViewIfNeeded();
-  await expect(page.locator('.booking-demo-badge')).toContainText('Interaktive Vorschau');
-  await expect(page.locator('.summary-status')).toContainText('Vorschau');
+  await expect(page.locator('.booking-demo-badge')).toContainText('Persönlich vorbereitet');
+  await expect(page.locator('.summary-status')).toContainText('Präsentationsmodus');
 
   const seeded = await page.evaluate(() => {
     const db = JSON.parse(localStorage.getItem('smileshine_studio_v1') || 'null');
@@ -34,7 +34,7 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   });
 
   expect(seeded.presentationMode).toBe(true);
-  expect(seeded.presentationVersion).toBe(1);
+  expect(seeded.presentationVersion).toBe(3);
   expect(seeded.customers).toBeGreaterThanOrEqual(7);
   expect(seeded.todayAppointments).toBeGreaterThanOrEqual(4);
   expect(seeded.futureOnline).toBe(true);
@@ -44,8 +44,8 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
 
   await page.goto('admin.html?pitch='+Date.now()+'#dashboard', { waitUntil: 'networkidle' });
   await page.waitForFunction(() => Boolean(window.SSAdmin?.showView));
-  await expect(page.locator('.demo-state')).toContainText('Vorschau');
-  await expect(page.locator('.sync-pill')).toContainText('Vorschau aktiv');
+  await expect(page.locator('.demo-state')).toContainText('Präsentationsmodus');
+  await expect(page.locator('.sync-pill')).toContainText('Präsentationsmodus');
   const todayRows = await page.locator('#todayList .appointment-row').count();
   expect(todayRows).toBeGreaterThanOrEqual(5);
   expect(todayRows).toBeLessThanOrEqual(7);
@@ -56,5 +56,5 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   await expect(page.locator('[data-pickup-order="pickup_pitch_2"]')).toContainText('Abholbereit');
 
   await page.evaluate(() => window.SSAdmin.showView('settings'));
-  await expect(page.locator('#resetDemo')).toHaveText('Beispieldaten zurücksetzen');
+  await expect(page.locator('#resetDemo')).toHaveText('Ausgangsstand wiederherstellen');
 });
