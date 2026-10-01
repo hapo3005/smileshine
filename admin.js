@@ -1,5 +1,12 @@
 (async () => {
   'use strict';
+  const syncAdminViewport=()=>{
+    const height=Math.round(window.visualViewport?.height||window.innerHeight||document.documentElement.clientHeight);
+    if(height>0)document.documentElement.style.setProperty('--admin-app-height',height+'px');
+  };
+  syncAdminViewport();
+  window.addEventListener('resize',syncAdminViewport,{passive:true});
+  window.visualViewport?.addEventListener('resize',syncAdminViewport,{passive:true});
   const STORE=window.SmileShineDataStore;
   if(STORE?.ready)await STORE.ready;
   if(window.SmileShineDemoApp?.ready)await window.SmileShineDemoApp.ready;

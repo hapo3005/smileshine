@@ -158,6 +158,14 @@ for (const viewport of viewports) {
       await expect(page.locator('.mobile-header')).toBeVisible();
       await expect(page.locator('.mobile-nav')).toBeVisible();
       await expect(page.locator('.sidebar')).toBeHidden();
+      const visualShell = await page.evaluate(() => {
+        const app = document.querySelector('.admin-app').getBoundingClientRect();
+        const nav = document.querySelector('.mobile-nav').getBoundingClientRect();
+        const visualHeight = window.visualViewport?.height || window.innerHeight;
+        return {appBottom: Math.round(app.bottom), navBottom: Math.round(nav.bottom), visualHeight: Math.round(visualHeight)};
+      });
+      expect(Math.abs(visualShell.appBottom - visualShell.visualHeight), 'mobile app shell must match the visual viewport').toBeLessThanOrEqual(2);
+      expect(visualShell.visualHeight - visualShell.navBottom, 'bottom navigation must sit close to the usable viewport edge').toBeLessThanOrEqual(28);
       await expect(page.locator('.kpi-card').nth(3).locator('.kpi-label')).toHaveText('Wiedervorlagen');
       const sabineWish = await page.evaluate(() => window.SSAdmin.db.customers.find(c => c.name === 'Sabine Meier')?.wishes || '');
       expect(sabineWish, 'Sabine Meier keeps her PMU wish').toContain('mehr Ausdruck');

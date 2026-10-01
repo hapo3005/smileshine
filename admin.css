@@ -227,7 +227,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 @media(max-width:760px){
   html,body{height:100%;overflow:hidden}
   .admin-app{
-    height:100dvh;
+    height:var(--admin-app-height,100svh);
     min-height:0;
     display:grid;
     grid-template-rows:minmax(0,1fr) auto;
