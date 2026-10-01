@@ -89,7 +89,7 @@
   }
 
   async function resetDemo(){
-    if(!confirm('Lokale Demo wirklich zurücksetzen? Kundendaten, Termine und lokal gespeicherte Fotos dieser Demo werden ersetzt.'))return;
+    if(!confirm('Präsentationsdaten auf den vorbereiteten Ausgangsstand zurücksetzen? Lokale Änderungen, Termine und Fotos dieser Präsentationsversion werden ersetzt.'))return;
     STORE?.resetPresentationData?.();
     await STORE?.clearMedia?.();
     location.reload();
@@ -104,7 +104,7 @@
       const info=await STORE?.storageInfo?.().catch(()=>({mediaCount:0,indexedDB:false})),simulation=api.db?.demoSimulation;
       const card=document.createElement('article');card.className='panel setting-card demo-storage-card';card.dataset.demoStorageCard='true';
       const simMeta=simulation?`<span>${Number(simulation.customerCount||0)} Kunden · ${Number(simulation.totalAppointments||0)} Termine</span><span>${simulation.weeklyTarget||'28–32'} Termine/Woche · ${Number(simulation.nailShare||0)} % Nägel</span><span>${simulation.openingHours||'Mo–Fr 09:00–19:00'}</span>`:'';
-      card.innerHTML=`<span class="setting-icon">▣</span><div class="demo-storage-copy"><strong>Demo-Datenspeicher</strong><p>Kundendaten, Termine und Fotos bleiben lokal auf diesem Gerät. Der Demobetrieb bildet einen realistischen Studioalltag mit Historie und kommenden Terminen ab.</p><div class="demo-storage-meta"><span>${info?.indexedDB?'IndexedDB aktiv':'Fallback aktiv'}</span><span>${Number(info?.mediaCount||0)} lokale Fotos</span>${simMeta}</div><div class="demo-storage-actions"><button type="button" class="soft-button" data-demo-export>Backup exportieren</button><button type="button" class="soft-button" data-demo-import>Backup importieren</button><button type="button" class="text-button" data-demo-reset>Demo zurücksetzen</button><button type="button" class="text-button" data-demo-logout>Abmelden</button></div></div><span class="status-tag communication-active">Lokal</span>`;
+      card.innerHTML=`<span class="setting-icon">▣</span><div class="demo-storage-copy"><strong>Präsentationsdaten</strong><p>Kundendaten, Termine und Fotos bleiben lokal auf diesem Gerät. Die vorbereitete Studioversion bildet einen realistischen Arbeitsalltag mit Historie und kommenden Terminen ab.</p><div class="demo-storage-meta"><span>${info?.indexedDB?'IndexedDB aktiv':'Fallback aktiv'}</span><span>${Number(info?.mediaCount||0)} lokale Fotos</span>${simMeta}</div><div class="demo-storage-actions"><button type="button" class="soft-button" data-demo-export>Backup exportieren</button><button type="button" class="soft-button" data-demo-import>Backup importieren</button><button type="button" class="text-button" data-demo-reset>Ausgangsstand wiederherstellen</button><button type="button" class="text-button" data-demo-logout>Abmelden</button></div></div><span class="status-tag communication-active">Lokal</span>`;
       settings.appendChild(card);
     }
     if(!document.body.dataset.demoAppBound){
