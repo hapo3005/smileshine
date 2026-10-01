@@ -180,3 +180,44 @@ button,a{-webkit-tap-highlight-color:transparent}
   .kpi-value{font-size:22px}
   .view[data-view-panel="dashboard"] .welcome-row h2{font-size:29px}
 }
+
+
+/* Admin mobile polish · 2026-10-01 */
+.nav-icon svg,.mobile-nav-icon svg,.kpi-icon svg,.row-menu svg{
+  width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round
+}
+.mobile-nav-icon{display:grid;place-items:center}
+.mobile-nav-icon svg{width:20px;height:20px}
+.mobile-nav-icon svg .fill{fill:currentColor;stroke:none}
+.kpi-icon svg{width:17px;height:17px}
+.row-menu svg{width:15px;height:15px;margin:auto}
+
+@media(max-width:760px){
+  .admin-main{padding:0 14px 160px}
+  .mobile-header{height:64px;justify-content:flex-start;padding:0 18px}
+  .mobile-brand{gap:10px}
+  .mobile-brand .admin-brand-mark{width:36px;height:36px;font-size:24px}
+  .mobile-brand strong{font-size:11px;letter-spacing:.14em}
+  .view{padding-top:18px}
+  .welcome-row{margin-bottom:14px}
+  .welcome-row h2,.view-heading h2{font-size:30px;line-height:1.05}
+  .welcome-row .muted{margin-top:7px;font-size:10px}
+  .kpi-grid{gap:8px;margin:0 0 12px}
+  .kpi-card{min-height:96px;padding:12px 13px;border-radius:16px}
+  .kpi-label{font-size:9px}
+  .kpi-icon{width:30px;height:30px;border-radius:10px}
+  .kpi-value{font-size:23px;margin-top:8px}
+  .kpi-foot{display:grid;grid-template-columns:1fr;gap:5px;margin-top:6px;font-size:8px}
+  .kpi-foot .delta{justify-self:start;padding:3px 6px}
+  .mobile-nav{left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));height:64px;padding:5px;border-radius:19px}
+  .mobile-nav button{font-size:16px;gap:3px}
+  .mobile-nav small{font-size:7.5px}
+  .mobile-nav-add{width:46px;height:46px;transform:translateY(-14px)}
+  .mobile-nav-add span{font-size:24px}
+}
+@media(max-width:400px){
+  .admin-main{padding-left:10px;padding-right:10px;padding-bottom:156px}
+  .mobile-header{margin-left:-10px;margin-right:-10px;padding-left:14px}
+  .kpi-card{padding:11px 12px;min-height:92px}
+  .kpi-value{font-size:22px}
+}
