@@ -42,6 +42,7 @@
   function syncAppointmentReminders(){
     const t=today(),horizon=isoDate(addDays(new Date(),30)),now=new Date(),nowMinutes=now.getHours()*60+now.getMinutes();
     (A.db.appointments||[]).forEach(a=>{
+      if(a.reminderOptIn===false)return;
       if(['cancelled','no_show','completed'].includes(a.status)||a.date<t||a.date>horizon)return;
       if(a.date===t&&A.minutesOf(a.time)<=nowMinutes)return;
       const due=isoShift(a.date,-1);
