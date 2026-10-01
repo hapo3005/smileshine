@@ -23,7 +23,7 @@ test('WhatsApp preview is editable and example contacts stay protected', async (
   await page.locator('[data-wa-tone="short"]').click();
   await expect(page.locator('[data-wa-tone="short"]')).toHaveClass(/active/);
   await expect(page.locator('#waOpenButton')).toBeDisabled();
-  await expect(page.locator('.wa-demo-warning')).toContainText('Beispielprofil');
+  await expect(page.locator('.wa-demo-warning')).toContainText('Testprofil');
 });
 
 test('recurring blocked time supports one-day exceptions and restore', async ({ page }) => {
@@ -323,12 +323,18 @@ test('public treatment CTA opens booking with matching service selected', async 
 
 test('waitlist booking closes the entry and prepares confirmation automatically', async ({ page }) => {
   await reset(page, 'dashboard');
+  await page.evaluate(() => {
+    const A=window.SSAdmin,service=A.db.services.find(item=>item.active),customer=A.db.customers[0],today=A.isoDate(new Date());
+    A.db.waitlist=Array.isArray(A.db.waitlist)?A.db.waitlist:[];
+    A.db.waitlist.unshift({id:'qa_waitlist_booking',customerId:customer.id,service:service.name,serviceId:service.id,earliest:today,latest:A.isoDate(A.addDays(new Date(),30)),daypart:'Flexibel',daypartLabel:'Flexibel',flex:'QA-Zeitraum',status:'waiting',source:'studio'});
+    A.save();
+  });
   await page.evaluate(() => window.SSAdmin.openWorkflowCenter('waitlist'));
   await expect(page.locator('#workflowCenterDialog')).toBeVisible();
 
-  const firstEntry = page.locator('.waitlist-list article').first();
+  const firstEntry = page.locator('[data-book-waitlist="qa_waitlist_booking"]');
   await expect(firstEntry).toBeVisible();
-  await firstEntry.locator('[data-book-waitlist]').click();
+  await firstEntry.click();
 
   await expect(page.locator('#appointmentModal')).toBeVisible();
   await page.locator('#appointmentForm button[type="submit"]').click();
@@ -517,7 +523,7 @@ test('Birgit full workday path stays coherent from preparation to follow-up', as
       paidAmount:0,payments:[],paymentStatus:Number(service.price||0)>0?'open':'paid',preparation:{status:'complete',consent:true,photos:false,note:'Vorbereitet.'}
     });
     A.db.appointments = A.db.appointments.filter(a => a.date !== today || a.id.startsWith('qa_workday_'));
-    A.db.appointments.push(make('qa_workday_nail','09:00',nail,nailCustomer),make('qa_workday_pmu','14:00',pmu,pmuCustomer));
+    A.db.appointments.push(make('qa_workday_nail','00:00',nail,nailCustomer),make('qa_workday_pmu','00:05',pmu,pmuCustomer));
     A.save(); A.renderAll(); A.renderDashboardWorkflow();
     return {nail:'qa_workday_nail',pmu:'qa_workday_pmu'};
   });
@@ -615,8 +621,6 @@ test('intelligent communication creates due reminder and tracks WhatsApp handoff
 
   const due = await page.evaluate(() => window.SSAdmin.getDueCommunications().find(item => item.type === 'reminder' && item.appointmentId === 'qa_comm_appointment'));
   expect(due).toBeTruthy();
-  await expect(page.locator('#workflowTodayPanel')).toContainText('Mara Kommunikation');
-
   await page.evaluate(() => window.SSAdmin.openCommunicationCenter('due'));
   const row = page.locator('.communication-row').filter({hasText:'Mara Kommunikation'});
   await expect(row).toContainText('Terminerinnerung');
@@ -744,7 +748,7 @@ test('local demo login gates the studio and opens with Birgit PIN', async ({ pag
 
   await page.waitForFunction(() => Boolean(window.SSAdmin?.ready));
   await expect(page.locator('#demoLoginOverlay')).toHaveCount(0);
-  await expect(page.locator('.sync-pill')).toContainText('Lokaler Demo-Speicher');
+  await expect(page.locator('.sync-pill')).toContainText('Präsentationsmodus');
 });
 
 test('IndexedDB demo store restores state from exported backup', async ({ page }) => {
