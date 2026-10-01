@@ -408,7 +408,7 @@ body::before{opacity:.08}
   border-radius:6px 28px 6px 28px;
   background:
     linear-gradient(180deg,rgba(243,238,234,.03),rgba(31,27,24,.18)),
-    url('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=90') center 27%/cover no-repeat;
+    url('https://images.pexels.com/photos/7256160/pexels-photo-7256160.jpeg?auto=compress&cs=tinysrgb&w=1800') center 27%/cover no-repeat;
   box-shadow:0 22px 62px rgba(58,46,39,.13);
 }
 .hero-refined .hero-media::before{background:linear-gradient(90deg,rgba(241,235,230,.08),transparent 30%,transparent)}
@@ -1069,7 +1069,7 @@ body::before{opacity:.08}
   border-radius:0;
   background:
     linear-gradient(180deg,rgba(34,26,22,.03),rgba(34,26,22,.10)),
-    url('https://images.pexels.com/photos/34775243/pexels-photo-34775243/free-photo-of-portrait-of-a-woman-with-natural-beauty.jpeg?auto=compress&cs=tinysrgb&w=2000') 68% 34%/cover no-repeat;
+    url('https://images.pexels.com/photos/11966587/pexels-photo-11966587.jpeg?auto=compress&cs=tinysrgb&w=2000') 58% 46%/cover no-repeat;
   box-shadow:none;
   filter:saturate(.82) contrast(1.02);
 }
@@ -1498,7 +1498,7 @@ body.site-premium{
   border-radius:2px 34px 2px 34px;
   background:
     linear-gradient(180deg,rgba(245,241,237,.02),rgba(35,29,26,.15)),
-    url('https://images.pexels.com/photos/8558256/pexels-photo-8558256.jpeg?auto=compress&cs=tinysrgb&w=1600') center 42%/cover no-repeat;
+    url('https://images.pexels.com/photos/19086283/pexels-photo-19086283.jpeg?auto=compress&cs=tinysrgb&w=1600') center 50%/cover no-repeat;
   box-shadow:0 30px 74px rgba(45,35,29,.14);
 }
 .site-premium .premium-about .about-copy{
