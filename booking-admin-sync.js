@@ -118,10 +118,11 @@
     const shown=display||{};
     const name=shown.name||s.name;
     const description=shown.description||s.description||'Beauty-Behandlung';
+    const publicPriceConfirmed=s.verification==='studio'||s.priceConfirmed===true;
     const btn=document.createElement('button');
     btn.className='service-option';btn.type='button';
     btn.dataset.serviceId=s.id;btn.dataset.service=name;btn.dataset.duration=String(Number(s.duration||30));
-    btn.innerHTML=`<span class="service-info"><strong>${esc(name)}</strong><small>${esc(description)} · ca. ${Number(s.duration||30)} Min.${Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
+    btn.innerHTML=`<span class="service-info"><strong>${esc(name)}</strong><small>${esc(description)} · ca. ${Number(s.duration||30)} Min.${publicPriceConfirmed&&Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
     return btn;
   }
 
@@ -196,7 +197,7 @@
     const status=$('.summary-status');if(status)status.innerHTML='<span></span>Präsentationsmodus · lokal gespeichert';
   }
 
-  function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card),online=$('.payment-option[data-payment="Online-Anzahlung"]'),panel=$('.booking-panel[data-panel="5"]'),head=$('.booking-panel-head h3',panel),intro=$('.booking-panel-head p',panel);const hasDeposit=Number(s.deposit||0)>0;if(online)online.hidden=!hasDeposit;if(!hasDeposit&&state){state.payment='Im Studio';$('.payment-option',panel).forEach(btn=>{const selected=btn.dataset.payment==='Im Studio';btn.classList.toggle('selected',selected);const check=$('.payment-check',btn);if(check)check.textContent=selected?'✓':'○'});window.SmileShineBooking?.updateSummary?.()}if(head)head.textContent=hasDeposit?'Wie möchtest du bezahlen?':'Bezahlung beim Termin.';if(intro)intro.textContent=hasDeposit?'Wähle die gewünschte Zahlungsart.':'Für diese Leistung ist aktuell die Bezahlung im Studio vorgesehen.';if(strong)strong.textContent=hasDeposit?money(s.deposit)+' für diese Leistung':'Keine Anzahlung erforderlich';if(copy)copy.textContent=hasDeposit?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':'Birgits tatsächliche Preise werden vor dem Livegang final bestätigt.'}
+  function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card),online=$('.payment-option[data-payment="Online-Anzahlung"]'),panel=$('.booking-panel[data-panel="5"]'),head=$('.booking-panel-head h3',panel),intro=$('.booking-panel-head p',panel);const publicPriceConfirmed=s.verification==='studio'||s.priceConfirmed===true;const hasDeposit=publicPriceConfirmed&&Number(s.deposit||0)>0;if(online)online.hidden=!hasDeposit;if(!hasDeposit&&state){state.payment='Im Studio';$('.payment-option',panel).forEach(btn=>{const selected=btn.dataset.payment==='Im Studio';btn.classList.toggle('selected',selected);const check=$('.payment-check',btn);if(check)check.textContent=selected?'✓':'○'});window.SmileShineBooking?.updateSummary?.()}if(head)head.textContent=hasDeposit?'Wie möchtest du bezahlen?':'Bezahlung beim Termin.';if(intro)intro.textContent=hasDeposit?'Wähle die gewünschte Zahlungsart.':'Für diese Leistung ist aktuell die Bezahlung im Studio vorgesehen.';if(strong)strong.textContent=hasDeposit?money(s.deposit)+' für diese Leistung':'Keine Anzahlung erforderlich';if(copy)copy.textContent=hasDeposit?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':'Birgits tatsächliche Preise werden vor dem Livegang final bestätigt.'}
 
   function finalButton(){const panel=$('.booking-panel[data-panel="6"]'),button=panel?.querySelector('.button.primary');if(!button||button.dataset.synced)return;button.dataset.synced='true';button.classList.remove('booking-disabled');button.removeAttribute('aria-disabled');button.textContent='Terminanfrage vormerken';button.addEventListener('click',()=>commit(panel,button))}
 
