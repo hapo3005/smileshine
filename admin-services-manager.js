@@ -59,7 +59,7 @@
         status.textContent=!s.active?'Pausiert':s.demoOnly?'Studio aktiv':CORE_SERVICE_IDS.has(s.id)?'Öffentlich buchbar':'Im Leistungsstamm';
         top.insertBefore(status,top.lastElementChild);
         if(toggle)toggle.setAttribute('aria-label',s.active?'Leistung pausieren':'Leistung aktivieren');
-        if(s.verification){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Demo-Wert':'Studio bestätigt';top.insertBefore(v,status)}
+        if(s.verification){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Arbeitswert':'Studio bestätigt';top.insertBefore(v,status)}
       }
       if(h3){const nameLabel=document.createElement('label');nameLabel.className='service-name-field';nameLabel.innerHTML=`<span>Name</span><input name="serviceName" maxlength="80" value="${escapeHTML(s.name)}">`;h3.replaceWith(nameLabel)}
       if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${!s.active?'Vorübergehend pausiert.':s.demoOnly?'Nur für Studio/Demo – nicht öffentlich buchbar.':CORE_SERVICE_IDS.has(s.id)?'In der öffentlichen Buchung sichtbar.':'Im internen Leistungsstamm – Angebot noch mit Birgit bestätigen.'}</small>`;p.replaceWith(desc)}
