@@ -154,10 +154,14 @@ for (const viewport of viewports) {
     await clearDemo(page);
     await page.waitForFunction(() => Boolean(window.SSAdmin?.showView));
 
-    if (viewport.width <= 760) {
+    if (viewport.width <= 900) {
       await expect(page.locator('.mobile-header')).toBeVisible();
       await expect(page.locator('.mobile-nav')).toBeVisible();
-      await expect(page.locator('.sidebar')).toBeHidden();      const dock = await page.evaluate(() => {
+      await expect(page.locator('.sidebar')).toBeHidden();
+      await expect(page.locator('#dashboardDetails')).toBeHidden();
+      await page.locator('#dashboardDetailsToggle').click();
+      await expect(page.locator('#dashboardDetails')).toBeVisible();
+      await page.locator('#dashboardDetailsToggle').click();      const dock = await page.evaluate(() => {
         const nav = document.querySelector('.mobile-nav').getBoundingClientRect();
         const visualHeight = window.visualViewport?.height || window.innerHeight;
         return {position:getComputedStyle(document.querySelector('.mobile-nav')).position, navBottom:Math.round(nav.bottom), visualHeight:Math.round(visualHeight)};
@@ -196,8 +200,10 @@ for (const viewport of viewports) {
       }
     }
 
-    if (viewport.width <= 760) {
+    if (viewport.width <= 900) {
       await page.locator('.mobile-nav-add').click();
+      await expect(page.locator('#quickCreateDialog')).toBeVisible();
+      await page.locator('[data-quick-create="appointment"]').click();
       await expect(page.locator('#appointmentModal')).toBeVisible();
       await assertNoRootOverflow(page, `${viewport.name} admin modal`);
       await page.locator('[data-close-modal]').first().click();
