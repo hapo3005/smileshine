@@ -182,7 +182,7 @@ for (const viewport of viewports) {
     }
 
     if (viewport.width <= 760) {
-      await page.locator('#mobileAdd').click();
+      await page.locator('.mobile-nav-add').click();
       await expect(page.locator('#appointmentModal')).toBeVisible();
       await assertNoRootOverflow(page, `${viewport.name} admin modal`);
       await page.locator('[data-close-modal]').first().click();
