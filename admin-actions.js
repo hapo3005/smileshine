@@ -14,6 +14,7 @@
     if(prefill.customerName)form.elements.customerName.value=prefill.customerName;
     if(prefill.phone)form.elements.phone.value=prefill.phone;
     if(prefill.email)form.elements.email.value=prefill.email;
+    if(prefill.note&&form.elements.note)form.elements.note.value=prefill.note;
     if(prefill.waitlistId)form.dataset.waitlistId=prefill.waitlistId;
     modal.showModal();
   }
@@ -58,12 +59,11 @@
     let customer=A.db.customers.find(c=>(email&&c.email===email)||(phone&&c.phone===phone)||c.name.toLowerCase()===name.toLowerCase());
     if(!customer){customer={id:uid('customer'),name,email,phone,created:isoDate(new Date())};A.db.customers.push(customer);A.addActivity('customer',`Neue Kundin / neuer Kunde: ${name}.`)}
     const price=Number(service.price||0);
-    const appointmentId=uid('appointment'),waitlistId=form.dataset.waitlistId||'';
-    A.db.appointments.push({id:appointmentId,date,time,duration:service.duration,service:service.name,customerId:customer.id,customerName:name,phone,email,status:'confirmed',payment:'Im Studio',paymentPreference:'Im Studio',source:waitlistId?'waitlist':'studio',note:String(data.get('note')||''),listPrice:price,finalPrice:price,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:price>0?'open':'paid'});
-    if(waitlistId){
-      const entry=(A.db.waitlist||[]).find(x=>x.id===waitlistId);
-      if(entry){entry.status='booked';entry.bookedAppointmentId=appointmentId;entry.bookedAt=new Date().toISOString();}
-    }
+    const appointmentId=uid('appointment'),waitlistId=form.dataset.waitlistId||'',waitlistEntry=waitlistId?(A.db.waitlist||[]).find(x=>x.id===waitlistId):null;
+    const contactPreference=waitlistEntry?.contactPreference||customer.contactPreference||'',reminderOptIn=waitlistEntry?.reminderOptIn??customer.reminderOptIn??null,precheck=waitlistEntry?.precheck||{};
+    if(contactPreference)customer.contactPreference=contactPreference;if(reminderOptIn!==null)customer.reminderOptIn=reminderOptIn;
+    A.db.appointments.push({id:appointmentId,date,time,duration:service.duration,service:service.name,customerId:customer.id,customerName:name,phone,email,contactPreference,reminderOptIn,status:'confirmed',payment:'Im Studio',paymentPreference:'Im Studio',source:waitlistId?'waitlist':'studio',note:String(data.get('note')||waitlistEntry?.note||''),precheck,listPrice:price,finalPrice:price,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:price>0?'open':'paid'});
+    if(waitlistEntry){waitlistEntry.status='booked';waitlistEntry.bookedAppointmentId=appointmentId;waitlistEntry.bookedAt=new Date().toISOString();}
     const confirmation=A.queueAppointmentCommunication?.('confirm',appointmentId,isoDate(new Date()),{title:'Terminbestätigung'});
     A.addActivity('booking',waitlistId?`${name}: Wartelistenplatz übernommen · ${service.name} am ${dateShort(date)} um ${time} Uhr bestätigt.`:`${name}: ${service.name} am ${dateShort(date)} um ${time} Uhr eingetragen.`);
     closeModal();delete form.dataset.waitlistId;A.save(waitlistId?'Termin aus Warteliste bestätigt.':'Termin gespeichert.');A.refreshPaymentUI?.();A.renderDashboardWorkflow?.();A.showView('appointments');
