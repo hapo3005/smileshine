@@ -48,9 +48,13 @@
     }
 
     const todays=(db.appointments||[]).filter(a=>a.date===today());
-    const pending=todays.find(a=>a.status==='pending');
-    if(pending&&!pending.preparation)pending.preparation={status:'open',consent:false,photos:false,note:'Vorbereitung noch nicht vollständig.'};
-    todays.filter(a=>a.status==='confirmed').forEach(a=>{if(!a.preparation)a.preparation={status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig.'}});
+    todays.filter(a=>a.status==='pending').forEach(a=>{if(!a.preparation)a.preparation={status:'open',consent:false,photos:false,note:'Vorbereitung noch nicht vollständig.'}});
+    todays.filter(a=>a.status==='confirmed').forEach(a=>{
+      if(a.preparation)return;
+      a.preparation=(a.demoSimulation||a.isDemoBooking)
+        ?{status:'complete',consent:true,photos:true,note:'Vorbereitung für den Präsentationstermin vollständig.'}
+        :{status:'open',consent:false,photos:false,note:'Vorbereitung vor dem Termin prüfen.'};
+    });
   }
 
   function financials(a){
@@ -492,6 +496,7 @@
   function confirmAppointment(id){
     const a=appointmentFor(id);if(!a||a.status!=='pending')return;
     a.status='confirmed';
+    if(!a.preparation)a.preparation={status:'open',consent:false,photos:false,note:'Vorbereitung vor dem Termin prüfen.'};
     const communication=A.queueAppointmentCommunication?.('confirm',a.id,today(),{title:'Terminbestätigung'});
     A.addActivity('booking',`${a.customerName}: Termin um ${a.time} Uhr bestätigt.`);
     A.save('Termin bestätigt.');
