@@ -139,8 +139,10 @@ for (const viewport of viewports) {
     if (viewport.width <= 620) {
       const hero = await page.locator('.hero-cinematic').boundingBox();
       const media = await page.locator('.hero-cinematic .hero-media').boundingBox();
-      expect(hero.height, `${viewport.name}: cinematic hero should fill the first mobile viewport`).toBeGreaterThanOrEqual(Math.min(viewport.height - 100, 650));
-      expect(media.height, `${viewport.name}: hero image must be present in the first viewport`).toBeGreaterThanOrEqual(hero.height - 4);
+      expect(hero.height, `${viewport.name}: editorial hero should remain substantial on mobile`).toBeGreaterThanOrEqual(Math.min(viewport.height - 100, 650));
+      expect(media.height, `${viewport.name}: neutral editorial visual should have meaningful height`).toBeGreaterThanOrEqual(220);
+      expect(media.y, `${viewport.name}: neutral editorial visual must appear in the first viewport`).toBeLessThan(viewport.height);
+      await expect(page.locator('.hero-cinematic .hero-media')).toHaveCSS('background-image', /hero-neutral\.svg/);
     }
     await completeBooking(page, viewport.name);
   });
