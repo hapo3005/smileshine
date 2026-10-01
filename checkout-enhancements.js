@@ -75,12 +75,13 @@
     const time=document.getElementById('summaryTime')?.textContent?.trim()||'–';
     const state=window.SmileShineBooking?.state;
     const configured=window.SmileShineBookingData?.getService?.(state?.serviceId||service);
-    const amount=Number(configured?.deposit||0);
+    const priceConfirmed=configured?.verification==='studio'||configured?.priceConfirmed===true;
+    const amount=priceConfirmed?Number(configured?.deposit||0):0;
     const serviceEl=document.getElementById('checkoutService');if(serviceEl)serviceEl.textContent=service||'–';
     const dateEl=document.getElementById('checkoutDate');if(dateEl)dateEl.textContent=date==='–'?'–':`${date} · ${time} Uhr`;
-    const depEl=document.getElementById('checkoutDeposit');if(depEl)depEl.textContent=amount?`${amount.toFixed(2).replace('.',',')} €`:'Keine Anzahlung';
-    const depAmount=document.getElementById('depositAmount');if(depAmount)depAmount.textContent=amount?`${amount.toFixed(2).replace('.',',')} € Anzahlung`:'Für Beratung keine Anzahlung';
-    const depText=document.getElementById('depositText');if(depText)depText.textContent=amount?'Im späteren Livebetrieb kann dieser Betrag als Anzahlung vorgesehen werden.':'Für diese Leistung ist aktuell keine Anzahlung vorgesehen.';
+    const depEl=document.getElementById('checkoutDeposit');if(depEl)depEl.textContent=!priceConfirmed?'Noch nicht bestätigt':amount?`${amount.toFixed(2).replace('.',',')} €`:'Keine Anzahlung';
+    const depAmount=document.getElementById('depositAmount');if(depAmount)depAmount.textContent=!priceConfirmed?'Preis & Anzahlung noch offen':amount?`${amount.toFixed(2).replace('.',',')} € Anzahlung`:'Keine Anzahlung vorgesehen';
+    const depText=document.getElementById('depositText');if(depText)depText.textContent=!priceConfirmed?'Birgit bestätigt Preis und mögliche Anzahlung vor dem Livegang.':amount?'Im späteren Livebetrieb kann dieser Betrag als Anzahlung vorgesehen werden.':'Für diese Leistung ist aktuell keine Anzahlung vorgesehen.';
   }
 
   paymentPanel.querySelectorAll('.payment-option').forEach(btn=>btn.addEventListener('click',()=>{
