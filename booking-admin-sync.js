@@ -74,7 +74,7 @@
     try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x){migrateCatalog(x);ensureCustomerNumbers(x);localStorage.setItem(KEY,JSON.stringify(x));return x}}catch(e){}
     const x=ensureCustomerNumbers(fallback());localStorage.setItem(KEY,JSON.stringify(x));return x;
   }
-  function save(db){migrateCatalog(db);ensureCustomerNumbers(db);localStorage.setItem(KEY,JSON.stringify(db))}
+  function save(db){migrateCatalog(db);ensureCustomerNumbers(db);if(STORE?.write)STORE.write(db);else localStorage.setItem(KEY,JSON.stringify(db))}
   function service(db,key){return db.services?.find(s=>String(s.id)===String(key)||s.name===key)}
 
   function free(db,date,time,name){
@@ -172,7 +172,7 @@
   }
 
   function cleanCustomerCopy(){
-    const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Interaktive Vorschau · keine Datenübermittlung';
+    const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Persönlich vorbereitet · in wenigen Schritten';
     const categoryLabel=$('.service-category-label');if(categoryLabel)categoryLabel.remove();
     const heads=$$('.booking-panel-head>p');
     const replacements=['Wähle die Behandlung, die zu deinem Wunsch passt.','Wähle einen freien Termin. Die verfügbaren Zeiten werden automatisch aktualisiert.','Mit ein paar Angaben können wir deinen Termin gut vorbereiten.','Deine Kontaktdaten benötigen wir für Bestätigung und Rückfragen.','Wähle die gewünschte Zahlungsart.','Prüfe deine Angaben noch einmal in Ruhe.'];
@@ -180,28 +180,45 @@
     const pre=$('.precheck-intro p');if(pre)pre.textContent='Bitte beantworte die Fragen so vollständig wie möglich.';
     const consent=$('#precheckForm .consent-row span');if(consent)consent.textContent='Ich bestätige, dass meine Angaben vollständig und korrekt sind.';
     const dataConsent=$('#bookingForm .consent-row span');if(dataConsent)dataConsent.textContent='Ich stimme der Verarbeitung meiner Angaben zur Terminorganisation zu.';
-    const waitNote=$('.waitlist-actions>span');if(waitNote)waitNote.textContent='Vorschau · keine Nachricht wird versendet.';
-    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML='<strong>Interaktive Vorschau.</strong><span>Der Ablauf kann vollständig ausprobiert werden. Es wird keine echte Buchung, Zahlung oder Nachricht ausgelöst.</span>';
-    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Vorschau · nur lokal';
+    const waitNote=$('.waitlist-actions>span');if(waitNote)waitNote.textContent='Wähle Zeitraum und Flexibilität. Deine Kontaktdaten folgen im nächsten Schritt.';
+    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML='<strong>Alles auf einen Blick.</strong><span>Im Präsentationsmodus wird deine Anfrage lokal gespeichert und erscheint direkt in Birgits Studioansicht.</span>';
+    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Präsentationsmodus · lokal gespeichert';
   }
 
-  function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card),online=$('.payment-option[data-payment="Online-Anzahlung"]'),panel=$('.booking-panel[data-panel="5"]'),head=$('.booking-panel-head h3',panel),intro=$('.booking-panel-head p',panel);const hasDeposit=Number(s.deposit||0)>0;if(online)online.hidden=!hasDeposit;if(!hasDeposit&&state){state.payment='Im Studio';$('.payment-option',panel).forEach(btn=>{const selected=btn.dataset.payment==='Im Studio';btn.classList.toggle('selected',selected);const check=$('.payment-check',btn);if(check)check.textContent=selected?'✓':'○'});window.SmileShineBooking?.updateSummary?.()}if(head)head.textContent=hasDeposit?'Wie möchtest du bezahlen?':'Bezahlung beim Termin.';if(intro)intro.textContent=hasDeposit?'Wähle die gewünschte Zahlungsart.':'Für diese Vorschau ist die Bezahlung im Studio vorgesehen.';if(strong)strong.textContent=hasDeposit?money(s.deposit)+' für diese Leistung':'Keine Anzahlung erforderlich';if(copy)copy.textContent=hasDeposit?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':'Es wird kein Preis angenommen. Birgits tatsächliche Preise werden vor dem Livegang hinterlegt.'}
+  function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card),online=$('.payment-option[data-payment="Online-Anzahlung"]'),panel=$('.booking-panel[data-panel="5"]'),head=$('.booking-panel-head h3',panel),intro=$('.booking-panel-head p',panel);const hasDeposit=Number(s.deposit||0)>0;if(online)online.hidden=!hasDeposit;if(!hasDeposit&&state){state.payment='Im Studio';$('.payment-option',panel).forEach(btn=>{const selected=btn.dataset.payment==='Im Studio';btn.classList.toggle('selected',selected);const check=$('.payment-check',btn);if(check)check.textContent=selected?'✓':'○'});window.SmileShineBooking?.updateSummary?.()}if(head)head.textContent=hasDeposit?'Wie möchtest du bezahlen?':'Bezahlung beim Termin.';if(intro)intro.textContent=hasDeposit?'Wähle die gewünschte Zahlungsart.':'Für diese Leistung ist aktuell die Bezahlung im Studio vorgesehen.';if(strong)strong.textContent=hasDeposit?money(s.deposit)+' für diese Leistung':'Keine Anzahlung erforderlich';if(copy)copy.textContent=hasDeposit?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':'Birgits tatsächliche Preise werden vor dem Livegang final bestätigt.'}
 
-  function finalButton(){const panel=$('.booking-panel[data-panel="6"]'),button=panel?.querySelector('.button.primary');if(!button||button.dataset.synced)return;button.dataset.synced='true';button.classList.remove('booking-disabled');button.removeAttribute('aria-disabled');button.textContent='Termin simulieren';button.addEventListener('click',()=>commit(panel,button))}
+  function finalButton(){const panel=$('.booking-panel[data-panel="6"]'),button=panel?.querySelector('.button.primary');if(!button||button.dataset.synced)return;button.dataset.synced='true';button.classList.remove('booking-disabled');button.removeAttribute('aria-disabled');button.textContent='Terminanfrage vormerken';button.addEventListener('click',()=>commit(panel,button))}
 
   function commit(panel,button){
-    const db=load(),state=window.SmileShineBooking?.state,serviceKey=state?.serviceId||state?.service,serviceName=state?.service||$('#summaryService')?.textContent?.trim(),date=state?.date||$('.date-option.selected')?.dataset.iso,time=state?.time||$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm');
-    if(!serviceName||!date||!time||!form)return;
-    const s=service(db,serviceKey||serviceName);if(!s||s.active===false){message(panel,'Diese Leistung ist derzeit nicht online buchbar.',true);return}
-    if(!free(db,date,time,s.id)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
+    const db=load(),state=window.SmileShineBooking?.state,serviceKey=state?.serviceId||state?.service,serviceName=state?.service||$('#summaryService')?.textContent?.trim(),date=state?.date||$('.date-option.selected')?.dataset.iso,time=state?.time||$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm'),waitlist=Boolean(state?.waitlist);
+    if(!serviceName||!form||(!waitlist&&(!date||!time)))return;
+    const s=service(db,serviceKey||serviceName);if(!s||s.active===false){message(panel,'Diese Leistung ist derzeit nicht online verfügbar.',true);return}
+    if(!waitlist&&!free(db,date,time,s.id)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
     const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),note=String(data.get('note')||'').trim();
-    let customer=(db.customers||[]).find(c=>(email&&c.email===email)||(phone&&c.phone===phone));if(!customer){customer={id:uid('customer'),customerNumber:takeCustomerNumber(db),name,firstName:first,lastName:last,email,phone,created:today()};db.customers=db.customers||[];db.customers.push(customer)}
-    const payment=$('#summaryPayment')?.textContent?.trim()||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
-    db.appointments=db.appointments||[];db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,status:'confirmed',payment,paymentPreference:payment,source:'online-demo',note,listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
-    db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Online-Buchung: ${name}, ${serviceName}.`,date:new Date().toISOString()});save(db);button.disabled=true;button.textContent='✓ Termin vorgemerkt';message(panel,'Der Termin wurde in dieser Vorschau lokal im Studio-Kalender vorgemerkt.',false);
+    let customer=(db.customers||[]).find(c=>(email&&c.email===email)||(phone&&c.phone===phone));
+    if(!customer){
+      customer={id:uid('customer'),customerNumber:takeCustomerNumber(db),name,firstName:first,lastName:last,email,phone,created:today()};
+      db.customers=db.customers||[];db.customers.push(customer);
+    }else{
+      customer.name=name||customer.name;customer.firstName=first||customer.firstName;customer.lastName=last||customer.lastName;customer.email=email||customer.email;customer.phone=phone||customer.phone;
+    }
+
+    if(waitlist){
+      const details=state?.waitlistDetails||{};
+      db.waitlist=Array.isArray(db.waitlist)?db.waitlist:[];
+      db.waitlist.push({id:uid('wait'),customerId:customer.id,service:s.name||serviceName,serviceId:s.id,earliest:today(),daypart:details.period||'Flexibel',flex:details.flex||'Diese Woche',note,precheck:state?.precheck||{},status:'waiting',source:'online',createdAt:new Date().toISOString()});
+      db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Wartelisten-Anfrage: ${name}, ${serviceName}.`,date:new Date().toISOString()});
+      save(db);button.disabled=true;button.textContent='✓ Wartelistenwunsch gespeichert';message(panel,'Der Wartelistenwunsch ist lokal gespeichert und erscheint direkt in Birgits Studioansicht.',false,'Warteliste gespeichert');return;
+    }
+
+    const payment=state?.payment||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
+    db.appointments=db.appointments||[];
+    db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,status:'pending',payment,paymentPreference:payment,source:'online',presentation:true,note,precheck:state?.precheck||{},listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
+    db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Online-Terminanfrage: ${name}, ${serviceName}.`,date:new Date().toISOString()});
+    save(db);button.disabled=true;button.textContent='✓ Anfrage gespeichert';message(panel,'Die Terminanfrage ist lokal gespeichert und erscheint als offene Anfrage in Birgits Studioansicht.',false,'Anfrage gespeichert');
   }
 
-  function message(panel,text,error){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';panel.querySelector('.booking-actions')?.before(box)}box.innerHTML=`<strong>${error?'Nicht verfügbar':'Termin vorgemerkt'}</strong><span>${text}</span>`}
+  function message(panel,text,error,title='Gespeichert'){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';panel.querySelector('.booking-actions')?.before(box)}box.innerHTML=`<strong>${error?'Nicht verfügbar':title}</strong><span>${text}</span>`}
 
   window.SmileShineBookingData={availableSlots,getService:key=>service(load(),key),load,catalog:CATALOG};
   window.addEventListener('storage',e=>{if(e.key===KEY){syncServices();syncPublicServices();refreshDeposit();window.SmileShineBooking?.buildDates?.()}});
