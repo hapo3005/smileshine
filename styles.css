@@ -1902,7 +1902,7 @@ body.site-premium{
   border-radius:0;
   background:
     linear-gradient(180deg,rgba(247,242,237,.04),rgba(43,35,31,.08)),
-    url('https://images.pexels.com/photos/33412989/pexels-photo-33412989.jpeg?auto=compress&cs=tinysrgb&w=1800') center 52%/cover no-repeat;
+    url('https://images.pexels.com/photos/33412989/pexels-photo-33412989.png?cs=srgb&fm=jpg&w=1800') center 52%/cover no-repeat;
   filter:saturate(.88) contrast(.99) brightness(1.01);
   box-shadow:inset 1px 0 rgba(67,54,47,.08);
 }
@@ -2110,7 +2110,7 @@ body.site-premium{
     overflow:hidden;
     background:
       linear-gradient(180deg,rgba(29,23,20,.02) 30%,rgba(29,23,20,.42) 100%),
-      url('https://images.pexels.com/photos/33412989/pexels-photo-33412989.jpeg?auto=compress&cs=tinysrgb&w=1200') center 52%/cover no-repeat;
+      url('https://images.pexels.com/photos/33412989/pexels-photo-33412989.png?cs=srgb&fm=jpg&w=1200') center 52%/cover no-repeat;
     filter:saturate(.82) contrast(1.03) brightness(.99);
     border:0;
     box-shadow:none;
