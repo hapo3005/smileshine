@@ -67,14 +67,12 @@
       const menu=$('.row-menu',card);if(menu&&!$('[data-payment-id]',menu)){const btn=document.createElement('button');btn.type='button';btn.dataset.paymentId=a.id;btn.title='Preis & Zahlung';btn.textContent='€';btn.onclick=()=>openPaymentModal(a.id);menu.prepend(btn)}
     })
   }
-  function refreshDashboardRevenue(){
-    const grid=$('#kpiGrid');if(!grid)return;const cards=$$('.kpi-card',grid);if(cards.length<4)return;const now=new Date(),paid=(A.db.appointments||[]).reduce((total,a)=>total+(a.status==='cancelled'?0:(a.payments||[]).reduce((sum,p)=>{const d=new Date(p.createdAt);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()?sum+Number(p.amount||0):sum},0)),0);const card=cards[3],label=$('.kpi-label',card),value=$('.kpi-value',card),foot=$('.kpi-foot>span:first-child',card),formatted=paid>0?money(paid):'–';if(label&&label.textContent!=='Umsatz · Monat')label.textContent='Umsatz · Monat';if(value&&value.textContent!==formatted)value.textContent=formatted;if(foot){const copy=paid>0?'Tatsächlich bezahlt':'Noch keine Zahlungen';if(foot.textContent!==copy)foot.textContent=copy;}
-  }
-  function refreshPaymentUI(){migrate();refreshAppointmentList();refreshDashboardRevenue();A.bindCustomerDetailRows?.()}
+  // Dashboard KPIs are owned by admin-render.js; payment data stays in appointment/payment views.
+
+  function refreshPaymentUI(){migrate();refreshAppointmentList();A.bindCustomerDetailRows?.()}
 
   migrate();ensureModal();ensureStyles();
   const appointments=$('#appointmentsList');if(appointments)new MutationObserver(()=>refreshAppointmentList()).observe(appointments,{childList:true,subtree:true});
-  const kpis=$('#kpiGrid');if(kpis)new MutationObserver(()=>refreshDashboardRevenue()).observe(kpis,{childList:true,subtree:true});
   document.addEventListener('click',e=>{const btn=e.target.closest('[data-payment-id]');if(btn){e.stopPropagation();openPaymentModal(btn.dataset.paymentId)}});
   Object.assign(A,{ensureFinancials,appointmentFinancials:financials,paymentStatusLabel:statusLabel,openPaymentModal,refreshPaymentUI});
   setTimeout(refreshPaymentUI,0);

@@ -92,7 +92,8 @@
   const slug=name=>name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ß/g,'ss').replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'');
   const fullNameParts=name=>{const p=name.split(/\s+/);return {firstName:p[0],lastName:p.slice(1).join(' ')}};
 
-  function segmentFor(index){
+  function segmentFor(index,row){
+    if(index<profiles.length)return /Beratung/i.test(String(row?.[6]||''))?'consult':'pmu';
     if(index<55)return 'nail-regular';
     if(index<75)return 'nail-occasional';
     if(index<120)return 'pmu';
@@ -100,14 +101,14 @@
     return 'consult';
   }
   function simulationPreference(index,row){
-    const segment=segmentFor(index);
+    const segment=segmentFor(index,row);
     if(segment==='nail-regular')return {favorite:'Nageldesign · Auffüllen Standard',wish:['kurze gepflegte Nägel in Naturtönen','saubere Form mit wechselnder Farbe','haltbare Modellage für den Alltag'][index%3]};
     if(segment==='nail-occasional')return {favorite:index%2?'Nageldesign · Neumodellage':'Klassische Maniküre',wish:index%2?'Neumodellage mit alltagstauglicher Länge':'gepflegte Naturnägel und saubere Nagelhaut'};
     if(segment==='mixed')return index%2?{favorite:'Nageldesign · Auffüllen Standard',wish:'regelmäßige Nägel, zusätzlich Interesse an PMU'}:{favorite:row[6],wish:row[7]};
     return {favorite:row[6],wish:row[7]};
   }
   function applyProfile(customer,row,index){
-    const [name,birthday,personality,communication,preferredTimes,style]=row,preference=simulationPreference(index,row),parts=fullNameParts(name),segment=segmentFor(index);
+    const [name,birthday,personality,communication,preferredTimes,style]=row,preference=simulationPreference(index,row),parts=fullNameParts(name),segment=segmentFor(index,row);
     Object.assign(customer,{name,firstName:parts.firstName,lastName:parts.lastName,birthday,personality,communication,preferredTimes,style,favoriteServices:[preference.favorite],wishes:preference.wish,segment,isDemoProfile:true,demoProfileIndex:index+1});
     customer.notes=`${personality}. Bevorzugt ${preferredTimes}; Kontakt am liebsten per ${communication}. Wunsch: ${preference.wish}.`;
     if(!customer.created)customer.created=isoDate(addDays(new Date(),-(30+(index*7)%720)));

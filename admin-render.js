@@ -17,7 +17,7 @@
     const titles={dashboard:greeting,calendar:'Kalender',appointments:'Termine',customers:'Kunden',services:'Leistungen',availability:'Verfügbarkeit',pickup:'Abholshop',settings:'Einstellungen'};
     if($('#pageTitle'))$('#pageTitle').textContent=titles[name];
     if(location.hash!==`#${name}`)history.replaceState(null,'',`#${name}`);
-    window.scrollTo({top:0,behavior:'smooth'});
+    const scroller=window.matchMedia('(max-width:760px)').matches?$('.admin-main'):null;(scroller||window).scrollTo({top:0,behavior:'smooth'});
     if(name==='calendar')renderCalendar();
   }
 

@@ -221,3 +221,42 @@ button,a{-webkit-tap-highlight-color:transparent}
   .kpi-card{padding:11px 12px;min-height:92px}
   .kpi-value{font-size:22px}
 }
+
+
+/* Non-overlapping mobile app shell · 2026-10-01 */
+@media(max-width:760px){
+  html,body{height:100%;overflow:hidden}
+  .admin-app{
+    height:100dvh;
+    min-height:0;
+    display:grid;
+    grid-template-rows:minmax(0,1fr) auto;
+    overflow:hidden;
+  }
+  .admin-main{
+    min-height:0;
+    height:auto;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    padding-bottom:28px;
+  }
+  .mobile-nav{
+    position:relative;
+    inset:auto;
+    left:auto;
+    right:auto;
+    bottom:auto;
+    width:auto;
+    margin-top:8px;
+    margin-left:max(12px,env(safe-area-inset-left));
+    margin-right:max(12px,env(safe-area-inset-right));
+    margin-bottom:max(10px,env(safe-area-inset-bottom));
+    flex:0 0 auto;
+  }
+  .mobile-nav-add{transform:none}
+}
+@media(max-width:400px){
+  .admin-main{padding-bottom:28px}
+}
