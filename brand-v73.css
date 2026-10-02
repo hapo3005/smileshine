@@ -1176,3 +1176,393 @@ body:has(.admin-app){background:#f3f3f0!important}
   }
   .site-premium .hero .hero-actions{display:none!important}
 }
+
+
+/* =========================================================
+   SITE-WIDE FINISH PASS · match approved hero quality
+   2026-10-02
+   ========================================================= */
+
+.site-premium{
+  --ss-warm-white:#f7f5f1;
+  --ss-warm-paper:#fbfaf7;
+  --ss-warm-stone:#e8e4de;
+  --ss-warm-line:rgba(27,27,27,.12);
+  --ss-warm-muted:#777572;
+}
+
+/* shared editorial rhythm */
+.site-premium .section{
+  padding-left:clamp(24px,6vw,96px)!important;
+  padding-right:clamp(24px,6vw,96px)!important;
+}
+.site-premium .section-heading.split{
+  grid-template-columns:minmax(0,1.08fr) minmax(300px,.56fr)!important;
+  gap:clamp(50px,8vw,128px)!important;
+  align-items:end!important;
+  margin-bottom:56px!important;
+}
+.site-premium .section-heading h2,
+.site-premium .booking-heading h2,
+.site-premium .contact-experience-heading h2{
+  font-family:var(--sans)!important;
+  font-weight:300!important;
+  letter-spacing:-.042em!important;
+  color:#1c1d1d!important;
+}
+.site-premium .section-heading.split>p,
+.site-premium .contact-experience-heading>p{
+  color:#767571!important;
+  font-size:12px!important;
+  line-height:1.82!important;
+}
+.site-premium .eyebrow{
+  color:#73716d!important;
+  font-size:8px!important;
+  font-weight:500!important;
+  letter-spacing:.24em!important;
+}
+
+/* TRUST — quiet, useful, no card-look */
+.site-premium .premium-trust{
+  border-color:var(--ss-warm-line)!important;
+  background:var(--ss-warm-paper)!important;
+}
+.site-premium .premium-trust article{
+  padding-top:34px!important;
+  padding-bottom:34px!important;
+  background:transparent!important;
+}
+.site-premium .premium-trust article+article{border-color:var(--ss-warm-line)!important}
+.site-premium .premium-trust span{color:#96928d!important}
+.site-premium .premium-trust strong{
+  color:#262626!important;
+  font-size:15px!important;
+  font-weight:400!important;
+}
+.site-premium .premium-trust small{color:#7c7975!important}
+
+/* TREATMENTS — photographic editorial triptych */
+.site-premium .premium-treatments{
+  background:#f3f1ed!important;
+  padding-top:124px!important;
+  padding-bottom:128px!important;
+}
+.site-premium .premium-treatments .section-heading h2{
+  font-size:clamp(46px,4.8vw,76px)!important;
+  line-height:1.01!important;
+}
+.site-premium .treatment-grid-refined{
+  border:0!important;
+  background:transparent!important;
+  gap:14px!important;
+}
+.site-premium .treatment-grid-refined .treatment-card{
+  position:relative!important;
+  min-height:560px!important;
+  border:0!important;
+  border-radius:1px!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+  filter:saturate(.58) contrast(.96) brightness(1.02)!important;
+}
+.site-premium .treatment-grid-refined .treatment-card::before{
+  background:linear-gradient(180deg,rgba(20,20,20,.00) 25%,rgba(20,20,20,.76) 100%)!important;
+}
+.site-premium .treatment-grid-refined .treatment-card>div{
+  left:30px!important; right:30px!important; bottom:30px!important;
+}
+.site-premium .treatment-grid-refined .treatment-card h3{
+  font-size:31px!important;
+  line-height:1.05!important;
+  color:white!important;
+}
+.site-premium .treatment-grid-refined .treatment-card p{
+  color:rgba(255,255,255,.72)!important;
+  min-height:0!important;
+}
+.site-premium .treatment-grid-refined .treatment-card a{
+  color:#fff!important;
+  border-color:rgba(255,255,255,.25)!important;
+}
+.site-premium .treatment-consultation{
+  padding-top:34px!important;
+  border-top:1px solid var(--ss-warm-line)!important;
+}
+.site-premium .treatment-consultation strong{
+  font-family:var(--sans)!important;
+  font-size:clamp(20px,2vw,28px)!important;
+  font-weight:300!important;
+  letter-spacing:-.025em!important;
+  color:#292929!important;
+}
+
+/* ABOUT — elegant split, calm and human */
+.site-premium .premium-about{
+  background:#faf9f6!important;
+  border-color:var(--ss-warm-line)!important;
+}
+.site-premium .premium-about .about-image{
+  min-height:760px!important;
+  filter:saturate(.55) contrast(.97) brightness(1.04)!important;
+}
+.site-premium .premium-about .about-copy{
+  background:#f5f3ef!important;
+  border-color:var(--ss-warm-line)!important;
+}
+.site-premium .premium-about .about-copy h2{
+  color:#202121!important;
+  font-size:clamp(42px,4.1vw,64px)!important;
+  line-height:1.03!important;
+}
+.site-premium .premium-about .about-intro{
+  font-family:var(--sans)!important;
+  font-size:16px!important;
+  line-height:1.7!important;
+  color:#4e4f4f!important;
+}
+.site-premium .premium-about .about-copy>p:not(.eyebrow):not(.about-intro){
+  color:#777572!important;
+  font-size:11.5px!important;
+}
+.site-premium .about-signals{
+  margin-top:32px!important;
+  border-color:var(--ss-warm-line)!important;
+}
+.site-premium .about-signals span{
+  min-height:56px!important;
+  color:#5d5d5b!important;
+  border-color:var(--ss-warm-line)!important;
+}
+.site-premium .about-statement{
+  max-width:640px!important;
+  color:#2e2f2f!important;
+  font-size:clamp(21px,2vw,29px)!important;
+  line-height:1.45!important;
+  font-weight:300!important;
+}
+
+/* PRINCIPLES — deliberate dark intermission */
+.site-premium .premium-principles{
+  background:#171818!important;
+  padding-top:116px!important;
+  padding-bottom:118px!important;
+}
+.site-premium .premium-principles .principles-heading{
+  margin-bottom:48px!important;
+}
+.site-premium .premium-principles .principles-heading h2{
+  font-family:var(--sans)!important;
+  font-size:clamp(48px,4.8vw,76px)!important;
+  font-weight:300!important;
+  letter-spacing:-.045em!important;
+}
+.site-premium .premium-principles .eyebrow{color:#aaa7a2!important}
+.site-premium .principles-grid{border-color:rgba(255,255,255,.14)!important}
+.site-premium .principles-grid article{
+  min-height:280px!important;
+  border-color:rgba(255,255,255,.14)!important;
+}
+.site-premium .principles-grid span{color:#aaa7a2!important}
+.site-premium .principles-grid h3{
+  font-family:var(--sans)!important;
+  font-size:27px!important;
+  font-weight:300!important;
+  letter-spacing:-.025em!important;
+}
+.site-premium .principles-grid p{color:rgba(255,255,255,.57)!important}
+
+/* BOOKING — product-quality, not form-builder */
+.site-premium .booking-editorial{
+  background:#f4f2ee!important;
+  padding-top:116px!important;
+  padding-bottom:124px!important;
+}
+.site-premium .booking-editorial .booking-heading{
+  align-items:end!important;
+  margin-bottom:42px!important;
+}
+.site-premium .booking-editorial .booking-heading h2{
+  font-size:clamp(44px,4.6vw,70px)!important;
+}
+.site-premium .booking-demo-badge{
+  border-radius:1px!important;
+  background:transparent!important;
+  border:1px solid var(--ss-warm-line)!important;
+  color:#73716e!important;
+}
+.site-premium .booking-shell{
+  border:1px solid var(--ss-warm-line)!important;
+  border-radius:1px!important;
+  background:#fff!important;
+  box-shadow:0 18px 54px rgba(24,24,24,.045)!important;
+  overflow:hidden!important;
+}
+.site-premium .booking-progress{
+  background:#efede9!important;
+  border-color:var(--ss-warm-line)!important;
+}
+.site-premium .progress-step{
+  color:#898783!important;
+}
+.site-premium .progress-step.active{color:#1d1e1e!important}
+.site-premium .booking-stage{background:#fbfaf8!important}
+.site-premium .booking-panel-head h3{
+  font-family:var(--sans)!important;
+  font-size:clamp(32px,3vw,44px)!important;
+  font-weight:300!important;
+  letter-spacing:-.035em!important;
+}
+.site-premium .service-option,
+.site-premium .date-option,
+.site-premium .time-area,
+.site-premium .booking-form input,
+.site-premium .booking-form textarea,
+.site-premium .booking-form select,
+.site-premium .precheck-intro,
+.site-premium .choice-block,
+.site-premium .payment-option,
+.site-premium .deposit-card,
+.site-premium .confirmation-card,
+.site-premium .confirmation-grid>div{
+  border-radius:1px!important;
+  background:#fff!important;
+  border-color:var(--ss-warm-line)!important;
+  box-shadow:none!important;
+}
+.site-premium .service-option:hover,
+.site-premium .service-option.selected,
+.site-premium .date-option:hover,
+.site-premium .date-option.selected,
+.site-premium .payment-option:hover,
+.site-premium .payment-option.selected{
+  border-color:#73716e!important;
+  background:#f8f7f4!important;
+}
+.site-premium .service-info strong,
+.site-premium .payment-option strong{
+  font-family:var(--sans)!important;
+  font-weight:300!important;
+  letter-spacing:-.025em!important;
+}
+.site-premium .booking-summary{
+  background:#1b1c1c!important;
+  border-left:0!important;
+}
+.site-premium .booking-summary h3,
+.site-premium .booking-summary strong{color:white!important}
+.site-premium .booking-summary .summary-item,
+.site-premium .summary-location{border-color:rgba(255,255,255,.12)!important}
+
+/* SHOP — lighter retail language */
+.site-premium .premium-boutique{
+  background:#faf9f6!important;
+  padding-top:116px!important;
+  padding-bottom:112px!important;
+}
+.site-premium .premium-boutique .section-heading h2{
+  font-size:clamp(44px,4.5vw,70px)!important;
+}
+.site-premium .shop-status{
+  background:transparent!important;
+  border:1px solid var(--ss-warm-line)!important;
+  border-radius:1px!important;
+}
+.site-premium .pickup-shop-footer{
+  margin-top:34px!important;
+  padding-top:26px!important;
+  border-top:1px solid var(--ss-warm-line)!important;
+  background:transparent!important;
+}
+
+/* CONTACT — architectural, clear, not card-heavy */
+.site-premium .premium-contact{
+  background:#f2f0ec!important;
+  padding-top:116px!important;
+  padding-bottom:116px!important;
+}
+.site-premium .contact-experience-heading{
+  margin-bottom:42px!important;
+}
+.site-premium .contact-experience-heading h2{
+  font-size:clamp(44px,4.5vw,70px)!important;
+}
+.site-premium .contact-benefits{
+  border-radius:1px!important;
+  border-color:var(--ss-warm-line)!important;
+  gap:0!important;
+  background:#fff!important;
+}
+.site-premium .contact-benefit{
+  background:transparent!important;
+  border-radius:0!important;
+}
+.site-premium .contact-benefit+.contact-benefit{border-left:1px solid var(--ss-warm-line)!important}
+.site-premium .contact-benefit-icon,
+.site-premium .contact-booking-icon{
+  border-radius:1px!important;
+  background:#efede9!important;
+  color:#333!important;
+}
+.site-premium .contact-experience-grid{
+  gap:14px!important;
+}
+.site-premium .contact-map-card,
+.site-premium .contact-booking-card{
+  border-radius:1px!important;
+  border:1px solid var(--ss-warm-line)!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+.site-premium .contact-booking-card{
+  background:#fff!important;
+}
+.site-premium .contact-booking-card h3{
+  font-family:var(--sans)!important;
+  font-size:clamp(31px,3vw,44px)!important;
+  font-weight:300!important;
+  letter-spacing:-.035em!important;
+}
+.site-premium .contact-route-button{
+  border-radius:1px!important;
+}
+.site-premium .contact-booking-flow>div{
+  border-radius:1px!important;
+  border-color:var(--ss-warm-line)!important;
+}
+
+/* FOOTER */
+.site-premium .premium-footer{
+  background:#161717!important;
+  color:rgba(255,255,255,.62)!important;
+  border:0!important;
+}
+.site-premium .premium-footer a{color:#fff!important}
+
+/* responsive finish */
+@media(max-width:980px){
+  .site-premium .section-heading.split,
+  .site-premium .contact-experience-heading{
+    grid-template-columns:1fr!important;
+    gap:22px!important;
+  }
+  .site-premium .premium-about .about-image{min-height:620px!important}
+  .site-premium .contact-benefits{grid-template-columns:1fr 1fr!important}
+  .site-premium .contact-benefit:nth-child(3){border-left:0!important;border-top:1px solid var(--ss-warm-line)!important}
+  .site-premium .contact-benefit:nth-child(4){border-top:1px solid var(--ss-warm-line)!important}
+}
+@media(max-width:760px){
+  .site-premium .premium-treatments,
+  .site-premium .booking-editorial,
+  .site-premium .premium-boutique,
+  .site-premium .premium-contact{
+    padding-top:82px!important;
+    padding-bottom:84px!important;
+  }
+  .site-premium .treatment-grid-refined{grid-template-columns:1fr!important}
+  .site-premium .treatment-grid-refined .treatment-card{min-height:470px!important}
+  .site-premium .principles-grid{grid-template-columns:1fr!important}
+  .site-premium .principles-grid article+article{border-left:0!important;border-top:1px solid rgba(255,255,255,.14)!important}
+  .site-premium .contact-benefits{grid-template-columns:1fr!important}
+  .site-premium .contact-benefit+.contact-benefit{border-left:0!important;border-top:1px solid var(--ss-warm-line)!important}
+}
