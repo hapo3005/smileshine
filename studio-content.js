@@ -14,6 +14,10 @@
       const value=get(node.dataset.studioText);
       if(value!==undefined&&value!==null)node.textContent=String(value);
     });
+    root.querySelectorAll('[data-studio-href]').forEach(node=>{
+      const value=get(node.dataset.studioHref);
+      if(value)node.href=String(value);
+    });
     root.querySelectorAll('[data-studio-phone-link]').forEach(node=>{
       node.href=`tel:${C.studio.phone.e164}`;
       const target=node.querySelector('[data-studio-phone-display]');
