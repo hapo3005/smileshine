@@ -262,8 +262,7 @@
   function initRecurringBlocks(){
     if(A.recurringBlocksReady)return;A.recurringBlocksReady=true;
     injectStyles();ensureSeriesMeta();extendForm();ensureDialogs();bindActions();
-    const baseRenderAll=A.renderAll;A.renderAll=()=>{baseRenderAll?.();extendForm();ensureSeriesMeta();renderGroupedBlockList()};
-    const baseRenderBlocks=A.renderBlocks;A.renderBlocks=()=>{baseRenderBlocks?.();ensureSeriesMeta();renderGroupedBlockList()};
+    A.registerRenderHook?.('recurring-blocks',()=>{extendForm();ensureSeriesMeta();renderGroupedBlockList()},30);
     renderGroupedBlockList();
   }
 
