@@ -8,7 +8,7 @@
     if(document.querySelector("link[data-calendar-workspace-style]"))return;
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href="admin-calendar-workspace.css?v=20261001-birthday-rc2";
+    link.href=A.assetUrl?.('admin-calendar-workspace.css')||'admin-calendar-workspace.css';
     link.dataset.calendarWorkspaceStyle="true";
     document.head.appendChild(link);
   }
