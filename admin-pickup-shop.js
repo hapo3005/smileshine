@@ -12,7 +12,7 @@
 
   function ensureStyles(){
     if(document.querySelector('link[data-pickup-admin-style]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-pickup-shop.css?v=20261001-birthday-rc2';link.dataset.pickupAdminStyle='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href=A.assetUrl?.('admin-pickup-shop.css')||'admin-pickup-shop.css';link.dataset.pickupAdminStyle='true';document.head.appendChild(link);
   }
 
   function ensureUI(){
