@@ -1,5 +1,6 @@
 (() => {
   const A=window.SSAdmin;if(!A)return;
+  const OWNER_FIRST=window.SmileShineConfig?.studio?.owner?.firstName||'Birgit';
   const {$,$$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,escapeHTML,SHORT_DAYS,DAY_NAMES,STATUS_LABELS}=A;
   const iconSVG=name=>({
     calendar:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M7.5 3v5M16.5 3v5M3.5 10h17"/></svg>',
@@ -13,7 +14,7 @@
     if(!views.includes(name))name='dashboard';
     $$('.view').forEach(v=>v.classList.toggle('active',v.dataset.viewPanel===name));
     $$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
-    const hour=new Date().getHours(),greeting=hour<12?'Guten Morgen, Birgit.':hour<18?'Guten Tag, Birgit.':'Guten Abend, Birgit.';
+    const hour=new Date().getHours(),greeting=`${hour<12?'Guten Morgen':hour<18?'Guten Tag':'Guten Abend'}, ${OWNER_FIRST}.`;
     const titles={dashboard:greeting,calendar:'Kalender',appointments:'Termine',customers:'Kunden',services:'Leistungen',availability:'Verfügbarkeit',pickup:'Abholshop',settings:'Einstellungen'};
     if($('#pageTitle'))$('#pageTitle').textContent=titles[name];
     if(location.hash!==`#${name}`)history.replaceState(null,'',`#${name}`);

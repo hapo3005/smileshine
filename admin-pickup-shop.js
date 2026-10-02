@@ -2,6 +2,9 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,escapeHTML}=A;
+  const CONFIG=window.SmileShineConfig||{};
+  const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
+  const PICKUP_ADDRESS=CONFIG.studio?.address?.pickup||'Raiffeisenstraße 4, 54516 Wittlich-Bombogen';
   const ORDER_KEY='smileshine_pickup_orders_demo_v1';
   const statusLabels={new:'Neu',ready:'Abholbereit',collected:'Abgeholt',cancelled:'Storniert'};
 
@@ -26,7 +29,7 @@
 
     if(!$('.view[data-view-panel="pickup"]')){
       const view=document.createElement('section');view.className='view';view.dataset.viewPanel='pickup';
-      view.innerHTML=`<div class="view-heading"><div><p class="eyebrow">Abholshop</p><h2>Online ausgewählt. Im Studio vorbereitet.</h2><p class="muted">Keine Pakete und keine Lieferadressen: Birgit sieht offene Abholwünsche und bereitet sie für die Abholung vor.</p></div><a class="soft-button pickup-public-link" href="index.html#shop">Abholshop ansehen ↗</a></div><div id="pickupAdminSummary" class="pickup-admin-summary"></div><article class="panel pickup-orders-panel"><div class="panel-head"><div><span class="panel-kicker">Abholaufträge</span><h3>Was muss vorbereitet werden?</h3></div><div class="pickup-admin-filter"><button type="button" data-pickup-admin-filter="active" class="active">Offen</button><button type="button" data-pickup-admin-filter="all">Alle</button></div></div><div id="pickupOrdersList" class="pickup-orders-list"></div></article>`;
+      view.innerHTML=`<div class="view-heading"><div><p class="eyebrow">Abholshop</p><h2>Online ausgewählt. Im Studio vorbereitet.</h2><p class="muted">Keine Pakete und keine Lieferadressen: ${escapeHTML(OWNER_FIRST)} sieht offene Abholwünsche und bereitet sie für die Abholung vor.</p></div><a class="soft-button pickup-public-link" href="index.html#shop">Abholshop ansehen ↗</a></div><div id="pickupAdminSummary" class="pickup-admin-summary"></div><article class="panel pickup-orders-panel"><div class="panel-head"><div><span class="panel-kicker">Abholaufträge</span><h3>Was muss vorbereitet werden?</h3></div><div class="pickup-admin-filter"><button type="button" data-pickup-admin-filter="active" class="active">Offen</button><button type="button" data-pickup-admin-filter="all">Alle</button></div></div><div id="pickupOrdersList" class="pickup-orders-list"></div></article>`;
       const settingsView=$('.view[data-view-panel="settings"]');settingsView?.before(view);
     }
 
@@ -41,7 +44,7 @@
   function normalize(order){
     if(!order.status)order.status='new';
     order.fulfillment='pickup';
-    order.pickupAddress=order.pickupAddress||'Raiffeisenstraße 4, 54516 Wittlich-Bombogen';
+    order.pickupAddress=order.pickupAddress||PICKUP_ADDRESS;
     return order;
   }
 

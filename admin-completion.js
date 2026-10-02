@@ -2,6 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,isoDate,addDays,dateShort,escapeHTML,uid,currency}=A;
+  const OWNER_FIRST=window.SmileShineConfig?.studio?.owner?.firstName||'Birgit';
   const METHODS=['Bar','Karte','Überweisung','Online','Gutschein'];
 
   const appointment=id=>(A.db.appointments||[]).find(a=>a.id===id);
@@ -91,7 +92,7 @@
       const resultLabel=isConsult?'Besprochene Optionen / offene Fragen':isNails?'Besonderheiten für den nächsten Termin':'Ergebnis / Besonderheiten';
       form.innerHTML=`
         <section class="completion-step">
-          <div class="completion-step-intro"><span class="panel-kicker">Schritt 1 von 4</span><h4>${isConsult?'Beratung kurz dokumentieren':'Behandlung dokumentieren'}</h4><p>Nur die Informationen, die Birgit beim nächsten Termin wirklich helfen.</p></div>
+          <div class="completion-step-intro"><span class="panel-kicker">Schritt 1 von 4</span><h4>${isConsult?'Beratung kurz dokumentieren':'Behandlung dokumentieren'}</h4><p>Nur die Informationen, die ${OWNER_FIRST} beim nächsten Termin wirklich helfen.</p></div>
           <div class="completion-field-grid">
             <label><span>${escapeHTML(materialLabel)}</span><input name="material" value="${escapeHTML(s.material??record?.material??'')}" placeholder="${escapeHTML(materialPlaceholder)}"></label>
             <label class="wide"><span>${escapeHTML(resultLabel)}</span><textarea name="result" rows="4" placeholder="Kurzer, praktischer Vermerk">${escapeHTML(s.result??record?.result??'')}</textarea></label>

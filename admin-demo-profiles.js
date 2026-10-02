@@ -2,7 +2,9 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=12;
+  const CONFIG=window.SmileShineConfig||{};
+  const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
+  const VERSION=14;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -131,42 +133,30 @@
     A.ensureCustomerNumbers?.(db);
   }
 
+  const RAW_DEMO_SERVICE_DEFS=[
+    {id:'demo-nail-refill',name:'Nageldesign · Auffüllen Standard',category:'Nägel · Modellage',duration:60,price:55,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Regelmäßiges Auffüllen und Formkorrektur der Modellage.',internalNote:`Terminlänge 60 Min. festgelegt. Preis ist ein vorläufiger Arbeitswert und mit ${OWNER_FIRST} final zu bestätigen.`},
+    {id:'demo-nail-refill-design',name:'Nageldesign · Auffüllen French / Babyboomer / aufwendiger',category:'Nägel · Modellage',duration:75,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Auffüllen mit zusätzlicher Zeit für French, Babyboomer, Nailart oder mehrere Reparaturen.',internalNote:`Terminlänge 75 Min. festgelegt. Preis noch mit ${OWNER_FIRST} festlegen.`},
+    {id:'demo-nail-new',name:'Nageldesign · Neumodellage',category:'Nägel · Modellage',duration:90,price:75,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Neumodellage mit Form- und Farbabstimmung.',internalNote:`Terminlänge 90 Min. festgelegt. Preis ist ein vorläufiger Arbeitswert und mit ${OWNER_FIRST} final zu bestätigen.`},
+    {id:'demo-nail-strengthen',name:'Naturnagelverstärkung / Gel',category:'Nägel · Modellage',duration:60,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Stabilisierung und gepflegte Modellage auf dem Naturnagel.',internalNote:`Terminlänge 60 Min. festgelegt. Angebot und Preis mit ${OWNER_FIRST} final bestätigen.`},
+    {id:'demo-nail-care',name:'Klassische Maniküre',category:'Nägel · Pflege',duration:45,price:42,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Pflege von Naturnägeln und Nagelhaut mit sauberer Formgebung.',internalNote:`Terminlänge 45 Min. festgelegt. Preis ist ein vorläufiger Arbeitswert und mit ${OWNER_FIRST} final zu bestätigen.`},
+    {id:'demo-nail-shellac',name:'Maniküre + Farbe / Shellac',category:'Nägel · Pflege',duration:60,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Maniküre mit zusätzlicher Farb- bzw. Shellac-Anwendung.',internalNote:`Terminlänge 60 Min. festgelegt. Angebot und Preis mit ${OWNER_FIRST} final bestätigen.`},
+    {id:'demo-nail-remove',name:'Modellage entfernen + Pflege',category:'Nägel · Service',duration:30,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Schonendes Entfernen der Modellage mit anschließender Nagelpflege.',internalNote:`Terminlänge 30 Min. festgelegt. Preis mit ${OWNER_FIRST} final bestätigen.`},
+    {id:'demo-nail-repair',name:'Nagelreparatur',category:'Nägel · Service',duration:15,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Kurzer Reparaturtermin für einen beschädigten Modellagenagel.',internalNote:`Terminlänge 15 Min. festgelegt. Preis mit ${OWNER_FIRST} final bestätigen.`},
+  ];
   const DEMO_SERVICE_DEFS=[
-    {id:'demo-nail-refill',name:'Nageldesign · Auffüllen Standard',category:'Nägel · Modellage',duration:60,price:55,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Regelmäßiges Auffüllen und Formkorrektur der Modellage.',internalNote:'Terminlänge 60 Min. festgelegt. Preis ist ein vorläufiger Arbeitswert und mit Birgit final zu bestätigen.'},
-    {id:'demo-nail-refill-design',name:'Nageldesign · Auffüllen French / Babyboomer / aufwendiger',category:'Nägel · Modellage',duration:75,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Auffüllen mit zusätzlicher Zeit für French, Babyboomer, Nailart oder mehrere Reparaturen.',internalNote:'Terminlänge 75 Min. festgelegt. Preis noch mit Birgit festlegen.'},
-    {id:'demo-nail-new',name:'Nageldesign · Neumodellage',category:'Nägel · Modellage',duration:90,price:75,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Neumodellage mit Form- und Farbabstimmung.',internalNote:'Terminlänge 90 Min. festgelegt. Preis ist ein vorläufiger Arbeitswert und mit Birgit final zu bestätigen.'},
-    {id:'demo-nail-strengthen',name:'Naturnagelverstärkung / Gel',category:'Nägel · Modellage',duration:60,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Stabilisierung und gepflegte Modellage auf dem Naturnagel.',internalNote:'Terminlänge 60 Min. festgelegt. Angebot und Preis mit Birgit final bestätigen.'},
-    {id:'demo-nail-care',name:'Klassische Maniküre',category:'Nägel · Pflege',duration:45,price:42,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Pflege von Naturnägeln und Nagelhaut mit sauberer Formgebung.',internalNote:'Terminlänge 45 Min. festgelegt. Preis ist ein vorläufiger Arbeitswert und mit Birgit final zu bestätigen.'},
-    {id:'demo-nail-shellac',name:'Maniküre + Farbe / Shellac',category:'Nägel · Pflege',duration:60,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Maniküre mit zusätzlicher Farb- bzw. Shellac-Anwendung.',internalNote:'Terminlänge 60 Min. festgelegt. Angebot und Preis mit Birgit final bestätigen.'},
-    {id:'demo-nail-remove',name:'Modellage entfernen + Pflege',category:'Nägel · Service',duration:30,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Schonendes Entfernen der Modellage mit anschließender Nagelpflege.',internalNote:'Terminlänge 30 Min. festgelegt. Preis mit Birgit final bestätigen.'},
-    {id:'demo-nail-repair',name:'Nagelreparatur',category:'Nägel · Service',duration:15,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Kurzer Reparaturtermin für einen beschädigten Modellagenagel.',internalNote:'Terminlänge 15 Min. festgelegt. Preis mit Birgit final bestätigen.'},
-
-    {id:'brows-pmu',name:'Augenbrauen Permanent Make-up',category:'Permanent Make-up · Augenbrauen',duration:120,price:299,deposit:50,active:true,verification:'market',demoOnly:false,description:'Dauerhafte Betonung und harmonische Formgebung der Augenbrauen.',internalNote:'Terminlänge 120 Min. festgelegt. Vorläufiger Markt-Arbeitswert 299 € · Anzahlung 50 €. Mit Birgit final bestätigen.'},
-    {id:'brows-hair',name:'Härchenzeichnung Augenbrauen',category:'Permanent Make-up · Augenbrauen',duration:120,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Feine, natürlich wirkende Härchenoptik für mehr Definition und Fülle.',internalNote:'Terminlänge 120 Min. festgelegt; konkretes Angebot und Preis mit Birgit final bestätigen.'},
-    {id:'powder-brows',name:'Powder Brows',category:'Permanent Make-up · Augenbrauen',duration:120,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Sanft schattierte Augenbrauen mit weichem, pudrigem Finish.',internalNote:'Terminlänge 120 Min. festgelegt; konkretes Angebot und Preis mit Birgit final bestätigen.'},
-    {id:'brows-refresh',name:'Augenbrauen-Auffrischung',category:'Permanent Make-up · Augenbrauen',duration:90,price:169,deposit:30,active:true,verification:'market',demoOnly:false,description:'Auffrischung einer bestehenden Augenbrauenpigmentierung.',internalNote:'Terminlänge 90 Min. festgelegt. Vorläufiger Markt-Arbeitswert 169 € · Anzahlung 30 €. Mit Birgit final bestätigen.'},
-    {id:'pmu-followup-brows',name:'PMU-Nachbehandlung · Augenbrauen',category:'Permanent Make-up · Augenbrauen',duration:60,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Kontrolle und gezielte Nachpigmentierung der Augenbrauen nach der Erstbehandlung.',internalNote:'Terminlänge 60 Min. festgelegt. Preis bewusst offen: mit Birgit klären, ob Nachbehandlung inklusive oder separat berechnet wird.'},
-
-    {id:'eyeliner',name:'Lidstrich',category:'Permanent Make-up · Augen',duration:90,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Präzise Pigmentierung für eine dauerhaft definierte Augenpartie.',internalNote:'Terminlänge 90 Min. festgelegt; konkretes Angebot und Preis mit Birgit final bestätigen.'},
-    {id:'lashline',name:'Wimpernkranzverdichtung',category:'Permanent Make-up · Augen',duration:90,price:249,deposit:50,active:true,verification:'market',demoOnly:false,description:'Dezente Pigmentierung am Wimpernansatz für einen dichteren Ausdruck.',internalNote:'Terminlänge 90 Min. festgelegt. Vorläufiger Markt-Arbeitswert 249 € · Anzahlung 50 €. Mit Birgit final bestätigen.'},
-    {id:'shaded-eyeliner',name:'Modellierter Lidstrich / Eyeliner',category:'Permanent Make-up · Augen',duration:105,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Individuell geformte Lidpigmentierung mit stärkerer Definition.',internalNote:'Terminlänge 105 Min. als Ausgangswert; mit Birgit final bestätigen.'},
-    {id:'lashline-refresh',name:'Wimpernkranz-Auffrischung',category:'Permanent Make-up · Augen',duration:90,price:149,deposit:30,active:true,verification:'market',demoOnly:false,description:'Auffrischung einer bestehenden Pigmentierung am Wimpernkranz.',internalNote:'Terminlänge 90 Min. festgelegt. Vorläufiger Markt-Arbeitswert 149 € · Anzahlung 30 €. Mit Birgit final bestätigen.'},
-    {id:'pmu-followup-lash',name:'PMU-Nachbehandlung · Wimpernkranz',category:'Permanent Make-up · Augen',duration:60,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Kontrolle und gezielte Nachpigmentierung des Wimpernkranzes.',internalNote:'Terminlänge 60 Min. festgelegt. Preis bewusst offen: mit Birgit klären, ob Nachbehandlung inklusive oder separat berechnet wird.'},
-
-    {id:'lip-pmu',name:'Lippenpigmentierung',category:'Permanent Make-up · Lippen',duration:150,price:349,deposit:75,active:true,verification:'market',demoOnly:false,description:'Natürlich wirkende Pigmentierung für Kontur, Farbe und Frische.',internalNote:'Terminlänge 150 Min. festgelegt. Vorläufiger Markt-Arbeitswert 349 € · Anzahlung 75 €. Mit Birgit final bestätigen.'},
-    {id:'lip-contour',name:'Lippenkontur',category:'Permanent Make-up · Lippen',duration:120,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Präzise Betonung und Harmonisierung der natürlichen Lippenkontur.',internalNote:'Terminlänge 120 Min. festgelegt; konkretes Angebot und Preis mit Birgit final bestätigen.'},
-    {id:'lip-full',name:'Lippen-Vollzeichnung',category:'Permanent Make-up · Lippen',duration:150,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Gleichmäßige Pigmentierung der gesamten Lippenfläche.',internalNote:'Terminlänge 150 Min. festgelegt; konkretes Angebot und Preis mit Birgit final bestätigen.'},
-    {id:'lip-refresh',name:'Lippen-Auffrischung',category:'Permanent Make-up · Lippen',duration:120,price:199,deposit:40,active:true,verification:'market',demoOnly:false,description:'Auffrischung einer bestehenden Lippenpigmentierung.',internalNote:'Terminlänge 120 Min. festgelegt. Vorläufiger Markt-Arbeitswert 199 € · Anzahlung 40 €. Mit Birgit final bestätigen.'},
-    {id:'pmu-followup-lips',name:'PMU-Nachbehandlung · Lippen',category:'Permanent Make-up · Lippen',duration:90,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Kontrolle und gezielte Nachpigmentierung der Lippen nach der Erstbehandlung.',internalNote:'Terminlänge 90 Min. festgelegt. Preis bewusst offen: mit Birgit klären, ob Nachbehandlung inklusive oder separat berechnet wird.'},
-
-    {id:'consult',name:'Beratung / Vorbesprechung',category:'Beratung & Grundlagen',duration:30,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',internalNote:'Terminlänge 30 Min. festgelegt; mit Birgit final bestätigen.'}
+    ...RAW_DEMO_SERVICE_DEFS,
+    ...(CONFIG.services||[]).map(service=>({...service,demoOnly:false}))
   ];
   const RETIRED_SERVICE_IDS=new Set(['brows','eyes','lips','pmu','cosmetic','brows-hair','powder-brows','eyeliner','shaded-eyeliner','lip-contour','lip-full','demo-pmu-followup','pmu-followup','pmu-refresh']);
+  const configuredAssumption=id=>{
+    const service=(CONFIG.services||[]).find(item=>item.id===id);
+    return {duration:Number(service?.duration||30),price:Number(service?.price||0),deposit:Number(service?.deposit||0)};
+  };
   const CORE_ASSUMPTIONS={
-    'Augenbrauen':{duration:120,price:299,deposit:50},
-    'Lid & Wimpernkranz':{duration:90,price:249,deposit:50},
-    'Lippen':{duration:150,price:349,deposit:75},
-    'Beratung':{duration:30,price:0,deposit:0}
+    'Augenbrauen':configuredAssumption('brows-pmu'),
+    'Lid & Wimpernkranz':configuredAssumption('lashline'),
+    'Lippen':configuredAssumption('lip-pmu'),
+    'Beratung':configuredAssumption('consult')
   };
   const FOLLOWUP_SERVICE_BY_PRIMARY={
     'brows-pmu':'pmu-followup-brows',
@@ -192,7 +182,7 @@
   function ensureDemoServices(db,rebuild){
     db.services=Array.isArray(db.services)?db.services:[];
     if(rebuild){
-      const baseline={'Augenbrauen':90,'Lid & Wimpernkranz':75,'Lippen':120,'Beratung':30};
+      const baseline=Object.fromEntries(Object.entries(CORE_ASSUMPTIONS).map(([name,value])=>[name,value.duration]));
       db.services.forEach(service=>{
         if(!service.demoAssumption)return;
         const key=Object.keys(baseline).find(name=>service.name===name||(name==='Augenbrauen'&&/Augenbrauen/i.test(service.name))||(name==='Lid & Wimpernkranz'&&/Wimpernkranz|Lid/i.test(service.name))||(name==='Lippen'&&/Lippen/i.test(service.name))||(name==='Beratung'&&/Beratung/i.test(service.name)));
@@ -213,11 +203,8 @@
       } else db.services.push({...def});
     });
     if(rebuild){
-      db.slotInterval=15;db.buffer=10;
-      db.workingHours={
-        1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},
-        4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}
-      };
+      db.slotInterval=Number(CONFIG.schedule?.slotInterval||15);db.buffer=Number(CONFIG.schedule?.buffer||10);
+      db.workingHours=JSON.parse(JSON.stringify(CONFIG.schedule?.workingHours||db.workingHours||{}));
     }
   }
 
@@ -366,8 +353,8 @@
     const day=value=>new Date(`${today}T${value}:00`).toISOString();
     const depositDate=isoDate(addDays(new Date(`${today}T12:00:00`),-7));
     const storyAppointments=[
-      {id:prefix+'anna',date:today,time:'09:00',duration:120,service:brows.name,customerId:anna.id,customerName:anna.name,phone:anna.phone,email:anna.email,status:'confirmed',source:'studio',phase:'Erstbehandlung',payment:'Online-Anzahlung',paymentPreference:'Online-Anzahlung',note:'Sehr natürliches Ergebnis gewünscht · vorhandene Form erhalten.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung, Einverständnis und Ausgangsfotos geprüft.'},listPrice:299,finalPrice:299,discount:0,depositExpected:50,paidAmount:50,payments:[{id:prefix+'pay_anna_deposit',amount:50,method:'Online',note:'Anzahlung erfasst · Präsentationsdaten',createdAt:new Date(`${depositDate}T12:00:00`).toISOString()}],paymentStatus:'partial',isDemoBooking:true,presentationStory:true},
-      {id:prefix+'petra',date:today,time:'12:15',duration:90,service:lashline.name,customerId:petra.id,customerName:petra.name,phone:petra.phone,email:petra.email,status:'completed',source:'studio',phase:'Erstbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Feine, unauffällige Verdichtung am Wimpernansatz.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'},listPrice:249,finalPrice:249,discount:0,depositExpected:0,paidAmount:249,payments:[{id:prefix+'pay_petra',amount:249,method:'Karte',note:'Bezahlt im Studio · Präsentationsdaten',createdAt:day('13:48')}],paymentStatus:'paid',isDemoBooking:true,presentationStory:true},
+      {id:prefix+'anna',date:today,time:'09:00',duration:Number(brows.duration||30),service:brows.name,customerId:anna.id,customerName:anna.name,phone:anna.phone,email:anna.email,status:'confirmed',source:'studio',phase:'Erstbehandlung',payment:'Online-Anzahlung',paymentPreference:'Online-Anzahlung',note:'Sehr natürliches Ergebnis gewünscht · vorhandene Form erhalten.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung, Einverständnis und Ausgangsfotos geprüft.'},listPrice:Number(brows.price||0),finalPrice:Number(brows.price||0),discount:0,depositExpected:Number(brows.deposit||0),paidAmount:Number(brows.deposit||0),payments:[{id:prefix+'pay_anna_deposit',amount:Number(brows.deposit||0),method:'Online',note:'Anzahlung erfasst · Präsentationsdaten',createdAt:new Date(`${depositDate}T12:00:00`).toISOString()}],paymentStatus:Number(brows.deposit||0)>0?'partial':'open',isDemoBooking:true,presentationStory:true},
+      {id:prefix+'petra',date:today,time:'12:15',duration:Number(lashline.duration||30),service:lashline.name,customerId:petra.id,customerName:petra.name,phone:petra.phone,email:petra.email,status:'completed',source:'studio',phase:'Erstbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Feine, unauffällige Verdichtung am Wimpernansatz.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'},listPrice:Number(lashline.price||0),finalPrice:Number(lashline.price||0),discount:0,depositExpected:0,paidAmount:Number(lashline.price||0),payments:[{id:prefix+'pay_petra',amount:Number(lashline.price||0),method:'Karte',note:'Bezahlt im Studio · Präsentationsdaten',createdAt:day('13:48')}],paymentStatus:'paid',isDemoBooking:true,presentationStory:true},
       {id:prefix+'laura',date:today,time:'14:30',duration:30,service:consult.name,customerId:laura.id,customerName:laura.name,phone:laura.phone,email:laura.email,status:'pending',source:'online',phase:'Beratung',payment:'Im Studio',paymentPreference:'Im Studio',contactPreference:'WhatsApp',reminderOptIn:true,note:'Online-Anfrage · möchte Lippenpigmentierung besprechen.',precheck:{goal:'Natürlich frischer Lippenfarbton ohne harte Kontur',previous:'Nein',allergy:'Nein',medication:'Nein',precheckNote:'Möglichst natürlich und alltagstauglich.'},preparation:{status:'open',consent:false,photos:false,note:'Online-Anfrage prüfen und Beratung vorbereiten.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true},
       {id:prefix+'sabine',date:today,time:'16:30',duration:60,service:followupBrows.name,customerId:sabine.id,customerName:sabine.name,phone:sabine.phone,email:sabine.email,status:'confirmed',source:'studio',phase:'Nachbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Nachbehandlung Augenbrauen · Form und Heilungsverlauf kontrollieren.',preparation:{status:'open',consent:false,photos:false,note:'Ausgangsfotos und Behandlungsnotiz vor Termin noch prüfen.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true}
     ];
@@ -401,7 +388,7 @@
       ['booking','Julia Weber: Für einen kurzfristigen Termin auf der Warteliste.']
     ];
     activity.reverse().forEach((item,index)=>db.activity.unshift({id:prefix+'activity_'+(index+1),type:item[0],text:item[1],date:new Date(now.getTime()-(index+1)*24*60000).toISOString()}));
-    db.presentationStory={version:1,birthdayReady:true,date:today,headline:'Ein Studiotag, der Birgit Arbeit abnimmt.',steps:['Online-Anfrage prüfen','Behandlung abschließen','Zahlung und Nachpflege erfassen','Freie Lücke über Warteliste besetzen','Abholvormerkung bearbeiten']};
+    db.presentationStory={version:1,birthdayReady:true,date:today,headline:`Ein Studiotag, der ${OWNER_FIRST} Arbeit abnimmt.`,steps:['Online-Anfrage prüfen','Behandlung abschließen','Zahlung und Nachpflege erfassen','Freie Lücke über Warteliste besetzen','Abholvormerkung bearbeiten']};
   }
 
   function buildSimulation(db){

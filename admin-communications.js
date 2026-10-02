@@ -2,6 +2,9 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,isoDate,addDays,dateShort,escapeHTML,uid}=A;
+  const CONFIG=window.SmileShineConfig||{};
+  const STUDIO_NAME=CONFIG.studio?.name||'Smile & Shine';
+  const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
   const VERSION=1;
   const TYPE_LABELS={confirm:'Terminbestätigung',change:'Terminänderung',reminder:'Terminerinnerung',aftercare:'Nachpflege',healing:'Heilungsverlauf',waitlist:'Freier Termin'};
   const TYPE_ICONS={confirm:'✓',change:'↻',reminder:'◷',aftercare:'♡',healing:'○',waitlist:'＋'};
@@ -124,14 +127,14 @@
   function messageText(item){
     const a=appointment(item.appointmentId),c=customer(item.customerId),name=String(a?.customerName||c?.name||'').split(/\s+/)[0]||'Hallo';
     if(item.type==='aftercare'){
-      return `Hallo ${name} 😊\n\nvielen Dank für deinen Termin bei Smile & Shine. Ich hoffe, du fühlst dich mit dem Ergebnis wohl. Bitte halte dich an die besprochenen Pflegehinweise. Wenn etwas unklar ist oder du eine Frage hast, schreib mir einfach hier.\n\nLiebe Grüße\nBirgit`;
+      return `Hallo ${name} 😊\n\nvielen Dank für deinen Termin bei ${STUDIO_NAME}. Ich hoffe, du fühlst dich mit dem Ergebnis wohl. Bitte halte dich an die besprochenen Pflegehinweise. Wenn etwas unklar ist oder du eine Frage hast, schreib mir einfach hier.\n\nLiebe Grüße\n${OWNER_FIRST}`;
     }
     if(item.type==='healing'){
-      return `Hallo ${name} 😊\n\nich wollte kurz nachfragen, wie sich alles seit deinem Termin bei Smile & Shine entwickelt hat und wie du mit dem Ergebnis zurechtkommst. Wenn du eine Frage hast oder mir etwas zeigen möchtest, kannst du mir gern hier schreiben.\n\nLiebe Grüße\nBirgit`;
+      return `Hallo ${name} 😊\n\nich wollte kurz nachfragen, wie sich alles seit deinem Termin bei ${STUDIO_NAME} entwickelt hat und wie du mit dem Ergebnis zurechtkommst. Wenn du eine Frage hast oder mir etwas zeigen möchtest, kannst du mir gern hier schreiben.\n\nLiebe Grüße\n${OWNER_FIRST}`;
     }
     if(item.type==='waitlist'){
       const slot=item.slot;
-      return `Hallo ${name} 😊\n\nbei Smile & Shine ist kurzfristig ein Termin frei geworden:\n\n📅 ${slot?dateShort(slot.date):''}\n🕒 ${slot?.time||''} Uhr\n✨ ${item.note?.split(' · ')[0]||''}\n\nWenn der Termin für dich passt, gib mir einfach kurz Bescheid.\n\nLiebe Grüße\nBirgit`;
+      return `Hallo ${name} 😊\n\nbei ${STUDIO_NAME} ist kurzfristig ein Termin frei geworden:\n\n📅 ${slot?dateShort(slot.date):''}\n🕒 ${slot?.time||''} Uhr\n✨ ${item.note?.split(' · ')[0]||''}\n\nWenn der Termin für dich passt, gib mir einfach kurz Bescheid.\n\nLiebe Grüße\n${OWNER_FIRST}`;
     }
     return '';
   }
@@ -162,7 +165,7 @@
     dialog.dataset.tab=tab;$$('[data-communication-tab]',dialog).forEach(btn=>btn.classList.toggle('active',btn.dataset.communicationTab===tab));
     const list=tab==='planned'?plannedCommunications():tab==='history'?historyCommunications():dueCommunications();
     const count=$('#communicationDueCount',dialog);if(count)count.textContent=String(dueCommunications().length);
-    body.innerHTML=`<section class="communication-list">${list.length?list.map(renderItem).join(''):`<div class="communication-empty"><strong>${tab==='due'?'Alles erledigt.':'Hier ist noch nichts.'}</strong><span>${tab==='due'?'Aktuell wartet keine Nachricht auf Birgit.':'Neue Einträge erscheinen automatisch.'}</span></div>`}</section>`;
+    body.innerHTML=`<section class="communication-list">${list.length?list.map(renderItem).join(''):`<div class="communication-empty"><strong>${tab==='due'?'Alles erledigt.':'Hier ist noch nichts.'}</strong><span>${tab==='due'?`Aktuell wartet keine Nachricht auf ${OWNER_FIRST}.`:'Neue Einträge erscheinen automatisch.'}</span></div>`}</section>`;
   }
 
   function openCenter(tab='due'){const dialog=ensureCenter();setTab(tab);if(!dialog.open)dialog.showModal()}
@@ -223,7 +226,7 @@
     const settings=$('.settings-grid');
     if(settings&&!$('[data-communication-setting]',settings)){
       const card=document.createElement('article');card.className='panel setting-card';card.dataset.communicationSetting='true';
-      card.innerHTML='<span class="setting-icon">✉</span><div><strong>Intelligente Kommunikation</strong><p>Bestätigungen, Änderungen, Erinnerungen, Nachpflege und Wiedervorlagen werden zentral geplant. WhatsApp bleibt unter Birgits Kontrolle.</p></div><span class="status-tag communication-active">Aktiv</span>';
+      card.innerHTML=`<span class="setting-icon">✉</span><div><strong>Intelligente Kommunikation</strong><p>Bestätigungen, Änderungen, Erinnerungen, Nachpflege und Wiedervorlagen werden zentral geplant. WhatsApp bleibt unter ${OWNER_FIRST}s Kontrolle.</p></div><span class="status-tag communication-active">Aktiv</span>`;
       settings.appendChild(card);
     }
   }

@@ -2267,3 +2267,27 @@ body.site-premium{
     display:none;
   }
 }
+
+
+/* Live-ready media slots · URLs are supplied by studio-config.js */
+.site-premium .hero-cinematic .hero-media{
+  background-image:
+    linear-gradient(180deg,rgba(247,242,237,.04),rgba(43,35,31,.08)),
+    var(--studio-media-hero);
+}
+.image-brows{background-image:var(--studio-media-brows)}
+.image-eyes{background-image:var(--studio-media-eyes)}
+.image-lips{background-image:var(--studio-media-lips)}
+.about-refined .about-image{
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.02),rgba(64,50,43,.08)),
+    var(--studio-media-about);
+}
+
+@media(max-width:760px){
+  .site-premium .hero-cinematic .hero-media{
+    background-image:
+      linear-gradient(180deg,rgba(29,23,20,.02) 30%,rgba(29,23,20,.42) 100%),
+      var(--studio-media-hero);
+  }
+}

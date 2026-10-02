@@ -53,12 +53,20 @@ test.use({
 
 function monitorErrors(page) {
   const errors = [];
-  page.on('pageerror', error => errors.push(`pageerror: ${error.message}`));
+  const isGoogleMapsNoise = value => {
+    const text = String(value || '');
+    return /(?:google\.com\/maps|maps\.googleapis\.com|places\.googleapis\.com|maps\.gstatic\.com|www\.google\.com)/i.test(text);
+  };
+  page.on('pageerror', error => {
+    const text = String(error?.message || error || '');
+    if (isGoogleMapsNoise(text)) return; // External Maps iframe failures must not be reported as Smile & Shine JS errors.
+    errors.push(`pageerror: ${text}`);
+  });
   page.on('console', message => {
     if (message.type() !== 'error') return;
     const source = message.location()?.url || '';
     const text = message.text();
-    if (source.includes('maps.gstatic.com') && text.includes('google is not defined')) return;
+    if (isGoogleMapsNoise(source) || isGoogleMapsNoise(text)) return;
     if (text.includes('downloadable font: download failed') && text.includes('fonts.gstatic.com')) return;
     errors.push(`console: ${text}`);
   });

@@ -1,3 +1,5 @@
+const STUDIO_CONFIG=window.SmileShineConfig;
+const PUBLIC_BUILD=document.querySelector('meta[name="smileshine-build"]')?.content||'dev';
 const toggle=document.querySelector('.menu-toggle');
 const nav=document.querySelector('.main-nav');
 if(toggle&&nav){
@@ -23,12 +25,16 @@ const precheckService=document.querySelector('#precheckService');
 const waitlistToggle=document.querySelector('#waitlistToggle');
 const waitlistForm=document.querySelector('#waitlistForm');
 
-const serviceCatalog=[
-  {group:'Permanent Make-up',name:'Augenbrauen',duration:120,serviceId:'brows-pmu'},
-  {group:'Permanent Make-up',name:'Lid & Wimpernkranz',duration:90,serviceId:'lashline'},
-  {group:'Permanent Make-up',name:'Lippen',duration:150,serviceId:'lip-pmu'},
-  {group:'Beratung',name:'Beratung',duration:30,serviceId:'consult'}
-]
+const publicServiceIds=['brows-pmu','lashline','lip-pmu','consult'];
+const serviceCatalog=publicServiceIds.map(serviceId=>{
+  const service=STUDIO_CONFIG?.services?.find(item=>item.id===serviceId);
+  return {
+    group:service?.publicGroup||service?.category||'Leistungen',
+    name:service?.publicName||service?.name||serviceId,
+    duration:Number(service?.duration||30),
+    serviceId
+  };
+})
 
 function renderServiceCatalog(){
   if(!serviceOptionsRoot)return;
@@ -278,6 +284,6 @@ async function importPublicModule(url,attempts=3){
   console.error('Smile & Shine: Modul konnte nicht geladen werden.',url,lastError);
   return null;
 }
-importPublicModule('./checkout-enhancements.js?v=20261001-birthday-rc3');
-importPublicModule('./booking-admin-sync.js?v=20261001-birthday-rc3');
-importPublicModule('./cnc-products-carousel.js?v=20261001-birthday-rc3');
+importPublicModule(`./checkout-enhancements.js?v=${encodeURIComponent(PUBLIC_BUILD)}`);
+importPublicModule(`./booking-admin-sync.js?v=${encodeURIComponent(PUBLIC_BUILD)}`);
+importPublicModule(`./cnc-products-carousel.js?v=${encodeURIComponent(PUBLIC_BUILD)}`);

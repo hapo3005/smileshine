@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="smileshine-build" content="20261002-core-refactor-rc1">
+  <meta name="smileshine-build" content="20261002-live-ready-rc1">
   <meta name="theme-color" content="#f8f4f2">
   <meta name="robots" content="noindex,nofollow">
   <title>Studio · Smile & Shine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=20261002-core-refactor-rc1">
+  <link rel="stylesheet" href="admin.css?v=20261002-live-ready-rc1">
 </head>
 <body class="demo-auth-locked">
   <div class="admin-app">
     <aside class="sidebar" aria-label="Studio-Navigation">
       <a class="admin-brand" href="#dashboard" aria-label="Smile & Shine Studio Start">
         <span class="admin-brand-mark">S</span>
-        <span><strong>SMILE &amp; SHINE</strong><small>STUDIO</small></span>
+        <span><strong data-studio-text="studio.name">SMILE &amp; SHINE</strong><small>STUDIO</small></span>
       </a>
 
       <nav class="side-nav">
@@ -39,7 +39,7 @@
     <main class="admin-main">
       <header class="topbar">
         <div>
-          <p class="topbar-kicker">Smile &amp; Shine · Wittlich-Bombogen</p>
+          <p class="topbar-kicker"><span data-studio-text="studio.name">Smile &amp; Shine</span> · <span data-studio-text="studio.locationLabel">Wittlich-Bombogen</span></p>
           <h1 id="pageTitle">Guten Tag, Birgit.</h1>
         </div>
         <div class="topbar-actions">
@@ -50,7 +50,7 @@
       </header>
 
       <div class="mobile-header">
-        <a class="mobile-brand" href="#dashboard"><span class="admin-brand-mark">S</span><span><strong>Smile &amp; Shine</strong><small>Studio</small></span></a>
+        <a class="mobile-brand" href="#dashboard"><span class="admin-brand-mark">S</span><span><strong data-studio-text="studio.name">Smile &amp; Shine</strong><small>Studio</small></span></a>
       </div>
 
       <section class="view active" data-view-panel="dashboard">
@@ -205,8 +205,10 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="studio-data-store.js?v=20261002-core-refactor-rc1"></script>
-  <script src="admin-demo-app.js?v=20261002-core-refactor-rc1"></script>
-  <script src="admin.js?v=20261002-core-refactor-rc1"></script>
+  <script src="studio-config.js?v=20261002-live-ready-rc1"></script>
+  <script src="studio-content.js?v=20261002-live-ready-rc1"></script>
+  <script src="studio-data-store.js?v=20261002-live-ready-rc1"></script>
+  <script src="admin-demo-app.js?v=20261002-live-ready-rc1"></script>
+  <script src="admin.js?v=20261002-live-ready-rc1"></script>
 </body>
 </html>

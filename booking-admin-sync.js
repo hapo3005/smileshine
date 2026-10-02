@@ -4,22 +4,12 @@
   const STORE=window.SmileShineDataStore;
   if(STORE?.ready)await STORE.ready;
   const KEY=STORE?.key||'smileshine_studio_v1';
-  const CATALOG_VERSION=6;
-  const CATALOG=[
-    {id:'consult',category:'Beratung & Grundlagen',name:'Beratung / Vorbesprechung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',duration:30,price:0,deposit:0,active:true,verification:'market',internalNote:'Terminlänge bereits festgelegt. Preis ist noch offen und wird mit Birgit final bestätigt.'},
-
-    {id:'brows-pmu',category:'Permanent Make-up · Augenbrauen',name:'Augenbrauen Permanent Make-up',description:'Dauerhafte Betonung und harmonische Formgebung der Augenbrauen.',duration:120,price:299,deposit:50,active:true,verification:'market',internalNote:'Vorläufiger Markt-Arbeitswert 299 € · Anzahlung 50 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
-    {id:'brows-refresh',category:'Permanent Make-up · Augenbrauen',name:'Augenbrauen-Auffrischung',description:'Auffrischung einer bestehenden Augenbrauenpigmentierung.',duration:90,price:169,deposit:30,active:true,verification:'market',internalNote:'Vorläufiger Markt-Arbeitswert 169 € · Anzahlung 30 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
-    {id:'pmu-followup-brows',category:'Permanent Make-up · Augenbrauen',name:'PMU-Nachbehandlung · Augenbrauen',description:'Kontrolle und gezielte Nachpigmentierung der Augenbrauen nach der Erstbehandlung.',duration:60,price:0,deposit:0,active:true,verification:'market',internalNote:'Preis bewusst offen: mit Birgit klären, ob die Nachbehandlung enthalten oder separat berechnet wird. Terminlänge bereits festgelegt.'},
-
-    {id:'lashline',category:'Permanent Make-up · Augen',name:'Wimpernkranzverdichtung',description:'Dezente Pigmentierung am Wimpernansatz für einen dichteren Ausdruck.',duration:90,price:249,deposit:50,active:true,verification:'market',internalNote:'Vorläufiger Markt-Arbeitswert 249 € · Anzahlung 50 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
-    {id:'lashline-refresh',category:'Permanent Make-up · Augen',name:'Wimpernkranz-Auffrischung',description:'Auffrischung einer bestehenden Pigmentierung am Wimpernkranz.',duration:90,price:149,deposit:30,active:true,verification:'market',internalNote:'Vorläufiger Markt-Arbeitswert 149 € · Anzahlung 30 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
-    {id:'pmu-followup-lash',category:'Permanent Make-up · Augen',name:'PMU-Nachbehandlung · Wimpernkranz',description:'Kontrolle und gezielte Nachpigmentierung des Wimpernkranzes.',duration:60,price:0,deposit:0,active:true,verification:'market',internalNote:'Preis bewusst offen: mit Birgit klären, ob die Nachbehandlung enthalten oder separat berechnet wird. Terminlänge bereits festgelegt.'},
-
-    {id:'lip-pmu',category:'Permanent Make-up · Lippen',name:'Lippenpigmentierung',description:'Natürlich wirkende Pigmentierung für Kontur, Farbe und Frische.',duration:150,price:349,deposit:75,active:true,verification:'market',internalNote:'Vorläufiger Markt-Arbeitswert 349 € · Anzahlung 75 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
-    {id:'lip-refresh',category:'Permanent Make-up · Lippen',name:'Lippen-Auffrischung',description:'Auffrischung einer bestehenden Lippenpigmentierung.',duration:120,price:199,deposit:40,active:true,verification:'market',internalNote:'Vorläufiger Markt-Arbeitswert 199 € · Anzahlung 40 €. Terminlänge bereits festgelegt. Preis mit Birgit final bestätigen.'},
-    {id:'pmu-followup-lips',category:'Permanent Make-up · Lippen',name:'PMU-Nachbehandlung · Lippen',description:'Kontrolle und gezielte Nachpigmentierung der Lippen nach der Erstbehandlung.',duration:90,price:0,deposit:0,active:true,verification:'market',internalNote:'Preis bewusst offen: mit Birgit klären, ob die Nachbehandlung enthalten oder separat berechnet wird. Terminlänge bereits festgelegt.'}
-  ];
+  const CONFIG=window.SmileShineConfig;
+  if(!CONFIG?.services?.length)throw new Error('Smile & Shine: Studio-Konfiguration fehlt.');
+  const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
+  const CONFIG_HOURS=()=>JSON.parse(JSON.stringify(CONFIG.schedule?.workingHours||{}));
+  const CATALOG_VERSION=Number(CONFIG.serviceCatalogVersion||1);
+  const CATALOG=CONFIG.services.map(service=>({...service}));
 
   const $=(s,r=document)=>r.querySelector(s);
   const $$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -81,7 +71,7 @@
 
   function takeCustomerNumber(db){ensureCustomerNumbers(db);let next=Math.max(1,Number(db.nextCustomerNumber)||1);const used=new Set((db.customers||[]).map(c=>customerNumberValue(c.customerNumber)).filter(Boolean));while(used.has(next))next++;const value=customerNumber(next);db.nextCustomerNumber=next+1;return value}
 
-  function fallback(){return migrateCatalog({version:1,catalogVersion:CATALOG_VERSION,slotInterval:15,buffer:10,nextCustomerNumber:1,services:CATALOG.map(x=>({...x})),workingHours:{1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}},customers:[],appointments:[],blocked:[],activity:[]})}
+  function fallback(){return migrateCatalog({version:1,catalogVersion:CATALOG_VERSION,slotInterval:Number(CONFIG.schedule?.slotInterval||15),buffer:Number(CONFIG.schedule?.buffer||10),nextCustomerNumber:1,services:CATALOG.map(x=>({...x})),workingHours:CONFIG_HOURS(),customers:[],appointments:[],blocked:[],activity:[]})}
 
   function load(){
     try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x){migrateCatalog(x);ensureCustomerNumbers(x);localStorage.setItem(KEY,JSON.stringify(x));return x}}catch(e){}
@@ -109,12 +99,11 @@
   }
 
   const BUILTIN_IDS=new Set(CATALOG.map(item=>item.id));
-  const PRESENTATION_SERVICES=[
-    {id:'brows-pmu',name:'Augenbrauen',description:'Permanent Make-up für Form, Balance und Ausdruck.'},
-    {id:'lashline',name:'Lid & Wimpernkranz',description:'Dezente Betonung der Augenpartie.'},
-    {id:'lip-pmu',name:'Lippen',description:'Pigmentierung für Kontur, Farbe und Frische.'},
-    {id:'consult',name:'Beratung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.'}
-  ];
+  const PUBLIC_SERVICE_IDS=['brows-pmu','lashline','lip-pmu','consult'];
+  const PRESENTATION_SERVICES=PUBLIC_SERVICE_IDS.map(id=>{
+    const service=CATALOG.find(item=>item.id===id)||{};
+    return {id,name:service.publicName||service.name||id,description:service.publicDescription||service.description||'',category:service.publicGroup||service.category||'Leistungen'};
+  });
 
   function makeButton(s,display){
     const shown=display||{};
@@ -135,7 +124,7 @@
 
     PRESENTATION_SERVICES.forEach(display=>{
       const s=services.find(item=>item.id===display.id&&item.active!==false);
-      if(s)rows.push({category:display.id==='consult'?'Beratung':'Permanent Make-up',service:s,display});
+      if(s)rows.push({category:display.category,service:s,display});
     });
 
     services.filter(s=>s.active!==false&&!s.demoOnly&&!BUILTIN_IDS.has(s.id)).forEach(s=>{
@@ -195,11 +184,11 @@
     const consent=$('#precheckForm .consent-row span');if(consent)consent.textContent='Ich bestätige, dass meine Angaben vollständig und korrekt sind.';
     const dataConsent=$('#bookingForm .consent-row span');if(dataConsent)dataConsent.textContent='Ich stimme der Verarbeitung meiner Angaben zur Terminorganisation zu.';
     const waitNote=$('.waitlist-actions>span');if(waitNote)waitNote.textContent='Wähle Zeitraum und Flexibilität. Deine Kontaktdaten folgen im nächsten Schritt.';
-    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML='<strong>Alles auf einen Blick.</strong><span>Im Präsentationsmodus wird deine Anfrage lokal gespeichert und erscheint direkt in Birgits Studioansicht.</span>';
+    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML=`<strong>Alles auf einen Blick.</strong><span>Im Präsentationsmodus wird deine Anfrage lokal gespeichert und erscheint direkt in ${OWNER_FIRST}s Studioansicht.</span>`;
     const status=$('.summary-status');if(status)status.innerHTML='<span></span>Präsentationsmodus · lokal gespeichert';
   }
 
-  function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card),online=$('.payment-option[data-payment="Online-Anzahlung"]'),panel=$('.booking-panel[data-panel="5"]'),head=$('.booking-panel-head h3',panel),intro=$('.booking-panel-head p',panel);const publicPriceConfirmed=s.verification==='studio'||s.priceConfirmed===true;const hasDeposit=publicPriceConfirmed&&Number(s.deposit||0)>0;if(online)online.hidden=!hasDeposit;if(!hasDeposit&&state){state.payment='Im Studio';$('.payment-option',panel).forEach(btn=>{const selected=btn.dataset.payment==='Im Studio';btn.classList.toggle('selected',selected);const check=$('.payment-check',btn);if(check)check.textContent=selected?'✓':'○'});window.SmileShineBooking?.updateSummary?.()}if(head)head.textContent=hasDeposit?'Wie möchtest du bezahlen?':'Bezahlung beim Termin.';if(intro)intro.textContent=hasDeposit?'Wähle die gewünschte Zahlungsart.':'Für diese Leistung ist aktuell die Bezahlung im Studio vorgesehen.';if(strong)strong.textContent=hasDeposit?money(s.deposit)+' für diese Leistung':'Keine Anzahlung erforderlich';if(copy)copy.textContent=hasDeposit?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':'Birgits tatsächliche Preise werden vor dem Livegang final bestätigt.'}
+  function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card),online=$('.payment-option[data-payment="Online-Anzahlung"]'),panel=$('.booking-panel[data-panel="5"]'),head=$('.booking-panel-head h3',panel),intro=$('.booking-panel-head p',panel);const publicPriceConfirmed=s.verification==='studio'||s.priceConfirmed===true;const hasDeposit=publicPriceConfirmed&&Number(s.deposit||0)>0;if(online)online.hidden=!hasDeposit;if(!hasDeposit&&state){state.payment='Im Studio';$('.payment-option',panel).forEach(btn=>{const selected=btn.dataset.payment==='Im Studio';btn.classList.toggle('selected',selected);const check=$('.payment-check',btn);if(check)check.textContent=selected?'✓':'○'});window.SmileShineBooking?.updateSummary?.()}if(head)head.textContent=hasDeposit?'Wie möchtest du bezahlen?':'Bezahlung beim Termin.';if(intro)intro.textContent=hasDeposit?'Wähle die gewünschte Zahlungsart.':'Für diese Leistung ist aktuell die Bezahlung im Studio vorgesehen.';if(strong)strong.textContent=hasDeposit?money(s.deposit)+' für diese Leistung':'Keine Anzahlung erforderlich';if(copy)copy.textContent=hasDeposit?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':`${OWNER_FIRST}s tatsächliche Preise werden vor dem Livegang final bestätigt.`}
 
   function finalButton(){const panel=$('.booking-panel[data-panel="6"]'),button=panel?.querySelector('.button.primary');if(!button||button.dataset.synced)return;button.dataset.synced='true';button.classList.remove('booking-disabled');button.removeAttribute('aria-disabled');button.textContent='Terminanfrage vormerken';button.addEventListener('click',()=>commit(panel,button))}
 
@@ -225,14 +214,14 @@
       if(existing)Object.assign(existing,payload);
       else db.waitlist.push({id:uid('wait'),...payload,createdAt:new Date().toISOString()});
       db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`${existing?'Wartelisten-Anfrage aktualisiert':'Neue Wartelisten-Anfrage'}: ${name}, ${serviceName}.`,date:new Date().toISOString()});
-      save(db);button.disabled=true;button.textContent=existing?'✓ Wartelistenwunsch aktualisiert':'✓ Wartelistenwunsch gespeichert';message(panel,existing?'Der Wartelistenwunsch wurde aktualisiert und ist in Birgits Studioansicht verfügbar.':'Der Wartelistenwunsch ist lokal gespeichert und erscheint direkt in Birgits Studioansicht.',false,existing?'Warteliste aktualisiert':'Warteliste gespeichert');return;
+      save(db);button.disabled=true;button.textContent=existing?'✓ Wartelistenwunsch aktualisiert':'✓ Wartelistenwunsch gespeichert';message(panel,existing?`Der Wartelistenwunsch wurde aktualisiert und ist in ${OWNER_FIRST}s Studioansicht verfügbar.`:`Der Wartelistenwunsch ist lokal gespeichert und erscheint direkt in ${OWNER_FIRST}s Studioansicht.`,false,existing?'Warteliste aktualisiert':'Warteliste gespeichert');return;
     }
 
     const payment=state?.payment||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
     db.appointments=db.appointments||[];
     db.appointments.push({id:uid('appointment'),date,time,duration:Number(s.duration||30),service:s.name||serviceName,serviceDescription:s.description||'',customerId:customer.id,customerName:name,email,phone,contactPreference,reminderOptIn,status:'pending',payment,paymentPreference:payment,source:'online',presentation:true,note,precheck:state?.precheck||{},listPrice:price,finalPrice:price,discount:0,depositExpected,paidAmount:0,payments:[],paymentStatus:price===0?'paid':depositExpected>0?'deposit-pending':'open'});
     db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`Neue Online-Terminanfrage: ${name}, ${serviceName}.`,date:new Date().toISOString()});
-    save(db);button.disabled=true;button.textContent='✓ Anfrage gespeichert';message(panel,'Die Terminanfrage ist lokal gespeichert und erscheint als offene Anfrage in Birgits Studioansicht.',false,'Anfrage gespeichert');
+    save(db);button.disabled=true;button.textContent='✓ Anfrage gespeichert';message(panel,`Die Terminanfrage ist lokal gespeichert und erscheint als offene Anfrage in ${OWNER_FIRST}s Studioansicht.`,false,'Anfrage gespeichert');
   }
 
   function message(panel,text,error,title='Gespeichert'){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';box.setAttribute('role','status');box.setAttribute('aria-live','polite');panel.querySelector('.booking-actions')?.before(box)}const strong=document.createElement('strong'),span=document.createElement('span');strong.textContent=error?'Nicht verfügbar':String(title||'Gespeichert');span.textContent=String(text||'');box.replaceChildren(strong,span)}

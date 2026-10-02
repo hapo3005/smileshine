@@ -2,6 +2,9 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,escapeHTML}=A;
+  const CONFIG=window.SmileShineConfig||{};
+  const STUDIO_NAME=CONFIG.studio?.name||'Smile & Shine';
+  const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
 
   function normalizePhone(value){
     let raw=String(value||'').trim();
@@ -26,18 +29,18 @@
   function message(type,a,tone='friendly'){
     const name=firstName(a.customerName),date=longDate(a.date),details=`📅 ${date}\n🕒 ${a.time} Uhr\n✨ ${a.service}`;
     if(tone==='short'){
-      if(type==='reminder')return `Hallo ${name} 👋\n\nErinnerung an deinen Termin bei Smile & Shine:\n${details}\n\nLiebe Grüße\nBirgit`;
-      if(type==='change')return `Hallo ${name} 👋\n\ndein Termin bei Smile & Shine wurde geändert:\n${details}\n\nBitte gib kurz Bescheid, falls es nicht passt.\n\nLiebe Grüße\nBirgit`;
-      return `Hallo ${name} 👋\n\ndein Termin bei Smile & Shine ist bestätigt:\n${details}\n\nLiebe Grüße\nBirgit`;
+      if(type==='reminder')return `Hallo ${name} 👋\n\nErinnerung an deinen Termin bei ${STUDIO_NAME}:\n${details}\n\nLiebe Grüße\n${OWNER_FIRST}`;
+      if(type==='change')return `Hallo ${name} 👋\n\ndein Termin bei ${STUDIO_NAME} wurde geändert:\n${details}\n\nBitte gib kurz Bescheid, falls es nicht passt.\n\nLiebe Grüße\n${OWNER_FIRST}`;
+      return `Hallo ${name} 👋\n\ndein Termin bei ${STUDIO_NAME} ist bestätigt:\n${details}\n\nLiebe Grüße\n${OWNER_FIRST}`;
     }
     if(tone==='personal'){
-      if(type==='reminder')return `Hallo ${name} 😊\n\nich wollte dich kurz an deinen Termin bei mir im Smile & Shine Studio erinnern:\n\n${details}\n\nIch freue mich schon auf dich! Wenn noch etwas unklar ist, schreib mir einfach hier.\n\nLiebe Grüße\nBirgit`;
-      if(type==='change')return `Hallo ${name} 😊\n\nich habe deinen Termin bei Smile & Shine angepasst. Für dich ist jetzt Folgendes eingetragen:\n\n${details}\n\nSchau bitte kurz, ob der neue Termin für dich passt, und melde dich einfach hier, falls wir noch einmal schauen sollen.\n\nLiebe Grüße\nBirgit`;
-      return `Hallo ${name} 😊\n\nschön, dass du einen Termin bei Smile & Shine hast. Ich habe dich fest eingetragen:\n\n${details}\n\nWenn vorher noch eine Frage auftaucht, kannst du mir jederzeit hier schreiben. Ich freue mich auf dich!\n\nLiebe Grüße\nBirgit`;
+      if(type==='reminder')return `Hallo ${name} 😊\n\nich wollte dich kurz an deinen Termin bei mir im ${STUDIO_NAME} Studio erinnern:\n\n${details}\n\nIch freue mich schon auf dich! Wenn noch etwas unklar ist, schreib mir einfach hier.\n\nLiebe Grüße\n${OWNER_FIRST}`;
+      if(type==='change')return `Hallo ${name} 😊\n\nich habe deinen Termin bei ${STUDIO_NAME} angepasst. Für dich ist jetzt Folgendes eingetragen:\n\n${details}\n\nSchau bitte kurz, ob der neue Termin für dich passt, und melde dich einfach hier, falls wir noch einmal schauen sollen.\n\nLiebe Grüße\n${OWNER_FIRST}`;
+      return `Hallo ${name} 😊\n\nschön, dass du einen Termin bei ${STUDIO_NAME} hast. Ich habe dich fest eingetragen:\n\n${details}\n\nWenn vorher noch eine Frage auftaucht, kannst du mir jederzeit hier schreiben. Ich freue mich auf dich!\n\nLiebe Grüße\n${OWNER_FIRST}`;
     }
-    if(type==='reminder')return `Hallo ${name} 👋\n\nkleine Erinnerung an deinen Termin bei Smile & Shine:\n\n${details}\n\nIch freue mich auf dich.\n\nLiebe Grüße\nBirgit · Smile & Shine`;
-    if(type==='change')return `Hallo ${name} 👋\n\ndein Termin bei Smile & Shine wurde geändert. Aktuell ist für dich eingetragen:\n\n${details}\n\nBitte gib mir kurz Bescheid, falls der neue Termin nicht passt.\n\nLiebe Grüße\nBirgit · Smile & Shine`;
-    return `Hallo ${name} 👋\n\ndein Termin bei Smile & Shine ist bestätigt.\n\n${details}\n\nFalls du Fragen hast oder den Termin ändern musst, melde dich bitte rechtzeitig.\n\nLiebe Grüße\nBirgit · Smile & Shine`;
+    if(type==='reminder')return `Hallo ${name} 👋\n\nkleine Erinnerung an deinen Termin bei ${STUDIO_NAME}:\n\n${details}\n\nIch freue mich auf dich.\n\nLiebe Grüße\n${OWNER_FIRST} · ${STUDIO_NAME}`;
+    if(type==='change')return `Hallo ${name} 👋\n\ndein Termin bei ${STUDIO_NAME} wurde geändert. Aktuell ist für dich eingetragen:\n\n${details}\n\nBitte gib mir kurz Bescheid, falls der neue Termin nicht passt.\n\nLiebe Grüße\n${OWNER_FIRST} · ${STUDIO_NAME}`;
+    return `Hallo ${name} 👋\n\ndein Termin bei ${STUDIO_NAME} ist bestätigt.\n\n${details}\n\nFalls du Fragen hast oder den Termin ändern musst, melde dich bitte rechtzeitig.\n\nLiebe Grüße\n${OWNER_FIRST} · ${STUDIO_NAME}`;
   }
 
   function injectStyles(){
@@ -83,7 +86,7 @@
   function ensureDialog(){
     injectStyles();if($('#whatsappDialog'))return;
     const dialog=document.createElement('dialog');dialog.id='whatsappDialog';dialog.className='wa-dialog';
-    dialog.innerHTML=`<div class="wa-dialog-card"><div class="wa-dialog-head"><div><span class="panel-kicker">Kostenlos über WhatsApp</span><h3>Nachricht vorbereiten</h3></div><button type="button" class="wa-dialog-close" data-close-whatsapp aria-label="Schließen">×</button></div><div class="wa-dialog-body"><div class="wa-appointment-summary" id="waAppointmentSummary"></div><div class="wa-template-grid"><button type="button" class="wa-template-button active" data-wa-template="confirm"><strong>Terminbestätigung</strong><small>Bestätigt Leistung, Datum und Uhrzeit.</small></button><button type="button" class="wa-template-button" data-wa-template="reminder"><strong>Erinnerung</strong><small>Freundliche Erinnerung vor dem Termin.</small></button><button type="button" class="wa-template-button" data-wa-template="change"><strong>Terminänderung</strong><small>Teilt den aktuell eingetragenen neuen Termin mit.</small></button></div><section class="wa-preview"><div class="wa-preview-head"><div><strong>Nachrichtenvorschau</strong><small>Genau dieser Text wird an WhatsApp übergeben.</small></div><div class="wa-tone-switch" aria-label="Ton der Nachricht"><button type="button" class="active" data-wa-tone="friendly">Freundlich</button><button type="button" data-wa-tone="short">Kurz</button><button type="button" data-wa-tone="personal">Persönlich</button></div></div><textarea id="waMessagePreview" aria-label="WhatsApp-Nachricht bearbeiten"></textarea><div class="wa-preview-actions"><span class="wa-character-count" id="waCharacterCount"></span><button type="button" class="wa-open-button" id="waOpenButton" data-open-whatsapp>In WhatsApp öffnen ↗</button></div></section><p class="wa-hint">Der Text kann hier frei geändert werden. Verschickt wird trotzdem erst, wenn Birgit anschließend in WhatsApp selbst auf „Senden“ tippt.</p></div></div>`;
+    dialog.innerHTML=`<div class="wa-dialog-card"><div class="wa-dialog-head"><div><span class="panel-kicker">Kostenlos über WhatsApp</span><h3>Nachricht vorbereiten</h3></div><button type="button" class="wa-dialog-close" data-close-whatsapp aria-label="Schließen">×</button></div><div class="wa-dialog-body"><div class="wa-appointment-summary" id="waAppointmentSummary"></div><div class="wa-template-grid"><button type="button" class="wa-template-button active" data-wa-template="confirm"><strong>Terminbestätigung</strong><small>Bestätigt Leistung, Datum und Uhrzeit.</small></button><button type="button" class="wa-template-button" data-wa-template="reminder"><strong>Erinnerung</strong><small>Freundliche Erinnerung vor dem Termin.</small></button><button type="button" class="wa-template-button" data-wa-template="change"><strong>Terminänderung</strong><small>Teilt den aktuell eingetragenen neuen Termin mit.</small></button></div><section class="wa-preview"><div class="wa-preview-head"><div><strong>Nachrichtenvorschau</strong><small>Genau dieser Text wird an WhatsApp übergeben.</small></div><div class="wa-tone-switch" aria-label="Ton der Nachricht"><button type="button" class="active" data-wa-tone="friendly">Freundlich</button><button type="button" data-wa-tone="short">Kurz</button><button type="button" data-wa-tone="personal">Persönlich</button></div></div><textarea id="waMessagePreview" aria-label="WhatsApp-Nachricht bearbeiten"></textarea><div class="wa-preview-actions"><span class="wa-character-count" id="waCharacterCount"></span><button type="button" class="wa-open-button" id="waOpenButton" data-open-whatsapp>In WhatsApp öffnen ↗</button></div></section><p class="wa-hint">Der Text kann hier frei geändert werden. Verschickt wird trotzdem erst, wenn ${OWNER_FIRST} anschließend in WhatsApp selbst auf „Senden“ tippt.</p></div></div>`;
     document.body.appendChild(dialog);
     dialog.addEventListener('click',event=>{if(event.target===dialog){cleanupVirtual();dialog.close()}});
     $('#waMessagePreview')?.addEventListener('input',updateCharacterCount);
