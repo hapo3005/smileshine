@@ -1,6 +1,7 @@
 (() => {
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,escapeHTML,uid}=A;
+  const OWNER_FIRST=window.SmileShineConfig?.studio?.owner?.firstName||'Birgit';
   const CORE_SERVICE_IDS=new Set(['brows-pmu','lashline','lip-pmu','consult']);
   const defaults={
     'Augenbrauen':'Form, Balance und Ausdruck mit natürlicher Wirkung.',
@@ -30,7 +31,7 @@
   function renderGuidance(){
     const host=$('#serviceDemoGuidance');if(!host)return;
     const services=A.db.services||[],market=services.filter(s=>s.verification==='market').length,confirmed=services.filter(s=>s.verification==='studio'||s.verification==='verified').length;
-    host.innerHTML=`<div><span class="service-demo-guidance-kicker">Preis- & Leistungscheck</span><strong>Preis- & Leistungscheck – Birgit behält die Kontrolle.</strong><p>Preise mit „Arbeitswert“ sind bewusst nur marktgestützte Ausgangswerte. Die bereits festgelegten Terminlängen bleiben bestehen. Sobald Birgit Preis, Anzahlung oder Leistungsdaten prüft und speichert, markieren wir die Leistung als „Studio bestätigt“.</p></div><div class="service-demo-guidance-stats"><span><b>${market}</b> noch prüfen</span><span><b>${confirmed}</b> Studio bestätigt</span></div>`;
+    host.innerHTML=`<div><span class="service-demo-guidance-kicker">Preis- & Leistungscheck</span><strong>Preis- & Leistungscheck – ${OWNER_FIRST} behält die Kontrolle.</strong><p>Preise mit „Arbeitswert“ sind bewusst nur marktgestützte Ausgangswerte. Die bereits festgelegten Terminlängen bleiben bestehen. Sobald ${OWNER_FIRST} Preis, Anzahlung oder Leistungsdaten prüft und speichert, markieren wir die Leistung als „Studio bestätigt“.</p></div><div class="service-demo-guidance-stats"><span><b>${market}</b> noch prüfen</span><span><b>${confirmed}</b> Studio bestätigt</span></div>`;
   }
 
   function bindModal(){
@@ -62,7 +63,7 @@
         if(s.verification){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Arbeitswert':'Studio bestätigt';top.insertBefore(v,status)}
       }
       if(h3){const nameLabel=document.createElement('label');nameLabel.className='service-name-field';nameLabel.innerHTML=`<span>Name</span><input name="serviceName" maxlength="80" value="${escapeHTML(s.name)}">`;h3.replaceWith(nameLabel)}
-      if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${!s.active?'Vorübergehend pausiert.':s.demoOnly?'Nur für Studio/Demo – nicht öffentlich buchbar.':CORE_SERVICE_IDS.has(s.id)?'In der öffentlichen Buchung sichtbar.':'Im internen Leistungsstamm – Angebot noch mit Birgit bestätigen.'}</small>`;p.replaceWith(desc)}
+      if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${!s.active?'Vorübergehend pausiert.':s.demoOnly?'Nur für Studio/Demo – nicht öffentlich buchbar.':CORE_SERVICE_IDS.has(s.id)?'In der öffentlichen Buchung sichtbar.':'Im internen Leistungsstamm – Angebot noch mit ${OWNER_FIRST} bestätigen.'}</small>`;p.replaceWith(desc)}
       if(s.internalNote){const note=document.createElement('div');note.className='service-internal-note';note.innerHTML=`<span>Interne Einordnung</span><p>${escapeHTML(s.internalNote)}</p>`;card.insertBefore(note,$('.service-fields',card)||save||null)}
       if(save){const actions=document.createElement('div');actions.className='service-card-actions';const del=document.createElement('button');del.type='button';del.className='service-delete-button';del.dataset.deleteService=s.id;del.textContent='Leistung löschen';save.replaceWith(actions);actions.append(save,del)}
     });
@@ -80,7 +81,7 @@
         if(A.db.services.some(x=>x.id!==s.id&&x.name.toLowerCase()===name.toLowerCase()))return A.toast('Dieser Leistungsname wird bereits verwendet.');
         const price=Math.max(0,Number($('[name=price]',card)?.value||0)),deposit=Math.max(0,Number($('[name=deposit]',card)?.value||0));if(deposit>price&&price>0)return A.toast('Die Anzahlung kann nicht höher als der Preis sein.');
         s.name=name;s.description=description;s.duration=Math.max(15,Number($('[name=duration]',card)?.value||s.duration));s.price=price;s.deposit=deposit;
-        s.verification='studio';s.confirmedAt=new Date().toISOString();s.internalNote='Von Birgit bzw. im Studio individuell geprüft und im Adminbereich bestätigt.';
+        s.verification='studio';s.confirmedAt=new Date().toISOString();s.internalNote=`Von ${OWNER_FIRST} bzw. im Studio individuell geprüft und im Adminbereich bestätigt.`;
         A.addActivity('setting',`${oldName}: Leistungseinstellungen geprüft und als Studio bestätigt.`);A.save(`${name} gespeichert und als Studio bestätigt.`);A.renderServices?.();renderGuidance();
       };
       const del=$('[data-delete-service]',card);if(del)del.onclick=()=>deleteService(del.dataset.deleteService);
