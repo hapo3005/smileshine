@@ -42,6 +42,15 @@
         pickup:'Raiffeisenstraße 4, 54516 Wittlich-Bombogen'
       }
     },
+    legal:{
+      verified:false,
+      businessName:'smile & shine GmbH',
+      representative:'Birgit Porn',
+      registerCourt:'Amtsgericht Wittlich',
+      registerNumber:'HRB 21773',
+      vatId:'DE213952194',
+      website:{label:'www.smile-shine.de',url:'https://www.smile-shine.de/'}
+    },
     content:{
       meta:{
         title:'Smile & Shine · Wittlich-Bombogen',
