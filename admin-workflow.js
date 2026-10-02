@@ -2,6 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,isoDate,addDays,dateShort,escapeHTML,uid}=A;
+  const OWNER_FIRST=window.SmileShineConfig?.studio?.owner?.firstName||'Birgit';
   const VERSION=1;
 
   const serviceFor=name=>(A.db.services||[]).find(s=>s.name===name);
@@ -440,7 +441,7 @@
 
     return `<section class="customer-workfile" data-customer-workflow="${customerId}">
       <div class="customer-workfile-head">
-        <div><span class="panel-kicker">Arbeitsakte</span><h4>Alles, was Birgit für diese Kundin wissen muss</h4><p>Behandlung, Zahlung, Nachpflege und Kommunikation in einem Arbeitsbild.</p></div>
+        <div><span class="panel-kicker">Arbeitsakte</span><h4>Alles, was ${OWNER_FIRST} für diese Kundin wissen muss</h4><p>Behandlung, Zahlung, Nachpflege und Kommunikation in einem Arbeitsbild.</p></div>
         <div class="customer-workflow-buttons"><button type="button" class="soft-button" data-customer-followup="${customerId}">＋ Wiedervorlage</button><button type="button" class="primary-action" data-customer-treatment="${customerId}">＋ Behandlung dokumentieren</button></div>
       </div>
 
