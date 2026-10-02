@@ -2,6 +2,7 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,dateShort,escapeHTML,isoDate}=A;
+  const OWNER_FIRST=window.SmileShineConfig?.studio?.owner?.firstName||'Birgit';
   const money=value=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(Number(value||0));
   const longDate=value=>new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(new Date(`${value}T12:00:00`));
   const statusLabel=status=>A.STATUS_LABELS?.[status]||status||'Offen';
@@ -168,7 +169,7 @@
         </article>
 
         <article class="customer-detail-panel customer-note-panel">
-          <div class="customer-section-head"><div><span class="panel-kicker">Interne Notiz</span><h4>Was Birgit wissen sollte</h4></div><button type="button" class="text-button" data-edit-customer>Bearbeiten</button></div>
+          <div class="customer-section-head"><div><span class="panel-kicker">Interne Notiz</span><h4>Was ${OWNER_FIRST} wissen sollte</h4></div><button type="button" class="text-button" data-edit-customer>Bearbeiten</button></div>
           <p class="customer-note-copy">${escapeHTML(customer.notes||'Noch keine interne Notiz hinterlegt.')}</p>
         </article>
       </section>
