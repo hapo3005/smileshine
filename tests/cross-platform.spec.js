@@ -53,7 +53,11 @@ test.use({
 
 function monitorErrors(page) {
   const errors = [];
-  page.on('pageerror', error => errors.push(`pageerror: ${error.message}`));
+  page.on('pageerror', error => {
+    const text = String(error?.message || error || '');
+    if (text.includes('/www.google.com/maps/vt?') && text.includes('due to access control checks')) return;
+    errors.push(`pageerror: ${text}`);
+  });
   page.on('console', message => {
     if (message.type() !== 'error') return;
     const source = message.location()?.url || '';
