@@ -104,9 +104,9 @@
       hero:{
         status:'temporary',
         requiredForLive:true,
-        url:'https://images.pexels.com/photos/33412989/pexels-photo-33412989.png?cs=srgb&fm=jpg&w=1800',
-        alt:'Neutrales Beauty-Editorial in warmen Naturtönen',
-        shotBrief:'Breites Studio- oder Beauty-Keyvisual, ruhig, hochwertig, viel negative Fläche für die Hero-Komposition.'
+        url:'https://images.pexels.com/photos/6899542/pexels-photo-6899542.jpeg?auto=compress&cs=tinysrgb&w=1800',
+        alt:'Heller, moderner Beauty-Behandlungsraum in warmen neutralen Tönen',
+        shotBrief:'Breiter moderner Behandlungsraum, warm-neutrale Architektur, ruhige helle Fläche links für Text, Behandlungsliege und Interior rechts.'
       },
       about:{
         status:'temporary',
