@@ -6,7 +6,7 @@
 
   function openModal(prefill={}){
     const modal=$('#appointmentModal'),form=$('#appointmentForm');if(!modal||!form)return;
-    const select=$('#appointmentService');select.innerHTML=visibleServices().map(s=>`<option value="${s.name}">${s.name} · ${s.duration} Min.</option>`).join('');
+    const select=$('#appointmentService');if(select){const options=visibleServices().map(service=>{const option=document.createElement('option');option.value=String(service.name||'');option.textContent=`${service.name} · ${service.duration} Min.`;return option});select.replaceChildren(...options)}
     form.reset();delete form.dataset.waitlistId;const first=visibleServices()[0],next=A.findNextFreeSlot(first?.duration||30);
     form.elements.date.value=prefill.date||next?.date||isoDate(addDays(new Date(),1));
     form.elements.time.value=prefill.time||next?.time||'09:00';

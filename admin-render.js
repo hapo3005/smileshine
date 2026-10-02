@@ -19,6 +19,7 @@
     if(location.hash!==`#${name}`)history.replaceState(null,'',`#${name}`);
     const scroller=window.matchMedia('(max-width:760px)').matches?$('.admin-main'):null;(scroller||window).scrollTo({top:0,behavior:'smooth'});
     if(name==='calendar')renderCalendar();
+    A.runViewHooks?.(name);
   }
 
   function renderDashboard(){
@@ -112,6 +113,6 @@
     const root=$('#blockList');if(!root)return;const today=isoDate(new Date()),list=[...A.db.blocked].filter(b=>b.date>=today).sort((a,b)=>`${a.date}${a.start}`.localeCompare(`${b.date}${b.start}`));root.innerHTML=list.length?list.map(b=>`<div class="block-item"><div><strong>${escapeHTML(b.label)}</strong><small>${dateShort(b.date)} · ${b.start}–${b.end} Uhr</small></div><button type="button" data-remove-block="${b.id}" aria-label="Sperrzeit löschen">×</button></div>`).join(''):'<div class="empty-state">Keine kommenden Sperrzeiten.</div>';A.bindBlockActions?.();
   }
 
-  function renderAll(){renderDashboard();renderAppointments();renderCustomers();renderServices();renderWorkingHours();renderBlocks();renderCalendar()}
+  function renderAll(){renderDashboard();renderAppointments();renderCustomers();renderServices();renderWorkingHours();renderBlocks();renderCalendar();A.runRenderHooks?.()}
   Object.assign(A,{showView,renderDashboard,renderCalendar,renderAppointments,renderCustomers,renderServices,renderWorkingHours,renderBlocks,renderAll});
 })();

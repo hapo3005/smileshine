@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 test.use({
-  baseURL: 'https://hapo3005.github.io/smileshine/',
+  baseURL: process.env.QA_BASE_URL || 'https://hapo3005.github.io/smileshine/',
   timezoneId: 'Europe/Berlin',
   locale: 'de-DE'
 });
@@ -456,11 +456,12 @@ test('nail completion creates refill rhythm without PMU aftercare', async ({ pag
   await reset(page, 'dashboard');
 
   const id = await page.evaluate(() => {
-    const A = window.SSAdmin, customer = A.db.customers.find(c => c.segment === 'nail-regular') || A.db.customers[0], today = A.isoDate(new Date());
+    const A = window.SSAdmin, customer = A.db.customers.find(c => c.segment === 'nail-regular') || A.db.customers[0];
+    const startedDate = A.isoDate(A.addDays(new Date(), -1));
     const service = A.db.services.find(s => /Auffüllen/i.test(s.name));
     const id = 'qa_nail_completion';
     A.db.appointments.push({
-      id,date:today,time:'09:00',duration:Number(service?.duration||60),service:service?.name||'Nageldesign · Auffüllen',
+      id,date:startedDate,time:'09:00',duration:Number(service?.duration||60),service:service?.name||'Nageldesign · Auffüllen',
       customerId:customer.id,customerName:customer.name,phone:customer.phone,email:customer.email,status:'confirmed',
       payment:'Im Studio',paymentPreference:'Im Studio',source:'studio',listPrice:Number(service?.price||55),finalPrice:Number(service?.price||55),
       discount:0,paidAmount:0,payments:[],paymentStatus:'open',preparation:{status:'complete',consent:true,photos:false,note:'Startklar.'}

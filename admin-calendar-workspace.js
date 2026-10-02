@@ -8,7 +8,7 @@
     if(document.querySelector("link[data-calendar-workspace-style]"))return;
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href="admin-calendar-workspace.css?v=20261001-birthday-rc2";
+    link.href=A.assetUrl?.('admin-calendar-workspace.css')||'admin-calendar-workspace.css';
     link.dataset.calendarWorkspaceStyle="true";
     document.head.appendChild(link);
   }
@@ -230,11 +230,8 @@
   function install(){
     if(installed)return;installed=true;ensureUI();
 
-    const originalRenderAll=A.renderAll;
-    A.renderAll=()=>{originalRenderAll();requestAnimationFrame(decorate)};
-
-    const originalShowView=A.showView;
-    A.showView=name=>{originalShowView(name);if(name==="calendar")requestAnimationFrame(decorate)};
+    A.registerRenderHook?.('calendar-workspace',()=>requestAnimationFrame(decorate),25);
+    A.registerViewHook?.('calendar-workspace',name=>{if(name==="calendar")requestAnimationFrame(decorate)},25);
 
     document.addEventListener("click",event=>{
       const quick=event.target.closest("[data-calendar-quick-date]");
@@ -256,28 +253,5 @@
     decorate();
   }
 
-  const baseInit=A.initCalendarViews;
-  if(baseInit&&document.querySelector(".calendar-control-stack")){
-    install();
-  }else if(baseInit){
-    A.initCalendarViews=()=>{baseInit();install()};
-  }else{
-    let tries=0;
-    const timer=setInterval(()=>{
-      tries++;
-      if(A.initCalendarViews){
-        clearInterval(timer);
-        if(document.querySelector(".calendar-control-stack")){
-          install();
-        }else{
-          const init=A.initCalendarViews;
-          A.initCalendarViews=()=>{init();install()};
-        }
-      }else if(tries>40){
-        clearInterval(timer);install();
-      }
-    },25);
-  }
-
-  Object.assign(A,{refreshCalendarWorkspace:decorate});
+  Object.assign(A,{initCalendarWorkspace:install,refreshCalendarWorkspace:decorate});
 })();

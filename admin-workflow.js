@@ -14,7 +14,7 @@
   function ensureStyles(){
     if(document.querySelector('link[data-workflow-style]'))return;
     const link=document.createElement('link');
-    link.rel='stylesheet';link.href='admin-workflow.css?v=20261001-admin-mobile-rc2';link.dataset.workflowStyle='true';
+    link.rel='stylesheet';link.href=A.assetUrl?.('admin-workflow.css')||'admin-workflow.css';link.dataset.workflowStyle='true';
     document.head.appendChild(link);
   }
 
@@ -599,10 +599,9 @@
   function initWorkflowHub(){
     ensureStyles();ensureData();ensureCenter();ensureFollowupDialog();ensureWaitlistDialog();ensureTreatmentDialog();bind();
 
-    if(!A.workflowRenderWrapped){
-      A.workflowRenderWrapped=true;
-      const original=A.renderAll?.bind(A);
-      if(original)A.renderAll=()=>{ensureData();original();renderDashboardWorkflow();queueMicrotask(()=>{decorateCustomerDetail();decorateAppointmentDetail();decorateTodayAgenda()})};
+    if(!A.workflowRenderHookRegistered){
+      A.workflowRenderHookRegistered=true;
+      A.registerRenderHook?.('workflow-hub',()=>{ensureData();renderDashboardWorkflow();queueMicrotask(()=>{decorateCustomerDetail();decorateAppointmentDetail();decorateTodayAgenda()})},50);
     }
 
     renderDashboardWorkflow();decorateTodayAgenda();

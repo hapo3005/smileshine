@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "refactor/**"]
     paths:
       - "index.html"
       - "admin.html"
@@ -53,6 +53,11 @@ on:
       - "impressum.html"
       - "datenschutz.html"
       - ".github/workflows/live-booking-e2e.yml"
+      - "playwright.config.js"
+      - "tests/static-server.js"
+      - "tests/admin-core-architecture.spec.js"
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -62,10 +67,14 @@ jobs:
   live-booking:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      QA_LOCAL: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '0' || '1' }}
+      QA_BASE_URL: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'https://hapo3005.github.io/smileshine/' || 'http://127.0.0.1:4173/' }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Wait for current GitHub Pages admin build
+        if: env.QA_LOCAL != '1'
         run: |
           EXPECTED_BUILD=$(grep -o 'meta name="smileshine-build" content="[^"]*"' admin.html | sed -E 's/.*content="([^"]*)"/\1/')
           echo "Waiting for admin build: $EXPECTED_BUILD"
@@ -85,7 +94,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Test published site in Chromium
-        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js tests/admin-appointment-detail.spec.js tests/admin-calendar-workspace.spec.js tests/admin-customer-workspace.spec.js tests/pickup-shop.spec.js tests/admin-pickup-shop.spec.js tests/contact-section.spec.js tests/pitch-mode.spec.js tests/birgit-pitch-workflows.spec.js tests/three-month-simulation.spec.js --reporter=line
+        run: npx playwright test tests/live-booking.spec.js tests/responsive.spec.js tests/admin-appointment-detail.spec.js tests/admin-calendar-workspace.spec.js tests/admin-customer-workspace.spec.js tests/pickup-shop.spec.js tests/admin-pickup-shop.spec.js tests/contact-section.spec.js tests/pitch-mode.spec.js tests/birgit-pitch-workflows.spec.js tests/three-month-simulation.spec.js tests/admin-core-architecture.spec.js --reporter=line
 
       - name: Upload Playwright diagnostics
         if: failure()

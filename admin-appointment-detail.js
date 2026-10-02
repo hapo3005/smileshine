@@ -9,7 +9,7 @@
 
   function ensureStyles(){
     if(document.querySelector('link[data-appointment-detail-style]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-appointment-detail.css?v=20261001-birthday-rc2';link.dataset.appointmentDetailStyle='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href=A.assetUrl?.('admin-appointment-detail.css')||'admin-appointment-detail.css';link.dataset.appointmentDetailStyle='true';document.head.appendChild(link);
   }
 
   function ensureModal(){

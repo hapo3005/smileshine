@@ -12,7 +12,7 @@
 
   function ensureStyles(){
     if(document.querySelector('link[data-pickup-admin-style]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-pickup-shop.css?v=20261001-birthday-rc2';link.dataset.pickupAdminStyle='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href=A.assetUrl?.('admin-pickup-shop.css')||'admin-pickup-shop.css';link.dataset.pickupAdminStyle='true';document.head.appendChild(link);
   }
 
   function ensureUI(){
@@ -108,8 +108,8 @@
 
   function initPickupShop(){
     if(A.pickupShopReady)return;A.pickupShopReady=true;A.pickupAdminFilter='active';ensureUI();bind();
-    const baseShow=A.showView;A.showView=name=>{baseShow(name);if(name==='pickup')render()};
-    const baseRenderAll=A.renderAll;A.renderAll=()=>{baseRenderAll?.();if($('.view[data-view-panel="pickup"]')?.classList.contains('active'))render()};
+    A.registerViewHook?.('pickup-shop',name=>{if(name==='pickup')render()},40);
+    A.registerRenderHook?.('pickup-shop',()=>{if($('.view[data-view-panel="pickup"]')?.classList.contains('active'))render()},40);
     $$('[data-view="pickup"]').forEach(btn=>btn.addEventListener('click',()=>A.showView('pickup')));
     $$('[data-jump="pickup"]').forEach(btn=>btn.addEventListener('click',()=>A.showView('pickup')));
     render();

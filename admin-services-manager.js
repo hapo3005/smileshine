@@ -10,7 +10,7 @@
   };
 
   function migrateDescriptions(){let changed=false;(A.db.services||[]).forEach(s=>{if(s.description===undefined){s.description=defaults[s.name]||'';changed=true}});if(changed){if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db))}}
-  function ensureStyles(){if(document.querySelector('link[data-service-manager-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='admin-services-manager.css?v=20261001-birthday-rc2';l.dataset.serviceManagerStyle='true';document.head.appendChild(l)}
+  function ensureStyles(){if(document.querySelector('link[data-service-manager-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href=A.assetUrl?.('admin-services-manager.css')||'admin-services-manager.css';l.dataset.serviceManagerStyle='true';document.head.appendChild(l)}
 
   function ensureUI(){
     ensureStyles();migrateDescriptions();
@@ -89,7 +89,7 @@
 
   function deleteService(id){const s=A.db.services.find(x=>x.id===id);if(!s)return;const appointments=A.db.appointments.filter(a=>a.service===s.name).length;const message=appointments?`„${s.name}“ wirklich löschen? ${appointments} bestehende Termin${appointments===1?' bleibt':'e bleiben'} mit eingefrorenem Namen und Preis erhalten.`:`„${s.name}“ wirklich löschen?`;if(!confirm(message))return;A.db.services=A.db.services.filter(x=>x.id!==id);A.addActivity('setting',`Leistung gelöscht: ${s.name}.`);A.save(`${s.name} wurde gelöscht.`);A.renderServices?.()}
 
-  function initServiceManager(){ensureUI();A.bindServiceActions=bindServiceActions;const grid=$('#servicesGrid');if(grid)new MutationObserver(()=>{decorateCards();bindServiceActions();renderGuidance()}).observe(grid,{childList:true});const baseShow=A.showView;A.showView=name=>{baseShow(name);if(name==='services'){ensureUI();decorateCards();bindServiceActions();renderGuidance()}};A.renderServices?.();decorateCards();bindServiceActions();renderGuidance()}
+  function initServiceManager(){ensureUI();A.bindServiceActions=bindServiceActions;const grid=$('#servicesGrid');if(grid)new MutationObserver(()=>{decorateCards();bindServiceActions();renderGuidance()}).observe(grid,{childList:true});A.registerViewHook?.('service-manager',name=>{if(name==='services'){ensureUI();decorateCards();bindServiceActions();renderGuidance()}},35);A.renderServices?.();decorateCards();bindServiceActions();renderGuidance()}
 
   Object.assign(A,{initServiceManager,bindServiceActions});
 })();

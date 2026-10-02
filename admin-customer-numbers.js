@@ -164,7 +164,7 @@
     ensureCustomerNumbers(A.db);if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db));
     const baseSeed=A.seed;A.seed=()=>ensureCustomerNumbers(baseSeed());
     const baseSave=A.save;A.save=message=>{ensureCustomerNumbers(A.db);return baseSave(message)};
-    const baseRenderAll=A.renderAll;A.renderAll=()=>{baseRenderAll?.();renderCustomersWithNumbers();bindExactCustomerOpen()};
+    A.registerRenderHook?.('customer-numbers',()=>{renderCustomersWithNumbers();bindExactCustomerOpen()},10);
     A.renderCustomers=renderCustomersWithNumbers;
     const detail=$('#customerDetailBody');if(detail)new MutationObserver(()=>queueMicrotask(decorateCustomerDetail)).observe(detail,{childList:true,subtree:true});
     renderCustomersWithNumbers();bindExactCustomerOpen();renderCustomerWorkspaceSummary();applyCustomerFilter();
