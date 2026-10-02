@@ -5,6 +5,10 @@
   const CHANGE_EVENT='smileshine:data-store-change';
   const PRESENTATION_VERSION=3;
   const PICKUP_KEY='smileshine_pickup_orders_demo_v1';
+  const CONFIG=window.SmileShineConfig;
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  const configuredServices=()=>((CONFIG?.services||[]).filter(service=>service.presentationSeed!==false).map(service=>({...service})));
+  const configuredHours=()=>clone(CONFIG?.schedule?.workingHours||{1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}});
 
   const isoDate=date=>{
     const d=new Date(date);
@@ -19,13 +23,8 @@
     const d1=isoDate(addDays(now,1)),d2=isoDate(addDays(now,2)),d3=isoDate(addDays(now,3)),d5=isoDate(addDays(now,5));
     return {
       version:1,presentationVersion:PRESENTATION_VERSION,presentationMode:true,publicCatalogReady:false,slotInterval:15,buffer:10,
-      services:[
-        {id:'brows-pmu',name:'Augenbrauen Permanent Make-up',category:'Permanent Make-up · Augenbrauen',description:'Dauerhafte Betonung und harmonische Formgebung der Augenbrauen.',duration:120,price:299,deposit:50,active:true,verification:'market'},
-        {id:'lashline',name:'Wimpernkranzverdichtung',category:'Permanent Make-up · Augen',description:'Dezente Pigmentierung am Wimpernansatz für einen dichteren Ausdruck.',duration:90,price:249,deposit:50,active:true,verification:'market'},
-        {id:'lip-pmu',name:'Lippenpigmentierung',category:'Permanent Make-up · Lippen',description:'Natürlich wirkende Pigmentierung für Kontur, Farbe und Frische.',duration:150,price:349,deposit:75,active:true,verification:'market'},
-        {id:'consult',name:'Beratung / Vorbesprechung',category:'Beratung & Grundlagen',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',duration:30,price:0,deposit:0,active:true,verification:'market'}
-      ],
-      workingHours:{1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}},
+      services:configuredServices(),
+      workingHours:configuredHours(),
       customers:[
         {id:'c1',name:'Anna Müller',firstName:'Anna',lastName:'Müller',phone:'0176 12345678',email:'anna.mueller@example.de',notes:'Wünscht ein sehr natürliches Ergebnis. Bevorzugt Termine am Vormittag.',created:dm21},
         {id:'c2',name:'Petra Schmidt',firstName:'Petra',lastName:'Schmidt',phone:'0151 30495512',email:'petra.schmidt@example.de',notes:'Bestandskundin. Lippenfarbe eher zurückhaltend und alltagstauglich.',created:dm12},
@@ -61,9 +60,9 @@
   function createPresentationPickupOrders(){
     const now=Date.now();
     return [
-      {id:'pickup_pitch_1',createdAt:new Date(now-38*60000).toISOString(),items:[{id:'hyaluron-serum',name:'aesthetic world Hyaluron Forte Serum',qty:1}],customer:{firstName:'Laura',lastName:'Becker',email:'laura.becker@example.de',phone:'0176 44081273',note:'Abholung gern zusammen mit meinem Beratungstermin.'},customerId:'c6',payment:'Bei Abholung bezahlen',fulfillment:'pickup',pickupAddress:'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',demo:true,presentation:true,buyerType:'existing',status:'new'},
-      {id:'pickup_pitch_2',createdAt:new Date(now-22*3600000).toISOString(),items:[{id:'clearing-foam',name:'aesthetic world Clearing Foam',qty:1},{id:'lipcare',name:'SUN Lipcare SPF 30',qty:1}],customer:{firstName:'Karin',lastName:'Hoffmann',email:'karin.hoffmann@example.de',phone:'0170 7738112',note:''},customerId:'c5',payment:'Bei Abholung bezahlen',fulfillment:'pickup',pickupAddress:'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',demo:true,presentation:true,buyerType:'existing',status:'ready'},
-      {id:'pickup_pitch_3',createdAt:new Date(now-72*3600000).toISOString(),items:[{id:'facial-tonic',name:'aesthetic world Facial Tonic',qty:1}],customer:{firstName:'Monika',lastName:'Klein',email:'monika.klein@example.de',phone:'0152 77190431',note:''},customerId:'c7',payment:'Bei Abholung bezahlen',fulfillment:'pickup',pickupAddress:'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',demo:true,presentation:true,buyerType:'existing',status:'collected'}
+      {id:'pickup_pitch_1',createdAt:new Date(now-38*60000).toISOString(),items:[{id:'hyaluron-serum',name:'aesthetic world Hyaluron Forte Serum',qty:1}],customer:{firstName:'Laura',lastName:'Becker',email:'laura.becker@example.de',phone:'0176 44081273',note:'Abholung gern zusammen mit meinem Beratungstermin.'},customerId:'c6',payment:'Bei Abholung bezahlen',fulfillment:'pickup',pickupAddress:CONFIG?.studio?.address?.pickup||'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',demo:true,presentation:true,buyerType:'existing',status:'new'},
+      {id:'pickup_pitch_2',createdAt:new Date(now-22*3600000).toISOString(),items:[{id:'clearing-foam',name:'aesthetic world Clearing Foam',qty:1},{id:'lipcare',name:'SUN Lipcare SPF 30',qty:1}],customer:{firstName:'Karin',lastName:'Hoffmann',email:'karin.hoffmann@example.de',phone:'0170 7738112',note:''},customerId:'c5',payment:'Bei Abholung bezahlen',fulfillment:'pickup',pickupAddress:CONFIG?.studio?.address?.pickup||'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',demo:true,presentation:true,buyerType:'existing',status:'ready'},
+      {id:'pickup_pitch_3',createdAt:new Date(now-72*3600000).toISOString(),items:[{id:'facial-tonic',name:'aesthetic world Facial Tonic',qty:1}],customer:{firstName:'Monika',lastName:'Klein',email:'monika.klein@example.de',phone:'0152 77190431',note:''},customerId:'c7',payment:'Bei Abholung bezahlen',fulfillment:'pickup',pickupAddress:CONFIG?.studio?.address?.pickup||'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',demo:true,presentation:true,buyerType:'existing',status:'collected'}
     ];
   }
 
