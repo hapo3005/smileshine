@@ -97,12 +97,11 @@
   }
 
   const BUILTIN_IDS=new Set(CATALOG.map(item=>item.id));
-  const PRESENTATION_SERVICES=[
-    {id:'brows-pmu',name:'Augenbrauen',description:'Permanent Make-up für Form, Balance und Ausdruck.'},
-    {id:'lashline',name:'Lid & Wimpernkranz',description:'Dezente Betonung der Augenpartie.'},
-    {id:'lip-pmu',name:'Lippen',description:'Pigmentierung für Kontur, Farbe und Frische.'},
-    {id:'consult',name:'Beratung',description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.'}
-  ];
+  const PUBLIC_SERVICE_IDS=['brows-pmu','lashline','lip-pmu','consult'];
+  const PRESENTATION_SERVICES=PUBLIC_SERVICE_IDS.map(id=>{
+    const service=CATALOG.find(item=>item.id===id)||{};
+    return {id,name:service.publicName||service.name||id,description:service.publicDescription||service.description||'',category:service.publicGroup||service.category||'Leistungen'};
+  });
 
   function makeButton(s,display){
     const shown=display||{};
@@ -123,7 +122,7 @@
 
     PRESENTATION_SERVICES.forEach(display=>{
       const s=services.find(item=>item.id===display.id&&item.active!==false);
-      if(s)rows.push({category:display.id==='consult'?'Beratung':'Permanent Make-up',service:s,display});
+      if(s)rows.push({category:display.category,service:s,display});
     });
 
     services.filter(s=>s.active!==false&&!s.demoOnly&&!BUILTIN_IDS.has(s.id)).forEach(s=>{
