@@ -34,7 +34,7 @@ jobs:
           npm install --no-save @playwright/test http-server
           npx playwright install --with-deps chromium
       - name: Run responsive and booking checks
-        run: npx playwright test
+        run: npx playwright test tests/smileshine.spec.js --config=playwright.config.cjs
       - name: Upload screenshots and report
         if: always()
         uses: actions/upload-artifact@v4
