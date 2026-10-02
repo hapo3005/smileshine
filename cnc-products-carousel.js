@@ -4,7 +4,15 @@
   const CART_KEY='smileshine_pickup_cart_v1';
   const ORDERS_KEY='smileshine_pickup_orders_demo_v1';
   const STORE=window.SmileShineDataStore;
+  const CONFIG=window.SmileShineConfig||{};
   const STUDIO_KEY=STORE?.key||'smileshine_studio_v1';
+  const STUDIO_NAME=CONFIG.studio?.name||'Smile & Shine';
+  const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
+  const LOCATION=CONFIG.studio?.locationLabel||'Wittlich-Bombogen';
+  const ADDRESS_DISPLAY=CONFIG.studio?.address?.display||'Raiffeisenstraße 4 · 54516 Wittlich-Bombogen';
+  const PICKUP_ADDRESS=CONFIG.studio?.address?.pickup||'Raiffeisenstraße 4, 54516 Wittlich-Bombogen';
+  const SHOP_HEADLINE=CONFIG.content?.shop?.headline||'Online auswählen. Im Studio abholen.';
+  const SHOP_INTRO=CONFIG.content?.shop?.intro||`Ausgewählte Pflegeprodukte können online in den Warenkorb gelegt und anschließend bei ${STUDIO_NAME} in ${LOCATION} abgeholt werden.`;
   const products=[
     {id:'clearing-foam',name:'aesthetic world Clearing Foam',size:'50 ml',category:'Reinigung',description:'Sanfter Reinigungsschaum für Make-up und Alltagsschmutz – gründlich, ohne die Haut unnötig auszutrocknen.',image:'https://shop.cnc-cosmetic.de/media/e1/d4/f9/1752582541/ac757d7728904503c4160f249f47c2dc.jpg?ts=1752582541'},
     {id:'facial-tonic',name:'aesthetic world Facial Tonic',size:'200 ml',category:'Tonic',description:'Alkoholfreies Gesichtstonic mit Aloe Vera, Hyaluronsäure und Panthenol für ein frisches, geklärtes Hautgefühl.',image:'https://shop.cnc-cosmetic.de/media/29/6b/4e/1752582641/b258d9424c8efcac1cd344d8396082b0.jpg?ts=1752582641'},
@@ -94,7 +102,7 @@
   function ensureDialog(){
     if(document.getElementById('pickupCartDialog'))return;
     const dialog=document.createElement('dialog');dialog.id='pickupCartDialog';dialog.className='pickup-cart-dialog';
-    dialog.innerHTML=`<div class="pickup-cart-card"><div class="pickup-cart-head"><div><span class="eyebrow">Smile &amp; Shine Abholshop</span><h3>Dein Warenkorb</h3><p>Online auswählen und im Studio in Wittlich-Bombogen abholen.</p></div><button type="button" class="pickup-cart-close" data-pickup-close aria-label="Warenkorb schließen">×</button></div><div class="pickup-cart-body" id="pickupCartBody"></div></div>`;
+    dialog.innerHTML=`<div class="pickup-cart-card"><div class="pickup-cart-head"><div><span class="eyebrow">${escapeHTML(STUDIO_NAME)} Abholshop</span><h3>Dein Warenkorb</h3><p>Online auswählen und im Studio in ${escapeHTML(LOCATION)} abholen.</p></div><button type="button" class="pickup-cart-close" data-pickup-close aria-label="Warenkorb schließen">×</button></div><div class="pickup-cart-body" id="pickupCartBody"></div></div>`;
     document.body.appendChild(dialog);
     dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
   }
@@ -134,12 +142,12 @@
     if(!cart.length)return '';
     const count=cartCount();
     return `<form class="pickup-checkout" id="pickupCheckoutForm">
-      <div class="pickup-guest-banner"><span>○</span><div><strong>Abholung ohne Konto vormerken</strong><small>Keine Registrierung und kein Login nötig. Bestehende Kundinnen werden über E-Mail oder Telefonnummer erkannt; neue Kundinnen werden direkt in Birgits Kundenkartei angelegt.</small></div></div>
-      <div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen · keine Versandkosten · Abholung nach Bereitmeldung</small></div></div>
-      <section class="pickup-checkout-section"><h4>Bezahlung bei Abholung</h4><p>Die tatsächlichen Produktpreise werden mit Birgit abgestimmt. In der Präsentationsversion wird deshalb keine Online-Zahlung vorgetäuscht.</p><div class="pickup-payment-options pickup-payment-single"><button class="pickup-payment-option active" type="button" data-pickup-payment="Bei Abholung bezahlen"><strong>Bei Abholung bezahlen</strong><small>Produkt im Studio bezahlen und direkt mitnehmen.</small></button></div><input type="hidden" name="payment" value="Bei Abholung bezahlen"></section>
+      <div class="pickup-guest-banner"><span>○</span><div><strong>Abholung ohne Konto vormerken</strong><small>Keine Registrierung und kein Login nötig. Bestehende Kundinnen werden über E-Mail oder Telefonnummer erkannt; neue Kundinnen werden direkt in ${escapeHTML(OWNER_FIRST)}s Kundenkartei angelegt.</small></div></div>
+      <div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei ${escapeHTML(STUDIO_NAME)}</strong><small>${escapeHTML(ADDRESS_DISPLAY)} · keine Versandkosten · Abholung nach Bereitmeldung</small></div></div>
+      <section class="pickup-checkout-section"><h4>Bezahlung bei Abholung</h4><p>Die tatsächlichen Produktpreise werden mit ${escapeHTML(OWNER_FIRST)} abgestimmt. In der Präsentationsversion wird deshalb keine Online-Zahlung vorgetäuscht.</p><div class="pickup-payment-options pickup-payment-single"><button class="pickup-payment-option active" type="button" data-pickup-payment="Bei Abholung bezahlen"><strong>Bei Abholung bezahlen</strong><small>Produkt im Studio bezahlen und direkt mitnehmen.</small></button></div><input type="hidden" name="payment" value="Bei Abholung bezahlen"></section>
       <section class="pickup-checkout-section"><h4>Wer holt die Produkte ab?</h4><p>Wir brauchen nur die Daten, die für Bestätigung und Abholung nötig sind.</p><div class="pickup-contact-grid"><label class="pickup-field"><span>Vorname</span><input name="firstName" autocomplete="given-name" required></label><label class="pickup-field"><span>Nachname</span><input name="lastName" autocomplete="family-name" required></label><label class="pickup-field"><span>E-Mail</span><input name="email" type="email" autocomplete="email" required></label><label class="pickup-field"><span>Telefon <small>optional</small></span><input name="phone" type="tel" autocomplete="tel"></label><label class="pickup-field pickup-field-wide"><span>Hinweis <small>optional</small></span><textarea name="note" rows="2" placeholder="z. B. Abholung zusammen mit meinem Termin"></textarea></label></div></section>
-      <div class="pickup-order-review"><div><span>Artikel</span><strong>${count}</strong></div><div><span>Abholung</span><strong>Smile &amp; Shine</strong></div><div><span>Preis</span><strong>Im Studio</strong></div></div>
-      <div class="pickup-demo-note"><strong>Präsentationsmodus:</strong> Die Vormerkung wird lokal gespeichert und erscheint in Birgits Abholshop. Eine Zahlung wird nicht ausgelöst.</div>
+      <div class="pickup-order-review"><div><span>Artikel</span><strong>${count}</strong></div><div><span>Abholung</span><strong>${escapeHTML(STUDIO_NAME)}</strong></div><div><span>Preis</span><strong>Im Studio</strong></div></div>
+      <div class="pickup-demo-note"><strong>Präsentationsmodus:</strong> Die Vormerkung wird lokal gespeichert und erscheint in ${escapeHTML(OWNER_FIRST)}s Abholshop. Eine Zahlung wird nicht ausgelöst.</div>
       <div class="pickup-checkout-actions"><button type="button" class="pickup-clear" data-pickup-clear>Warenkorb leeren</button><button type="submit" class="pickup-submit">Abholung vormerken</button></div>
     </form>`;
   }
@@ -173,23 +181,23 @@
       buyerType:linked.existed?'existing':'new',
       payment:String(data.get('payment')||'Bei Abholung bezahlen'),
       fulfillment:'pickup',
-      pickupAddress:'Raiffeisenstraße 4, 54516 Wittlich-Bombogen',
+      pickupAddress:PICKUP_ADDRESS,
       presentation:true,
       status:'new'
     };
     try{const old=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');localStorage.setItem(ORDERS_KEY,JSON.stringify([order,...(Array.isArray(old)?old:[])].slice(0,20)))}catch{}
     clearCart();
-    const body=document.getElementById('pickupCartBody');if(body)body.innerHTML=`<div class="pickup-success"><div class="pickup-success-mark">✓</div><h4>Abholung vorgemerkt.</h4><p>Die Vormerkung wurde lokal gespeichert und erscheint direkt in Birgits Abholshop der Studioversion.</p></div><div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei Smile &amp; Shine</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen</small></div></div>`;
+    const body=document.getElementById('pickupCartBody');if(body)body.innerHTML=`<div class="pickup-success"><div class="pickup-success-mark">✓</div><h4>Abholung vorgemerkt.</h4><p>Die Vormerkung wurde lokal gespeichert und erscheint direkt in ${escapeHTML(OWNER_FIRST)}s Abholshop der Studioversion.</p></div><div class="pickup-cart-location"><span>⌖</span><div><strong>Abholung bei ${escapeHTML(STUDIO_NAME)}</strong><small>${escapeHTML(ADDRESS_DISPLAY)}</small></div></div>`;
   }
 
   function render(){
     const section=document.getElementById('shop');if(!section)return;
     injectStyles();ensureDialog();section.classList.add('pickup-shop');
-    section.innerHTML=`<div class="section-heading split boutique-heading"><div><p class="eyebrow">Pflege für zu Hause · CNC Cosmetic</p><h2>Online auswählen. Im Studio abholen.</h2></div><div class="boutique-intro"><p>Ausgewählte Pflegeprodukte können online in den Warenkorb gelegt und anschließend bei Smile &amp; Shine in Wittlich-Bombogen abgeholt werden.</p><span class="shop-status">Nur Abholung · kein Versand</span></div></div>
-      <div class="pickup-promise" aria-label="So funktioniert der Abholshop"><div><span>♡</span><div><strong>Produkt auswählen</strong><small>Online in den Warenkorb oder direkt im Studio kaufen.</small></div></div><div><span>€</span><div><strong>Im Studio bezahlen</strong><small>Preis und Zahlung werden bei der Abholung geklärt.</small></div></div><div><span>⌖</span><div><strong>Im Studio abholen</strong><small>Raiffeisenstraße 4 · 54516 Wittlich-Bombogen.</small></div></div></div>
+    section.innerHTML=`<div class="section-heading split boutique-heading"><div><p class="eyebrow">Pflege für zu Hause · CNC Cosmetic</p><h2>${escapeHTML(SHOP_HEADLINE)}</h2></div><div class="boutique-intro"><p>${escapeHTML(SHOP_INTRO)}</p><span class="shop-status">Nur Abholung · kein Versand</span></div></div>
+      <div class="pickup-promise" aria-label="So funktioniert der Abholshop"><div><span>♡</span><div><strong>Produkt auswählen</strong><small>Online in den Warenkorb oder direkt im Studio kaufen.</small></div></div><div><span>€</span><div><strong>Im Studio bezahlen</strong><small>Preis und Zahlung werden bei der Abholung geklärt.</small></div></div><div><span>⌖</span><div><strong>Im Studio abholen</strong><small>${escapeHTML(ADDRESS_DISPLAY)}.</small></div></div></div>
       <div class="pickup-shop-toolbar"><p>Ausgewählte Produkte für Reinigung, Feuchtigkeit, Schutz und Pflege.</p><button class="pickup-cart-button" type="button" data-pickup-cart>Warenkorb <span class="pickup-cart-count" data-pickup-count>0</span></button></div>
       <div class="pickup-product-grid">${products.map(productCard).join('')}</div>
-      <div class="pickup-shop-footer"><div><strong>Abholung bei Smile &amp; Shine.</strong><p>Abholung online vormerken und nach Bereitmeldung im Studio mitnehmen.</p></div><span>Raiffeisenstraße 4 · Wittlich-Bombogen</span></div>`;
+      <div class="pickup-shop-footer"><div><strong>Abholung bei ${escapeHTML(STUDIO_NAME)}.</strong><p>Abholung online vormerken und nach Bereitmeldung im Studio mitnehmen.</p></div><span>${escapeHTML(ADDRESS_DISPLAY)}</span></div>`;
 
     section.querySelectorAll('.pickup-product-visual img').forEach(img=>img.addEventListener('error',()=>{img.style.display='none'},{once:true}));
     renderCartState();
