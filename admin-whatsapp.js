@@ -1,10 +1,10 @@
 (() => {
   'use strict';
   const A=window.SSAdmin;if(!A)return;
-  const {$,$,escapeHTML}=A;
+  const {$,$$,escapeHTML}=A;
   const CONFIG=window.SmileShineConfig||{};
-  const STUDIO_NAME=CONFIG.studio?.name||'${STUDIO_NAME}';
-  const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'${OWNER_FIRST}';
+  const STUDIO_NAME=CONFIG.studio?.name||'Smile & Shine';
+  const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
 
   function normalizePhone(value){
     let raw=String(value||'').trim();
