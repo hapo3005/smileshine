@@ -460,3 +460,439 @@ body:has(.admin-app){background:#f3f3f0!important}
   .brand-v73 .brand-copy strong{font-size:10px!important;letter-spacing:.16em!important}
   .brand-v73 .brand-copy small{font-size:5.8px!important;letter-spacing:.20em!important}
 }
+
+
+/* =========================================================
+   Smile & Shine 7.3 · Composition pass
+   Hero + treatments + about · 2026-10-02
+   ========================================================= */
+
+/* HERO — architectural, calm, unmistakably Smile & Shine */
+.site-premium .hero{
+  min-height:calc(100vh - 86px)!important;
+  grid-template-columns:minmax(0,.88fr) minmax(580px,1.12fr)!important;
+  gap:0!important;
+  padding:0!important;
+  border-bottom:1px solid var(--ss-line);
+  background:#f8f8f5!important;
+}
+.site-premium .hero-copy{
+  padding:clamp(72px,8vw,132px) clamp(48px,6.8vw,118px) clamp(62px,7vw,108px) clamp(42px,5.5vw,96px)!important;
+  justify-content:center!important;
+  border-right:1px solid var(--ss-line);
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.58),rgba(247,247,244,.92)),
+    #f7f7f4!important;
+}
+.site-premium .hero-copy::before{
+  content:"SMILE & SHINE  /  WITTLICH-BOMBOGEN";
+  display:block;
+  margin:0 0 42px;
+  font-size:8px;
+  font-weight:500;
+  letter-spacing:.28em;
+  color:#8a8d8f;
+}
+.site-premium .hero .eyebrow{
+  margin-bottom:22px!important;
+  color:#626669!important;
+  font-size:8px!important;
+}
+.site-premium .hero h1{
+  max-width:760px!important;
+  margin:0!important;
+  font-size:clamp(58px,5.9vw,98px)!important;
+  line-height:.98!important;
+  letter-spacing:-.045em!important;
+  color:#171819!important;
+}
+.site-premium .hero h1 em{
+  display:block;
+  margin-top:5px;
+  color:#777b7e!important;
+  font-style:normal!important;
+}
+.site-premium .hero .lead{
+  max-width:610px!important;
+  margin:38px 0 34px!important;
+  padding-top:26px;
+  border-top:1px solid var(--ss-line);
+  color:#6f7376!important;
+  font-size:13px!important;
+  line-height:1.82!important;
+}
+.site-premium .hero-actions{gap:10px!important}
+.site-premium .hero .button{
+  min-height:48px!important;
+  padding:13px 21px!important;
+  font-size:8.5px!important;
+  letter-spacing:.17em!important;
+}
+.site-premium .hero-meta{
+  margin-top:28px!important;
+  padding-top:18px!important;
+  display:flex!important;
+  gap:28px!important;
+  border-top:1px solid var(--ss-line);
+  font-size:8px!important;
+  letter-spacing:.15em!important;
+  text-transform:uppercase!important;
+}
+.site-premium .hero-media{
+  min-height:calc(100vh - 86px)!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  filter:grayscale(.78) saturate(.2) contrast(.94) brightness(1.05)!important;
+  background-position:center center!important;
+}
+.site-premium .hero-media::before{
+  background:
+    linear-gradient(90deg,rgba(247,247,244,.08),transparent 22%),
+    linear-gradient(180deg,rgba(255,255,255,.05),transparent 48%,rgba(10,10,10,.12))!important;
+}
+.site-premium .hero-media::after{
+  height:28%!important;
+  background:linear-gradient(180deg,transparent,rgba(14,15,15,.18))!important;
+}
+.site-premium .hero-media-caption{
+  left:34px!important;
+  right:auto!important;
+  bottom:28px!important;
+  width:min(360px,calc(100% - 68px))!important;
+  padding:18px 20px!important;
+  background:rgba(248,248,246,.87)!important;
+  border:1px solid rgba(255,255,255,.60)!important;
+  color:#1c1e1f!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(14px)!important;
+}
+.site-premium .hero-media-caption span{
+  color:#85898b!important;
+  font-size:7px!important;
+  letter-spacing:.18em!important;
+}
+.site-premium .hero-media-caption strong{
+  color:#252728!important;
+  font-weight:400!important;
+  font-size:12px!important;
+}
+.site-premium .hero-scroll-cue{
+  left:auto!important;
+  right:34px!important;
+  bottom:28px!important;
+  color:#fff!important;
+}
+.site-premium .hero::before{display:none!important}
+
+/* TRUST STRIP — slim architectural rail */
+.site-premium .premium-trust{
+  margin:0!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  background:#fff!important;
+  border-top:0!important;
+  border-bottom:1px solid var(--ss-line)!important;
+}
+.site-premium .premium-trust article{
+  min-height:145px;
+  padding:32px clamp(28px,4vw,72px)!important;
+}
+.site-premium .premium-trust article span{
+  display:block;
+  margin-bottom:12px;
+  font-size:7px;
+  font-weight:500;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:#85898b;
+}
+.site-premium .premium-trust strong{
+  max-width:390px;
+  font-size:13px!important;
+  line-height:1.45;
+  letter-spacing:.01em!important;
+  text-transform:none!important;
+  font-weight:500;
+}
+.site-premium .premium-trust small{
+  max-width:410px;
+  margin-top:8px!important;
+  font-size:10px!important;
+  line-height:1.6;
+}
+
+/* TREATMENTS — editorial service architecture instead of generic beauty cards */
+.site-premium .premium-treatments{
+  padding-top:128px!important;
+  padding-bottom:132px!important;
+  background:#f4f4f1!important;
+}
+.site-premium .premium-treatments .section-heading.split{
+  grid-template-columns:minmax(0,1.15fr) minmax(320px,.55fr)!important;
+  gap:8vw!important;
+  align-items:end!important;
+  margin-bottom:66px!important;
+}
+.site-premium .premium-treatments .section-heading h2{
+  max-width:900px!important;
+  font-size:clamp(44px,4.7vw,72px)!important;
+}
+.site-premium .treatment-grid-refined{
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:1px!important;
+  background:var(--ss-line)!important;
+  border:1px solid var(--ss-line)!important;
+}
+.site-premium .treatment-grid-refined .treatment-card{
+  min-height:560px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  filter:grayscale(.86) saturate(.12) contrast(.94) brightness(1.02)!important;
+  transform:none!important;
+}
+.site-premium .treatment-grid-refined .treatment-card::before{
+  background:linear-gradient(180deg,rgba(10,10,10,.02) 20%,rgba(10,10,10,.72) 100%)!important;
+}
+.site-premium .treatment-grid-refined .treatment-card>div{
+  left:28px!important;
+  right:28px!important;
+  bottom:30px!important;
+}
+.site-premium .treatment-grid-refined .treatment-card span{
+  font-size:7px!important;
+  letter-spacing:.22em!important;
+  text-transform:uppercase!important;
+}
+.site-premium .treatment-grid-refined .treatment-card h3{
+  margin:10px 0 12px!important;
+  font-size:28px!important;
+  letter-spacing:-.02em!important;
+}
+.site-premium .treatment-grid-refined .treatment-card p{
+  max-width:280px;
+  font-size:10px!important;
+  line-height:1.65!important;
+}
+.site-premium .treatment-grid-refined .treatment-card a{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  margin-top:20px!important;
+  padding-top:14px!important;
+  border-top:1px solid rgba(255,255,255,.28)!important;
+  font-size:8px!important;
+  letter-spacing:.14em!important;
+  text-transform:uppercase!important;
+}
+.site-premium .treatment-grid-refined .treatment-card:hover{
+  filter:grayscale(.58) saturate(.26) contrast(.96) brightness(1.02)!important;
+}
+.site-premium .treatment-consultation{
+  margin-top:34px!important;
+  padding:28px 0 0!important;
+  border-top:1px solid var(--ss-line)!important;
+  display:grid!important;
+  grid-template-columns:1fr auto!important;
+  gap:36px!important;
+  align-items:end!important;
+}
+.site-premium .treatment-consultation span{
+  display:block;
+  margin-bottom:7px;
+  font-size:7px!important;
+  letter-spacing:.2em!important;
+  text-transform:uppercase!important;
+  color:#85898b!important;
+}
+.site-premium .treatment-consultation strong{
+  display:block;
+  max-width:740px;
+  font-size:18px!important;
+  font-weight:400!important;
+}
+.site-premium .treatment-consultation p{
+  max-width:720px;
+  margin:8px 0 0!important;
+  color:#737679!important;
+  font-size:10px!important;
+}
+
+/* Dynamically rendered service catalog */
+.site-premium #behandlungen .public-services-grid{background:transparent!important}
+.site-premium #behandlungen .public-service-group{
+  margin-bottom:46px!important;
+}
+.site-premium #behandlungen .public-service-group-head{
+  margin-bottom:14px!important;
+}
+.site-premium #behandlungen .public-service-group-head::after{
+  background:linear-gradient(90deg,var(--ss-line-strong),transparent)!important;
+}
+.site-premium #behandlungen .public-service-cards{
+  gap:1px!important;
+  padding:0 0 12px!important;
+  background:var(--ss-line)!important;
+}
+.site-premium #behandlungen .public-service-card{
+  min-height:420px!important;
+  border:0!important;
+  background-color:#ddd!important;
+  box-shadow:none!important;
+  filter:grayscale(.86) saturate(.12) contrast(.95) brightness(1.02)!important;
+}
+.site-premium #behandlungen .public-service-card:hover{
+  filter:grayscale(.55) saturate(.24) contrast(.96) brightness(1.02)!important;
+}
+.site-premium #behandlungen .public-service-card h3{
+  font-size:28px!important;
+  font-weight:300!important;
+}
+.site-premium #behandlungen .public-service-card p{
+  color:rgba(255,255,255,.72)!important;
+}
+.site-premium #behandlungen .public-service-card>a{
+  border-radius:1px!important;
+  border-color:rgba(255,255,255,.38)!important;
+}
+
+/* ABOUT — Birgit as the human counterpart to the architecture */
+.site-premium .about-refined{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr)!important;
+  gap:0!important;
+  padding:0!important;
+  background:#fff!important;
+  border-top:1px solid var(--ss-line);
+  border-bottom:1px solid var(--ss-line);
+}
+.site-premium .about-refined::before{display:none!important}
+.site-premium .about-refined .about-image{
+  min-height:720px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  filter:grayscale(.82) saturate(.16) contrast(.95) brightness(1.04)!important;
+  background-position:center!important;
+}
+.site-premium .about-refined .about-copy{
+  position:relative;
+  padding:clamp(64px,8vw,132px) clamp(44px,7vw,118px)!important;
+  border:0!important;
+  border-left:1px solid var(--ss-line)!important;
+  border-radius:0!important;
+  background:#f7f7f4!important;
+}
+.site-premium .about-refined .about-copy::before{
+  content:"S | S";
+  position:absolute;
+  top:36px;
+  right:42px;
+  font-size:11px;
+  font-weight:300;
+  letter-spacing:.12em;
+  color:#9a9d9f;
+}
+.site-premium .about-refined .about-copy h2{
+  max-width:720px!important;
+  font-size:clamp(42px,4.4vw,70px)!important;
+  line-height:1.02!important;
+}
+.site-premium .about-refined .about-intro{
+  margin-top:34px!important;
+  padding-top:26px!important;
+  border-top:1px solid var(--ss-line)!important;
+}
+.site-premium .about-refined .about-copy p:not(.eyebrow){
+  max-width:660px!important;
+  color:#6f7376!important;
+  font-size:12px!important;
+  line-height:1.8!important;
+}
+.site-premium .about-signals{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:0!important;
+  margin:30px 0 0!important;
+  border-top:1px solid var(--ss-line)!important;
+  border-bottom:1px solid var(--ss-line)!important;
+}
+.site-premium .about-signals span{
+  padding:14px 12px 14px 0!important;
+  border-top:0!important;
+  font-size:7.5px!important;
+  letter-spacing:.12em!important;
+  text-transform:uppercase!important;
+  color:#5f6366!important;
+}
+.site-premium .about-signals span:nth-child(even){
+  padding-left:18px!important;
+  border-left:1px solid var(--ss-line)!important;
+}
+.site-premium .about-statement{
+  margin:34px 0 0!important;
+  padding:0!important;
+  border:0!important;
+  font-family:var(--sans)!important;
+  font-size:20px!important;
+  font-weight:300!important;
+  line-height:1.45!important;
+  color:#313436!important;
+}
+.site-premium .about-actions{margin-top:30px!important}
+
+/* PRINCIPLES — visual continuation */
+.site-premium .premium-principles{
+  background:#151617!important;
+  color:#fff!important;
+}
+.site-premium .premium-principles::before{background:rgba(255,255,255,.12)!important}
+.site-premium .premium-principles .eyebrow,
+.site-premium .premium-principles h2,
+.site-premium .premium-principles h3{color:#fff!important}
+.site-premium .premium-principles p{color:rgba(255,255,255,.58)!important}
+.site-premium .principles-grid article{
+  border-color:rgba(255,255,255,.13)!important;
+}
+.site-premium .principles-grid article>span{
+  color:rgba(255,255,255,.48)!important;
+}
+
+/* Responsive composition */
+@media(max-width:1050px){
+  .site-premium .hero{
+    grid-template-columns:1fr!important;
+  }
+  .site-premium .hero-copy{
+    min-height:auto!important;
+    border-right:0!important;
+    border-bottom:1px solid var(--ss-line)!important;
+  }
+  .site-premium .hero-media{
+    min-height:620px!important;
+  }
+  .site-premium .premium-trust{grid-template-columns:1fr 1fr 1fr!important}
+  .site-premium .about-refined{grid-template-columns:1fr!important}
+  .site-premium .about-refined .about-copy{border-left:0!important;border-top:1px solid var(--ss-line)!important}
+}
+@media(max-width:760px){
+  .site-premium .hero-copy{
+    padding:54px 20px 44px!important;
+  }
+  .site-premium .hero-copy::before{margin-bottom:30px}
+  .site-premium .hero h1{font-size:clamp(44px,13vw,60px)!important}
+  .site-premium .hero-media{min-height:500px!important}
+  .site-premium .hero-meta{flex-direction:column!important;gap:7px!important}
+  .site-premium .premium-trust{grid-template-columns:1fr!important}
+  .site-premium .premium-trust article{min-height:auto;padding:24px 20px!important}
+  .site-premium .premium-trust article+article{border-left:0!important;border-top:1px solid var(--ss-line)!important}
+  .site-premium .premium-treatments{padding:82px 20px!important}
+  .site-premium .treatment-grid-refined{grid-template-columns:1fr!important}
+  .site-premium .treatment-grid-refined .treatment-card{min-height:480px!important}
+  .site-premium .treatment-consultation{grid-template-columns:1fr!important}
+  .site-premium .about-refined .about-image{min-height:520px!important}
+  .site-premium .about-refined .about-copy{padding:64px 20px!important}
+  .site-premium .about-signals{grid-template-columns:1fr!important}
+  .site-premium .about-signals span:nth-child(even){padding-left:0!important;border-left:0!important;border-top:1px solid var(--ss-line)!important}
+}
