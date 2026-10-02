@@ -309,3 +309,154 @@ body:has(.admin-app){background:#f3f3f0!important}
   .admin-brand-v73 .admin-brand-copy strong{font-size:9.5px!important;letter-spacing:.16em!important}
   .admin-brand-v73 .admin-brand-copy small{font-size:5.8px!important;letter-spacing:.20em!important}
 }
+
+
+/* Public brand lockup + warm-tone purge · 2026-10-02 */
+.brand-v73{
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+  min-width:0!important;
+}
+.brand-v73 .brand-mark{
+  width:42px!important;
+  height:42px!important;
+  flex:0 0 42px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid rgba(21,21,21,.16)!important;
+  border-radius:1px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+.brand-v73 .brand-mark::before{
+  content:"S | S"!important;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:300!important;
+  letter-spacing:.05em!important;
+  color:#222426!important;
+}
+.brand-v73 .brand-mark::after{display:none!important}
+.brand-v73 .brand-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:6px;
+}
+.brand-v73 .brand-copy strong{
+  display:block!important;
+  white-space:nowrap!important;
+  font-family:var(--sans)!important;
+  font-size:13px!important;
+  line-height:1!important;
+  font-weight:300!important;
+  letter-spacing:.20em!important;
+  color:#1d1f20!important;
+  text-transform:uppercase!important;
+}
+.brand-v73 .brand-copy small{
+  display:block!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  font-family:var(--sans)!important;
+  font-size:7px!important;
+  line-height:1!important;
+  font-weight:400!important;
+  letter-spacing:.26em!important;
+  color:#85898b!important;
+  text-transform:uppercase!important;
+}
+
+/* Remove residual brown/rose brand accents from the public site */
+.site-premium{
+  --accent:#666b6e!important;
+  --accent-dark:#4e5356!important;
+  --champagne:#b7babd!important;
+}
+.site-premium .hero .eyebrow,
+.site-premium .hero h1,
+.site-premium .hero h1 em,
+.site-premium .section h2,
+.site-premium .text-link,
+.site-premium .product-kicker,
+.site-premium .boutique-number,
+.site-premium .stars,
+.site-premium .service-group-title,
+.site-premium .public-service-group-head span{
+  color:#1f2122!important;
+}
+.site-premium .hero h1 em{
+  color:#4f5457!important;
+}
+.site-premium .hero-meta,
+.site-premium .lead,
+.site-premium .section-heading.split>p,
+.site-premium .section-text{
+  color:#707477!important;
+}
+.site-premium .hero-media,
+.site-premium .treatment-card,
+.site-premium .product-image,
+.site-premium .about-image{
+  filter:saturate(.18) contrast(.97) brightness(1.04)!important;
+}
+.site-premium .hero-media::before{
+  background:linear-gradient(90deg,rgba(255,255,255,.20),transparent 42%,rgba(255,255,255,.04))!important;
+}
+.site-premium .button.primary,
+.site-premium .nav-cta{
+  background:#171819!important;
+  border-color:#171819!important;
+  color:#fff!important;
+}
+.site-premium .button.primary:hover,
+.site-premium .nav-cta:hover{
+  background:#2d3032!important;
+}
+.site-premium .button.ghost{
+  border-color:rgba(20,20,20,.18)!important;
+  color:#303335!important;
+}
+.site-premium .voucher-visual,
+.site-premium .cta-section,
+.site-premium .booking-summary,
+.site-premium .booking-progress{
+  box-shadow:none!important;
+}
+.site-premium .cta-section{
+  background:linear-gradient(120deg,#ededeb 0%,#f7f7f4 62%,#ffffff 100%)!important;
+}
+.site-premium .voucher-visual{
+  background:linear-gradient(145deg,#fbfbf9,#e7e7e3)!important;
+}
+
+/* Kill legacy warm pseudo-elements and tinted backgrounds */
+.site-premium .review-card::before{color:rgba(20,20,20,.06)!important}
+.site-premium .booking-final-note,
+.site-premium .deposit-card,
+.site-premium .privacy-card,
+.site-premium .payment-security,
+.site-premium .checkout-notice,
+.site-premium .precheck-intro{
+  background:#f5f5f2!important;
+}
+.site-premium .summary-status span{background:#8e9396!important}
+.site-premium .choice-row input{accent-color:#242627!important}
+
+/* Header spacing: make the lockup feel like a brand, not a UI badge */
+.site-header{
+  min-height:86px!important;
+}
+@media(max-width:900px){
+  .brand-v73 .brand-mark{width:38px!important;height:38px!important;flex-basis:38px!important}
+  .brand-v73 .brand-copy strong{font-size:11.5px!important}
+  .brand-v73 .brand-copy small{font-size:6.4px!important}
+}
+@media(max-width:620px){
+  .brand-v73{gap:10px!important}
+  .brand-v73 .brand-mark{width:34px!important;height:34px!important;flex-basis:34px!important}
+  .brand-v73 .brand-copy strong{font-size:10px!important;letter-spacing:.16em!important}
+  .brand-v73 .brand-copy small{font-size:5.8px!important;letter-spacing:.20em!important}
+}
