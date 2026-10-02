@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const STORE=window.SmileShineDataStore;
+  const BUILD_ID=document.querySelector('meta[name="smileshine-build"]')?.content||'dev';
   const SESSION_KEY='smileshine_demo_session_v1';
   const REMEMBER_KEY='smileshine_demo_remember_v1';
   const USER='Birgit';
@@ -18,7 +19,7 @@
 
   function ensureStyles(){
     if(document.querySelector('link[data-demo-app-style]'))return;
-    const link=document.createElement('link');link.rel='stylesheet';link.href='admin-demo-app.css?v=20260925-demoapp2';link.dataset.demoAppStyle='true';document.head.appendChild(link);
+    const link=document.createElement('link');link.rel='stylesheet';link.href=`admin-demo-app.css?v=${encodeURIComponent(BUILD_ID)}`;link.dataset.demoAppStyle='true';document.head.appendChild(link);
   }
 
   function unlock(){
