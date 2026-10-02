@@ -237,3 +237,75 @@ body:has(.admin-app){background:#f3f3f0!important}
   .brand strong{font-size:11px!important;letter-spacing:.18em!important}
   .hero h1{font-size:clamp(42px,13vw,54px)!important}
 }
+
+
+/* Admin brand lockup · refined 7.3 */
+.admin-brand-v73{
+  display:flex!important;
+  align-items:center!important;
+  gap:13px!important;
+  padding:2px 0 4px!important;
+  min-height:54px;
+}
+.admin-brand-v73 .admin-brand-mark{
+  width:42px!important;
+  height:42px!important;
+  flex:0 0 42px!important;
+  border:1px solid rgba(21,21,21,.16)!important;
+  border-radius:1px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  position:relative!important;
+}
+.admin-brand-v73 .admin-brand-mark::before{
+  content:"S | S"!important;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:300!important;
+  letter-spacing:.05em!important;
+  color:#26282a!important;
+}
+.admin-brand-v73 .admin-brand-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:6px;
+}
+.admin-brand-v73 .admin-brand-copy strong{
+  display:block!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  font-family:var(--sans)!important;
+  font-size:10.5px!important;
+  line-height:1!important;
+  font-weight:300!important;
+  letter-spacing:.185em!important;
+  color:#202224!important;
+  text-transform:uppercase!important;
+}
+.admin-brand-v73 .admin-brand-copy small{
+  display:block!important;
+  margin:0!important;
+  white-space:nowrap!important;
+  font-family:var(--sans)!important;
+  font-size:6.5px!important;
+  line-height:1!important;
+  font-weight:400!important;
+  letter-spacing:.24em!important;
+  color:#8a8d8f!important;
+  text-transform:uppercase!important;
+}
+.mobile-header .admin-brand-v73 .admin-brand-mark{
+  width:36px!important;
+  height:36px!important;
+  flex-basis:36px!important;
+}
+.mobile-header .admin-brand-v73 .admin-brand-copy strong{font-size:10px!important}
+.mobile-header .admin-brand-v73 .admin-brand-copy small{font-size:6px!important}
+@media(max-width:620px){
+  .admin-brand-v73{gap:10px!important}
+  .admin-brand-v73 .admin-brand-mark{width:34px!important;height:34px!important;flex-basis:34px!important}
+  .admin-brand-v73 .admin-brand-copy strong{font-size:9.5px!important;letter-spacing:.16em!important}
+  .admin-brand-v73 .admin-brand-copy small{font-size:5.8px!important;letter-spacing:.20em!important}
+}
