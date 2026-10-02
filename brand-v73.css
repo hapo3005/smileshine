@@ -896,3 +896,73 @@ body:has(.admin-app){background:#f3f3f0!important}
   .site-premium .about-signals{grid-template-columns:1fr!important}
   .site-premium .about-signals span:nth-child(even){padding-left:0!important;border-left:0!important;border-top:1px solid var(--ss-line)!important}
 }
+
+
+/* About-section correction · 2026-10-02
+   Fixes oversized heading, pill-shaped signals and awkward tablet composition.
+*/
+.site-premium .about-refined,
+.site-premium .about-refined .about-copy{
+  overflow:visible!important;
+}
+.site-premium .about-refined .about-copy h2{
+  max-width:760px!important;
+  font-size:clamp(40px,4.05vw,62px)!important;
+  line-height:1.04!important;
+  letter-spacing:-.038em!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  text-wrap:balance;
+}
+.site-premium .about-signals{
+  border-top:1px solid var(--ss-line)!important;
+  border-bottom:1px solid var(--ss-line)!important;
+}
+.site-premium .about-signals span{
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  min-height:52px;
+  display:flex!important;
+  align-items:center!important;
+  margin:0!important;
+}
+.site-premium .about-signals span:nth-child(n+3){
+  border-top:1px solid var(--ss-line)!important;
+}
+.site-premium .about-signals span:nth-child(even){
+  border-left:1px solid var(--ss-line)!important;
+}
+@media(max-width:1050px){
+  .site-premium .about-refined .about-copy{
+    padding:72px clamp(28px,7vw,72px) 76px!important;
+  }
+  .site-premium .about-refined .about-copy h2{
+    max-width:820px!important;
+    font-size:clamp(42px,7vw,58px)!important;
+    line-height:1.04!important;
+  }
+  .site-premium .about-refined .about-intro{
+    max-width:760px!important;
+  }
+}
+@media(max-width:620px){
+  .site-premium .about-refined .about-copy{
+    padding:58px 20px 62px!important;
+  }
+  .site-premium .about-refined .about-copy h2{
+    font-size:clamp(38px,11vw,48px)!important;
+    line-height:1.04!important;
+  }
+  .site-premium .about-signals{
+    grid-template-columns:1fr!important;
+  }
+  .site-premium .about-signals span{
+    min-height:48px;
+    padding:12px 0!important;
+    border-left:0!important;
+  }
+  .site-premium .about-signals span+span{
+    border-top:1px solid var(--ss-line)!important;
+  }
+}
