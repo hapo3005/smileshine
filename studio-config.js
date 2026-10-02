@@ -60,10 +60,27 @@
         eyebrow:'Birgit Porn · Permanent Make-up & Beauty',
         captionLabel:'Smile & Shine · Wittlich-Bombogen',
         caption:'Ruhig. Präzise. Auf dich abgestimmt.',
-        location:'Wittlich-Bombogen'
+        location:'Wittlich-Bombogen',
+        lead:'Form, Farbe und Ausdruck werden nicht nach einem Schema gewählt. Bei Smile & Shine beginnt jede Behandlung mit einem genauen Blick auf dich – für ein Ergebnis, das gepflegt, harmonisch und selbstverständlich wirkt.'
+      },
+      treatments:{
+        headline:'Drei Bereiche. Ein Anspruch: Es muss zu dir passen.',
+        intro:'Permanent Make-up soll nicht wie ein Effekt wirken. Entscheidend ist das Zusammenspiel aus Proportion, Farbe und gewünschter Wirkung – abgestimmt auf dein Gesicht und deinen Alltag.'
       },
       about:{
-        eyebrow:'Birgit Porn · Über mich'
+        eyebrow:'Birgit Porn · Über mich',
+        headline:'Erfahrung erkennt man nicht an Lautstärke. Sondern am Ergebnis.',
+        intro:'Schönheit bedeutet für mich nicht, einem Trend zu folgen. Sie beginnt damit, genau hinzusehen: Welche Form passt zu deinem Gesicht? Welche Wirkung wünschst du dir? Und was fühlt sich wirklich nach dir an?',
+        body:'Langjährige Beauty-Erfahrung, ein geschultes Auge für Proportionen, Farbe und Balance sowie eine ehrliche Beratung bilden die Grundlage jeder Behandlung.',
+        statement:'„Nicht mehr. Nicht auffälliger. Sondern stimmiger.“'
+      },
+      contact:{
+        headline:'Alles geklärt, bevor du losfährst.',
+        intro:'Termin, Vorbereitung und Anfahrt greifen bei Smile & Shine ineinander. So weißt du vor deinem Besuch, was dich erwartet und kannst dich ganz auf deinen Termin konzentrieren.'
+      },
+      shop:{
+        headline:'Online auswählen. Im Studio abholen.',
+        intro:'Ausgewählte Pflegeprodukte können online in den Warenkorb gelegt und anschließend bei Smile & Shine in Wittlich-Bombogen abgeholt werden.'
       },
       footer:{
         descriptor:'Permanent Make-up & Beauty · Wittlich-Bombogen'
