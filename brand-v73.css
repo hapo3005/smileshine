@@ -1124,3 +1124,19 @@ body:has(.admin-app){background:#f3f3f0!important}
     max-width:420px;
   }
 }
+
+
+/* Hero media source correction · 2026-10-02 */
+.site-premium .hero .hero-media{
+  background:
+    linear-gradient(90deg,rgba(250,248,244,.84) 0%,rgba(250,248,244,.58) 30%,rgba(250,248,244,.16) 49%,rgba(250,248,244,0) 66%),
+    var(--studio-media-hero) center 48%/cover no-repeat!important;
+  filter:saturate(.74) contrast(.97) brightness(1.04)!important;
+}
+@media(max-width:760px){
+  .site-premium .hero .hero-media{
+    background:
+      linear-gradient(180deg,rgba(250,248,244,.82) 0%,rgba(250,248,244,.70) 48%,rgba(250,248,244,.18) 76%,rgba(250,248,244,.08) 100%),
+      var(--studio-media-hero) 56% center/cover no-repeat!important;
+  }
+}
