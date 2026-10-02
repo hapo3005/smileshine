@@ -49,7 +49,7 @@
 
   function persist(value){if(STORE)STORE.write(value);else localStorage.setItem(STORE_KEY,JSON.stringify(value));return value}
   function load(){try{const parsed=STORE?STORE.read():JSON.parse(localStorage.getItem(STORE_KEY)||'null');if(!parsed){const s=seed();return persist(s)}if(!Array.isArray(parsed.appointments)||!Array.isArray(parsed.services))throw new Error('invalid');return parsed}catch(e){const s=seed();return persist(s)}}
-  const api={STORE_KEY,DAY_NAMES,SHORT_DAYS,STATUS_LABELS,$,$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,uid,escapeHTML,seed,db:load(),calendarCursor:new Date(),calendarMode:'day'};
+  const api={STORE_KEY,DAY_NAMES,SHORT_DAYS,STATUS_LABELS,$,$$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,uid,escapeHTML,seed,db:load(),calendarCursor:new Date(),calendarMode:'day'};
   const renderHooks=new Map(),viewHooks=new Map(),eventListeners=new Map();
   const registerHook=(registry,name,fn,priority=0)=>{
     if(!name||typeof fn!=='function')throw new TypeError('Hook requires a name and function');
