@@ -1,4 +1,5 @@
 (() => {
+  const OWNER_FIRST=window.SmileShineConfig?.studio?.owner?.firstName||'Birgit';
   const dataPanel=document.querySelector('.booking-panel[data-panel="4"]');
   const paymentPanel=document.querySelector('.booking-panel[data-panel="5"]');
   if(!dataPanel||!paymentPanel)return;
@@ -81,7 +82,7 @@
     const dateEl=document.getElementById('checkoutDate');if(dateEl)dateEl.textContent=date==='–'?'–':`${date} · ${time} Uhr`;
     const depEl=document.getElementById('checkoutDeposit');if(depEl)depEl.textContent=!priceConfirmed?'Noch nicht bestätigt':amount?`${amount.toFixed(2).replace('.',',')} €`:'Keine Anzahlung';
     const depAmount=document.getElementById('depositAmount');if(depAmount)depAmount.textContent=!priceConfirmed?'Preis & Anzahlung noch offen':amount?`${amount.toFixed(2).replace('.',',')} € Anzahlung`:'Keine Anzahlung vorgesehen';
-    const depText=document.getElementById('depositText');if(depText)depText.textContent=!priceConfirmed?'Birgit bestätigt Preis und mögliche Anzahlung vor dem Livegang.':amount?'Im späteren Livebetrieb kann dieser Betrag als Anzahlung vorgesehen werden.':'Für diese Leistung ist aktuell keine Anzahlung vorgesehen.';
+    const depText=document.getElementById('depositText');if(depText)depText.textContent=!priceConfirmed?`${OWNER_FIRST} bestätigt Preis und mögliche Anzahlung vor dem Livegang.`:amount?'Im späteren Livebetrieb kann dieser Betrag als Anzahlung vorgesehen werden.':'Für diese Leistung ist aktuell keine Anzahlung vorgesehen.';
   }
 
   paymentPanel.querySelectorAll('.payment-option').forEach(btn=>btn.addEventListener('click',()=>{
