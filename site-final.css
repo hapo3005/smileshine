@@ -653,3 +653,157 @@
     border-top:1px solid var(--ss-line)!important;
   }
 }
+
+
+/* ===== Frontend stability / bug-fix pass ===== */
+html{overflow-x:hidden!important;scroll-behavior:smooth}
+body{overflow-x:hidden!important}
+.site-premium *, .site-premium *::before, .site-premium *::after{box-sizing:border-box}
+
+.site-premium a,
+.site-premium button,
+.site-premium input,
+.site-premium select,
+.site-premium textarea{outline-offset:3px}
+.site-premium a:focus-visible,
+.site-premium button:focus-visible,
+.site-premium input:focus-visible,
+.site-premium select:focus-visible,
+.site-premium textarea:focus-visible{
+  outline:2px solid #2b2d2f!important;
+  outline-offset:3px!important;
+}
+
+.site-premium img,
+.site-premium svg{max-width:100%;height:auto}
+
+.site-premium .site-header{
+  position:relative!important;
+  z-index:50!important;
+}
+.site-premium .main-nav{min-width:0!important}
+.site-premium .main-nav a{white-space:nowrap!important}
+
+.site-premium .section-heading h2,
+.site-premium .booking-heading h2,
+.site-premium .contact-experience-heading h2,
+.site-premium .premium-about .about-copy h2,
+.site-premium .premium-principles .principles-heading h2{
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  hyphens:none!important;
+}
+
+.site-premium .button,
+.site-premium .nav-cta,
+.site-premium .text-link{
+  -webkit-tap-highlight-color:transparent;
+}
+.site-premium .button[aria-disabled="true"],
+.site-premium .booking-disabled{
+  pointer-events:none!important;
+  opacity:.55!important;
+}
+
+.site-premium .booking-shell,
+.site-premium .booking-main,
+.site-premium .booking-stage,
+.site-premium .booking-panel,
+.site-premium .service-options,
+.site-premium .date-scroller,
+.site-premium .time-slots{
+  min-width:0!important;
+}
+.site-premium .date-scroller{
+  overflow-x:auto!important;
+  overscroll-behavior-x:contain!important;
+  scrollbar-width:thin;
+}
+.site-premium .time-slots{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:10px!important;
+}
+.site-premium .booking-form input,
+.site-premium .booking-form textarea,
+.site-premium .booking-form select,
+.site-premium .waitlist-form select,
+.site-premium .waitlist-form textarea{
+  width:100%!important;
+  max-width:100%!important;
+}
+
+.site-premium .treatment-card,
+.site-premium .about-image,
+.site-premium .contact-map-card{
+  background-color:#dedad4!important;
+}
+
+.site-premium .premium-footer{
+  gap:18px!important;
+  flex-wrap:wrap!important;
+}
+.site-premium .premium-footer .footer-meta{
+  min-width:0!important;
+  overflow-wrap:anywhere!important;
+}
+
+@media(max-width:980px){
+  .site-premium .site-header{
+    padding-left:22px!important;
+    padding-right:22px!important;
+  }
+}
+
+@media(max-width:760px){
+  html{scroll-behavior:auto}
+  .site-premium .site-header{
+    min-height:72px!important;
+  }
+  .site-premium .brand strong{
+    font-size:12px!important;
+    letter-spacing:.18em!important;
+  }
+  .site-premium .brand small{
+    font-size:7px!important;
+    letter-spacing:.20em!important;
+  }
+  .site-premium .menu-toggle{
+    min-width:44px!important;
+    min-height:44px!important;
+  }
+  .site-premium .main-nav.open{
+    max-height:calc(100vh - 72px)!important;
+    overflow-y:auto!important;
+  }
+  .site-premium .section{
+    padding-left:20px!important;
+    padding-right:20px!important;
+  }
+  .site-premium .field-row{
+    grid-template-columns:1fr!important;
+  }
+  .site-premium .booking-actions{
+    gap:12px!important;
+    flex-wrap:wrap!important;
+  }
+  .site-premium .booking-actions .button,
+  .site-premium .booking-actions .booking-back{
+    width:100%!important;
+  }
+  .site-premium .premium-footer{
+    align-items:flex-start!important;
+    flex-direction:column!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important}
+  .site-premium *,
+  .site-premium *::before,
+  .site-premium *::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+}
