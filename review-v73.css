@@ -225,11 +225,13 @@ body.site-premium img{max-width:100%}
   .site-premium .principles-grid{grid-template-columns:1fr}
   .site-premium .principles-grid article,.site-premium .principles-grid article+article{padding:24px 0;border-left:0}
   .site-premium .principles-grid article+article{border-top:1px solid rgba(255,255,255,.16)}
-  .site-premium .booking-demo-badge{justify-self:start}
+  .site-premium .booking-heading,.site-premium .booking-heading>div{min-width:0;max-width:100%;width:100%}
+  .site-premium .booking-demo-badge{justify-self:stretch;min-width:0;max-width:100%;width:100%;white-space:normal;overflow-wrap:anywhere}
   .site-premium .booking-progress{overflow-x:auto;display:flex;scrollbar-width:none}
   .site-premium .booking-progress::-webkit-scrollbar{display:none}
   .site-premium .progress-step{min-width:104px;flex:0 0 auto}
-  .site-premium .booking-shell{margin-left:-1px;margin-right:-1px}
+  .site-premium .booking-shell{margin-left:0;margin-right:0;max-width:100%;min-width:0}
+  .site-premium .booking-main,.site-premium .booking-stage,.site-premium .booking-panel,.site-premium .booking-panel-head{min-width:0;max-width:100%}
   .site-premium .pickup-shop-footer{align-items:flex-start;flex-direction:column}
   .site-premium .contact-benefits{grid-template-columns:1fr}
   .site-premium .contact-benefit+article,.site-premium .contact-benefit:nth-child(3),.site-premium .contact-benefit:nth-child(4){border-left:0;border-top:1px solid var(--ss-line)}
