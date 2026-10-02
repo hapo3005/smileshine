@@ -7,6 +7,8 @@ const BUILD = ADMIN_SOURCE.match(/<meta name="smileshine-build" content="([^"]+)
 const browserName = process.env.PW_BROWSER || 'chromium';
 const profile = process.env.QA_PROFILE || 'desktop';
 const label = process.env.QA_LABEL || `${process.platform} / ${browserName} / ${profile}`;
+const QA_BASE_URL = process.env.QA_BASE_URL || 'https://hapo3005.github.io/smileshine/';
+const IS_PUBLISHED_QA = /hapo3005\.github\.io/.test(QA_BASE_URL);
 
 const profiles = {
   desktop: {
@@ -39,7 +41,7 @@ const profiles = {
 };
 
 test.use({
-  baseURL: 'https://hapo3005.github.io/smileshine/',
+  baseURL: QA_BASE_URL,
   browserName,
   timezoneId: 'Europe/Berlin',
   locale: 'de-DE',
@@ -64,6 +66,7 @@ function monitorErrors(page) {
 }
 
 async function waitForPublishedBuild(page) {
+  if(!IS_PUBLISHED_QA)return;
   let seen = '';
   for (let attempt = 0; attempt < 30; attempt++) {
     const response = await page.request.get(`admin.html?crossqa-build=${Date.now()}-${attempt}`, { failOnStatusCode: false });
