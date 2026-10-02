@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const A=window.SSAdmin;if(!A)return;
-  const {$,$,escapeHTML}=A;
+  const {$,$$,escapeHTML}=A;
   const CONFIG=window.SmileShineConfig||{};
   const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
   const PICKUP_ADDRESS=CONFIG.studio?.address?.pickup||'Raiffeisenstraße 4, 54516 Wittlich-Bombogen';
