@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 test.use({
-  baseURL: 'https://hapo3005.github.io/smileshine/',
+  baseURL: process.env.QA_BASE_URL || 'https://hapo3005.github.io/smileshine/',
   timezoneId: 'Europe/Berlin',
   trace: 'retain-on-failure',
   screenshot: 'only-on-failure'
