@@ -235,7 +235,7 @@
     save(db);button.disabled=true;button.textContent='✓ Anfrage gespeichert';message(panel,'Die Terminanfrage ist lokal gespeichert und erscheint als offene Anfrage in Birgits Studioansicht.',false,'Anfrage gespeichert');
   }
 
-  function message(panel,text,error,title='Gespeichert'){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';box.setAttribute('role','status');box.setAttribute('aria-live','polite');panel.querySelector('.booking-actions')?.before(box)}box.innerHTML=`<strong>${error?'Nicht verfügbar':title}</strong><span>${text}</span>`}
+  function message(panel,text,error,title='Gespeichert'){let box=$('.sync-booking-message',panel);if(!box){box=document.createElement('div');box.className='booking-final-note sync-booking-message';box.setAttribute('role','status');box.setAttribute('aria-live','polite');panel.querySelector('.booking-actions')?.before(box)}const strong=document.createElement('strong'),span=document.createElement('span');strong.textContent=error?'Nicht verfügbar':String(title||'Gespeichert');span.textContent=String(text||'');box.replaceChildren(strong,span)}
 
   window.SmileShineBookingData={availableSlots,getService:key=>service(load(),key),load,catalog:CATALOG};
   window.addEventListener('storage',e=>{if(e.key===KEY){syncServices();syncPublicServices();refreshDeposit();window.SmileShineBooking?.buildDates?.()}});
