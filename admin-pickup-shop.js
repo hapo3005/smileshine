@@ -108,8 +108,8 @@
 
   function initPickupShop(){
     if(A.pickupShopReady)return;A.pickupShopReady=true;A.pickupAdminFilter='active';ensureUI();bind();
-    const baseShow=A.showView;A.showView=name=>{baseShow(name);if(name==='pickup')render()};
-    const baseRenderAll=A.renderAll;A.renderAll=()=>{baseRenderAll?.();if($('.view[data-view-panel="pickup"]')?.classList.contains('active'))render()};
+    A.registerViewHook?.('pickup-shop',name=>{if(name==='pickup')render()},40);
+    A.registerRenderHook?.('pickup-shop',()=>{if($('.view[data-view-panel="pickup"]')?.classList.contains('active'))render()},40);
     $$('[data-view="pickup"]').forEach(btn=>btn.addEventListener('click',()=>A.showView('pickup')));
     $$('[data-jump="pickup"]').forEach(btn=>btn.addEventListener('click',()=>A.showView('pickup')));
     render();
