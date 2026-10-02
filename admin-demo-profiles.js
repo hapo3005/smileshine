@@ -2,7 +2,9 @@
   'use strict';
   const A=window.SSAdmin;if(!A)return;
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
-  const VERSION=12;
+  const CONFIG=window.SmileShineConfig||{};
+  const CONFIG_SERVICE_IDS=new Set((CONFIG.services||[]).map(service=>service.id));
+  const VERSION=13;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -131,7 +133,7 @@
     A.ensureCustomerNumbers?.(db);
   }
 
-  const DEMO_SERVICE_DEFS=[
+  const RAW_DEMO_SERVICE_DEFS=[
     {id:'demo-nail-refill',name:'Nageldesign · Auffüllen Standard',category:'Nägel · Modellage',duration:60,price:55,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Regelmäßiges Auffüllen und Formkorrektur der Modellage.',internalNote:'Terminlänge 60 Min. festgelegt. Preis ist ein vorläufiger Arbeitswert und mit Birgit final zu bestätigen.'},
     {id:'demo-nail-refill-design',name:'Nageldesign · Auffüllen French / Babyboomer / aufwendiger',category:'Nägel · Modellage',duration:75,price:0,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Auffüllen mit zusätzlicher Zeit für French, Babyboomer, Nailart oder mehrere Reparaturen.',internalNote:'Terminlänge 75 Min. festgelegt. Preis noch mit Birgit festlegen.'},
     {id:'demo-nail-new',name:'Nageldesign · Neumodellage',category:'Nägel · Modellage',duration:90,price:75,deposit:0,active:true,verification:'studio',demoOnly:true,description:'Neumodellage mit Form- und Farbabstimmung.',internalNote:'Terminlänge 90 Min. festgelegt. Preis ist ein vorläufiger Arbeitswert und mit Birgit final zu bestätigen.'},
@@ -161,12 +163,20 @@
 
     {id:'consult',name:'Beratung / Vorbesprechung',category:'Beratung & Grundlagen',duration:30,price:0,deposit:0,active:true,verification:'market',demoOnly:false,description:'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.',internalNote:'Terminlänge 30 Min. festgelegt; mit Birgit final bestätigen.'}
   ];
+  const DEMO_SERVICE_DEFS=[
+    ...RAW_DEMO_SERVICE_DEFS.filter(def=>!CONFIG_SERVICE_IDS.has(def.id)),
+    ...(CONFIG.services||[]).map(service=>({...service,demoOnly:false}))
+  ];
   const RETIRED_SERVICE_IDS=new Set(['brows','eyes','lips','pmu','cosmetic','brows-hair','powder-brows','eyeliner','shaded-eyeliner','lip-contour','lip-full','demo-pmu-followup','pmu-followup','pmu-refresh']);
+  const configuredAssumption=(id,fallback)=>{
+    const service=(CONFIG.services||[]).find(item=>item.id===id);
+    return service?{duration:Number(service.duration||fallback.duration),price:Number(service.price||0),deposit:Number(service.deposit||0)}:fallback;
+  };
   const CORE_ASSUMPTIONS={
-    'Augenbrauen':{duration:120,price:299,deposit:50},
-    'Lid & Wimpernkranz':{duration:90,price:249,deposit:50},
-    'Lippen':{duration:150,price:349,deposit:75},
-    'Beratung':{duration:30,price:0,deposit:0}
+    'Augenbrauen':configuredAssumption('brows-pmu',{duration:120,price:299,deposit:50}),
+    'Lid & Wimpernkranz':configuredAssumption('lashline',{duration:90,price:249,deposit:50}),
+    'Lippen':configuredAssumption('lip-pmu',{duration:150,price:349,deposit:75}),
+    'Beratung':configuredAssumption('consult',{duration:30,price:0,deposit:0})
   };
   const FOLLOWUP_SERVICE_BY_PRIMARY={
     'brows-pmu':'pmu-followup-brows',
@@ -192,7 +202,7 @@
   function ensureDemoServices(db,rebuild){
     db.services=Array.isArray(db.services)?db.services:[];
     if(rebuild){
-      const baseline={'Augenbrauen':90,'Lid & Wimpernkranz':75,'Lippen':120,'Beratung':30};
+      const baseline=Object.fromEntries(Object.entries(CORE_ASSUMPTIONS).map(([name,value])=>[name,value.duration]));
       db.services.forEach(service=>{
         if(!service.demoAssumption)return;
         const key=Object.keys(baseline).find(name=>service.name===name||(name==='Augenbrauen'&&/Augenbrauen/i.test(service.name))||(name==='Lid & Wimpernkranz'&&/Wimpernkranz|Lid/i.test(service.name))||(name==='Lippen'&&/Lippen/i.test(service.name))||(name==='Beratung'&&/Beratung/i.test(service.name)));
@@ -213,11 +223,8 @@
       } else db.services.push({...def});
     });
     if(rebuild){
-      db.slotInterval=15;db.buffer=10;
-      db.workingHours={
-        1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},
-        4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}
-      };
+      db.slotInterval=Number(CONFIG.schedule?.slotInterval||15);db.buffer=Number(CONFIG.schedule?.buffer||10);
+      db.workingHours=JSON.parse(JSON.stringify(CONFIG.schedule?.workingHours||db.workingHours||{}));
     }
   }
 
