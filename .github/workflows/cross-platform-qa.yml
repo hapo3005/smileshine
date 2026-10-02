@@ -16,6 +16,7 @@ on:
       - "admin.css"
       - "admin-*.css"
       - "admin-*.js"
+      - "admin.js"
       - "script.js"
       - "studio-data-store.js"
       - "booking-admin-sync.js"
