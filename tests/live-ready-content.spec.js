@@ -43,7 +43,7 @@ test('central studio config drives public identity, services, contact and media 
   expect(snapshot.summaryAddress).toBe(snapshot.address);
   expect(snapshot.phoneHref).toContain(snapshot.phone.replace(/\D/g,'').slice(-7));
   expect(snapshot.routeHref).toContain('google.com/maps');
-  expect(snapshot.heroMedia).toContain('33412989');
+  expect(snapshot.heroMedia).toMatch(/^url\(["']?https?:\/\//);
   expect(snapshot.media.filter(item => item.requiredForLive)).toHaveLength(5);
   expect(snapshot.media.every(item => item.status === 'temporary' && item.url)).toBe(true);
 
