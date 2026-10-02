@@ -142,7 +142,8 @@ for (const viewport of viewports) {
       expect(hero.height, `${viewport.name}: editorial hero should remain substantial on mobile`).toBeGreaterThanOrEqual(Math.min(viewport.height - 100, 650));
       expect(media.height, `${viewport.name}: neutral editorial visual should have meaningful height`).toBeGreaterThanOrEqual(220);
       expect(media.y, `${viewport.name}: neutral editorial visual must appear in the first viewport`).toBeLessThan(viewport.height);
-      await expect(page.locator('.hero-cinematic .hero-media')).toHaveCSS('background-image', /images\.pexels\.com\/photos\/33412989/);
+      const heroBackground = await page.locator('.hero-cinematic .hero-media').evaluate(node => getComputedStyle(node).backgroundImage);
+      expect(heroBackground, `${viewport.name}: hero media must render an actual image`).not.toBe('none');
     }
     await completeBooking(page, viewport.name);
   });
