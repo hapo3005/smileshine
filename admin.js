@@ -49,14 +49,28 @@
 
   function persist(value){if(STORE)STORE.write(value);else localStorage.setItem(STORE_KEY,JSON.stringify(value));return value}
   function load(){try{const parsed=STORE?STORE.read():JSON.parse(localStorage.getItem(STORE_KEY)||'null');if(!parsed){const s=seed();return persist(s)}if(!Array.isArray(parsed.appointments)||!Array.isArray(parsed.services))throw new Error('invalid');return parsed}catch(e){const s=seed();return persist(s)}}
-  const api={STORE_KEY,DAY_NAMES,SHORT_DAYS,STATUS_LABELS,$,$$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,uid,escapeHTML,seed,db:load(),calendarCursor:new Date(),calendarMode:'day'};
+  const api={STORE_KEY,DAY_NAMES,SHORT_DAYS,STATUS_LABELS,$,$,isoDate,addDays,minutesOf,timeOf,currency,dateShort,uid,escapeHTML,seed,db:load(),calendarCursor:new Date(),calendarMode:'day'};
+  const renderHooks=new Map(),viewHooks=new Map(),eventListeners=new Map();
+  const registerHook=(registry,name,fn,priority=0)=>{
+    if(!name||typeof fn!=='function')throw new TypeError('Hook requires a name and function');
+    registry.set(name,{name,fn,priority:Number(priority)||0});
+    return()=>registry.delete(name);
+  };
+  const runHooks=(registry,...args)=>[...registry.values()].sort((a,b)=>a.priority-b.priority||a.name.localeCompare(b.name)).forEach(hook=>{try{hook.fn(...args)}catch(error){console.error('[Smile & Shine hook]',hook.name,error)}});
+  api.registerRenderHook=(name,fn,priority=0)=>registerHook(renderHooks,name,fn,priority);
+  api.registerViewHook=(name,fn,priority=0)=>registerHook(viewHooks,name,fn,priority);
+  api.runRenderHooks=()=>runHooks(renderHooks);
+  api.runViewHooks=name=>runHooks(viewHooks,name);
+  api.on=(event,fn)=>{if(!eventListeners.has(event))eventListeners.set(event,new Set());eventListeners.get(event).add(fn);return()=>eventListeners.get(event)?.delete(fn)};
+  api.emit=(event,detail)=>{for(const fn of eventListeners.get(event)||[]){try{fn(detail)}catch(error){console.error('[Smile & Shine event]',event,error)}}};
+  api.coreDiagnostics=()=>({renderHooks:[...renderHooks.keys()],viewHooks:[...viewHooks.keys()],events:[...eventListeners.keys()]});
   api.activeAppointments=()=>api.db.appointments.filter(a=>a.status!=='cancelled');
   api.overlaps=(sa,ea,sb,eb)=>sa<eb&&ea>sb;
   api.isSlotFree=(date,time,duration)=>{const start=minutesOf(time),end=start+Number(duration||30)+Number(api.db.buffer||0);if(api.activeAppointments().filter(a=>a.date===date).some(a=>api.overlaps(start,end,minutesOf(a.time),minutesOf(a.time)+Number(a.duration||30)+Number(api.db.buffer||0))))return false;return !api.db.blocked.filter(b=>b.date===date).some(b=>api.overlaps(start,end,minutesOf(b.start),minutesOf(b.end)))};
   api.findNextFreeSlot=(duration=30)=>{const now=new Date();for(let offset=0;offset<30;offset++){const d=addDays(now,offset),wh=api.db.workingHours[d.getDay()];if(!wh?.enabled)continue;const date=isoDate(d);let start=minutesOf(wh.start),end=minutesOf(wh.end);if(offset===0){const current=d.getHours()*60+d.getMinutes()+60;start=Math.max(start,Math.ceil(current/30)*30)}for(let m=start;m+duration<=end;m+=Number(api.db.slotInterval||30))if(api.isSlotFree(date,timeOf(m),duration))return{date,time:timeOf(m)}}return null};
   api.addActivity=(type,text)=>{api.db.activity=api.db.activity||[];api.db.activity.unshift({id:uid('activity'),type,text,date:new Date().toISOString()});api.db.activity=api.db.activity.slice(0,20)};
   api.toast=message=>{const toast=$('#toast');if(!toast)return;toast.textContent=message;toast.classList.add('show');clearTimeout(api.toast.timer);api.toast.timer=setTimeout(()=>toast.classList.remove('show'),2500)};
-  api.save=message=>{persist(api.db);if(message)api.toast(message);api.renderAll?.()};
+  api.save=message=>{persist(api.db);api.emit('data:changed',{message});if(message)api.toast(message);api.renderAll?.()};
   api.relativeTime=value=>{const diff=Math.max(0,Date.now()-new Date(value).getTime()),h=Math.floor(diff/3600000);if(h<1)return'Gerade eben';if(h<24)return`Vor ${h} Std.`;const d=Math.floor(h/24);return d===1?'Gestern':`Vor ${d} Tagen`};
   window.SSAdmin=api;
   async function importWithRetry(url,attempts=3){
@@ -68,10 +82,13 @@
     }
     throw lastError;
   }
-  const adminModules=["./admin-render.js?v=20261001-admin-mobile-rc3","./admin-actions.js?v=20261001-birgit-simple-rc3","./admin-calendar-views.js?v=20261001-birthday-rc3","./admin-calendar-workspace.js?v=20261001-birthday-rc3","./admin-customer-detail.js?v=20261001-birthday-rc3","./admin-payments.js?v=20261001-admin-mobile-rc3","./admin-appointment-detail.js?v=20261001-birthday-rc3","./admin-services-manager.js?v=20261001-birthday-rc3","./admin-customer-numbers.js?v=20261001-birthday-rc3","./admin-pickup-shop.js?v=20261001-birthday-rc3","./admin-demo-profiles.js?v=20261001-admin-mobile-rc4","./admin-whatsapp.js?v=20261001-birthday-rc3","./admin-recurring-blocks.js?v=20261001-birthday-rc3","./admin-communications.js?v=20261001-birgit-story2","./admin-workflow.js?v=20261001-birgit-simple-rc1","./admin-completion.js?v=20261001-birthday-rc3","./admin-media.js?v=20261001-birthday-rc3"];
+  const BUILD_ID=document.querySelector('meta[name="smileshine-build"]')?.content||'dev';
+  api.buildId=BUILD_ID;
+  api.assetUrl=path=>`${path}${path.includes('?')?'&':'?'}v=${encodeURIComponent(BUILD_ID)}`;
+  const adminModules=["./admin-render.js","./admin-actions.js","./admin-calendar-views.js","./admin-calendar-workspace.js","./admin-customer-detail.js","./admin-payments.js","./admin-appointment-detail.js","./admin-services-manager.js","./admin-customer-numbers.js","./admin-pickup-shop.js","./admin-demo-profiles.js","./admin-whatsapp.js","./admin-recurring-blocks.js","./admin-communications.js","./admin-workflow.js","./admin-completion.js","./admin-media.js"];
   try{
-    for(const url of adminModules)await importWithRetry(url);
-    api.initDemoProfiles?.();api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.initRecurringBlocks?.();api.initPickupShop?.();api.initCommunication?.();api.initWorkflowHub?.();api.renderAll();api.refreshPaymentUI?.();api.initWhatsApp?.();api.initCompletion?.();api.initCustomerMedia?.();api.bindCustomerDetailRows?.();await window.SmileShineDemoApp?.init?.(api);api.showView(location.hash.replace('#','')||'dashboard');
+    for(const url of adminModules)await importWithRetry(api.assetUrl(url));
+    api.initDemoProfiles?.();api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.initCalendarWorkspace?.();api.initRecurringBlocks?.();api.initPickupShop?.();api.initCommunication?.();api.initWorkflowHub?.();api.renderAll();api.refreshPaymentUI?.();api.initWhatsApp?.();api.initCompletion?.();api.initCustomerMedia?.();api.bindCustomerDetailRows?.();await window.SmileShineDemoApp?.init?.(api);api.showView(location.hash.replace('#','')||'dashboard');
     api.ready=true;document.documentElement.dataset.adminReady='true';
   }catch(error){
     api.initError=String(error?.stack||error||'Unbekannter Initialisierungsfehler');console.error(error);api.toast('Die Studioversion konnte nicht vollständig geladen werden.');
