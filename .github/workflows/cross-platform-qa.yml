@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "refactor/**"]
     paths:
       - "index.html"
       - "admin.html"
@@ -23,6 +23,10 @@ on:
       - "cnc-products-carousel.js"
       - "tests/cross-platform.spec.js"
       - ".github/workflows/cross-platform-qa.yml"
+      - "playwright.config.js"
+      - "tests/static-server.js"
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -78,6 +82,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
+    env:
+      QA_LOCAL: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '0' || '1' }}
+      QA_BASE_URL: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'https://hapo3005.github.io/smileshine/' || 'http://127.0.0.1:4173/' }}
 
     steps:
       - uses: actions/checkout@v4
