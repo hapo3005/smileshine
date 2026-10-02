@@ -1,10 +1,12 @@
 (() => {
   'use strict';
   const STORE=window.SmileShineDataStore;
+  const CONFIG=window.SmileShineConfig;
   const BUILD_ID=document.querySelector('meta[name="smileshine-build"]')?.content||'dev';
   const SESSION_KEY='smileshine_demo_session_v1';
   const REMEMBER_KEY='smileshine_demo_remember_v1';
-  const USER='Birgit';
+  const USER=CONFIG?.studio?.owner?.firstName||'Birgit';
+  const SESSION_VALUE=USER.toLowerCase().replace(/[^a-z0-9]+/g,'-')||'studio';
   const PIN='2026';
   const params=new URLSearchParams(location.search);
   const forceLogin=params.has('show-login');
@@ -14,7 +16,7 @@
   function authenticated(){
     if(forceLogin)return false;
     if(navigator.webdriver)return true;
-    return sessionStorage.getItem(SESSION_KEY)==='birgit'||localStorage.getItem(REMEMBER_KEY)==='birgit';
+    return sessionStorage.getItem(SESSION_KEY)===SESSION_VALUE||localStorage.getItem(REMEMBER_KEY)===SESSION_VALUE;
   }
 
   function ensureStyles(){
@@ -35,16 +37,16 @@
     let overlay=document.querySelector('#demoLoginOverlay');if(overlay)return;
     overlay=document.createElement('div');overlay.id='demoLoginOverlay';overlay.className='demo-login-overlay';
     overlay.innerHTML=`<main class="demo-login-card" aria-labelledby="demoLoginTitle">
-      <div class="demo-login-brand"><span>S</span><div><strong>SMILE &amp; SHINE</strong><small>STUDIO · PRÄSENTATION</small></div></div>
-      <div class="demo-login-copy"><span class="demo-login-kicker">Lokale Studioversion</span><h1 id="demoLoginTitle">Willkommen, Birgit.</h1><p>Diese Präsentationsversion zeigt den vollständigen Studioablauf und speichert alle Testdaten ausschließlich lokal auf diesem Gerät.</p></div>
+      <div class="demo-login-brand"><span>S</span><div><strong>${CONFIG?.studio?.name||'Smile & Shine'}</strong><small>STUDIO · PRÄSENTATION</small></div></div>
+      <div class="demo-login-copy"><span class="demo-login-kicker">Lokale Studioversion</span><h1 id="demoLoginTitle">Willkommen, ${USER}.</h1><p>Diese Präsentationsversion zeigt den vollständigen Studioablauf und speichert alle Testdaten ausschließlich lokal auf diesem Gerät.</p></div>
       <form id="demoLoginForm">
-        <label><span>Benutzer</span><input name="user" autocomplete="username" value="Birgit" required></label>
+        <label><span>Benutzer</span><input name="user" autocomplete="username" value="${USER}" required></label>
         <label><span>Präsentations-PIN</span><input name="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN eingeben" required></label>
         <label class="demo-remember"><input type="checkbox" name="remember"><span>Auf diesem Gerät angemeldet bleiben</span></label>
         <p class="demo-login-error" id="demoLoginError" role="alert"></p>
         <button type="submit">Studio öffnen →</button>
       </form>
-      <div class="demo-login-access"><span>Präsentationszugang</span><strong>Birgit · PIN 2026</strong><small>Nicht für echte Kundendaten gedacht. Die spätere Live-Version erhält eine echte serverseitige Anmeldung.</small></div>
+      <div class="demo-login-access"><span>Präsentationszugang</span><strong>${USER} · PIN 2026</strong><small>Nicht für echte Kundendaten gedacht. Die spätere Live-Version erhält eine echte serverseitige Anmeldung.</small></div>
     </main>`;
     document.body.appendChild(overlay);
     const form=overlay.querySelector('#demoLoginForm');
@@ -52,8 +54,8 @@
       event.preventDefault();
       const data=new FormData(form),user=String(data.get('user')||'').trim(),pin=String(data.get('pin')||'').trim();
       if(user.toLowerCase()!==USER.toLowerCase()||pin!==PIN){overlay.querySelector('#demoLoginError').textContent='Benutzer oder Präsentations-PIN ist nicht korrekt.';return}
-      sessionStorage.setItem(SESSION_KEY,'birgit');
-      if(data.get('remember')==='on')localStorage.setItem(REMEMBER_KEY,'birgit');else localStorage.removeItem(REMEMBER_KEY);
+      sessionStorage.setItem(SESSION_KEY,SESSION_VALUE);
+      if(data.get('remember')==='on')localStorage.setItem(REMEMBER_KEY,SESSION_VALUE);else localStorage.removeItem(REMEMBER_KEY);
       unlock();
     });
     form.elements.pin?.focus();
