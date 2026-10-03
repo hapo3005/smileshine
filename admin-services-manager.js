@@ -2,7 +2,6 @@
   const A=window.SSAdmin;if(!A)return;
   const {$,$$,escapeHTML,uid}=A;
   const OWNER_FIRST=window.SmileShineConfig?.studio?.owner?.firstName||'Birgit';
-  const CORE_SERVICE_IDS=new Set(['brows-pmu','lashline','lip-pmu','consult']);
   const defaults={
     'Augenbrauen':'Form, Balance und Ausdruck mit natürlicher Wirkung.',
     'Lid & Wimpernkranz':'Dezente Betonung für einen klaren und wachen Blick.',
@@ -10,7 +9,7 @@
     'Beratung':'Persönliches Vorgespräch zu Wunsch, Ablauf und Möglichkeiten.'
   };
 
-  function migrateDescriptions(){let changed=false;(A.db.services||[]).forEach(s=>{if(s.description===undefined){s.description=defaults[s.name]||'';changed=true}});if(changed){if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db))}}
+  function migrateDescriptions(){let changed=false;(A.db.services||[]).forEach(s=>{if(s.description===undefined){s.description=defaults[s.name]||'';changed=true}if(typeof s.publicBookable!=='boolean'){s.publicBookable=s.active!==false&&!s.demoOnly;changed=true}});if(changed){if(window.SmileShineDataStore)window.SmileShineDataStore.write(A.db);else localStorage.setItem(A.STORE_KEY,JSON.stringify(A.db))}}
   function ensureStyles(){if(document.querySelector('link[data-service-manager-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href=A.assetUrl?.('admin-services-manager.css')||'admin-services-manager.css';l.dataset.serviceManagerStyle='true';document.head.appendChild(l)}
 
   function ensureUI(){
@@ -22,7 +21,7 @@
     renderGuidance();
     if(!$('#serviceModal')){
       const dialog=document.createElement('dialog');dialog.className='modal';dialog.id='serviceModal';
-      dialog.innerHTML=`<form class="modal-card" id="serviceForm"><div class="modal-head"><div><span class="panel-kicker">Leistungsverwaltung</span><h3>Neue Leistung</h3></div><button type="button" class="modal-close" data-close-service aria-label="Schließen">×</button></div><div class="modal-body"><label><span>Name der Leistung</span><input name="name" required maxlength="80" placeholder="z. B. Powder Brows"></label><label><span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" required placeholder="Kurze, verständliche Beschreibung für Kundinnen und Kunden"></textarea><small class="service-field-hint">Wird auch in der Online-Terminanfrage angezeigt.</small></label><div class="form-row"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="60" required></label><label><span>Preis · €</span><input name="price" type="number" min="0" step="0.01" value="0" required></label></div><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" step="0.01" value="0"></label><label class="service-active-row"><span><strong>Online anfragbar</strong><small>Kann später jederzeit vorübergehend pausiert werden.</small></span><span class="switch"><input name="active" type="checkbox" checked><span></span></span></label></div><div class="modal-actions"><button type="button" class="soft-button" data-close-service>Abbrechen</button><button type="submit" class="primary-action">Leistung anlegen</button></div></form>`;
+      dialog.innerHTML=`<form class="modal-card" id="serviceForm"><div class="modal-head"><div><span class="panel-kicker">Leistungsverwaltung</span><h3>Neue Leistung</h3></div><button type="button" class="modal-close" data-close-service aria-label="Schließen">×</button></div><div class="modal-body"><label><span>Name der Leistung</span><input name="name" required maxlength="80" placeholder="z. B. Powder Brows"></label><label><span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" required placeholder="Kurze, verständliche Beschreibung für Kundinnen und Kunden"></textarea><small class="service-field-hint">Wird auch in der Online-Terminanfrage angezeigt.</small></label><div class="form-row"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="60" required></label><label><span>Preis · €</span><input name="price" type="number" min="0" step="0.01" value="0" required></label></div><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" step="0.01" value="0"></label><label class="service-active-row"><span><strong>Auf Website anfragbar</strong><small>Ist die Leistung aktiv, erscheint sie auf der Website und in der Online-Terminanfrage.</small></span><span class="switch"><input name="publicBookable" type="checkbox" checked><span></span></span></label></div><div class="modal-actions"><button type="button" class="soft-button" data-close-service>Abbrechen</button><button type="submit" class="primary-action">Leistung anlegen</button></div></form>`;
       document.body.appendChild(dialog);
     }
     bindModal();decorateCards();
@@ -39,31 +38,32 @@
     $$('[data-close-service]').forEach(btn=>btn.onclick=closeServiceModal);
     const modal=$('#serviceModal');if(modal&&!modal.dataset.bound){modal.dataset.bound='1';modal.addEventListener('click',e=>{if(e.target===modal)closeServiceModal()});$('#serviceForm')?.addEventListener('submit',e=>{e.preventDefault();saveNewService(e.currentTarget)})}
   }
-  function openServiceModal(){ensureUI();const form=$('#serviceForm'),modal=$('#serviceModal');form?.reset();if(form){form.elements.duration.value='60';form.elements.price.value='0';form.elements.deposit.value='0';form.elements.active.checked=true}modal?.showModal();queueMicrotask(()=>{if(!form||!modal?.open)return;const active=document.activeElement;if(active===document.body||active===modal||!form.contains(active))form.elements.name?.focus()})}
+  function openServiceModal(){ensureUI();const form=$('#serviceForm'),modal=$('#serviceModal');form?.reset();if(form){form.elements.duration.value='60';form.elements.price.value='0';form.elements.deposit.value='0';form.elements.publicBookable.checked=true}modal?.showModal();queueMicrotask(()=>{if(!form||!modal?.open)return;const active=document.activeElement;if(active===document.body||active===modal||!form.contains(active))form.elements.name?.focus()})}
   function closeServiceModal(){if($('#serviceModal')?.open)$('#serviceModal').close()}
 
   function saveNewService(form){
     if(!form.reportValidity())return;
-    const fd=new FormData(form),name=String(fd.get('name')||'').trim(),description=String(fd.get('description')||'').trim(),duration=Math.max(15,Number(fd.get('duration')||60)),price=Math.max(0,Number(fd.get('price')||0)),deposit=Math.max(0,Number(fd.get('deposit')||0)),active=form.elements.active.checked;
+    const fd=new FormData(form),name=String(fd.get('name')||'').trim(),description=String(fd.get('description')||'').trim(),duration=Math.max(15,Number(fd.get('duration')||60)),price=Math.max(0,Number(fd.get('price')||0)),deposit=Math.max(0,Number(fd.get('deposit')||0)),publicBookable=form.elements.publicBookable.checked;
     if(A.db.services.some(s=>s.name.toLowerCase()===name.toLowerCase()))return A.toast('Eine Leistung mit diesem Namen existiert bereits.');
     if(deposit>price&&price>0)return A.toast('Die Anzahlung kann nicht höher als der Preis sein.');
-    A.db.services.push({id:uid('service'),name,description,duration,price,deposit,active,verification:'studio',internalNote:'Manuell im Adminbereich angelegte Leistung.',createdAt:new Date().toISOString()});
+    A.db.services.push({id:uid('service'),name,description,duration,price,deposit,active:true,publicBookable,verification:'studio',internalNote:'Manuell im Adminbereich angelegte Leistung.',createdAt:new Date().toISOString()});
     A.addActivity('setting',`Neue Leistung angelegt: ${name}.`);closeServiceModal();A.save(`${name} wurde angelegt.`);A.renderServices?.();decorateCards();
   }
 
   function decorateCards(){
     $$('.service-card-admin').forEach(card=>{
       const s=A.db.services.find(x=>x.id===card.dataset.serviceId);if(!s||card.dataset.serviceEnhanced==='1')return;card.dataset.serviceEnhanced='1';
-      const top=$('.service-card-top',card),h3=$('h3',card),p=card.querySelector(':scope > p'),save=$('.service-save',card),toggle=$('[name=active]',card);
+      const top=$('.service-card-top',card),h3=$('h3',card),p=card.querySelector(':scope > p'),save=$('.service-save',card),toggle=$('[name=publicBookable]',card);
       if(top){
-        const status=document.createElement('span');status.className=`service-live-status ${s.active?'active':'paused'}`;
-        status.textContent=!s.active?'Pausiert':s.demoOnly?'Studio aktiv':CORE_SERVICE_IDS.has(s.id)?'Öffentlich buchbar':'Im Leistungsstamm';
+        const visible=s.active!==false&&s.publicBookable===true;
+        const status=document.createElement('span');status.className=`service-live-status ${visible?'active':'paused'}`;
+        status.textContent=visible?'Auf Website':'Nur intern';
         top.insertBefore(status,top.lastElementChild);
-        if(toggle)toggle.setAttribute('aria-label',s.active?'Leistung pausieren':'Leistung aktivieren');
+        if(toggle)toggle.setAttribute('aria-label',visible?'Von Website entfernen':'Auf Website anzeigen');
         if(s.verification){const v=document.createElement('span');v.className=`service-verify-badge ${s.verification}`;v.textContent=s.verification==='verified'?'Verifiziert':s.verification==='market'?'Arbeitswert':'Studio bestätigt';top.insertBefore(v,status)}
       }
       if(h3){const nameLabel=document.createElement('label');nameLabel.className='service-name-field';nameLabel.innerHTML=`<span>Name</span><input name="serviceName" maxlength="80" value="${escapeHTML(s.name)}">`;h3.replaceWith(nameLabel)}
-      if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${!s.active?'Vorübergehend pausiert.':s.demoOnly?'Nur für Studio/Demo – nicht öffentlich buchbar.':CORE_SERVICE_IDS.has(s.id)?'In der öffentlichen Buchung sichtbar.':'Im internen Leistungsstamm – Angebot noch mit ${OWNER_FIRST} bestätigen.'}</small>`;p.replaceWith(desc)}
+      if(p){const desc=document.createElement('label');desc.className='service-description-field';desc.innerHTML=`<span>Kurzbeschreibung</span><textarea name="description" rows="3" maxlength="180" placeholder="Kurzbeschreibung für die Buchung">${escapeHTML(s.description||'')}</textarea><small>${s.active===false?'Leistung ist intern deaktiviert.':s.publicBookable?'Auf Website und in der Online-Terminanfrage sichtbar.':'Nur intern im Leistungsstamm sichtbar.'}</small>`;p.replaceWith(desc)}
       if(s.internalNote){const note=document.createElement('div');note.className='service-internal-note';note.innerHTML=`<span>Interne Einordnung</span><p>${escapeHTML(s.internalNote)}</p>`;card.insertBefore(note,$('.service-fields',card)||save||null)}
       if(save){const actions=document.createElement('div');actions.className='service-card-actions';const del=document.createElement('button');del.type='button';del.className='service-delete-button';del.dataset.deleteService=s.id;del.textContent='Leistung löschen';save.replaceWith(actions);actions.append(save,del)}
     });
@@ -73,8 +73,8 @@
     decorateCards();
     $$('.service-card-admin').forEach(card=>{
       const s=A.db.services.find(x=>x.id===card.dataset.serviceId);if(!s)return;
-      const toggle=$('[name=active]',card);
-      if(toggle)toggle.onchange=()=>{s.active=toggle.checked;A.addActivity('setting',`${s.name}: ${s.active?'aktiviert':'pausiert'}.`);A.save(s.active?`${s.name} ist aktiv.`:`${s.name} wurde pausiert.`);A.renderServices?.()};
+      const toggle=$('[name=publicBookable]',card);
+      if(toggle)toggle.onchange=()=>{s.publicBookable=toggle.checked;A.addActivity('setting',`${s.name}: ${s.publicBookable?'auf Website freigegeben':'von Website entfernt'}.`);A.save(s.publicBookable?`${s.name} ist jetzt auf der Website anfragbar.`:`${s.name} ist jetzt nur intern sichtbar.`);A.renderServices?.()};
       const save=$('.service-save',card);if(save)save.onclick=()=>{
         const oldName=s.name,name=String($('[name=serviceName]',card)?.value||s.name).trim(),description=String($('[name=description]',card)?.value||'').trim();
         if(!name)return A.toast('Bitte einen Namen für die Leistung eingeben.');
