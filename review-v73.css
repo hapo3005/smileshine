@@ -99,6 +99,25 @@ body.site-premium img{max-width:100%}
 .site-premium .treatment-consultation strong{display:block;margin-top:7px;font-size:17px;font-weight:500}
 .site-premium .treatment-consultation p{margin:7px 0 0;font-size:12px;line-height:1.65;color:#777b7d}
 
+/* Public service directory — driven by Admin */
+.site-premium .public-service-directory{max-width:var(--ss-max);margin:42px auto 0;padding-top:34px;border-top:1px solid var(--ss-line)}
+.site-premium .public-service-directory-head{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px 38px;align-items:end;margin-bottom:28px}
+.site-premium .public-service-directory-head>span{grid-column:1/-1;font-size:9px;font-weight:600;letter-spacing:.17em;text-transform:uppercase;color:#7b8082}
+.site-premium .public-service-directory-head>strong{font-size:24px;line-height:1.15;font-weight:400;letter-spacing:-.025em}
+.site-premium .public-service-directory-head>p{margin:0;font-size:12px;line-height:1.65;color:#727779}
+.site-premium .public-service-directory-groups{display:grid;gap:26px}
+.site-premium .public-service-directory-title{padding-bottom:9px;border-bottom:1px solid var(--ss-line);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#777c7e}
+.site-premium .public-service-directory-list{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--ss-line)}
+.site-premium .public-service-directory-item{min-width:0;padding:20px 0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;border-top:1px solid var(--ss-line)}
+.site-premium .public-service-directory-item:nth-child(odd){padding-right:22px}
+.site-premium .public-service-directory-item:nth-child(even){padding-left:22px;border-left:1px solid var(--ss-line)}
+.site-premium .public-service-directory-item strong{display:block;font-size:15px;line-height:1.35;font-weight:500}
+.site-premium .public-service-directory-item p{margin:6px 0 0;font-size:11px;line-height:1.55;color:#777c7e}
+.site-premium .public-service-directory-meta{display:flex;flex-direction:column;align-items:flex-end;gap:8px;white-space:nowrap}
+.site-premium .public-service-directory-meta>span{font-size:9px;color:#808587}
+.site-premium .public-service-directory-meta button{appearance:none;border:0;border-bottom:1px solid rgba(23,25,26,.35);background:transparent;padding:4px 0;color:#202324;font:600 9px/1.2 "Montserrat",sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.site-premium .public-service-directory-meta button:hover{border-bottom-color:#17191a}
+
 /* About */
 .site-premium .premium-about{padding:0;display:grid;grid-template-columns:48% 52%;background:#eeece7}
 .site-premium .about-image{min-height:720px;background-image:linear-gradient(rgba(245,243,239,.06),rgba(245,243,239,.06)),var(--studio-media-about);background-size:cover;background-position:center}
@@ -248,6 +267,14 @@ body.site-premium img{max-width:100%}
   .site-premium .treatment-grid-refined .treatment-card,.site-premium .treatment-grid-refined .treatment-card:last-child{grid-column:auto;min-height:360px}
   .site-premium .treatment-card>div{padding:22px}
   .site-premium .treatment-consultation{grid-template-columns:1fr;padding:22px;gap:18px}
+  .site-premium .public-service-directory{margin-top:32px;padding-top:26px}
+  .site-premium .public-service-directory-head{grid-template-columns:1fr;gap:8px;margin-bottom:22px}
+  .site-premium .public-service-directory-head>span{grid-column:auto}
+  .site-premium .public-service-directory-head>strong{font-size:21px}
+  .site-premium .public-service-directory-list{grid-template-columns:1fr}
+  .site-premium .public-service-directory-item,.site-premium .public-service-directory-item:nth-child(odd),.site-premium .public-service-directory-item:nth-child(even){padding:17px 0;border-left:0}
+  .site-premium .public-service-directory-item{grid-template-columns:minmax(0,1fr) auto;gap:14px}
+  .site-premium .public-service-directory-meta{align-items:flex-end}
   .site-premium .about-image{min-height:390px}
   .site-premium .about-copy{padding:62px 20px}
   .site-premium .about-signals{grid-template-columns:1fr}
