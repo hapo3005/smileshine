@@ -149,7 +149,7 @@
       return;
     }
 
-    $(".schedule-event.booking",root).forEach(el=>{
+    $$(".schedule-event.booking",root).forEach(el=>{
       const a=A.db.appointments.find(item=>item.id===el.dataset.appointmentId);if(!a)return;
       el.classList.add("calendar-workspace-event","status-"+(a.status||"pending"));
       let tags=$(".calendar-event-tags",el);
