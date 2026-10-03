@@ -37,7 +37,10 @@ for (const viewport of [
     await expect(section.locator('.contact-booking-card')).toBeVisible();
     await expect(section.locator('.contact-booking-flow>div')).toHaveCount(3);
     await expect(section.locator('.contact-booking-flow svg')).toHaveCount(3);
-    await expect(section.getByRole('link',{name:/Termin anfragen/})).toBeVisible();
+    const contactCta=section.locator('.contact-booking-cta');
+    await expect(contactCta).toBeVisible();
+    await expect(contactCta).toContainText('Termin mit Birgit planen');
+    await expect(contactCta).toHaveAttribute('href','#booking');
     await expect(section).toContainText('Keine Registrierung');
 
     const body=page.locator('body');
