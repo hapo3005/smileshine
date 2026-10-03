@@ -144,7 +144,7 @@
       const ended=appointmentEnd(a)<=nowMinutes();
       if(a.status==='pending')items.push({key:'confirm-'+a.id,priority:1,kind:'confirm',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · ${a.customerName}`,detail:a.source==='online'?'Online-Terminanfrage wartet auf deine Prüfung.':'Termin ist noch offen und sollte bestätigt werden.',action:a.source==='online'?'Prüfen':'Bestätigen'});
       if(a.status==='confirmed'&&ended)items.push({key:'finish-'+a.id,priority:1,kind:'completion',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Abschluss offen`,detail:`${a.customerName} · ${a.service} ist zeitlich beendet.`,action:'Abschließen'});
-      if(a.preparation?.status==='open'&&!ended)items.push({key:'prep-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Vorbereitung fehlt`,detail:`${a.customerName} · ${a.service}`,action:'Vorbereitung prüfen'});
+      if(a.status!=='pending'&&a.preparation?.status==='open'&&!ended)items.push({key:'prep-'+a.id,priority:1,kind:'appointment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Vorbereitung fehlt`,detail:`${a.customerName} · ${a.service}`,action:'Vorbereitung prüfen'});
       const f=financials(a);
       if(f.open>0&&a.status==='completed')items.push({key:'pay-'+a.id,priority:3,kind:'payment',appointmentId:a.id,customerId:a.customerId,title:`${a.time} · Zahlung offen`,detail:`${a.customerName} · ${money(f.open)} noch ausstehend`,action:'Zahlung'});
     });
