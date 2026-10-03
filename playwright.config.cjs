@@ -15,7 +15,7 @@ module.exports = defineConfig({
   },
   webServer: {
     command: 'npx http-server . -p 4173 -c-1 --silent',
-    url: 'http://127.0.0.1:4173/review/',
+    url: 'http://127.0.0.1:4173/index.html',
     reuseExistingServer: false,
     timeout: 30000
   }
