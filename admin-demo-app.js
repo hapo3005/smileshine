@@ -37,16 +37,16 @@
     let overlay=document.querySelector('#demoLoginOverlay');if(overlay)return;
     overlay=document.createElement('div');overlay.id='demoLoginOverlay';overlay.className='demo-login-overlay';
     overlay.innerHTML=`<main class="demo-login-card" aria-labelledby="demoLoginTitle">
-      <div class="demo-login-brand"><span>S</span><div><strong>${CONFIG?.studio?.name||'Smile & Shine'}</strong><small>STUDIO · PRÄSENTATION</small></div></div>
-      <div class="demo-login-copy"><span class="demo-login-kicker">Lokale Studioversion</span><h1 id="demoLoginTitle">Willkommen, ${USER}.</h1><p>Diese Präsentationsversion zeigt den vollständigen Studioablauf und speichert alle Testdaten ausschließlich lokal auf diesem Gerät.</p></div>
+      <div class="demo-login-brand"><span class="demo-login-brand-mark" aria-hidden="true">S | S</span><div class="demo-login-brand-copy"><strong>${CONFIG?.studio?.name||'Smile & Shine'}</strong><small>DENTIST · COSMETIC</small></div></div>
+      <div class="demo-login-copy"><span class="demo-login-kicker">Studiozugang · Präsentation</span><h1 id="demoLoginTitle">Willkommen, ${USER}.</h1><p>Dein vorbereiteter Studioarbeitsplatz mit Kalender, Kundenakten und Organisation. Die Präsentationsdaten bleiben lokal auf diesem Gerät.</p></div>
       <form id="demoLoginForm">
         <label><span>Benutzer</span><input name="user" autocomplete="username" value="${USER}" required></label>
         <label><span>Präsentations-PIN</span><input name="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN eingeben" required></label>
         <label class="demo-remember"><input type="checkbox" name="remember"><span>Auf diesem Gerät angemeldet bleiben</span></label>
         <p class="demo-login-error" id="demoLoginError" role="alert"></p>
-        <button type="submit">Studio öffnen →</button>
+        <button type="submit">Studio öffnen</button>
       </form>
-      <div class="demo-login-access"><span>Präsentationszugang</span><strong>${USER} · PIN 2026</strong><small>Nicht für echte Kundendaten gedacht. Die spätere Live-Version erhält eine echte serverseitige Anmeldung.</small></div>
+      <div class="demo-login-access"><span>Präsentationszugang</span><strong>${USER} · PIN 2026</strong><small>Diese Demo verwendet lokale Testdaten. Für den späteren Livebetrieb wird die Anmeldung serverseitig abgesichert.</small></div>
     </main>`;
     document.body.appendChild(overlay);
     const form=overlay.querySelector('#demoLoginForm');
