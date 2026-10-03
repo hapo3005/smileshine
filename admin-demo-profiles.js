@@ -4,7 +4,7 @@
   const {$,isoDate,addDays,minutesOf,timeOf,escapeHTML}=A;
   const CONFIG=window.SmileShineConfig||{};
   const OWNER_FIRST=CONFIG.studio?.owner?.firstName||'Birgit';
-  const VERSION=14;
+  const VERSION=15;
 
   const profiles=[
     ['Anna Müller','1987-03-12','ruhig, verbindlich','WhatsApp, kurz und direkt','vormittags','sehr natürlich','Augenbrauen','weiche, symmetrische Brauen ohne harten Effekt'],
@@ -315,6 +315,16 @@
     return 'Kontrolle nach Erstbehandlung';
   }
 
+  function nextOpenStoryDate(db,startDate){
+    let cursor=new Date(`${startDate}T12:00:00`);
+    for(let i=0;i<14;i++){
+      const hours=db.workingHours?.[cursor.getDay()];
+      if(hours?.enabled)return isoDate(cursor);
+      cursor=addDays(cursor,1);
+    }
+    return startDate;
+  }
+
   function applyBirthdayStory(db,today){
     const prefix='birthday_story_',now=new Date(),customer=name=>(db.customers||[]).find(c=>c.name===name),service=id=>(db.services||[]).find(s=>s.id===id);
     const [anna,petra,laura,sabine,julia,sophie,monika]=['Anna Müller','Petra Schmidt','Laura Becker','Sabine Meier','Julia Weber','Sophie Wagner','Monika Klein'].map(customer);
@@ -350,26 +360,28 @@
       a.reminderOptIn=false;
     });
 
-    const day=value=>new Date(`${today}T${value}:00`).toISOString();
-    const depositDate=isoDate(addDays(new Date(`${today}T12:00:00`),-7));
+    const storyDate=nextOpenStoryDate(db,today);
+    const storyIsToday=storyDate===today;
+    const day=value=>new Date(`${storyDate}T${value}:00`).toISOString();
+    const depositDate=isoDate(addDays(new Date(`${storyDate}T12:00:00`),-7));
     const storyAppointments=[
-      {id:prefix+'anna',date:today,time:'09:00',duration:Number(brows.duration||30),service:brows.name,customerId:anna.id,customerName:anna.name,phone:anna.phone,email:anna.email,status:'confirmed',source:'studio',phase:'Erstbehandlung',payment:'Online-Anzahlung',paymentPreference:'Online-Anzahlung',note:'Sehr natürliches Ergebnis gewünscht · vorhandene Form erhalten.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung, Einverständnis und Ausgangsfotos geprüft.'},listPrice:Number(brows.price||0),finalPrice:Number(brows.price||0),discount:0,depositExpected:Number(brows.deposit||0),paidAmount:Number(brows.deposit||0),payments:[{id:prefix+'pay_anna_deposit',amount:Number(brows.deposit||0),method:'Online',note:'Anzahlung erfasst · Präsentationsdaten',createdAt:new Date(`${depositDate}T12:00:00`).toISOString()}],paymentStatus:Number(brows.deposit||0)>0?'partial':'open',isDemoBooking:true,presentationStory:true},
-      {id:prefix+'petra',date:today,time:'12:15',duration:Number(lashline.duration||30),service:lashline.name,customerId:petra.id,customerName:petra.name,phone:petra.phone,email:petra.email,status:'completed',source:'studio',phase:'Erstbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Feine, unauffällige Verdichtung am Wimpernansatz.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'},listPrice:Number(lashline.price||0),finalPrice:Number(lashline.price||0),discount:0,depositExpected:0,paidAmount:Number(lashline.price||0),payments:[{id:prefix+'pay_petra',amount:Number(lashline.price||0),method:'Karte',note:'Bezahlt im Studio · Präsentationsdaten',createdAt:day('13:48')}],paymentStatus:'paid',isDemoBooking:true,presentationStory:true},
-      {id:prefix+'laura',date:today,time:'14:30',duration:30,service:consult.name,customerId:laura.id,customerName:laura.name,phone:laura.phone,email:laura.email,status:'pending',source:'online',phase:'Beratung',payment:'Im Studio',paymentPreference:'Im Studio',contactPreference:'WhatsApp',reminderOptIn:true,note:'Online-Anfrage · möchte Lippenpigmentierung besprechen.',precheck:{goal:'Natürlich frischer Lippenfarbton ohne harte Kontur',previous:'Nein',allergy:'Nein',medication:'Nein',precheckNote:'Möglichst natürlich und alltagstauglich.'},preparation:{status:'open',consent:false,photos:false,note:'Online-Anfrage prüfen und Beratung vorbereiten.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true},
-      {id:prefix+'sabine',date:today,time:'16:30',duration:60,service:followupBrows.name,customerId:sabine.id,customerName:sabine.name,phone:sabine.phone,email:sabine.email,status:'confirmed',source:'studio',phase:'Nachbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Nachbehandlung Augenbrauen · Form und Heilungsverlauf kontrollieren.',preparation:{status:'open',consent:false,photos:false,note:'Ausgangsfotos und Behandlungsnotiz vor Termin noch prüfen.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true}
+      {id:prefix+'anna',date:storyDate,time:'09:00',duration:Number(brows.duration||30),service:brows.name,customerId:anna.id,customerName:anna.name,phone:anna.phone,email:anna.email,status:'confirmed',source:'studio',phase:'Erstbehandlung',payment:'Online-Anzahlung',paymentPreference:'Online-Anzahlung',note:'Sehr natürliches Ergebnis gewünscht · vorhandene Form erhalten.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung, Einverständnis und Ausgangsfotos geprüft.'},listPrice:Number(brows.price||0),finalPrice:Number(brows.price||0),discount:0,depositExpected:Number(brows.deposit||0),paidAmount:Number(brows.deposit||0),payments:[{id:prefix+'pay_anna_deposit',amount:Number(brows.deposit||0),method:'Online',note:'Anzahlung erfasst · Präsentationsdaten',createdAt:new Date(`${depositDate}T12:00:00`).toISOString()}],paymentStatus:Number(brows.deposit||0)>0?'partial':'open',isDemoBooking:true,presentationStory:true},
+      {id:prefix+'petra',date:storyDate,time:'12:15',duration:Number(lashline.duration||30),service:lashline.name,customerId:petra.id,customerName:petra.name,phone:petra.phone,email:petra.email,status:storyIsToday?'completed':'confirmed',source:'studio',phase:'Erstbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Feine, unauffällige Verdichtung am Wimpernansatz.',preparation:{status:'complete',consent:true,photos:true,note:'Vorbereitung vollständig geprüft.'},listPrice:Number(lashline.price||0),finalPrice:Number(lashline.price||0),discount:0,depositExpected:0,paidAmount:Number(lashline.price||0),payments:[{id:prefix+'pay_petra',amount:Number(lashline.price||0),method:'Karte',note:'Bezahlt im Studio · Präsentationsdaten',createdAt:day('13:48')}],paymentStatus:storyIsToday?'paid':'open',isDemoBooking:true,presentationStory:true},
+      {id:prefix+'laura',date:storyDate,time:'14:30',duration:30,service:consult.name,customerId:laura.id,customerName:laura.name,phone:laura.phone,email:laura.email,status:'pending',source:'online',phase:'Beratung',payment:'Im Studio',paymentPreference:'Im Studio',contactPreference:'WhatsApp',reminderOptIn:true,note:'Online-Anfrage · möchte Lippenpigmentierung besprechen.',precheck:{goal:'Natürlich frischer Lippenfarbton ohne harte Kontur',previous:'Nein',allergy:'Nein',medication:'Nein',precheckNote:'Möglichst natürlich und alltagstauglich.'},preparation:{status:'open',consent:false,photos:false,note:'Online-Anfrage prüfen und Beratung vorbereiten.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true},
+      {id:prefix+'sabine',date:storyDate,time:'16:30',duration:60,service:followupBrows.name,customerId:sabine.id,customerName:sabine.name,phone:sabine.phone,email:sabine.email,status:'confirmed',source:'studio',phase:'Nachbehandlung',payment:'Im Studio',paymentPreference:'Im Studio',note:'Nachbehandlung Augenbrauen · Form und Heilungsverlauf kontrollieren.',preparation:{status:'open',consent:false,photos:false,note:'Ausgangsfotos und Behandlungsnotiz vor Termin noch prüfen.'},listPrice:0,finalPrice:0,discount:0,depositExpected:0,paidAmount:0,payments:[],paymentStatus:'paid',isDemoBooking:true,presentationStory:true}
     ];
     db.appointments.push(...storyAppointments);
-    db.blocked.push({id:prefix+'lunch',date:today,start:'13:55',end:'14:20',label:'Mittagspause'});
+    db.blocked.push({id:prefix+'lunch',date:storyDate,start:'13:55',end:'14:20',label:'Mittagspause'});
 
-    const historyBase=new Date(`${today}T12:00:00`);
+    const historyBase=new Date(`${storyDate}T12:00:00`);
     db.treatmentRecords.push(
       {id:prefix+'record_anna',seedKey:prefix+'record_anna',customerId:anna.id,appointmentId:'',date:isoDate(addDays(historyBase,-56)),service:brows.name,material:'Soft Brown · natürlich aufgebaut',result:'Form weich ausgeglichen, Intensität bewusst dezent.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:new Date(addDays(historyBase,-56)).toISOString()},
       {id:prefix+'record_sabine',seedKey:prefix+'record_sabine',customerId:sabine.id,appointmentId:'',date:isoDate(addDays(historyBase,-42)),service:brows.name,material:'Ash Brown · sanfte Formkorrektur',result:'Natürliches Ergebnis, kleine Asymmetrien ausgeglichen.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:new Date(addDays(historyBase,-42)).toISOString()},
       {id:prefix+'record_monika',seedKey:prefix+'record_monika',customerId:monika.id,appointmentId:'',date:isoDate(addDays(historyBase,-7)),service:lashline.name,material:'Black Brown · feine Verdichtung',result:'Wimpernansatz sehr dezent und gleichmäßig betont.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:new Date(addDays(historyBase,-7)).toISOString()},
-      {id:prefix+'record_petra',seedKey:prefix+'record_petra',customerId:petra.id,appointmentId:prefix+'petra',date:today,service:lashline.name,material:'Dark Brown · feine Verdichtung',result:'Wimpernansatz dezent und gleichmäßig betont.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:day('13:46')}
+      {id:prefix+'record_petra',seedKey:prefix+'record_petra',customerId:petra.id,appointmentId:prefix+'petra',date:storyDate,service:lashline.name,material:'Dark Brown · feine Verdichtung',result:'Wimpernansatz dezent und gleichmäßig betont.',beforePhoto:true,afterPhoto:true,aftercare:true,createdAt:day('13:46')}
     );
 
-    db.communications.push({id:prefix+'comm_sabine',key:`reminder:${prefix}sabine:${today}`,type:'reminder',appointmentId:prefix+'sabine',customerId:sabine.id,dueDate:today,status:'due',title:'Terminerinnerung',note:`${sabine.name} · ${followupBrows.name} · 16:30 Uhr`,createdAt:new Date(now.getTime()-55*60000).toISOString()});
+    db.communications.push({id:prefix+'comm_sabine',key:`reminder:${prefix}sabine:${today}`,type:'reminder',appointmentId:prefix+'sabine',customerId:sabine.id,dueDate:storyDate,status:'due',title:'Terminerinnerung',note:`${sabine.name} · ${followupBrows.name} · 16:30 Uhr`,createdAt:new Date(now.getTime()-55*60000).toISOString()});
 
     db.followUps.push(
       {id:prefix+'followup_monika',seedKey:prefix+'followup_monika',customerId:monika.id,title:'Heilungsverlauf kurz nachfragen',dueDate:today,type:'aftercare',status:'open',note:'Kurze persönliche Rückmeldung nach der letzten PMU-Behandlung.'},
@@ -377,8 +389,8 @@
     );
 
     db.waitlist.push(
-      {id:prefix+'wait_julia',seedKey:prefix+'wait_julia',customerId:julia.id,service:consult.name,serviceId:consult.id,earliest:today,latest:today,daypart:'Flexibel',daypartLabel:'Flexibel',flex:'Heute kurzfristig',note:'Kann heute spontan kommen und möchte Lippenpigmentierung besprechen.',status:'waiting',source:'studio'},
-      {id:prefix+'wait_sophie',seedKey:prefix+'wait_sophie',customerId:sophie.id,service:followupLash.name,serviceId:followupLash.id,earliest:today,latest:today,daypart:'Nachmittag',daypartLabel:'Nachmittag',flex:'Heute kurzfristig',note:'Kann bei einer frei gewordenen Stunde kurzfristig übernehmen.',status:'waiting',source:'studio'}
+      {id:prefix+'wait_julia',seedKey:prefix+'wait_julia',customerId:julia.id,service:consult.name,serviceId:consult.id,earliest:storyDate,latest:storyDate,daypart:'Flexibel',daypartLabel:'Flexibel',flex:'Heute kurzfristig',note:'Kann heute spontan kommen und möchte Lippenpigmentierung besprechen.',status:'waiting',source:'studio'},
+      {id:prefix+'wait_sophie',seedKey:prefix+'wait_sophie',customerId:sophie.id,service:followupLash.name,serviceId:followupLash.id,earliest:storyDate,latest:storyDate,daypart:'Nachmittag',daypartLabel:'Nachmittag',flex:'Heute kurzfristig',note:'Kann bei einer frei gewordenen Stunde kurzfristig übernehmen.',status:'waiting',source:'studio'}
     );
 
     const activity=[
@@ -388,7 +400,7 @@
       ['booking','Julia Weber: Für einen kurzfristigen Termin auf der Warteliste.']
     ];
     activity.reverse().forEach((item,index)=>db.activity.unshift({id:prefix+'activity_'+(index+1),type:item[0],text:item[1],date:new Date(now.getTime()-(index+1)*24*60000).toISOString()}));
-    db.presentationStory={version:1,birthdayReady:true,date:today,headline:`Ein Studiotag, der ${OWNER_FIRST} Arbeit abnimmt.`,steps:['Online-Anfrage prüfen','Behandlung abschließen','Zahlung und Nachpflege erfassen','Freie Lücke über Warteliste besetzen','Abholvormerkung bearbeiten']};
+    db.presentationStory={version:2,birthdayReady:true,date:storyDate,headline:`Ein Studiotag, der ${OWNER_FIRST} Arbeit abnimmt.`,steps:['Online-Anfrage prüfen','Behandlung abschließen','Zahlung und Nachpflege erfassen','Freie Lücke über Warteliste besetzen','Abholvormerkung bearbeiten']};
   }
 
   function buildSimulation(db){
