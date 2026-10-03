@@ -1,10 +1,220 @@
-body.demo-auth-locked{overflow:hidden}.demo-auth-locked .admin-app{visibility:hidden}
-.demo-login-overlay{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 20% 10%,#fff7f4 0,transparent 34%),linear-gradient(135deg,#f8f1ee,#efe4df)}
-.demo-login-card{width:min(460px,100%);background:#fffdfb;border:1px solid #eaded8;border-radius:28px;box-shadow:0 28px 80px rgba(65,43,37,.14);padding:30px}
-.demo-login-brand{display:flex;align-items:center;gap:11px}.demo-login-brand>span{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#b36f68;color:white;font:20px "Marcellus",serif}.demo-login-brand strong,.demo-login-brand small{display:block}.demo-login-brand strong{font-size:11px;letter-spacing:.12em}.demo-login-brand small{margin-top:3px;font-size:7px;color:#8b7b76;letter-spacing:.16em}
-.demo-login-copy{margin:28px 0 20px}.demo-login-kicker{font-size:8px;text-transform:uppercase;letter-spacing:.14em;color:#a56f68;font-weight:800}.demo-login-copy h1{font:36px/1.05 "Marcellus",serif;font-weight:400;margin:7px 0 10px;color:#342a27}.demo-login-copy p{margin:0;color:#81736f;font-size:11px;line-height:1.7}
-#demoLoginForm{display:grid;gap:11px}#demoLoginForm label:not(.demo-remember){display:grid;gap:6px}#demoLoginForm label>span{font-size:8px;color:#746762;font-weight:800;text-transform:uppercase;letter-spacing:.08em}#demoLoginForm input:not([type=checkbox]){width:100%;min-height:46px;border:1px solid #e8dcd6;border-radius:13px;background:#fffaf8;padding:10px 12px;font:12px "Manrope",sans-serif;outline:0}#demoLoginForm input:focus{border-color:#c98b83;box-shadow:0 0 0 3px rgba(201,139,131,.11)}
-.demo-remember{display:flex;align-items:center;gap:8px;padding:2px 1px}.demo-remember span{text-transform:none!important;letter-spacing:0!important;font-weight:600!important;font-size:9px!important}.demo-login-error{min-height:14px;margin:0;color:#a54842;font-size:9px}.demo-login-card form>button{border:0;border-radius:13px;background:#b36f68;color:#fff;padding:13px 16px;font-weight:800;cursor:pointer;box-shadow:0 10px 24px rgba(179,111,104,.2)}
-.demo-login-access{margin-top:18px;padding:13px 14px;border:1px solid #eaded8;border-radius:14px;background:#faf5f2}.demo-login-access span,.demo-login-access strong,.demo-login-access small{display:block}.demo-login-access span{font-size:7px;text-transform:uppercase;letter-spacing:.12em;color:#9b706a;font-weight:800}.demo-login-access strong{font-size:10px;margin-top:4px}.demo-login-access small{font-size:8px;color:#8b7d78;line-height:1.55;margin-top:5px}
-.demo-storage-pill{background:#f5f0ec!important}.demo-storage-card{align-items:flex-start}.demo-storage-copy{min-width:0}.demo-storage-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.demo-storage-meta span{border-radius:999px;background:#f4ece8;padding:5px 7px;font-size:7px;font-weight:800;color:#875f59}.demo-storage-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.demo-storage-actions button{font-size:8px;padding:8px 10px}
-@media(max-width:600px){.demo-login-overlay{padding:14px}.demo-login-card{padding:22px;border-radius:22px}.demo-login-copy h1{font-size:31px}.demo-storage-actions{display:grid;grid-template-columns:1fr 1fr}.demo-storage-actions button{width:100%}}
+body.demo-auth-locked{overflow:hidden}
+.demo-auth-locked .admin-app{visibility:hidden}
+
+.demo-login-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:grid;
+  place-items:center;
+  padding:28px;
+  background:
+    linear-gradient(90deg,transparent calc(50% - 1px),rgba(23,25,26,.035) 50%,transparent calc(50% + 1px)),
+    #f5f3ef;
+  color:#17191a;
+  font-family:"Montserrat",system-ui,sans-serif;
+}
+.demo-login-card{
+  width:min(480px,100%);
+  background:#fff;
+  border:1px solid #dedfdd;
+  border-radius:3px;
+  box-shadow:0 24px 70px rgba(23,25,26,.08);
+  padding:34px;
+}
+.demo-login-brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding-bottom:24px;
+  border-bottom:1px solid #e7e7e3;
+}
+.demo-login-brand-mark{
+  width:48px;
+  height:48px;
+  flex:0 0 48px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(23,25,26,.18);
+  background:#fff;
+  color:#252829;
+  font-size:9px;
+  font-weight:300;
+  letter-spacing:.08em;
+}
+.demo-login-brand-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.demo-login-brand-copy strong{
+  display:block;
+  font-size:11px;
+  line-height:1;
+  font-weight:300;
+  letter-spacing:.19em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.demo-login-brand-copy small{
+  display:block;
+  font-size:6.5px;
+  line-height:1;
+  font-weight:400;
+  letter-spacing:.24em;
+  color:#85898b;
+  text-transform:uppercase;
+}
+.demo-login-copy{margin:34px 0 24px}
+.demo-login-kicker{
+  display:block;
+  margin-bottom:10px;
+  font-size:8px;
+  font-weight:600;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#777c7e;
+}
+.demo-login-copy h1{
+  margin:0;
+  color:#17191a;
+  font:300 38px/1.04 "Montserrat",system-ui,sans-serif;
+  letter-spacing:-.045em;
+}
+.demo-login-copy p{
+  margin:14px 0 0;
+  color:#73787a;
+  font-size:10.5px;
+  line-height:1.75;
+}
+#demoLoginForm{display:grid;gap:14px}
+#demoLoginForm label:not(.demo-remember){display:grid;gap:7px}
+#demoLoginForm label>span{
+  font-size:7.5px;
+  color:#6f7477;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+}
+#demoLoginForm input:not([type=checkbox]){
+  width:100%;
+  min-height:48px;
+  border:1px solid #dfe0dd;
+  border-radius:2px;
+  background:#faf9f6;
+  padding:11px 13px;
+  color:#17191a;
+  font:400 12px "Montserrat",system-ui,sans-serif;
+  outline:0;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+#demoLoginForm input:not([type=checkbox]):focus{
+  border-color:#7b8082;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(79,85,88,.07);
+}
+.demo-remember{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:1px 0;
+}
+.demo-remember input{
+  width:15px;
+  height:15px;
+  margin:0;
+  accent-color:#17191a;
+}
+.demo-remember span{
+  text-transform:none!important;
+  letter-spacing:0!important;
+  font-weight:400!important;
+  font-size:9px!important;
+  color:#666b6d!important;
+}
+.demo-login-error{
+  min-height:14px;
+  margin:-2px 0 0;
+  color:#8c5555;
+  font-size:9px;
+}
+.demo-login-card form>button{
+  min-height:50px;
+  border:1px solid #17191a;
+  border-radius:2px;
+  background:#17191a;
+  color:#fff;
+  padding:13px 18px;
+  font:600 10px "Montserrat",system-ui,sans-serif;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:none;
+  transition:background .18s ease,transform .18s ease;
+}
+.demo-login-card form>button:hover{background:#303334;transform:translateY(-1px)}
+.demo-login-access{
+  margin-top:24px;
+  padding:15px 16px;
+  border:1px solid #e2e3e0;
+  border-radius:2px;
+  background:#f8f7f4;
+}
+.demo-login-access span,
+.demo-login-access strong,
+.demo-login-access small{display:block}
+.demo-login-access span{
+  font-size:7px;
+  text-transform:uppercase;
+  letter-spacing:.15em;
+  color:#7c8183;
+  font-weight:600;
+}
+.demo-login-access strong{
+  margin-top:6px;
+  font-size:10px;
+  font-weight:600;
+  color:#292c2d;
+}
+.demo-login-access small{
+  margin-top:6px;
+  color:#7a7f81;
+  font-size:7.5px;
+  line-height:1.6;
+}
+
+/* Demo storage stays in the same 7.3 system */
+.demo-storage-pill{background:#f8f7f4!important}
+.demo-storage-card{align-items:flex-start}
+.demo-storage-copy{min-width:0}
+.demo-storage-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}
+.demo-storage-meta span{
+  border-radius:2px;
+  border:1px solid #dedfdd;
+  background:#f8f7f4;
+  padding:5px 7px;
+  font-size:7px;
+  font-weight:600;
+  color:#5f6466;
+}
+.demo-storage-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.demo-storage-actions button{font-size:8px;padding:8px 10px}
+
+@media(max-width:600px){
+  .demo-login-overlay{padding:14px;place-items:center}
+  .demo-login-card{padding:24px 22px;border-radius:2px;box-shadow:0 18px 50px rgba(23,25,26,.07)}
+  .demo-login-brand{padding-bottom:20px}
+  .demo-login-brand-mark{width:44px;height:44px;flex-basis:44px}
+  .demo-login-copy{margin:28px 0 22px}
+  .demo-login-copy h1{font-size:34px}
+  .demo-login-copy p{font-size:10px}
+  .demo-login-card form>button{min-height:48px}
+  .demo-storage-actions{display:grid;grid-template-columns:1fr 1fr}
+  .demo-storage-actions button{width:100%}
+}
+@media(max-width:380px){
+  .demo-login-overlay{padding:10px}
+  .demo-login-card{padding:21px 18px}
+  .demo-login-copy h1{font-size:31px}
+}
