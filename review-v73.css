@@ -164,6 +164,21 @@ body.site-premium img{max-width:100%}
 .site-premium .contact-booking-card{padding:34px;display:flex;flex-direction:column;justify-content:center}
 .site-premium .contact-booking-card h3{font-size:25px;line-height:1.25;font-weight:400}
 .site-premium .contact-booking-card p{font-size:12px;line-height:1.7;color:#6f7477}
+.site-premium .contact-booking-icon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:28px;border:1px solid var(--ss-line);background:#f7f5f1;color:#4f5558}
+.site-premium .contact-booking-icon svg,
+.site-premium .contact-booking-flow svg,
+.site-premium .contact-booking-cta svg,
+.site-premium .contact-reassurance svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.site-premium .contact-booking-icon svg{width:21px;height:21px}
+.site-premium .contact-booking-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 26px}
+.site-premium .contact-booking-flow>div{display:grid;grid-template-columns:32px minmax(0,1fr);gap:8px;align-items:center;min-width:0;padding:10px;border:1px solid var(--ss-line);background:#faf9f6}
+.site-premium .contact-booking-flow>div span{width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--ss-line);background:#fff;color:#555a5c}
+.site-premium .contact-booking-flow>div span svg{width:18px;height:18px}
+.site-premium .contact-booking-flow>div strong{min-width:0;font-size:9px;line-height:1.4;font-weight:600}
+.site-premium .contact-booking-cta{width:100%;min-height:54px;margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.site-premium .contact-booking-cta svg{width:18px;height:18px;flex:0 0 18px}
+.site-premium .contact-reassurance{display:flex;align-items:center;gap:8px;margin-top:14px;color:#686d70;font-size:10px;line-height:1.5}
+.site-premium .contact-reassurance svg{width:16px;height:16px;flex:0 0 16px}
 
 /* Footer */
 .site-premium .site-footer{min-height:86px;padding:22px var(--ss-gutter);display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;border-top:1px solid var(--ss-line);background:#fff;font-size:10px;color:#74797b}
@@ -251,6 +266,10 @@ body.site-premium img{max-width:100%}
   .site-premium .contact-direct-actions{width:100%}
   .site-premium .contact-route-button{flex:1;justify-content:center}
   .site-premium .contact-booking-card{padding:26px 22px}
+  .site-premium .contact-booking-icon{margin-bottom:22px}
+  .site-premium .contact-booking-flow{grid-template-columns:1fr}
+  .site-premium .contact-booking-flow>div{grid-template-columns:32px minmax(0,1fr)}
+  .site-premium .contact-booking-cta{padding-left:20px;padding-right:20px}
   .site-premium .site-footer{grid-template-columns:1fr;gap:8px;text-align:left}
   .site-premium .site-footer .footer-meta{text-align:left;line-height:1.6}
 }
