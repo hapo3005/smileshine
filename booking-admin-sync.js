@@ -56,6 +56,9 @@
         demoPricingVersion:CATALOG_VERSION
       };
     }),...extras];
+    db.services.forEach(service=>{
+      if(typeof service.publicBookable!=='boolean')service.publicBookable=service.active!==false&&!service.demoOnly;
+    });
     db.catalogVersion=CATALOG_VERSION;
     return db;
   }
@@ -71,7 +74,7 @@
 
   function takeCustomerNumber(db){ensureCustomerNumbers(db);let next=Math.max(1,Number(db.nextCustomerNumber)||1);const used=new Set((db.customers||[]).map(c=>customerNumberValue(c.customerNumber)).filter(Boolean));while(used.has(next))next++;const value=customerNumber(next);db.nextCustomerNumber=next+1;return value}
 
-  function fallback(){return migrateCatalog({version:1,catalogVersion:CATALOG_VERSION,slotInterval:Number(CONFIG.schedule?.slotInterval||15),buffer:Number(CONFIG.schedule?.buffer||10),nextCustomerNumber:1,services:CATALOG.map(x=>({...x})),workingHours:CONFIG_HOURS(),customers:[],appointments:[],blocked:[],activity:[]})}
+  function fallback(){return migrateCatalog({version:1,catalogVersion:CATALOG_VERSION,slotInterval:Number(CONFIG.schedule?.slotInterval||15),buffer:Number(CONFIG.schedule?.buffer||10),nextCustomerNumber:1,services:CATALOG.map(x=>({...x,publicBookable:typeof x.publicBookable==='boolean'?x.publicBookable:x.active!==false&&!x.demoOnly})),workingHours:CONFIG_HOURS(),customers:[],appointments:[],blocked:[],activity:[]})}
 
   function load(){
     try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x){migrateCatalog(x);ensureCustomerNumbers(x);localStorage.setItem(KEY,JSON.stringify(x));return x}}catch(e){}
@@ -98,15 +101,15 @@
     return slots;
   }
 
-  const BUILTIN_IDS=new Set(CATALOG.map(item=>item.id));
-  const PUBLIC_SERVICE_IDS=['brows-pmu','lashline','lip-pmu','consult'];
-  const PRESENTATION_SERVICES=PUBLIC_SERVICE_IDS.map(id=>{
-    const service=CATALOG.find(item=>item.id===id)||{};
-    return {id,name:service.publicName||service.name||id,description:service.publicDescription||service.description||'',category:service.publicGroup||service.category||'Leistungen'};
+  const isPublicBookable=service=>Boolean(service)&&service.active!==false&&service.publicBookable===true;
+  const publicDisplay=service=>({
+    name:service.publicName||service.name||'Leistung',
+    description:service.publicDescription||service.description||'',
+    category:service.publicGroup||service.category||'Weitere Leistungen'
   });
 
   function makeButton(s,display){
-    const shown=display||{};
+    const shown=display||publicDisplay(s);
     const name=shown.name||s.name;
     const description=shown.description||s.description||'Beauty-Behandlung';
     const publicPriceConfirmed=s.verification==='studio'||s.priceConfirmed===true;
@@ -117,61 +120,64 @@
     return btn;
   }
 
+  function publicServices(db){
+    return (db.services||[])
+      .filter(isPublicBookable)
+      .sort((a,b)=>String(publicDisplay(a).category).localeCompare(String(publicDisplay(b).category),'de')||String(publicDisplay(a).name).localeCompare(String(publicDisplay(b).name),'de'));
+  }
+
   function syncServices(){
     const db=load(),root=$('.service-options');if(!root)return;
-    const services=db.services||[];
-    const rows=[];
-
-    PRESENTATION_SERVICES.forEach(display=>{
-      const s=services.find(item=>item.id===display.id&&item.active!==false);
-      if(s)rows.push({category:display.category,service:s,display});
-    });
-
-    services.filter(s=>s.active!==false&&!s.demoOnly&&!BUILTIN_IDS.has(s.id)).forEach(s=>{
-      rows.push({category:s.category||'Weitere Leistungen',service:s,display:{name:s.name,description:s.description||''}});
-    });
-
+    const services=publicServices(db);
     root.innerHTML='';
-    if(!rows.length){
+    if(!services.length){
       root.innerHTML='<div class="time-placeholder sync-services-empty">Aktuell sind keine Leistungen online anfragbar. Bitte kontaktiere das Studio direkt.</div>';
       return;
     }
-
-    const categories=[...new Set(rows.map(row=>row.category))];
+    const categories=[...new Set(services.map(service=>publicDisplay(service).category))];
     categories.forEach(category=>{
       const section=document.createElement('section');section.className='service-group';
       const heading=document.createElement('div');heading.className='service-group-title';heading.innerHTML=`<span>${esc(category)}</span>`;section.appendChild(heading);
       const grid=document.createElement('div');grid.className='service-group-grid';
-      rows.filter(row=>row.category===category).forEach(row=>grid.appendChild(makeButton(row.service,row.display)));
+      services.filter(service=>publicDisplay(service).category===category).forEach(service=>grid.appendChild(makeButton(service,publicDisplay(service))));
       section.appendChild(grid);root.appendChild(section);
     });
   }
 
   function syncPublicServices(){
-    const section=$('#behandlungen');
-    const root=section?.querySelector('.treatment-grid');
-    if(!section||!root)return;
-    const db=load();
-    if(db.publicCatalogReady!==true)return;
-    const active=(db.services||[]).filter(s=>s.active!==false&&!s.demoOnly&&s.verification!=='market');
-    if(!active.length)return;
-    const heading=section.querySelector('.section-heading.split>p');
-    if(heading)heading.textContent='Permanent Make-up und Beauty-Behandlungen mit dem Anspruch, das Ergebnis natürlich, typgerecht und stimmig wirken zu lassen.';
-    root.classList.add('public-services-grid');
-    root.innerHTML='';
-    const categories=[...new Set(active.map(s=>s.category||'Leistungen'))];
+    const section=$('#behandlungen');if(!section)return;
+    const db=load(),services=publicServices(db);
+    let root=section.querySelector('.public-service-directory');
+    if(!services.length){root?.remove();return}
+    if(!root){
+      root=document.createElement('div');
+      root.className='public-service-directory';
+      const consultation=section.querySelector('.treatment-consultation');
+      consultation?.insertAdjacentElement('afterend',root);
+    }
+    root.innerHTML='<div class="public-service-directory-head"><span>Aktuell anfragbar</span><strong>Alle Leistungen im Überblick</strong><p>Was hier freigegeben ist, wird direkt aus Birgits Leistungsverwaltung übernommen.</p></div><div class="public-service-directory-groups"></div>';
+    const groups=root.querySelector('.public-service-directory-groups');
+    const categories=[...new Set(services.map(service=>publicDisplay(service).category))];
     categories.forEach(category=>{
-      const group=document.createElement('section');group.className='public-service-group';
-      group.innerHTML=`<div class="public-service-group-head"><span>${esc(category)}</span></div>`;
-      const cards=document.createElement('div');cards.className='public-service-cards';
-      active.filter(s=>(s.category||'Leistungen')===category).forEach(s=>{
-        const card=document.createElement('article');card.className='public-service-card';
-        const price=Number(s.price||0)>0?`<small>${money(s.price)}</small>`:'';
-        card.innerHTML=`<div><h3>${esc(s.name)}</h3><p>${esc(s.description||'')}</p><div class="public-service-meta"><span>ca. ${Number(s.duration||30)} Min.</span>${price}</div></div><a href="#booking" aria-label="${esc(s.name)} buchen">→</a>`;
-        cards.appendChild(card);
+      const group=document.createElement('section');group.className='public-service-directory-group';
+      group.innerHTML=`<div class="public-service-directory-title">${esc(category)}</div><div class="public-service-directory-list"></div>`;
+      const list=group.querySelector('.public-service-directory-list');
+      services.filter(service=>publicDisplay(service).category===category).forEach(service=>{
+        const display=publicDisplay(service),row=document.createElement('article');
+        row.className='public-service-directory-item';
+        row.innerHTML=`<div><strong>${esc(display.name)}</strong><p>${esc(display.description)}</p></div><div class="public-service-directory-meta"><span>ca. ${Number(service.duration||30)} Min.</span><button type="button" data-public-service-id="${esc(service.id)}">Termin anfragen</button></div>`;
+        list.appendChild(row);
       });
-      group.appendChild(cards);root.appendChild(group);
+      groups.appendChild(group);
     });
+    root.querySelectorAll('[data-public-service-id]').forEach(button=>button.addEventListener('click',()=>{
+      const serviceId=button.dataset.publicServiceId;
+      document.querySelector('#booking')?.scrollIntoView({behavior:'smooth',block:'start'});
+      requestAnimationFrame(()=>setTimeout(()=>{
+        const option=document.querySelector('.service-option[data-service-id="'+CSS.escape(serviceId)+'"]');
+        if(option)window.SmileShineBooking?.selectServiceButton?.(option);
+      },120));
+    }));
   }
 
   function cleanCustomerCopy(){
