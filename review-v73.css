@@ -230,7 +230,8 @@ body.site-premium img{max-width:100%}
   .site-premium .about-signals span,.site-premium .about-signals span:nth-child(even){padding:13px 0;border-left:0}
   .site-premium .about-signals span+span{border-top:1px solid var(--ss-line)}
   .site-premium .about-actions{align-items:stretch;flex-direction:column}
-  .site-premium .about-actions .button{width:100%}
+  .site-premium .about-actions .button{width:100%;justify-content:flex-start;text-align:left;padding-left:24px;padding-right:24px}
+  .site-premium .about-actions .text-link{width:100%;justify-content:flex-start;text-align:left;padding-left:24px;padding-right:24px}
   .site-premium .principles-grid{grid-template-columns:1fr}
   .site-premium .principles-grid article,.site-premium .principles-grid article+article{padding:24px 0;border-left:0}
   .site-premium .principles-grid article+article{border-top:1px solid rgba(255,255,255,.16)}
