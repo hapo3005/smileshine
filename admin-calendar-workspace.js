@@ -136,11 +136,11 @@
 
   function decorateDay(){
     const root=$("#daySchedule");if(!root||A.calendarMode!=="day")return;
-    const date=isoDate(A.calendarCursor),hours=workingHours(date),special=A.activeAppointments().filter(a=>a.date===date&&a.specialOpening);
+    const date=isoDate(A.calendarCursor),hours=workingHours(date);
 
     root.querySelectorAll(".calendar-free-quick,.calendar-now-marker").forEach(el=>el.remove());
 
-    if(!hours.enabled&&!special.length){
+    if(!hours.enabled){
       const empty=$(".empty-state",root);
       if(empty){
         empty.classList.add("calendar-workspace-closed");
@@ -156,8 +156,6 @@
       if(!tags){tags=document.createElement("span");tags.className="calendar-event-tags";el.appendChild(tags)}
       tags.innerHTML="<i>"+escapeHTML(statusLabel(a.status))+"</i><em>"+escapeHTML(paymentText(a))+"</em>";
     });
-
-    if(!hours.enabled)return;
 
     const interval=Math.max(15,Number(A.db.slotInterval||30));
     $$(".schedule-row",root).forEach(row=>{
