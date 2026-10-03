@@ -134,7 +134,8 @@
     const completed=todays.filter(a=>a.status==='completed').length,noShows=todays.filter(a=>a.status==='no_show').length;
     const remaining=todays.filter(a=>!['completed','cancelled','no_show'].includes(a.status)&&appointmentEnd(a)>now).length;
     const waiting=(A.db.waitlist||[]).filter(x=>x.status==='waiting').length,gap=nextUsefulGap(todays),matches=matchingWaitlistForGap(gap);
-    return {todays,focus,mode,completed,noShows,remaining,waiting,gap,matches,paid:paidToday()};
+    const hours=A.db.workingHours?.[new Date(`${t}T12:00:00`).getDay()];
+    return {todays,focus,mode,completed,noShows,remaining,waiting,gap,matches,paid:paidToday(),closed:!hours?.enabled};
   }
 
   function deriveActions(){
@@ -196,7 +197,9 @@
             <div><span>Zuletzt</span><strong>${escapeHTML(focusInfo.lastText)}</strong></div>
             <div><span>Startklar?</span><strong>${escapeHTML(focusInfo.prepText)}</strong><small>${escapeHTML(focusInfo.payText)}</small></div>
           </div>`:''}`
-          :`<div class="day-cockpit-empty"><strong>Heute ist noch frei.</strong><span>Neue Termine oder Wartelistenplätze kannst du direkt eintragen.</span></div>`}
+          :cockpit.closed
+            ?`<div class="day-cockpit-empty"><strong>Heute ist geschlossen.</strong><span>Für heute sind keine Öffnungszeiten hinterlegt. Der nächste Arbeitstag steht im Kalender bereit.</span></div>`
+            :`<div class="day-cockpit-empty"><strong>Heute ist noch frei.</strong><span>Neue Termine oder Wartelistenplätze kannst du direkt eintragen.</span></div>`}
         </div>
         <div class="day-cockpit-stats">
           <div><span>Erledigt</span><strong>${cockpit.completed}</strong><small>von ${cockpit.todays.length} Terminen</small></div>
