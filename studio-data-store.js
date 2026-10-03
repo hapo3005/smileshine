@@ -7,7 +7,7 @@
   const PICKUP_KEY='smileshine_pickup_orders_demo_v1';
   const CONFIG=window.SmileShineConfig;
   const clone=value=>JSON.parse(JSON.stringify(value));
-  const configuredServices=()=>((CONFIG?.services||[]).filter(service=>service.presentationSeed!==false).map(service=>({...service})));
+  const configuredServices=()=>((CONFIG?.services||[]).filter(service=>service.presentationSeed!==false).map(service=>({...service,publicBookable:typeof service.publicBookable==='boolean'?service.publicBookable:service.active!==false&&!service.demoOnly})));
   const configuredHours=()=>clone(CONFIG?.schedule?.workingHours||{1:{enabled:true,start:'09:00',end:'19:00'},2:{enabled:true,start:'09:00',end:'19:00'},3:{enabled:true,start:'09:00',end:'19:00'},4:{enabled:true,start:'09:00',end:'19:00'},5:{enabled:true,start:'09:00',end:'19:00'},6:{enabled:false,start:'09:00',end:'13:00'},0:{enabled:false,start:'09:00',end:'13:00'}});
 
   const isoDate=date=>{
@@ -126,6 +126,18 @@
   function resetPresentationData(){
     const value=createPresentationData();write(value);seedPickupOrders(true);clearMedia().catch(()=>{});return value;
   }
+  function normalizePublicCatalog(value){
+    if(!value||!Array.isArray(value.services))return false;
+    let changed=false;
+    value.services.forEach(service=>{
+      if(typeof service.publicBookable!=='boolean'){
+        service.publicBookable=service.active!==false&&!service.demoOnly;
+        changed=true;
+      }
+    });
+    return changed;
+  }
+
   function ensurePresentationData(){
     const current=read();
     if(!current){
@@ -139,6 +151,8 @@
       value.appointments=Array.isArray(current.appointments)&&current.appointments.length?current.appointments:fresh.appointments;
       write(value);seedPickupOrders(false);return value;
     }
+    const normalized=normalizePublicCatalog(current);
+    if(normalized)write(current);
     seedPickupOrders(false);return current;
   }
   function clear(){
