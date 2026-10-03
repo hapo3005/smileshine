@@ -36,14 +36,9 @@ body.site-premium img{max-width:100%}
 .site-premium .button.primary:hover{background:#303334;border-color:#303334}
 .site-premium .button.ghost{background:transparent;color:#252829}
 .site-premium .brand-cta{min-height:52px;font-size:10px;letter-spacing:.12em;font-weight:600;position:relative;overflow:hidden}
-.site-premium .brand-cta-primary{padding:0 0 0 20px;gap:18px}
-.site-premium .brand-cta-primary::after{content:"↗";align-self:stretch;width:46px;display:grid;place-items:center;border-left:1px solid rgba(255,255,255,.18);font-size:13px;font-weight:400;transition:background .2s ease,transform .2s ease}
-.site-premium .brand-cta-primary:hover::after{background:rgba(255,255,255,.08);transform:translate(1px,-1px)}
-.site-premium .brand-cta-secondary{padding:0 3px;border-color:transparent;border-bottom-color:rgba(23,25,26,.38);justify-content:flex-start;gap:12px}
-.site-premium .brand-cta-secondary::after{content:"↘";font-size:13px;font-weight:400;transition:transform .2s ease}
+.site-premium .brand-cta-primary{padding:0 22px}
+.site-premium .brand-cta-secondary{padding:0 3px;border-color:transparent;border-bottom-color:rgba(23,25,26,.38);justify-content:flex-start}
 .site-premium .brand-cta-secondary:hover{border-bottom-color:#17191a;background:transparent}
-.site-premium .brand-cta-secondary:hover::after{transform:translate(1px,1px)}
-.site-premium .contact-booking-cta.brand-cta-primary::after{display:none}
 .site-premium .contact-booking-cta.brand-cta-primary{padding:0 20px}
 .site-premium .text-link{display:inline-flex;align-items:center;gap:8px;padding-bottom:5px;border-bottom:1px solid rgba(23,25,26,.28);font-size:11px;font-weight:600;letter-spacing:.07em;text-decoration:none;transition:border-color .2s ease,transform .2s ease}
 .site-premium .text-link:hover{border-bottom-color:#17191a;transform:translateY(-1px)}
@@ -59,9 +54,7 @@ body.site-premium img{max-width:100%}
 .site-premium .main-nav{display:flex;align-items:center;gap:clamp(18px,2.4vw,34px)}
 .site-premium .main-nav>a{font-size:10px;font-weight:500;letter-spacing:.10em;text-transform:uppercase;text-decoration:none;color:#505456}
 .site-premium .main-nav>a:hover{color:#17191a}
-.site-premium .main-nav .nav-cta{min-height:42px;padding:0 0 0 16px;background:transparent;color:#17191a;border:1px solid rgba(23,25,26,.22);display:inline-flex;align-items:center;gap:14px;letter-spacing:.11em}
-.site-premium .main-nav .nav-cta::after{content:"↗";align-self:stretch;width:38px;display:grid;place-items:center;border-left:1px solid rgba(23,25,26,.16);font-size:12px;font-weight:400;transition:background .2s ease,transform .2s ease}
-.site-premium .main-nav .nav-cta:hover::after{background:rgba(23,25,26,.05);transform:translate(1px,-1px)}
+.site-premium .main-nav .nav-cta{min-height:42px;padding:0 18px;background:transparent;color:#17191a;border:1px solid rgba(23,25,26,.22);display:inline-flex;align-items:center;letter-spacing:.11em}
 .site-premium .menu-toggle{display:none;border:0;background:transparent;font:300 26px/1 "Montserrat",sans-serif;color:#17191a}
 
 /* Hero — approved room artwork, native live text, real media element */
@@ -99,9 +92,7 @@ body.site-premium img{max-width:100%}
 .site-premium .treatment-card h3{margin:8px 0 10px;font-size:25px;font-weight:400;color:#fff}
 .site-premium .treatment-card p{max-width:330px;margin:0 0 18px;font-size:12px;line-height:1.65;color:rgba(255,255,255,.84)}
 .site-premium .treatment-card a{display:inline-flex;align-items:center;gap:10px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.34);font-size:9px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;text-decoration:none;color:#fff;transition:border-color .2s ease,transform .2s ease}
-.site-premium .treatment-card a b{font-size:12px;font-weight:400;transition:transform .2s ease}
 .site-premium .treatment-card a:hover{border-bottom-color:#fff;transform:translateY(-1px)}
-.site-premium .treatment-card a:hover b{transform:translate(2px,-2px)}
 .site-premium .treatment-consultation{max-width:var(--ss-max);margin:14px auto 0;padding:28px 30px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;border:1px solid var(--ss-line);background:#fff}
 .site-premium .treatment-consultation span{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#888d8f}
 .site-premium .treatment-consultation strong{display:block;margin-top:7px;font-size:17px;font-weight:500}
@@ -185,7 +176,7 @@ body.site-premium img{max-width:100%}
   .site-premium .main-nav{position:absolute;top:100%;left:0;right:0;padding:18px var(--ss-gutter) 24px;background:#f7f5f1;border-bottom:1px solid var(--ss-line);display:none;flex-direction:column;align-items:stretch;gap:0}
   .site-premium .main-nav.open{display:flex}
   .site-premium .main-nav>a{padding:14px 0;border-bottom:1px solid var(--ss-line)}
-  .site-premium .main-nav .nav-cta{margin-top:12px;padding:0 0 0 16px;border-bottom:1px solid rgba(23,25,26,.22);justify-content:space-between}
+  .site-premium .main-nav .nav-cta{margin-top:12px;padding:0 16px;border-bottom:1px solid rgba(23,25,26,.22);justify-content:center}
   .site-premium .hero{display:flex;flex-direction:column;min-height:0}
   .site-premium .hero-media{order:1;width:100%;height:clamp(320px,48vw,430px);min-height:clamp(320px,48vw,430px);background-size:auto 190%;background-position:right center}
   .site-premium .hero-media::before{inset:auto 0 0 0;width:auto;height:24%;background:linear-gradient(180deg,rgba(243,239,233,0) 0%,#f3efe9 100%)}
