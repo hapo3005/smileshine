@@ -98,11 +98,11 @@
 
   function renderServices(){
     const root=$('#servicesGrid');if(!root)return;
-    const publicIds=new Set(['brows-pmu','lashline','lip-pmu','consult']);
     const visible=[...(A.db.services||[])].sort((a,b)=>String(a.category||'').localeCompare(String(b.category||''),'de')||String(a.name||'').localeCompare(String(b.name||''),'de'));
     root.innerHTML=visible.map(s=>{
-      const scope=!s.active?'Pausiert':s.demoOnly?'Studioleistung · nicht öffentlich':publicIds.has(s.id)?'Online anfragbar':'Leistungsstamm · noch bestätigen';
-      return `<article class="panel service-card-admin" data-service-id="${s.id}"><div class="service-card-top"><span class="service-category">${escapeHTML(s.category||'Weitere Leistungen')}</span><label class="switch"><input type="checkbox" name="active" ${s.active?'checked':''}><span></span></label></div><h3>${escapeHTML(s.name)}</h3><p>${escapeHTML(scope)}</p><div class="service-fields"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="${s.duration}"></label><label><span>Preis · €</span><input name="price" type="number" min="0" value="${s.price}"></label><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" value="${s.deposit}"></label></div><button class="soft-button service-save" type="button">Änderungen speichern</button></article>`;
+      if(typeof s.publicBookable!=='boolean')s.publicBookable=s.active!==false&&!s.demoOnly;
+      const scope=s.active===false?'Intern deaktiviert':s.publicBookable?'Auf Website anfragbar':'Nur intern im Leistungsstamm';
+      return `<article class="panel service-card-admin" data-service-id="${s.id}"><div class="service-card-top"><span class="service-category">${escapeHTML(s.category||'Weitere Leistungen')}</span><label class="switch" title="Auf Website anfragbar"><input type="checkbox" name="publicBookable" ${s.publicBookable?'checked':''}><span></span></label></div><h3>${escapeHTML(s.name)}</h3><p>${escapeHTML(scope)}</p><div class="service-fields"><label><span>Dauer · Min.</span><input name="duration" type="number" min="15" step="15" value="${s.duration}"></label><label><span>Preis · €</span><input name="price" type="number" min="0" value="${s.price}"></label><label><span>Anzahlung · €</span><input name="deposit" type="number" min="0" value="${s.deposit}"></label></div><button class="soft-button service-save" type="button">Änderungen speichern</button></article>`;
     }).join('');A.bindServiceActions?.();
   }
 
