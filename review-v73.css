@@ -156,8 +156,17 @@ body.site-premium img{max-width:100%}
 .site-premium .contact-map-card,.site-premium .contact-booking-card{border:1px solid var(--ss-line);background:#fff}
 .site-premium .contact-map-preview{min-height:420px;position:relative;overflow:hidden}
 .site-premium .contact-map-preview iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.site-premium .contact-map-overlay{position:absolute;left:20px;bottom:20px;max-width:330px;padding:16px 18px;background:rgba(255,255,255,.94);border:1px solid var(--ss-line);display:flex;gap:12px;align-items:center;backdrop-filter:blur(8px)}
+.site-premium .contact-map-overlay{position:absolute;left:20px;bottom:20px;max-width:360px;padding:14px 16px;background:rgba(255,255,255,.96);border:1px solid var(--ss-line);display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center;backdrop-filter:blur(10px)}
+.site-premium .contact-map-pin{width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--ss-line);background:#fff;color:#2b2e30}
+.site-premium .contact-map-pin svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.site-premium .contact-map-overlay>div{min-width:0}
+.site-premium .contact-map-overlay small{display:block;margin-bottom:3px;font-size:8px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#7b8082}
+.site-premium .contact-map-overlay strong{display:block;font-size:16px;line-height:1.25;font-weight:500;color:#232627}
+.site-premium .contact-map-overlay div>span{display:block;margin-top:3px;font-size:11px;line-height:1.45;color:#6e7375}
 .site-premium .contact-map-actions{padding:18px 20px;display:flex;justify-content:space-between;gap:20px;align-items:center;border-top:1px solid var(--ss-line)}
+.site-premium .contact-map-actions>div:first-child{min-width:0}
+.site-premium .contact-map-actions>div:first-child>span{display:block;margin-bottom:4px;font-size:8px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#808587}
+.site-premium .contact-map-actions>div:first-child>strong{display:block;font-size:16px;line-height:1.25;font-weight:500;color:#252829}
 .site-premium .contact-direct-actions{display:flex;gap:8px;flex-wrap:wrap}
 .site-premium .contact-route-button{min-height:40px;padding:0 12px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ss-line);font-size:10px;text-decoration:none}
 .site-premium .contact-route-button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6}
@@ -260,11 +269,16 @@ body.site-premium img{max-width:100%}
   .site-premium .pickup-shop-footer{align-items:flex-start;flex-direction:column}
   .site-premium .contact-benefits{grid-template-columns:1fr}
   .site-premium .contact-benefit+article,.site-premium .contact-benefit:nth-child(3),.site-premium .contact-benefit:nth-child(4){border-left:0;border-top:1px solid var(--ss-line)}
-  .site-premium .contact-map-preview{min-height:330px}
-  .site-premium .contact-map-overlay{left:12px;right:12px;bottom:12px;max-width:none}
-  .site-premium .contact-map-actions{align-items:flex-start;flex-direction:column}
-  .site-premium .contact-direct-actions{width:100%}
-  .site-premium .contact-route-button{flex:1;justify-content:center}
+  .site-premium .contact-map-preview{min-height:300px}
+  .site-premium .contact-map-overlay{left:12px;right:12px;bottom:12px;max-width:none;padding:13px 14px;grid-template-columns:36px minmax(0,1fr);gap:10px}
+  .site-premium .contact-map-pin{width:36px;height:36px}
+  .site-premium .contact-map-overlay strong{font-size:15px}
+  .site-premium .contact-map-overlay div>span{font-size:10px;line-height:1.4}
+  .site-premium .contact-map-actions{align-items:stretch;flex-direction:column;gap:14px;padding:16px}
+  .site-premium .contact-map-actions>div:first-child{padding:0 2px}
+  .site-premium .contact-map-actions>div:first-child>strong{font-size:15px}
+  .site-premium .contact-direct-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .site-premium .contact-route-button{min-width:0;justify-content:center;padding:0 10px}
   .site-premium .contact-booking-card{padding:26px 22px}
   .site-premium .contact-booking-icon{margin-bottom:22px}
   .site-premium .contact-booking-flow{grid-template-columns:1fr}
