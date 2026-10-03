@@ -12,14 +12,23 @@ const viewports = [
 fs.mkdirSync('artifacts/screenshots', { recursive: true });
 
 for (const vp of viewports) {
-  test(`public review · ${vp.name}`, async ({ page }) => {
+  test(`public site · ${vp.name}`, async ({ page }) => {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    await page.goto('/review/', { waitUntil: 'networkidle' });
+    await page.goto('/index.html', { waitUntil: 'networkidle' });
 
     await expect(page.locator('.site-header')).toBeVisible();
     await expect(page.locator('.brand-v73')).toBeVisible();
     await expect(page.locator('.hero h1')).toBeVisible();
     await expect(page.locator('.hero-media')).toBeVisible();
+
+    const navCta=page.locator('.main-nav .nav-cta');
+    const heroPrimary=page.locator('.hero-actions .brand-cta-primary');
+    const heroSecondary=page.locator('.hero-actions .brand-cta-secondary');
+    await expect(navCta).toContainText('Termin mit Birgit planen');
+    await expect(heroPrimary).toContainText('Mit Birgit ins Gespräch kommen');
+    await expect(heroSecondary).toContainText('Behandlungen im Detail');
+    await expect(page.locator('.about-actions .brand-cta-primary')).toContainText('Wunsch mit Birgit besprechen');
+    await expect(page.locator('.contact-booking-cta')).toContainText('Termin mit Birgit planen');
 
     const metrics = await page.evaluate(() => ({
       scroll: document.documentElement.scrollWidth,
@@ -76,7 +85,7 @@ test('booking starts and advances without a JavaScript crash', async ({ page }) 
   page.on('pageerror', err => pageErrors.push(err.message));
 
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto('/review/', { waitUntil: 'networkidle' });
+  await page.goto('/index.html', { waitUntil: 'networkidle' });
 
   const firstService = page.locator('.service-option').first();
   await expect(firstService).toBeVisible();
