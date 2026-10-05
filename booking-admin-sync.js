@@ -147,22 +147,24 @@
   function syncPublicServices(){
     const section=$('#behandlungen');if(!section)return;
     const db=load(),services=publicServices(db);
+    const editorialIds=new Set(['brows-pmu','lashline','lip-pmu','consult']);
+    const additionalServices=services.filter(service=>!editorialIds.has(service.id));
     let root=section.querySelector('.public-service-directory');
-    if(!services.length){root?.remove();return}
+    if(!additionalServices.length){root?.remove();return}
     if(!root){
       root=document.createElement('div');
       root.className='public-service-directory';
       const consultation=section.querySelector('.treatment-consultation');
       consultation?.insertAdjacentElement('afterend',root);
     }
-    root.innerHTML='<div class="public-service-directory-head"><span>Aktuell anfragbar</span><strong>Alle Leistungen im Überblick</strong><p>Was hier freigegeben ist, wird direkt aus Birgits Leistungsverwaltung übernommen.</p></div><div class="public-service-directory-groups"></div>';
+    root.innerHTML='<div class="public-service-directory-head"><span>Ergänzend buchbar</span><strong>Weitere Leistungen</strong><p>Zusätzliche freigegebene Leistungen aus Birgits Leistungsverwaltung.</p></div><div class="public-service-directory-groups"></div>';
     const groups=root.querySelector('.public-service-directory-groups');
-    const categories=[...new Set(services.map(service=>publicDisplay(service).category))];
+    const categories=[...new Set(additionalServices.map(service=>publicDisplay(service).category))];
     categories.forEach(category=>{
       const group=document.createElement('section');group.className='public-service-directory-group';
       group.innerHTML=`<div class="public-service-directory-title">${esc(category)}</div><div class="public-service-directory-list"></div>`;
       const list=group.querySelector('.public-service-directory-list');
-      services.filter(service=>publicDisplay(service).category===category).forEach(service=>{
+      additionalServices.filter(service=>publicDisplay(service).category===category).forEach(service=>{
         const display=publicDisplay(service),row=document.createElement('article');
         row.className='public-service-directory-item';
         row.innerHTML=`<div><strong>${esc(display.name)}</strong><p>${esc(display.description)}</p></div><div class="public-service-directory-meta"><span>ca. ${Number(service.duration||30)} Min.</span><button type="button" data-public-service-id="${esc(service.id)}">Termin anfragen</button></div>`;
