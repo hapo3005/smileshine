@@ -57,7 +57,7 @@ function renderServiceCatalog(){
       currentGroup=item.group;
       html+=`<div class="service-group-title"><span>${currentGroup}</span></div>`;
     }
-    html+=`<button class="service-option" type="button" data-service="${item.name}" data-service-id="${item.serviceId}" data-duration="${item.duration}"><span class="service-info"><strong>${item.name}</strong><small>ca. ${item.duration} Min.</small></span><span class="service-arrow">→</span></button>`;
+    html+=`<button class="service-option" type="button" data-service="${item.name}" data-service-id="${item.serviceId}" data-duration="${item.duration}"><span class="service-info"><strong>${item.name}</strong><small>ca. ${item.duration} Min.</small></span></button>`;
   });
   serviceOptionsRoot.innerHTML=html;
 }
