@@ -1429,5 +1429,3 @@ body{overflow-x:hidden!important}
     -webkit-backdrop-filter:none!important;
   }
 }
-/* The pickup address can exceed a narrow phone viewport on one line. */
-.site-premium .pickup-shop-footer>span{white-space:normal;overflow-wrap:anywhere}

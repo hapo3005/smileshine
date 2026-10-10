@@ -379,3 +379,5 @@ body.site-premium .booking-editorial .booking-summary .summary-status{margin-top
 body.site-premium .booking-editorial .booking-summary .summary-status span{background:#62676a;box-shadow:none;flex:0 0 5px;width:5px;height:5px}
 @media(max-width:1050px){body.site-premium .booking-editorial .booking-summary{position:static;margin:0 24px 24px;display:grid;grid-template-columns:1fr 1fr;column-gap:24px}body.site-premium .booking-editorial .booking-summary .summary-kicker,body.site-premium .booking-editorial .booking-summary h3,body.site-premium .booking-editorial .booking-summary .summary-item:has(#summaryService),body.site-premium .booking-editorial .booking-summary .summary-location,body.site-premium .booking-editorial .booking-summary .summary-status{grid-column:1/-1}}
 @media(max-width:620px){body.site-premium .booking-editorial .booking-summary{margin:0 16px 16px;padding:24px 20px;column-gap:16px}body.site-premium .booking-editorial .booking-summary h3{font-size:23px}}
+/* The pickup address can exceed a narrow phone viewport on one line. */
+.site-premium .pickup-shop-footer>span{white-space:normal;overflow-wrap:anywhere}
