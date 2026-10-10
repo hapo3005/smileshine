@@ -156,19 +156,19 @@
     return `<article class="communication-row ${item.status==='handed_off'?'is-done':''}">
       <span class="communication-icon">${TYPE_ICONS[item.type]||'•'}</span>
       <div class="communication-copy"><div><span>${escapeHTML(label)}</span><strong>${escapeHTML(name)}</strong></div><small>${escapeHTML(meta)}</small><em>fällig ${dateShort(item.dueDate)}</em>${item.messageText?`<details class="communication-message"><summary>Nachrichtentext ansehen</summary><p>${escapeHTML(item.messageText)}</p></details>`:''}</div>
-      <div class="communication-actions">${!isHandled(item)?`<button type="button" class="primary-action" data-open-communication="${item.id}">Nachricht vorbereiten</button><button type="button" class="text-button" data-skip-communication="${item.id}">Nicht nötig</button>`:`<span class="communication-state">${item.status==='sent_confirmed'?'Versand manuell bestätigt':item.status==='handed_off'?'An WhatsApp übergeben':'Ohne Versand erledigt'}${item.status==='handed_off'?`<button type="button" class="soft-button" data-confirm-communication-sent="${item.id}">Versand bestätigen</button><button type="button" class="text-button" data-retry-communication="${item.id}">Nicht gesendet</button>`:''}</span>`}</div>
+      <div class="communication-actions">${!isHandled(item)?`<button type="button" class="primary-action" data-open-communication="${item.id}">Nachricht vorbereiten</button><button type="button" class="text-button" data-skip-communication="${item.id}">Nicht nötig</button>`:`<span class="communication-state">${item.status==='sent_confirmed'?'Versand manuell bestätigt':item.status==='handed_off'?'An WhatsApp übergeben':'Ohne Versand erledigt'}</span>${item.status==='handed_off'?`<button type="button" class="soft-button" data-confirm-communication-sent="${item.id}">Versand bestätigen</button><button type="button" class="text-button" data-retry-communication="${item.id}">Nicht gesendet</button>`:''}`}</div>
     </article>`;
   }
 
   function setTab(tab='due'){
     const dialog=ensureCenter(),body=$('#communicationCenterBody',dialog);
     dialog.dataset.tab=tab;$$('[data-communication-tab]',dialog).forEach(btn=>btn.classList.toggle('active',btn.dataset.communicationTab===tab));
-    const list=tab==='planned'?plannedCommunications():tab==='history'?historyCommunications():dueCommunications();
+    const all=tab==='planned'?plannedCommunications():tab==='history'?historyCommunications():dueCommunications();const customerId=dialog.dataset.customerId||'';const list=customerId?all.filter(item=>item.customerId===customerId):all;
     const count=$('#communicationDueCount',dialog);if(count)count.textContent=String(dueCommunications().length);
     body.innerHTML=`<section class="communication-list">${list.length?list.map(renderItem).join(''):`<div class="communication-empty"><strong>${tab==='due'?'Alles erledigt.':'Hier ist noch nichts.'}</strong><span>${tab==='due'?`Aktuell wartet keine Nachricht auf ${OWNER_FIRST}.`:'Neue Einträge erscheinen automatisch.'}</span></div>`}</section>`;
   }
 
-  function openCenter(tab='due'){const dialog=ensureCenter();setTab(tab);if(!dialog.open)dialog.showModal()}
+  function openCenter(tab='due',customerId=''){const dialog=ensureCenter();dialog.dataset.customerId=customerId;setTab(tab);if(!dialog.open)dialog.showModal()}
 
   function openCommunication(id){
     const item=ensureData().find(x=>x.id===id);if(!item)return;
@@ -216,7 +216,7 @@
   function bind(){
     if(A.communicationBound)return;A.communicationBound=true;
     document.addEventListener('click',event=>{
-      const center=event.target.closest('[data-open-communication-center]');if(center){const mobile=$('#mobileMoreDialog');if(mobile?.open)mobile.close();openCenter(center.dataset.communicationTabOpen||'due');return}
+      const center=event.target.closest('[data-open-communication-center]');if(center){const mobile=$('#mobileMoreDialog');if(mobile?.open)mobile.close();openCenter(center.dataset.communicationTabOpen||'due',center.dataset.communicationCustomerId||'');return}
       const tab=event.target.closest('[data-communication-tab]');if(tab){setTab(tab.dataset.communicationTab);return}
       const open=event.target.closest('[data-open-communication]');if(open){openCommunication(open.dataset.openCommunication);return}
       const confirmBtn=event.target.closest('[data-confirm-communication-sent]');if(confirmBtn){confirmSent(confirmBtn.dataset.confirmCommunicationSent);return}
