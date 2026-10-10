@@ -147,7 +147,7 @@
   function syncPublicServices(){
     const section=$('#behandlungen');if(!section)return;
     const db=load(),services=publicServices(db);
-    const editorialIds=new Set(['brows-pmu','lashline','lip-pmu','consult']);
+    const editorialIds=new Set([...section.querySelectorAll('[data-booking-service]')].map(link=>link.dataset.bookingService));
     const additionalServices=services.filter(service=>!editorialIds.has(service.id));
     let root=section.querySelector('.public-service-directory');
     if(!additionalServices.length){root?.remove();return}
@@ -157,7 +157,7 @@
       const consultation=section.querySelector('.treatment-consultation');
       consultation?.insertAdjacentElement('afterend',root);
     }
-    root.innerHTML='<div class="public-service-directory-head"><span>Ergänzend buchbar</span><strong>Weitere Leistungen</strong><p>Zusätzliche freigegebene Leistungen aus Birgits Leistungsverwaltung.</p></div><div class="public-service-directory-groups"></div>';
+    root.innerHTML='<div class="public-service-directory-head"><span>Ergänzend buchbar</span><strong>Weitere Leistungen</strong><p>Auffrischungen, Nachbehandlungen und weitere Angebote für deinen nächsten Besuch.</p></div><div class="public-service-directory-groups"></div>';
     const groups=root.querySelector('.public-service-directory-groups');
     const categories=[...new Set(additionalServices.map(service=>publicDisplay(service).category))];
     categories.forEach(category=>{
