@@ -107,7 +107,7 @@
   }
 
   function renderWorkingHours(){
-    const root=$('#workingHours');if(!root)return;const order=[1,2,3,4,5,6,0];root.innerHTML=order.map(day=>{const h=A.db.workingHours[day]||{enabled:false,start:'09:00',end:'18:00'};return `<div class="hours-row" data-day="${day}"><strong>${DAY_NAMES[day]}</strong><label class="switch"><input type="checkbox" name="enabled" ${h.enabled?'checked':''}><span></span></label><div class="times"><input type="time" name="start" value="${h.start}" ${h.enabled?'':'disabled'}><span>–</span><input type="time" name="end" value="${h.end}" ${h.enabled?'':'disabled'}></div></div>`}).join('');A.bindHourToggles?.();
+    const root=$('#workingHours');if(!root)return;const order=[1,2,3,4,5,6,0];root.innerHTML=order.map(day=>{const h=A.db.workingHours[day]||{enabled:false,start:'09:00',end:'18:00'};return `<div class="hours-row" data-day="${day}"><strong>${DAY_NAMES[day]}</strong><label class="switch"><input type="checkbox" name="enabled" aria-label="${DAY_NAMES[day]} geöffnet" ${h.enabled?'checked':''}><span></span></label><div class="times"><input type="time" name="start" aria-label="${DAY_NAMES[day]} Beginn" value="${h.start}" ${h.enabled?'':'disabled'}><span>–</span><input type="time" name="end" aria-label="${DAY_NAMES[day]} Ende" value="${h.end}" ${h.enabled?'':'disabled'}></div></div>`}).join('');A.bindHourToggles?.();
   }
 
   function renderBlocks(){
