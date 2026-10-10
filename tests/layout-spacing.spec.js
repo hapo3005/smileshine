@@ -17,7 +17,7 @@ async function inspect(page,label,info){
   const offenders=[...document.querySelectorAll('body *')].filter(el=>{
    const r=el.getBoundingClientRect();
    return r.width&&r.height&&r.right>innerWidth+2&&!el.closest('.additional-service-track,.booking-progress,.cnc-products-track,[class*=carousel-track]');
-  }).slice(0,15).map(el=>({tag:el.tagName,cls:el.className,id:el.id,right:Math.round(el.getBoundingClientRect().right),width:Math.round(el.getBoundingClientRect().width)}));
+  }).slice(0,15).map(el=>({tag:el.tagName,cls:el.className,id:el.id,text:el.textContent.trim().slice(0,90),parent:el.parentElement.className,right:Math.round(el.getBoundingClientRect().right),width:Math.round(el.getBoundingClientRect().width)}));
   return {overflow:document.documentElement.scrollWidth-innerWidth,issues:out,offenders};
  });
  fs.writeFileSync(info.outputPath(label+'.json'),JSON.stringify(issues,null,2));
