@@ -469,7 +469,7 @@
       </div>`:''}
 
       <div class="customer-workfile-communications">
-        <div class="customer-workfile-section-head"><div><span class="panel-kicker">Kontaktverlauf</span><h5>Was wurde wann vorbereitet?</h5></div><button type="button" class="soft-button" data-open-communication-center data-communication-tab-open="history">Gesamten Verlauf öffnen</button>${communications.length?'<span>'+communications.length+'</span>':''}</div>
+        <div class="customer-workfile-section-head"><div><span class="panel-kicker">Kontaktverlauf</span><h5>Was wurde wann vorbereitet?</h5></div><button type="button" class="soft-button" data-open-communication-center data-communication-tab-open="history" data-communication-customer-id="${escapeHTML(customerId)}">Gesamten Verlauf öffnen</button>${communications.length?'<span>'+communications.length+'</span>':''}</div>
         <div class="customer-communication-history">${communications.length?communications.slice(0,4).map(item=>`<div><span class="customer-communication-type">${escapeHTML(communicationTypeLabel(item.type))}</span><strong>${escapeHTML(item.title||communicationTypeLabel(item.type))}</strong><small>${communicationDate(item)} · ${item.status==='sent_confirmed'?'Versand manuell bestätigt':item.status==='handed_off'?'an WhatsApp übergeben':item.status==='done'?'ohne Versand erledigt':item.dueDate<=t?'fällig' :'geplant'}</small>${item.messageText?`<details class="customer-communication-message"><summary>Nachricht lesen</summary><p>${escapeHTML(item.messageText)}</p></details>`:''}</div>`).join(''):'<p>Noch keine Kommunikation protokolliert.</p>'}</div>
       </div>
     </section>`;
