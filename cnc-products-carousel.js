@@ -30,10 +30,10 @@
   function product(id){return products.find(item=>item.id===id)}
   const eur=value=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(value);
   const cartTotal=()=>cart.reduce((sum,row)=>sum+(product(row.id)?.price||0)*Number(row.qty||0),0);
-  function loadCart(){try{const parsed=JSON.parse(localStorage.getItem(CART_KEY)||'[]');return Array.isArray(parsed)?parsed.filter(item=>product(item.id)&&Number(item.qty)>0):[]}catch{return []}}
+  function loadCart(){try{const parsed=JSON.parse(localStorage.getItem(CART_KEY)||'[]');return Array.isArray(parsed)?parsed.filter(item=>item&&product(item.id)&&Number.isInteger(Number(item.qty))&&Number(item.qty)>0).map(item=>({id:item.id,qty:Math.min(20,Number(item.qty))})):[]}catch{return []}}
   function saveCart(){localStorage.setItem(CART_KEY,JSON.stringify(cart));renderCartState()}
   function cartCount(){return cart.reduce((sum,item)=>sum+Number(item.qty||0),0)}
-  function add(id){const item=cart.find(row=>row.id===id);if(item)item.qty++;else cart.push({id,qty:1});saveCart();openCart()}
+  function add(id){const item=cart.find(row=>row.id===id);if(item)item.qty=Math.min(20,item.qty+1);else cart.push({id,qty:1});saveCart();openCart()}
   function setQty(id,qty){qty=Number(qty||0);if(qty<=0)cart=cart.filter(row=>row.id!==id);else{const item=cart.find(row=>row.id===id);if(item)item.qty=Math.min(20,qty)}saveCart()}
   function clearCart(){cart=[];saveCart()}
 
