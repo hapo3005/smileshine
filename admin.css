@@ -345,3 +345,8 @@ button,a{-webkit-tap-highlight-color:transparent}
  .quick-create-sheet{left:50%;right:auto;width:min(600px,calc(100vw - 40px));transform:translateX(-50%);bottom:max(94px,calc(env(safe-area-inset-bottom) + 88px))}
 }
 @media(max-width:760px){.mobile-nav-add small{display:none}}
+
+/* Dashboard summaries are real interactive controls. */
+.kpi-action{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;appearance:none;-webkit-appearance:none}
+.kpi-action:hover{border-color:#9ca2a0;box-shadow:0 4px 16px rgba(23,25,26,.08)}
+.kpi-action:focus-visible{outline:3px solid #3e6266;outline-offset:3px}
