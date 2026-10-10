@@ -75,3 +75,7 @@ body.site-premium .contact-reassurance{margin-top:16px}
  body.site-premium .about-copy{padding-block:clamp(64px,6vw,92px)}
  body.site-premium .hero-copy{padding-top:clamp(56px,6vw,90px);padding-bottom:clamp(52px,6vw,86px)}
 }
+
+/* Keyboard-accessible skip navigation, visually hidden until focused. */
+body.site-premium .skip-link{position:fixed;z-index:99999;top:12px;left:12px;transform:translateY(-180%);padding:12px 16px;background:#17191a;color:#fff;border-radius:6px;text-decoration:none;font-size:16px;line-height:1.5}
+body.site-premium .skip-link:focus-visible{transform:translateY(0);outline:3px solid #b5a29a;outline-offset:3px}
