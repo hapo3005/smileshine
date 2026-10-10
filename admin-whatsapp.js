@@ -24,7 +24,7 @@
   function appointment(id){return (A.db.appointments||[]).find(a=>a.id===id)}
   function customerFor(a){return (A.db.customers||[]).find(c=>c.id===a?.customerId)||((A.db.customers||[]).find(c=>c.email&&a?.email&&c.email===a.email))}
   function phoneFor(a){return a?.phone||customerFor(a)?.phone||''}
-  function isDemoContact(a){return Boolean(a?.isDemoBooking||customerFor(a)?.isDemoProfile)}
+  function isDemoContact(a){return Boolean(A.db.presentationMode||a?.isDemoBooking||customerFor(a)?.isDemoProfile)}
 
   function message(type,a,tone='friendly'){
     const name=firstName(a.customerName),date=longDate(a.date),details=`📅 ${date}\n🕒 ${a.time} Uhr\n✨ ${a.service}`;
