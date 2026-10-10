@@ -120,7 +120,8 @@ body.site-premium img{max-width:100%}
 
 /* About */
 .site-premium .premium-about{padding:0;display:grid;grid-template-columns:48% 52%;background:#eeece7}
-.site-premium .about-image{min-height:720px;background-image:linear-gradient(rgba(245,243,239,.06),rgba(245,243,239,.06)),var(--studio-media-about);background-size:cover;background-position:center}
+.site-premium .about-image{position:relative;min-height:720px;overflow:hidden;background:#efede8}
+.site-premium .about-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
 .site-premium .about-copy{padding:clamp(72px,7vw,112px) var(--ss-gutter);display:flex;flex-direction:column;justify-content:center}
 .site-premium .about-copy>p{max-width:690px;font-size:14px;line-height:1.8;color:#686d70}
 .site-premium .about-intro{margin-top:28px;font-size:16px!important;color:#343738!important}
@@ -230,7 +231,7 @@ body.site-premium img{max-width:100%}
   .site-premium .treatment-grid-refined{grid-template-columns:1fr 1fr}
   .site-premium .treatment-grid-refined .treatment-card:last-child{grid-column:1/-1;min-height:430px}
   .site-premium .premium-about{grid-template-columns:1fr}
-  .site-premium .about-image{min-height:540px}
+  .site-premium .about-image{min-height:0;aspect-ratio:4/5;width:min(100%,600px);margin-inline:auto}
   .site-premium .principles-heading{grid-template-columns:1fr;gap:18px}
   .site-premium .principles-heading .eyebrow{grid-column:auto;margin-bottom:0}
   .site-premium .contact-benefits{grid-template-columns:1fr 1fr}
@@ -275,7 +276,7 @@ body.site-premium img{max-width:100%}
   .site-premium .public-service-directory-item,.site-premium .public-service-directory-item:nth-child(odd),.site-premium .public-service-directory-item:nth-child(even){padding:17px 0;border-left:0}
   .site-premium .public-service-directory-item{grid-template-columns:minmax(0,1fr) auto;gap:14px}
   .site-premium .public-service-directory-meta{align-items:flex-end}
-  .site-premium .about-image{min-height:390px}
+  .site-premium .about-image{min-height:0;width:100%;aspect-ratio:4/5}
   .site-premium .about-copy{padding:62px 20px}
   .site-premium .about-signals{grid-template-columns:1fr}
   .site-premium .about-signals span,.site-premium .about-signals span:nth-child(even){padding:13px 0;border-left:0}

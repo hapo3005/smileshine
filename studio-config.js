@@ -109,10 +109,10 @@
         shotBrief:'Breiter moderner Behandlungsraum, warm-neutrale Architektur, ruhige helle Fläche links für Text, Behandlungsliege und Interior rechts.'
       },
       about:{
-        status:'temporary',
+        status:'studio',
         requiredForLive:true,
-        url:'https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=1400&q=90',
-        alt:'Vorläufiges Beauty-Editorial für die Über-mich-Sektion',
+        url:'assets/birgit-portrait.webp',
+        alt:'Birgit Porn, Inhaberin von Smile & Shine',
         shotBrief:'Authentisches Portrait von Birgit im Studio, natürliches Licht, ruhiger Hintergrund, Hochformat.'
       },
       brows:{
