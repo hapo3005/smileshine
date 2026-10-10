@@ -159,9 +159,9 @@
     root.innerHTML='<div class="public-service-directory-head"><span>Ergänzend zu deiner Behandlung</span><strong>Auffrischen. Nachbehandeln. Wohlfühlen.</strong><p>Entdecke die weiteren Leistungen – wische durch die Karten oder nutze die Pfeile.</p></div><div class="additional-carousel-nav"><span class="additional-carousel-status" aria-live="polite"></span><div><button type="button" data-carousel-prev aria-label="Vorherige Leistungen">←</button><button type="button" data-carousel-next aria-label="Weitere Leistungen">→</button></div></div><div class="additional-service-track" role="region" aria-label="Weitere Behandlungen" tabindex="0"></div><div class="additional-service-footer"><span>Deine Behandlung ausgewählt? Finde jetzt die passende Zeit.</span><a class="button primary brand-cta brand-cta-primary" href="#booking">Behandlung &amp; Termin wählen</a></div>';
     const track=root.querySelector('.additional-service-track');
     const additionalPhotos={
-      'brows-refresh':{id:6135632,position:'75% 35%'},
+      'brows-refresh':{id:6135632,position:'50% 100%'},
       'pmu-followup-brows':{id:33607397,position:'100% 35%'},
-      'lashline-refresh':{id:32039798,position:'50% 40%'},
+      'lashline-refresh':{id:31215869,position:'50% 40%'},
       'pmu-followup-lash':{id:15353405,position:'50% 45%'},
       'lip-refresh':{id:3762445,position:'50% 40%'},
       'pmu-followup-lips':{id:7479545,position:'50% 40%'}
