@@ -5,3 +5,11 @@
 @media(max-width:1050px){.workflow-mini-grid.communication-enabled{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.communication-center-card{margin:2vh auto 88px;max-height:86vh}.communication-tabs{overflow:auto;padding:10px 14px}#communicationCenterBody{padding:14px}.communication-row{grid-template-columns:32px minmax(0,1fr)}.communication-actions{grid-column:2;align-items:stretch}.communication-actions .primary-action{flex:1}.workflow-mini-grid.communication-enabled{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:400px){.workflow-mini-grid.communication-enabled{grid-template-columns:1fr}.communication-actions{flex-direction:column}.communication-actions>*{width:100%}}
+
+/* Communication status actions and readable draft history */
+.communication-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.communication-state{display:inline-flex;align-items:center;min-height:32px}
+.communication-actions .soft-button,.communication-actions .text-button{min-height:42px}
+.communication-message,.customer-communication-message{margin-top:9px;max-width:100%;font-size:14px}
+.communication-message summary,.customer-communication-message summary{cursor:pointer;color:#34302f;font-weight:700;padding:5px 0}
+.communication-message p,.customer-communication-message p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;margin:6px 0 0;color:#34302f}
