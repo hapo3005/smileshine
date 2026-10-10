@@ -176,9 +176,13 @@
     if(customer){customer.name=name;customer.phone=phone;customer.email=email;customer.contactPreference=contactPreference||customer.contactPreference;customer.reminderOptIn=reminderOptIn}
     const moved=old.date!==date||old.time!==time,changedService=old.service!==a.service,statusChanged=old.status!==a.status;
     const summary=moved?`${name}: Termin auf ${dateShort(date)} um ${time} Uhr verschoben.`:changedService?`${name}: Leistung auf ${a.service} geändert.`:statusChanged?`${name}: Terminstatus auf „${statusLabel(a.status)}“ geändert.`:`${name}: Termindetails aktualisiert.`;
-    if(moved||changedService)A.queueAppointmentCommunication?.('change',a.id,A.isoDate(new Date()),{title:'Terminänderung'});
-    else if(old.status!=='confirmed'&&a.status==='confirmed')A.queueAppointmentCommunication?.('confirm',a.id,A.isoDate(new Date()),{title:'Terminbestätigung'});
-    A.addActivity('booking',summary);if(dialog.open)dialog.close();A.save('Termin aktualisiert.');A.refreshPaymentUI?.();A.renderDashboardWorkflow?.();
+    // Close the modal before any communication or rendering work can throw.
+    if(dialog.open)dialog.close();
+    try{
+      if(moved||changedService)A.queueAppointmentCommunication?.('change',a.id,A.isoDate(new Date()),{title:'Terminänderung'});
+      else if(old.status!=='confirmed'&&a.status==='confirmed')A.queueAppointmentCommunication?.('confirm',a.id,A.isoDate(new Date()),{title:'Terminbestätigung'});
+    }catch(error){console.error('Terminbenachrichtigung konnte nicht vorbereitet werden',error)}
+    A.addActivity('booking',summary);A.save('Termin aktualisiert.');A.refreshPaymentUI?.();A.renderDashboardWorkflow?.();
   }
 
   function deleteAppointment(id,dialog){
