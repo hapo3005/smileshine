@@ -134,7 +134,8 @@
     const url=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
     window.open(url,'_blank','noopener,noreferrer');
     if(cleanupAppointmentId){A.db.appointments=A.db.appointments.filter(item=>item.id!==cleanupAppointmentId);const dialog=$('#whatsappDialog');if(dialog)delete dialog.dataset.cleanupAppointmentId;}
-    if(communicationId){A.markCommunicationHandedOff?.(communicationId,text,phone);setTimeout(()=>{if(!document.querySelector('#waSentConfirmDialog')?.open){const d=document.querySelector('#waSentConfirmDialog');if(d){d.dataset.communicationId=communicationId;d.showModal()}}},350)}
+    const entryId=communicationId||A.queueCommunication?.({key:`manual:${id}:${Date.now()}`,type:currentSelection().type,appointmentId:a.isCommunicationVirtual?'':id,customerId:a.customerId||customerFor(a)?.id||'',dueDate:A.isoDate(new Date()),title:'WhatsApp-Nachricht manuell vorbereitet',note:a.service||''})?.id;
+    if(entryId){A.markCommunicationHandedOff?.(entryId,text,phone);setTimeout(()=>{const d=$('#waSentConfirmDialog');if(d&&!d.open){d.dataset.communicationId=entryId;d.showModal()}},350)}
     $('#whatsappDialog')?.close();
   }
 
