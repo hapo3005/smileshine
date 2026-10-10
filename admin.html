@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="smileshine-build" content="20261010-demo-history-audit">
+  <meta name="smileshine-build" content="20261010-final-labels-audit">
   <meta name="theme-color" content="#f7f7f4">
   <meta name="robots" content="noindex,nofollow">
   <title>Studio · Smile & Shine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=20261010-demo-history-audit">
-  <link rel="stylesheet" href="admin-workflow.css?v=20261010-demo-history-audit" data-workflow-style="true">
-  <link rel="stylesheet" href="admin-appointment-detail.css?v=20261010-demo-history-audit" data-appointment-detail-style="true">
-  <link rel="stylesheet" href="admin-communications.css?v=20261010-demo-history-audit" data-communication-style="true">
-  <link rel="stylesheet" href="brand-v73.css?v=20261010-demo-history-audit">
-<link rel="stylesheet" href="readability.css?v=20261010-demo-history-audit">
+  <link rel="stylesheet" href="admin.css?v=20261010-final-labels-audit">
+  <link rel="stylesheet" href="admin-workflow.css?v=20261010-final-labels-audit" data-workflow-style="true">
+  <link rel="stylesheet" href="admin-appointment-detail.css?v=20261010-final-labels-audit" data-appointment-detail-style="true">
+  <link rel="stylesheet" href="admin-communications.css?v=20261010-final-labels-audit" data-communication-style="true">
+  <link rel="stylesheet" href="brand-v73.css?v=20261010-final-labels-audit">
+<link rel="stylesheet" href="readability.css?v=20261010-final-labels-audit">
 </head>
 <body class="demo-auth-locked">
   <div class="admin-app">
@@ -127,7 +127,7 @@
       <section class="view" data-view-panel="appointments">
         <div class="view-heading"><div><p class="eyebrow">Terminverwaltung</p><h2>Alle Termine.</h2><p class="muted">Suchen, filtern, bestätigen, absagen oder direkt einen neuen Termin eintragen.</p></div><button class="primary-action" type="button" data-action="newAppointment">＋ Neuer Termin</button></div>
         <article class="panel list-panel">
-          <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="appointmentSearch" type="search" placeholder="Name oder Leistung suchen"></label><select id="appointmentFilter"><option value="upcoming">Kommende</option><option value="all">Alle</option><option value="confirmed">Bestätigt</option><option value="pending-upcoming">Ausstehende Bestätigungen</option><option value="pending">Offen</option><option value="completed">Abgeschlossen</option><option value="no_show">Nicht erschienen</option><option value="cancelled">Abgesagt</option></select></div>
+          <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="appointmentSearch" type="search" aria-label="Termine nach Name oder Leistung suchen" placeholder="Name oder Leistung suchen"></label><select id="appointmentFilter" aria-label="Termine nach Status filtern"><option value="upcoming">Kommende</option><option value="all">Alle</option><option value="confirmed">Bestätigt</option><option value="pending-upcoming">Ausstehende Bestätigungen</option><option value="pending">Offen</option><option value="completed">Abgeschlossen</option><option value="no_show">Nicht erschienen</option><option value="cancelled">Abgesagt</option></select></div>
           <div id="appointmentsList" class="appointments-list"></div>
         </article>
       </section>
@@ -135,7 +135,7 @@
       <section class="view" data-view-panel="customers">
         <div class="view-heading"><div><p class="eyebrow">Kunden</p><h2>Kundenkartei.</h2><p class="muted">Kontaktdaten, Wünsche, Termine und Behandlungsverlauf übersichtlich an einem Ort.</p></div></div>
         <article class="panel list-panel">
-          <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="customerSearch" type="search" placeholder="Kunden suchen"></label><span class="result-count" id="customerCount"></span></div>
+          <div class="list-toolbar"><label class="search-field"><span>⌕</span><input id="customerSearch" type="search" aria-label="Kunden suchen" placeholder="Kunden suchen"></label><span class="result-count" id="customerCount"></span></div>
           <div id="customersList" class="customers-list"></div>
         </article>
       </section>
@@ -215,10 +215,10 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="studio-config.js?v=20261010-demo-history-audit"></script>
-  <script src="studio-content.js?v=20261010-demo-history-audit"></script>
-  <script src="studio-data-store.js?v=20261010-demo-history-audit"></script>
-  <script src="admin-demo-app.js?v=20261010-demo-history-audit"></script>
-  <script src="admin.js?v=20261010-demo-history-audit"></script>
+  <script src="studio-config.js?v=20261010-final-labels-audit"></script>
+  <script src="studio-content.js?v=20261010-final-labels-audit"></script>
+  <script src="studio-data-store.js?v=20261010-final-labels-audit"></script>
+  <script src="admin-demo-app.js?v=20261010-final-labels-audit"></script>
+  <script src="admin.js?v=20261010-final-labels-audit"></script>
 </body>
 </html>
