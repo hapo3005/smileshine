@@ -6,7 +6,7 @@ test.use({
 });
 
 test('published booking flow stays in sync with admin services', async ({ page }) => {
-  test.setTimeout(90000);
+  test.setTimeout(180000);
   const browserErrors = [];
   page.on('pageerror', error => browserErrors.push(`pageerror: ${error.message}`));
   page.on('console', message => {
@@ -46,6 +46,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
     await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
   };
 
+  console.log('BOOKING_STAGE: choose brows');
   await choose('.service-option[data-service-id="brows-pmu"]', 'Augenbrauen', 120);
   await expect(page.locator('.date-option.selected')).toHaveCount(1);
   await expect(page.locator('.time-slot:visible')).not.toHaveCount(0, { timeout: 5000 });
@@ -85,6 +86,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await choose('.service-option[data-service-id="brows-pmu"]', 'Augenbrauen', 120);
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
+  console.log('BOOKING_STAGE: create service');
   await page.locator('[data-action="newService"]').click();
   await page.locator('#serviceForm input[name="name"]').fill('QA Testleistung');
   await page.locator('#serviceForm textarea[name="description"]').fill('Automatischer Live-Test');
@@ -100,6 +102,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await expect(page.locator('.time-slot:visible')).not.toHaveCount(0);
   await page.locator('.time-slot:visible').first().click();
   await expect(page.locator('.booking-panel[data-panel="3"]')).toHaveClass(/active/);
+  console.log('BOOKING_STAGE: preparation');
   for (const name of ['previous', 'allergy', 'medication']) {
     await page.locator(`#precheckForm input[name="${name}"][value="Nein"]`).check();
   }

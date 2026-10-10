@@ -2,7 +2,7 @@ const { test, expect } = require("@playwright/test");
 
 // Seed workday scenarios on a fixed open Monday, independent of CI's weekday.
 test.beforeEach(async ({ page }) => {
-  await page.clock.install({time:new Date('2026-10-12T10:00:00+02:00')});
+  await page.clock.install({time:new Date('2026-10-05T10:00:00+02:00')});
 });
 
 

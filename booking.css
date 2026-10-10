@@ -159,3 +159,5 @@
 
 /* Long treatment names and descriptions must fit narrow phones. */
 .service-info{min-width:0;overflow-wrap:anywhere}
+/* Let confirmation text shrink beside the icon on small phones. */
+.confirmation-card>div:last-child{min-width:0;overflow-wrap:anywhere}
