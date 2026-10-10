@@ -94,7 +94,7 @@
       <div class="pickup-product-copy">
         <div class="pickup-product-meta"><span>${escapeHTML(item.category)}</span><span>${escapeHTML(item.size)}</span></div>
         <h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.description)}</p>
-        <div class="pickup-product-price"><strong>Preis im Studio</strong><strong class="pickup-product-amount">${eur(item.price)}</strong></div>
+        <div class="pickup-product-price"><strong>Preis</strong><strong class="pickup-product-amount">${eur(item.price)}</strong></div>
         <button class="pickup-add" type="button" data-pickup-add="${item.id}">In den Warenkorb</button>
         
       </div>
