@@ -174,7 +174,7 @@
         card.style.backgroundImage=`linear-gradient(180deg,rgba(10,10,10,.02) 25%,rgba(10,10,10,.82) 100%),url("https://images.pexels.com/photos/${photo.id}/pexels-photo-${photo.id}.jpeg?auto=compress&cs=tinysrgb&w=1000")`;
         card.style.backgroundPosition=photo.position;
       }
-      card.innerHTML=`<div><span>${esc(display.category)} · ca. ${Number(service.duration||30)} Min.</span><h3>${esc(display.name)}</h3><p>${esc(display.description)}</p><a href="#booking" data-public-service-id="${esc(service.id)}">Behandlung auswählen <span aria-hidden="true">↗</span></a></div>`;
+      card.innerHTML=`<div><span>${esc(display.category)} · ca. ${Number(service.duration||30)} Min.</span><h3>${esc(display.name)}</h3><p>${esc(display.description)}</p><a href="#booking" data-public-service-id="${esc(service.id)}">Behandlung auswählen</a></div>`;
       track.appendChild(card);
     });
     root.querySelectorAll('[data-public-service-id]').forEach(link=>link.addEventListener('click',event=>{
