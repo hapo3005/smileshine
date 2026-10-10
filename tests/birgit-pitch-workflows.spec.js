@@ -1,5 +1,11 @@
 const { test, expect } = require('@playwright/test');
 
+// Seed workday scenarios on a fixed open Monday, independent of CI's weekday.
+test.beforeEach(async ({ page }) => {
+  await page.clock.install({time:new Date('2026-10-12T10:00:00+02:00')});
+});
+
+
 test.use({
   baseURL: process.env.QA_BASE_URL || 'https://hapo3005.github.io/smileshine/',
   timezoneId: 'Europe/Berlin',
@@ -307,8 +313,8 @@ test('service catalog uses the agreed realistic appointment lengths', async ({ p
   expect(services['pmu-followup']).toBeUndefined();
   expect(services['demo-pmu-followup']).toBeUndefined();
 
-  await expect(page.locator('#servicesGrid')).toContainText('Nur für Studio/Demo – nicht öffentlich buchbar.');
-  await expect(page.locator('#servicesGrid')).toContainText('In der öffentlichen Buchung sichtbar.');
+  await expect(page.locator('#servicesGrid')).toContainText('Nur intern im Leistungsstamm sichtbar.');
+  await expect(page.locator('#servicesGrid')).toContainText('Auf Website und in der Online-Terminanfrage sichtbar.');
   await expect(page.locator('#servicesGrid')).toContainText('mit Birgit final bestätigen');
   await expect(page.locator('.service-card-admin[data-service-id="demo-nail-refill"] input[name="duration"]')).toHaveValue('60');
   await expect(page.locator('.service-card-admin[data-service-id="lip-pmu"] input[name="duration"]')).toHaveValue('150');
@@ -609,7 +615,7 @@ test('Birgit full workday path stays coherent from preparation to follow-up', as
   expect(state.pmuOpen).toBe(0);
 });
 
-test('intelligent communication creates due reminder and tracks WhatsApp handoff', async ({ page }) => {
+test('intelligent communication prepares reminder and blocks demo WhatsApp handoff', async ({ page }) => {
   await reset(page, 'dashboard');
 
   await page.evaluate(() => {
@@ -659,17 +665,14 @@ test('intelligent communication creates due reminder and tracks WhatsApp handoff
 
   await expect(page.locator('#whatsappDialog')).toBeVisible();
   await expect(page.locator('#waMessagePreview')).toHaveValue(/Erinnerung an deinen Termin|kleine Erinnerung/i);
-  await expect(page.locator('#waOpenButton')).toBeEnabled();
-
-  await page.evaluate(() => { window.open = () => null; });
-  await page.locator('#waOpenButton').click();
-
+  await expect(page.locator('#waOpenButton')).toBeDisabled();
+  await expect(page.locator('#waOpenButton')).toContainText('Versand gesperrt');
   const state = await page.evaluate(() => {
     const item = window.SSAdmin.db.communications.find(entry => entry.type === 'reminder' && entry.appointmentId === 'qa_comm_appointment');
     return {status:item?.status || '', handedOffAt:Boolean(item?.handedOffAt)};
   });
-  expect(state.status).toBe('handed_off');
-  expect(state.handedOffAt).toBe(true);
+  expect(state.status).not.toBe('handed_off');
+  expect(state.handedOffAt).toBe(false);
 });
 
 

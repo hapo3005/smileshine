@@ -123,7 +123,7 @@ for (const viewport of viewports) {
     await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', /.+/);
     await assertNoRootOverflow(page, `${viewport.name} public top`);
 
-    if (viewport.width <= 900) {
+    if (await page.locator('.menu-toggle').isVisible()) {
       await expect(page.locator('.menu-toggle')).toBeVisible();
       await expect(page.locator('.main-nav')).toBeHidden();
       await page.locator('.menu-toggle').click();

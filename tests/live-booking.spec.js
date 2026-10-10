@@ -71,14 +71,14 @@ test('published booking flow stays in sync with admin services', async ({ page }
     has: page.locator('input[name="serviceName"][value="Augenbrauen Permanent Make-up"]')
   });
   await expect(browsCard()).toBeVisible();
-  await browsCard().locator('input[name="active"]').uncheck({ force: true });
+  await browsCard().locator('input[name="publicBookable"]').uncheck({ force: true });
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
   await expect(page.locator('.service-option[data-service-id="brows-pmu"]')).toBeHidden();
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
   await expect(browsCard()).toBeVisible();
-  await browsCard().locator('input[name="active"]').check({ force: true });
+  await browsCard().locator('input[name="publicBookable"]').check({ force: true });
 
   await page.goto(`index.html?e2e=${Date.now()}#booking`, { waitUntil: 'networkidle' });
   await expect(page.locator('.service-option[data-service-id="brows-pmu"]')).toBeVisible();

@@ -45,7 +45,8 @@ test('central studio config drives public identity, services, contact and media 
   expect(snapshot.routeHref).toContain('google.com/maps');
   expect(snapshot.heroMedia).toMatch(/^url\(["']?https?:\/\//);
   expect(snapshot.media.filter(item => item.requiredForLive)).toHaveLength(5);
-  expect(snapshot.media.every(item => item.status === 'temporary' && item.url)).toBe(true);
+  expect(snapshot.media.every(item => ['temporary','studio'].includes(item.status) && item.url)).toBe(true);
+  expect(snapshot.media.find(item=>item.key==='about')).toMatchObject({status:'studio',url:'assets/birgit-portrait.webp'});
 
   for (const service of snapshot.configuredServices) {
     const rendered = snapshot.renderedServices.find(item => item.id === service.id);
