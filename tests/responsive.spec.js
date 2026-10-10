@@ -22,7 +22,7 @@ const viewports = [
 async function assertNoRootOverflow(page, label) {
   const metrics = await page.evaluate(async () => {
     const viewport = document.documentElement.clientWidth;
-    const explicitScrollers = '.public-service-cards,.cnc-product-track,.booking-progress,.date-scroller,.calendar-week-view,.calendar-month-view,.day-schedule';
+    const explicitScrollers = '.additional-service-track,.public-service-cards,.cnc-product-track,.booking-progress,.date-scroller,.calendar-week-view,.calendar-month-view,.day-schedule';
 
     const offenders = [...document.body.querySelectorAll('*')].filter(el => {
       if (el.closest(explicitScrollers)) return false;

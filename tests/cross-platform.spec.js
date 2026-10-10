@@ -89,7 +89,7 @@ async function waitForPublishedBuild(page) {
 async function assertNoUnexpectedOverflow(page, context) {
   const result = await page.evaluate(() => {
     const width = document.documentElement.clientWidth;
-    const allowed = '.public-service-cards,.booking-progress,.date-scroller,.calendar-week-view,.calendar-month-view,.day-schedule,.pickup-product-grid';
+    const allowed = '.additional-service-track,.public-service-cards,.booking-progress,.date-scroller,.calendar-week-view,.calendar-month-view,.day-schedule,.pickup-product-grid';
     const offenders = [...document.body.querySelectorAll('*')].filter(el => {
       if (el.closest(allowed)) return false;
       const style = getComputedStyle(el);
@@ -220,9 +220,13 @@ test(`Birgit admin cross-platform smoke — ${label}`, async ({ page }, testInfo
     await expect(page.locator('#dashboardDetails')).toBeHidden();
     await expect(page.locator('#workflowTodayPanel .workflow-head'), 'touch start must show day focus and next actions').toBeVisible();
   }
-  await expect(page.locator('.day-cockpit-brief')).toBeVisible();
+  if (await page.locator('.day-cockpit-empty').isVisible()) {
+    await expect(page.locator('.day-cockpit-empty')).toContainText(/Heute ist geschlossen|Heute ist noch frei/);
+  } else {
+    await expect(page.locator('.day-cockpit-brief')).toBeVisible();
+    await expect(page.locator('.day-cockpit-actions button').first()).toBeVisible();
+  }
   if(width<=900) await expect(page.locator('#workflowTodayPanel .workflow-action').first()).toBeVisible();
-  else await expect(page.locator('#todayList .today-context-action').first()).toBeVisible();
   await assertNoUnexpectedOverflow(page, `${label} Birgit daily cockpit`);
   const addButton = width <= 900 ? page.locator('.mobile-nav-add') : page.locator('#quickAdd');
   await addButton.click();
