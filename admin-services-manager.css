@@ -1,15 +1,15 @@
 .service-name-field,.service-description-field{display:grid;gap:6px}
 .service-name-field{margin:14px 0 10px}
-.service-name-field>span,.service-description-field>span{font-size:8px;color:#717678;font-weight:600;letter-spacing:.035em}
-.service-name-field input,.service-description-field textarea{width:100%;border:1px solid #dedfdd;background:#faf9f6;border-radius:2px;padding:10px 12px;font:400 11px/1.45 "Montserrat",system-ui,sans-serif;color:#17191a;outline:0}
+.service-name-field>span,.service-description-field>span{font-size:14px;color:#717678;font-weight:600;letter-spacing:.035em}
+.service-name-field input,.service-description-field textarea{width:100%;border:1px solid #dedfdd;background:#faf9f6;border-radius:2px;padding:10px 12px;font:400 14px/1.45 "Montserrat",system-ui,sans-serif;color:#17191a;outline:0}
 .service-name-field input:focus,.service-description-field textarea:focus{border-color:#8b9092;background:#fff;box-shadow:0 0 0 3px rgba(79,85,88,.07)}
 .service-description-field textarea{resize:vertical;min-height:82px;line-height:1.55}
-.service-description-field small{font-size:8px;line-height:1.45;color:#7b8082}
-.service-field-hint{font-size:8px;color:#7b8082;margin-top:0}
+.service-description-field small{font-size:14px;line-height:1.45;color:#7b8082}
+.service-field-hint{font-size:14px;color:#7b8082;margin-top:0}
 
 .service-card-top{align-items:center;flex-wrap:wrap;gap:7px 8px}
-.service-category{display:inline-flex;align-items:center;min-height:24px;padding:0;border:0;border-radius:0;background:transparent;color:#676c6e;font-size:8px;font-weight:600;letter-spacing:.12em;line-height:1.25;text-transform:uppercase}
-.service-live-status,.service-verify-badge{display:inline-flex;align-items:center;min-height:24px;border:1px solid #dedfdd;border-radius:2px;padding:4px 7px;background:#f8f7f4;color:#5e6365;font-size:7.5px;font-weight:600;letter-spacing:.035em;white-space:nowrap}
+.service-category{display:inline-flex;align-items:center;min-height:24px;padding:0;border:0;border-radius:0;background:transparent;color:#676c6e;font-size:14px;font-weight:600;letter-spacing:.12em;line-height:1.25;text-transform:uppercase}
+.service-live-status,.service-verify-badge{display:inline-flex;align-items:center;min-height:24px;border:1px solid #dedfdd;border-radius:2px;padding:4px 7px;background:#f8f7f4;color:#5e6365;font-size:14px;font-weight:600;letter-spacing:.035em;white-space:nowrap}
 .service-live-status{margin-left:auto;margin-right:0}
 .service-live-status.active{border-color:#d5dfd6;background:#f3f7f3;color:#526858}
 .service-live-status.paused{border-color:#dedfdd;background:#f5f4f1;color:#73787a}
@@ -18,26 +18,26 @@
 .service-verify-badge.studio{border-color:#d9dcde;background:#f3f4f4;color:#5c6265}
 
 .service-internal-note{margin:12px 0 4px;padding:12px 13px;border:1px solid #dedfdd;border-radius:2px;background:#f8f7f4}
-.service-internal-note>span{display:block;font-size:7.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#73787a}
-.service-internal-note p{margin:5px 0 0;font-size:8.5px;line-height:1.55;color:#74797b}
+.service-internal-note>span{display:block;font-size:14px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:#73787a}
+.service-internal-note p{margin:5px 0 0;font-size:14px;line-height:1.55;color:#74797b}
 .service-card-admin:has(.service-live-status.paused){background:#fff}
 
 .service-card-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:15px;align-items:stretch}
 .service-card-actions .service-save{margin-top:0;min-height:40px;border-color:#17191a;background:#17191a;color:#fff;border-radius:2px}
 .service-card-actions .service-save:hover{background:#303334;border-color:#303334}
-.service-delete-button{min-height:40px;border:1px solid #dedfdd;background:#fff;color:#7b5555;border-radius:2px;padding:0 13px;font:600 8.5px "Montserrat",system-ui,sans-serif;cursor:pointer}
+.service-delete-button{min-height:40px;border:1px solid #dedfdd;background:#fff;color:#7b5555;border-radius:2px;padding:0 13px;font:600 14px "Montserrat",system-ui,sans-serif;cursor:pointer}
 .service-delete-button:hover{border-color:#cdbbbb;background:#fbf8f8;color:#714b4b}
 
 .service-active-row{display:flex!important;align-items:center;justify-content:space-between;gap:16px;border:1px solid #dedfdd;background:#f8f7f4;border-radius:2px;padding:12px 13px}
-.service-active-row>span:first-child strong{display:block;font-size:10px;font-weight:600}
-.service-active-row>span:first-child small{display:block;font-size:8px;color:#7b8082;margin-top:3px;line-height:1.45}
+.service-active-row>span:first-child strong{display:block;font-size:14px;font-weight:600}
+.service-active-row>span:first-child small{display:block;font-size:14px;color:#7b8082;margin-top:3px;line-height:1.45}
 
 .service-demo-guidance{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;margin:0 0 18px;padding:16px 18px;border:1px solid #dedfdd;border-radius:2px;background:#f8f7f4;box-shadow:none}
-.service-demo-guidance-kicker{display:block;margin-bottom:5px;font-size:7.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#73787a}
-.service-demo-guidance strong{display:block;font-size:13px;font-weight:500;color:#202324}
-.service-demo-guidance p{max-width:760px;margin:6px 0 0;font-size:9px;line-height:1.55;color:#73787a}
+.service-demo-guidance-kicker{display:block;margin-bottom:5px;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#73787a}
+.service-demo-guidance strong{display:block;font-size:14px;font-weight:500;color:#202324}
+.service-demo-guidance p{max-width:760px;margin:6px 0 0;font-size:14px;line-height:1.55;color:#73787a}
 .service-demo-guidance-stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.service-demo-guidance-stats span{display:grid;gap:2px;min-width:98px;padding:9px 11px;border:1px solid #dedfdd;border-radius:2px;background:#fff;font-size:7.5px;color:#73787a}
+.service-demo-guidance-stats span{display:grid;gap:2px;min-width:98px;padding:9px 11px;border:1px solid #dedfdd;border-radius:2px;background:#fff;font-size:14px;color:#73787a}
 .service-demo-guidance-stats b{font-size:15px;font-weight:500;color:#34383a}
 
 @media(max-width:760px){

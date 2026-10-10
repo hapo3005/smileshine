@@ -1,0 +1,46 @@
+/* Shared readable typography for customers and the studio workspace. */
+html{font-size:16px}
+body{font-size:16px;line-height:1.5}
+button,input,select,textarea{font-family:inherit}
+input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important;line-height:1.5!important;min-height:48px}
+body.site-premium p:not(.eyebrow):not(.summary-kicker),body.site-premium .service-info small,body.site-premium .premium-trust small,body.site-premium .contact-benefit small{font-size:16px!important;line-height:1.65}
+body.site-premium .eyebrow,body.site-premium .summary-kicker{font-size:14px!important;line-height:1.5}
+body.site-premium .button,body.site-premium .nav-cta,body.site-premium .treatment-card a,body.site-premium .additional-service-card a,body.site-premium .booking-back,body.site-premium .waitlist-button,body.site-premium .pickup-add,body.site-premium .pickup-submit,body.site-premium .pickup-cart-button,body.site-premium .contact-route-button{font-size:16px!important;line-height:1.4;letter-spacing:.04em;min-height:48px;height:auto;white-space:normal}
+body.site-premium .button,body.site-premium .pickup-add,body.site-premium .pickup-submit{padding-top:14px;padding-bottom:14px;text-align:center}
+body.site-premium .main-nav>a{font-size:14px;letter-spacing:.04em}
+body.site-premium .main-nav{gap:22px}
+body.site-premium .brand-v73 .brand-copy small{font-size:14px;letter-spacing:.1em}
+body.site-premium .brand-v73 .brand-copy strong{letter-spacing:.14em}
+body.site-premium .booking-panel-head p,body.site-premium .service-info small,body.site-premium .summary-item span,body.site-premium .summary-location small,body.site-premium .summary-status,body.site-premium .field-row label>span,body.site-premium .pickup-field>span{color:#555b5e}
+body.site-premium .pickup-product-card p{color:#555b5e}
+body.site-premium .booking-demo-badge{max-width:100%;white-space:normal;font-size:14px;line-height:1.5}
+body.site-premium .progress-step{padding-right:24px;margin-right:20px}
+body.site-premium .progress-step strong{font-size:14px;letter-spacing:.04em}
+body.site-premium .booking-progress{overflow-x:auto}
+body.site-premium .booking-editorial .booking-summary{padding:24px 20px}
+body.site-premium .booking-editorial .booking-summary .summary-item:not(:has(#summaryService)){grid-template-columns:1fr;gap:4px;padding:10px 0}
+body.site-premium .booking-editorial .booking-summary .summary-item strong{font-size:16px}
+body.site-premium .booking-editorial .booking-summary #summaryService{font-size:19px}
+body.site-premium .booking-editorial .booking-summary .summary-location small,body.site-premium .booking-editorial .booking-summary .summary-status{font-size:14px}
+body.site-premium .booking-editorial .booking-summary .summary-status{letter-spacing:0}
+body.site-premium .site-footer{font-size:14px;line-height:1.6}
+@media(max-width:1200px){
+ body.site-premium .menu-toggle{display:block;min-width:48px;min-height:48px}
+ body.site-premium .main-nav{position:absolute;top:100%;left:0;right:0;padding:18px var(--ss-gutter) 24px;background:#f7f5f1;border-bottom:1px solid var(--ss-line);display:none;flex-direction:column;align-items:stretch;gap:0}
+ body.site-premium .main-nav.open{display:flex}
+ body.site-premium .main-nav>a{padding:14px 0;font-size:16px;line-height:1.5;border-bottom:1px solid var(--ss-line)}
+ body.site-premium .main-nav .nav-cta{margin-top:12px;padding:14px 16px;justify-content:center}
+}
+@media(max-width:620px){body.site-premium .brand-v73{gap:10px}body.site-premium .brand-v73 .brand-copy strong{font-size:14px;letter-spacing:.1em}body.site-premium .brand-v73 .brand-copy small{letter-spacing:.04em}body.site-premium .treatment-consultation .consultation-cta{white-space:normal}body.site-premium .booking-panel-head h3{font-size:32px}body.site-premium .contact-direct-actions{grid-template-columns:1fr}}
+/* Forms, calendars, tables and dialogs in Birgit's workspace. */
+body:has(.admin-app){--sidebar:280px}
+.admin-app p,.demo-login-copy p{font-size:16px;line-height:1.65}
+.admin-app label,.demo-login-card label{font-size:14px;line-height:1.5}
+.admin-app button:not(.nav-icon),.demo-login-card button{font-size:16px;line-height:1.4;min-height:44px;white-space:normal}
+.admin-app small,.demo-login-card small{font-size:14px;line-height:1.5}
+.admin-app th,.admin-app td{font-size:14px;line-height:1.5}
+.admin-brand-v73 .admin-brand-copy strong,.mobile-header .admin-brand-v73 .admin-brand-copy strong{font-size:14px!important;letter-spacing:.08em!important}
+.admin-brand-v73 .admin-brand-copy small,.mobile-header .admin-brand-v73 .admin-brand-copy small{font-size:14px!important;letter-spacing:.02em!important}
+.demo-login-brand-copy small{font-size:14px!important}
+.demo-login-access,.demo-login-access small{line-height:1.6}
+@media(max-width:760px){.admin-app input,.admin-app select,.admin-app textarea{font-size:16px!important}}

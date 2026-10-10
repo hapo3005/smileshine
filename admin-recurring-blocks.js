@@ -13,11 +13,11 @@
       .block-date-range{display:grid;grid-template-columns:1fr 1fr;gap:12px}
       .recurring-block-fields{display:grid;grid-template-columns:1fr;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fffaf8}
       .recurring-block-fields[hidden]{display:none}
-      .recurring-block-note{font-size:10px;line-height:1.5;color:var(--muted);margin:-2px 0 0}
+      .recurring-block-note{font-size:14px;line-height:1.5;color:var(--muted);margin:-2px 0 0}
       .block-item.is-series{background:#fffaf8;border-radius:12px;padding:12px;margin-top:7px;align-items:center}
-      .block-item .series-pill{display:inline-flex;margin-top:5px;padding:3px 7px;border-radius:999px;background:var(--rose-soft);color:var(--rose-deep);font-size:9px;font-weight:700}
+      .block-item .series-pill{display:inline-flex;margin-top:5px;padding:3px 7px;border-radius:999px;background:var(--rose-soft);color:var(--rose-deep);font-size:14px;font-weight:700}
       .series-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-      .series-actions button{width:auto;min-width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:#fffaf8;color:var(--ink);padding:0 10px;cursor:pointer;font-size:10px;font-weight:700}
+      .series-actions button{width:auto;min-width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:#fffaf8;color:var(--ink);padding:0 10px;cursor:pointer;font-size:14px;font-weight:700}
       .series-actions button:hover{border-color:#d8c1bb;background:#fff}
       .series-actions .series-delete{color:var(--danger);font-size:16px;padding:0;min-width:34px}
       .series-dialog{border:0;padding:0;background:transparent;max-width:min(620px,calc(100vw - 28px));width:100%}
@@ -27,15 +27,15 @@
       .series-dialog-head h3{font:25px/1.15 "Marcellus",serif;margin:4px 0 0;font-weight:400}
       .series-dialog-close{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:#fffaf8;cursor:pointer;font-size:20px}
       .series-dialog-body{padding:20px 24px;display:grid;gap:14px}
-      .series-dialog-body label{display:grid;gap:7px;font-size:11px;font-weight:700;color:var(--muted)}
+      .series-dialog-body label{display:grid;gap:7px;font-size:14px;font-weight:700;color:var(--muted)}
       .series-dialog-body input{height:48px;border:1px solid var(--line);border-radius:12px;background:#fffaf8;padding:0 12px;color:var(--ink)}
       .series-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
       .series-dialog-actions{display:flex;justify-content:flex-end;gap:8px;padding:0 24px 22px}
       .series-exception-list{display:grid;gap:7px;margin-top:3px}
       .series-exception-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:#fffaf8}
-      .series-exception-item span{font-size:10px;color:var(--muted)}
-      .series-exception-item button{border:0;background:transparent;color:var(--rose-deep);font-size:10px;font-weight:700;cursor:pointer}
-      .series-empty-exceptions{font-size:10px;color:var(--muted);padding:5px 0}
+      .series-exception-item span{font-size:14px;color:var(--muted)}
+      .series-exception-item button{border:0;background:transparent;color:var(--rose-deep);font-size:14px;font-weight:700;cursor:pointer}
+      .series-empty-exceptions{font-size:14px;color:var(--muted);padding:5px 0}
       @media(max-width:720px){.block-date-range,.series-form-row{grid-template-columns:1fr}.recurring-block-fields{padding:10px}.series-actions{justify-content:flex-start;margin-top:8px}.block-item.is-series{display:block}}
     `;
     document.head.appendChild(style);

@@ -61,7 +61,7 @@ body::before{
   display:grid;place-items:center;
   color:var(--ss-black);
 }
-.brand-mark::before,.admin-brand-mark::before{content:"S | S";font-size:9px;font-weight:300;letter-spacing:.04em;white-space:nowrap}
+.brand-mark::before,.admin-brand-mark::before{content:"S | S";font-size:14px;font-weight:300;letter-spacing:.04em;white-space:nowrap}
 .brand-mark::after{display:none}
 .admin-brand-mark{font-size:0!important}
 .brand strong,.admin-brand strong,.mobile-brand strong{
@@ -73,7 +73,7 @@ body::before{
 }
 .brand small,.admin-brand small,.mobile-brand small{
   font-family:var(--sans)!important;
-  font-size:8px!important;
+  font-size:14px!important;
   font-weight:400!important;
   letter-spacing:.28em!important;
   color:#777b7d!important;
@@ -234,7 +234,7 @@ body:has(.admin-app){background:#f3f3f0!important}
 }
 @media(max-width:620px){
   .brand-mark{width:30px;height:30px;flex-basis:30px}
-  .brand strong{font-size:11px!important;letter-spacing:.18em!important}
+  .brand strong{font-size:14px!important;letter-spacing:.18em!important}
   .hero h1{font-size:clamp(42px,13vw,54px)!important}
 }
 
@@ -259,7 +259,7 @@ body:has(.admin-app){background:#f3f3f0!important}
 }
 .admin-brand-v73 .admin-brand-mark::before{
   content:"S | S"!important;
-  font-size:9px!important;
+  font-size:14px!important;
   line-height:1!important;
   font-weight:300!important;
   letter-spacing:.05em!important;
@@ -277,7 +277,7 @@ body:has(.admin-app){background:#f3f3f0!important}
   margin:0!important;
   white-space:nowrap!important;
   font-family:var(--sans)!important;
-  font-size:10.5px!important;
+  font-size:14px!important;
   line-height:1!important;
   font-weight:300!important;
   letter-spacing:.185em!important;
@@ -289,7 +289,7 @@ body:has(.admin-app){background:#f3f3f0!important}
   margin:0!important;
   white-space:nowrap!important;
   font-family:var(--sans)!important;
-  font-size:6.5px!important;
+  font-size:14px!important;
   line-height:1!important;
   font-weight:400!important;
   letter-spacing:.24em!important;
@@ -301,11 +301,11 @@ body:has(.admin-app){background:#f3f3f0!important}
   height:36px!important;
   flex-basis:36px!important;
 }
-.mobile-header .admin-brand-v73 .admin-brand-copy strong{font-size:10px!important}
-.mobile-header .admin-brand-v73 .admin-brand-copy small{font-size:6px!important}
+.mobile-header .admin-brand-v73 .admin-brand-copy strong{font-size:14px!important}
+.mobile-header .admin-brand-v73 .admin-brand-copy small{font-size:14px!important}
 @media(max-width:620px){
   .admin-brand-v73{gap:10px!important}
   .admin-brand-v73 .admin-brand-mark{width:34px!important;height:34px!important;flex-basis:34px!important}
-  .admin-brand-v73 .admin-brand-copy strong{font-size:9.5px!important;letter-spacing:.16em!important}
-  .admin-brand-v73 .admin-brand-copy small{font-size:5.8px!important;letter-spacing:.20em!important}
+  .admin-brand-v73 .admin-brand-copy strong{font-size:14px!important;letter-spacing:.16em!important}
+  .admin-brand-v73 .admin-brand-copy small{font-size:14px!important;letter-spacing:.20em!important}
 }

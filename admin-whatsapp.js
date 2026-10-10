@@ -47,8 +47,8 @@
     if($('#whatsappAdminStyles'))return;
     const style=document.createElement('style');style.id='whatsappAdminStyles';style.textContent=`
       .wa-quick-button,.customer-wa-button{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#fffaf8;color:var(--rose-deep);font-weight:700;cursor:pointer}
-      .wa-quick-button{min-width:38px;height:38px;border-radius:11px;padding:0 9px;font-size:10px}
-      .customer-wa-button{height:30px;border-radius:9px;padding:0 10px;font-size:9px}
+      .wa-quick-button{min-width:38px;height:38px;border-radius:11px;padding:0 9px;font-size:14px}
+      .customer-wa-button{height:30px;border-radius:9px;padding:0 10px;font-size:14px}
       .wa-quick-button:hover,.customer-wa-button:hover{background:#fff;border-color:#d7bbb5}
       .wa-dialog{border:0;padding:0;background:transparent;width:min(680px,calc(100vw - 28px));max-height:calc(100vh - 28px)}
       .wa-dialog::backdrop{background:rgba(35,29,27,.36);backdrop-filter:blur(4px)}
@@ -58,25 +58,25 @@
       .wa-dialog-close{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:#fffaf8;cursor:pointer;font-size:20px;flex:0 0 auto}
       .wa-dialog-body{padding:20px 24px 24px;display:grid;gap:14px;overflow:auto}
       .wa-appointment-summary{padding:13px 14px;border:1px solid var(--line);border-radius:13px;background:#fffaf8;display:grid;gap:3px}
-      .wa-appointment-summary strong{font-size:13px}.wa-appointment-summary small{color:var(--muted);font-size:10px}
+      .wa-appointment-summary strong{font-size:14px}.wa-appointment-summary small{color:var(--muted);font-size:14px}
       .wa-demo-warning{display:block;margin-top:5px;color:var(--rose-deep)!important;font-weight:700}
       .wa-template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
       .wa-template-button{width:100%;text-align:left;border:1px solid var(--line);border-radius:14px;background:#fffaf8;padding:12px 13px;cursor:pointer;color:var(--ink);transition:.16s ease}
       .wa-template-button:hover,.wa-template-button.active{border-color:#c98279;background:var(--rose-soft)}
-      .wa-template-button strong{display:block;font-size:11px;margin-bottom:3px}.wa-template-button small{display:block;color:var(--muted);font-size:9px;line-height:1.4}
+      .wa-template-button strong{display:block;font-size:14px;margin-bottom:3px}.wa-template-button small{display:block;color:var(--muted);font-size:14px;line-height:1.4}
       .wa-preview{border-top:1px solid var(--line);padding-top:15px;display:grid;gap:11px}
       .wa-preview-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-      .wa-preview-head strong{display:block;font-size:12px}.wa-preview-head small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+      .wa-preview-head strong{display:block;font-size:14px}.wa-preview-head small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
       .wa-tone-switch{display:inline-flex;border:1px solid var(--line);border-radius:11px;background:#fffaf8;padding:3px;gap:2px}
-      .wa-tone-switch button{border:0;background:transparent;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:700;color:var(--muted);cursor:pointer}
+      .wa-tone-switch button{border:0;background:transparent;border-radius:8px;padding:7px 9px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
       .wa-tone-switch button.active{background:#fff;color:var(--rose-deep);box-shadow:0 1px 4px rgba(35,29,27,.08)}
-      .wa-preview textarea{width:100%;min-height:240px;resize:vertical;border:1px solid var(--line);border-radius:15px;background:#fffaf8;color:var(--ink);padding:14px 15px;font:12px/1.6 "Manrope",sans-serif;outline:none}
+      .wa-preview textarea{width:100%;min-height:240px;resize:vertical;border:1px solid var(--line);border-radius:15px;background:#fffaf8;color:var(--ink);padding:14px 15px;font:14px/1.6 "Manrope",sans-serif;outline:none}
       .wa-preview textarea:focus{border-color:#c98279;box-shadow:0 0 0 3px rgba(201,130,121,.09)}
       .wa-preview-actions{display:flex;align-items:center;justify-content:space-between;gap:12px}
-      .wa-preview-actions .wa-character-count{font-size:9px;color:var(--muted)}
+      .wa-preview-actions .wa-character-count{font-size:14px;color:var(--muted)}
       .wa-open-button{border:0;border-radius:12px;background:var(--rose);color:#fff;font-weight:700;padding:12px 16px;cursor:pointer;box-shadow:0 8px 20px rgba(179,104,97,.18)}
       .wa-open-button:disabled{opacity:.48;cursor:not-allowed;box-shadow:none}
-      .wa-hint{font-size:10px;line-height:1.5;color:var(--muted);margin:0}
+      .wa-hint{font-size:14px;line-height:1.5;color:var(--muted);margin:0}
       .status-tag.whatsapp-active{background:var(--rose-soft);color:var(--rose-deep)}
       .wa-dialog.custom-mode .wa-template-grid,.wa-dialog.custom-mode .wa-tone-switch{display:none}
       @media(max-width:720px){.wa-dialog-head,.wa-dialog-body{padding-left:18px;padding-right:18px}.wa-template-grid{grid-template-columns:1fr}.wa-preview-head,.wa-preview-actions{align-items:stretch;flex-direction:column}.wa-tone-switch{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.wa-open-button{width:100%}}
