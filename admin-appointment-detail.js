@@ -99,6 +99,7 @@
         <div class="appointment-hero-actions">
           <button type="button" class="soft-button" data-appointment-payment>€ Preis & Zahlung</button>
           <button type="button" class="soft-button" data-appointment-customer ${customer?'':'disabled'}>○ Kundenakte</button>
+          <button type="button" class="soft-button" data-appointment-messages>Nachrichten öffnen</button>
         </div>
       </section>
 
@@ -157,6 +158,7 @@
     $('[data-delete-appointment-detail]',body).addEventListener('click',()=>deleteAppointment(a.id,dialog));
     $('[data-appointment-calendar]',body).addEventListener('click',()=>{dialog.close();A.calendarCursor=new Date(`${a.date}T12:00:00`);A.calendarMode='day';A.showView('calendar')});
     $('[data-appointment-payment]',body).addEventListener('click',()=>{dialog.close();A.openPaymentModal?.(a.id)});
+    $('[data-appointment-messages]',body).addEventListener('click',()=>{dialog.close();A.openCommunicationCenter?.('due')});
     $('[data-appointment-customer]',body)?.addEventListener('click',()=>{if(!customer)return;dialog.close();A.renderCustomerDetail?.(customer.id)});
     renderAvailability(a);
   }
