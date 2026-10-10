@@ -177,7 +177,9 @@
     const data=new FormData(form),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),firstName=String(data.get('firstName')||'').trim(),lastName=String(data.get('lastName')||'').trim(),linked=linkPickupCustomer({firstName,lastName,email,phone}),known=linked.customer,order={
       id:'pickup_'+Date.now(),
       createdAt:new Date().toISOString(),
-      items:cart.map(row=>({...row,name:product(row.id)?.name||row.id})),
+      items:cart.map(row=>({...row,name:product(row.id)?.name||row.id,unitPrice:product(row.id)?.price||0,lineTotal:(product(row.id)?.price||0)*Number(row.qty||0)})),
+      total:cartTotal(),
+      currency:'EUR',
       customer:{firstName,lastName,email,phone,note:String(data.get('note')||'')},
       customerId:known?.id||null,
       buyerType:linked.existed?'existing':'new',
