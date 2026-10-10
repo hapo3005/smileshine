@@ -360,3 +360,22 @@ body.site-premium img{max-width:100%}
 .site-premium .treatment-consultation .consultation-cta{min-height:48px;white-space:nowrap;justify-content:center;flex-shrink:0}
 .site-premium .consultation-cta:focus-visible{outline:2px solid #17191a;outline-offset:4px}
 @media(max-width:620px){.site-premium .treatment-consultation .consultation-cta{width:100%;text-align:center}}
+
+/* Quiet, content-sized appointment overview in the studio palette. */
+body.site-premium .booking-editorial .booking-shell{overflow:visible}
+body.site-premium .booking-editorial .booking-summary{position:sticky;top:108px;align-self:start;display:block;min-height:0;min-width:0;margin:24px 24px 24px 0;padding:28px 24px;background:#f7f5f1;color:#17191a;border:1px solid rgba(23,25,26,.14);border-radius:0;box-shadow:none;overflow:visible}
+body.site-premium .booking-editorial .booking-summary::before{display:none}
+body.site-premium .booking-editorial .booking-summary .summary-kicker{margin:0 0 8px;color:#62676a;font-size:10px;line-height:1.5;letter-spacing:.12em;font-weight:500}
+body.site-premium .booking-editorial .booking-summary h3{margin:0 0 24px;font-family:Montserrat,sans-serif;font-size:25px;line-height:1.25;font-weight:400;letter-spacing:-.025em;color:#17191a}
+body.site-premium .booking-editorial .booking-summary .summary-item{display:grid;grid-template-columns:1fr;gap:7px;padding:14px 0;border-top:1px solid rgba(23,25,26,.12)}
+body.site-premium .booking-editorial .booking-summary .summary-item span{color:#62676a;font-size:10px;line-height:1.4;letter-spacing:.09em}
+body.site-premium .booking-editorial .booking-summary .summary-item strong{display:block;margin:0;max-width:none;text-align:left;color:#17191a;font-size:13px;line-height:1.5;font-weight:500;overflow-wrap:anywhere}
+body.site-premium .booking-editorial .booking-summary #summaryService{font-size:18px;line-height:1.4;font-weight:400}
+body.site-premium .booking-editorial .booking-summary .summary-location{margin:12px 0 0;padding:18px 0 0;border:0;border-top:1px solid rgba(23,25,26,.12);border-radius:0;background:transparent;gap:0}
+body.site-premium .booking-editorial .booking-summary .summary-location>span{display:none}
+body.site-premium .booking-editorial .booking-summary .summary-location strong{color:#17191a;font-size:12px;line-height:1.5;font-weight:500}
+body.site-premium .booking-editorial .booking-summary .summary-location small{color:#62676a;font-size:11px;line-height:1.6}
+body.site-premium .booking-editorial .booking-summary .summary-status{margin-top:16px;background:transparent;color:#62676a;font-size:9px;line-height:1.6;letter-spacing:.04em;font-weight:400}
+body.site-premium .booking-editorial .booking-summary .summary-status span{background:#62676a;box-shadow:none;flex:0 0 5px;width:5px;height:5px}
+@media(max-width:1050px){body.site-premium .booking-editorial .booking-summary{position:static;margin:0 24px 24px;display:grid;grid-template-columns:1fr 1fr;column-gap:24px}body.site-premium .booking-editorial .booking-summary .summary-kicker,body.site-premium .booking-editorial .booking-summary h3,body.site-premium .booking-editorial .booking-summary .summary-item:has(#summaryService),body.site-premium .booking-editorial .booking-summary .summary-location,body.site-premium .booking-editorial .booking-summary .summary-status{grid-column:1/-1}}
+@media(max-width:620px){body.site-premium .booking-editorial .booking-summary{margin:0 16px 16px;padding:24px 20px;column-gap:16px}body.site-premium .booking-editorial .booking-summary h3{font-size:23px}}
