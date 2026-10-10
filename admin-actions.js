@@ -111,7 +111,7 @@
   function bindActions(){
     ensureCustomerUI();
     document.addEventListener('click',event=>{const tile=event.target.closest('[data-kpi-action]');if(!tile)return;const action=tile.dataset.kpiAction;if(action==='calendar'){A.showView('calendar')}else if(action==='appointments'){const filter=$('#appointmentFilter'),search=$('#appointmentSearch');if(filter)filter.value='pending-upcoming';if(search)search.value='';A.showView('appointments');A.renderAppointments?.()}else if(action==='waitlist'){A.openWorkflowCenter?.('waitlist')}else if(action==='followups'){A.openWorkflowCenter?.('followups')}});
-    $('[data-view]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.view)));
+    $$('[data-view]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.view)));
     $$('[data-jump]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.jump)));
     $$('[data-action="newAppointment"]').forEach(btn=>btn.addEventListener('click',()=>openModal()));
     $('#quickAdd')?.addEventListener('click',()=>openModal());
