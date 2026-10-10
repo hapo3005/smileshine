@@ -116,7 +116,7 @@
     const btn=document.createElement('button');
     btn.className='service-option';btn.type='button';
     btn.dataset.serviceId=s.id;btn.dataset.service=name;btn.dataset.duration=String(Number(s.duration||30));
-    btn.innerHTML=`<span class="service-info"><strong>${esc(name)}</strong><small>${esc(description)} · ca. ${Number(s.duration||30)} Min.${publicPriceConfirmed&&Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span><span class="service-arrow">→</span>`;
+    btn.innerHTML=`<span class="service-info"><strong>${esc(name)}</strong><small>${esc(description)} · ca. ${Number(s.duration||30)} Min.${publicPriceConfirmed&&Number(s.price||0)>0?` · ${money(s.price)}`:''}</small></span>`;
     return btn;
   }
 
