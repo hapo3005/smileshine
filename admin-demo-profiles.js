@@ -445,7 +445,7 @@
         if(minute+Number(service.duration||30)>latestEnd){seed++;continue}
         const time=timeOf(minute),appointment=createAppointment(db,{date,time,key,seed,customer,service,specialOpening:specialSaturday});
         db.appointments.push(appointment);
-        if(key==='pmu')pmuDue.push({customer,dueDate:isoDate(addDays(cursor,42)),followupServiceId:FOLLOWUP_SERVICE_BY_PRIMARY[service.id]||'pmu-followup-brows',used:false});
+        if(key==='pmu'&&!['cancelled','no_show'].includes(appointment.status))pmuDue.push({customer,dueDate:isoDate(addDays(cursor,42)),followupServiceId:FOLLOWUP_SERVICE_BY_PRIMARY[service.id]||'pmu-followup-brows',used:false});
         minute+=Number(service.duration||30)+10;seed++;
       }
     }
@@ -490,6 +490,14 @@
     const rebuild=Number(db.demoSimulation?.version||0)<VERSION;
     ensureProfiles(db);ensureDemoServices(db,rebuild);
     if(rebuild)buildSimulation(db);
+    // Repair only generated follow-ups whose simulated primary visit did not take place.
+    const pmuArea=name=>/Augenbrauen/i.test(name||'')?'brows':/Wimpernkranz|Lid/i.test(name||'')?'eyes':/Lippen/i.test(name||'')?'lips':'';
+    for(const followup of db.appointments.filter(a=>a.demoSimulation&&a.phase==='Nachbehandlung'&&!['cancelled','no_show'].includes(a.status))){
+      const prior=db.appointments.filter(a=>a.demoSimulation&&a.customerId===followup.customerId&&a.phase==='Erstbehandlung'&&pmuArea(a.service)===pmuArea(followup.service)&&daysBetween(a.date,followup.date)>=21&&daysBetween(a.date,followup.date)<=90);
+      if(prior.length&&prior.every(a=>['cancelled','no_show'].includes(a.status))){
+        followup.status='cancelled';followup.note+=' · Demo-Korrektur: Erstbehandlung ausgefallen.';
+      }
+    }
     db.demoProfilesVersion=VERSION;
     db.activity=(Array.isArray(db.activity)?db.activity:[]).filter(x=>x.id!=='demo_profiles_loaded'&&!/Testkundenprofile/i.test(String(x.text||'')));
     return db;
