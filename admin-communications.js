@@ -36,11 +36,11 @@
       followUpId:input.followUpId||'',waitlistId:input.waitlistId||'',dueDate:input.dueDate||today(),status:input.status||'due',
       title:input.title||'',note:input.note||'',slot:input.slot||null,createdAt:input.createdAt||new Date().toISOString()
     };
-    if(item){const previousStatus=item.status;Object.assign(item,base);if(['handed_off','done'].includes(previousStatus))item.status=previousStatus;return item}
+    if(item){const previousStatus=item.status;Object.assign(item,base);if(['handed_off','done','sent_confirmed'].includes(previousStatus))item.status=previousStatus;return item}
     item={id:uid('communication'),...base};A.db.communications.push(item);return item;
   }
 
-  function isHandled(item){return ['handed_off','done','cancelled'].includes(item.status)}
+  function isHandled(item){return ['handed_off','done','sent_confirmed','cancelled'].includes(item.status)}
 
   function syncAppointmentReminders(){
     const t=today(),horizon=isoDate(addDays(new Date(),30)),now=new Date(),nowMinutes=now.getHours()*60+now.getMinutes();
@@ -117,7 +117,7 @@
   }
 
   function historyCommunications(){
-    return ensureData().filter(isHandled).slice().sort((a,b)=>String(b.handedOffAt||b.completedAt||b.createdAt).localeCompare(String(a.handedOffAt||a.completedAt||a.createdAt)));
+    return ensureData().filter(isHandled).slice().sort((a,b)=>String(b.sentConfirmedAt||b.handedOffAt||b.completedAt||b.createdAt).localeCompare(String(a.sentConfirmedAt||a.handedOffAt||a.completedAt||a.createdAt)));
   }
 
   function displayName(item){
@@ -143,7 +143,7 @@
     let dialog=$('#communicationCenterDialog');if(dialog)return dialog;
     dialog=document.createElement('dialog');dialog.id='communicationCenterDialog';dialog.className='modal communication-center-dialog';
     dialog.innerHTML=`<div class="modal-card communication-center-card">
-      <div class="modal-head"><div><span class="panel-kicker">Kommunikation</span><h3>Nachrichten</h3><p>Geplante und vorbereitete Kontakte im Überblick. „An WhatsApp übergeben“ bestätigt keinen tatsächlichen Versand. E-Mail-Synchronisation ist noch nicht aktiv.</p></div><button type="button" class="modal-close" data-close-communication-center>×</button></div>
+      <div class="modal-head"><div><span class="panel-kicker">Kommunikation</span><h3>Nachrichten</h3><p>Geplante und vorbereitete Kontakte im Überblick. Nach der WhatsApp-Übergabe den Versand hier selbst bestätigen. E-Mail-Synchronisation ist noch nicht aktiv.</p></div><button type="button" class="modal-close" data-close-communication-center>×</button></div>
       <div class="communication-tabs"><button type="button" data-communication-tab="due">Fällig <span id="communicationDueCount">0</span></button><button type="button" data-communication-tab="planned">Geplant</button><button type="button" data-communication-tab="history">Erledigt</button></div>
       <div id="communicationCenterBody"></div>
     </div>`;
@@ -155,8 +155,8 @@
     const meta=a?`${dateShort(a.date)} · ${a.time} Uhr · ${a.service}`:item.note||'';
     return `<article class="communication-row ${item.status==='handed_off'?'is-done':''}">
       <span class="communication-icon">${TYPE_ICONS[item.type]||'•'}</span>
-      <div class="communication-copy"><div><span>${escapeHTML(label)}</span><strong>${escapeHTML(name)}</strong></div><small>${escapeHTML(meta)}</small><em>fällig ${dateShort(item.dueDate)}</em></div>
-      <div class="communication-actions">${!isHandled(item)?`<button type="button" class="primary-action" data-open-communication="${item.id}">Nachricht vorbereiten</button><button type="button" class="text-button" data-skip-communication="${item.id}">Nicht nötig</button>`:`<span class="communication-state">${item.status==='handed_off'?'An WhatsApp übergeben':'Erledigt'}</span>`}</div>
+      <div class="communication-copy"><div><span>${escapeHTML(label)}</span><strong>${escapeHTML(name)}</strong></div><small>${escapeHTML(meta)}</small><em>fällig ${dateShort(item.dueDate)}</em>${item.messageText?`<details class="communication-message"><summary>Nachrichtentext ansehen</summary><p>${escapeHTML(item.messageText)}</p></details>`:''}</div>
+      <div class="communication-actions">${!isHandled(item)?`<button type="button" class="primary-action" data-open-communication="${item.id}">Nachricht vorbereiten</button><button type="button" class="text-button" data-skip-communication="${item.id}">Nicht nötig</button>`:`<span class="communication-state">${item.status==='sent_confirmed'?'Versand manuell bestätigt':item.status==='handed_off'?'An WhatsApp übergeben':'Ohne Versand erledigt'}${item.status==='handed_off'?`<button type="button" class="soft-button" data-confirm-communication-sent="${item.id}">Versand bestätigen</button><button type="button" class="text-button" data-retry-communication="${item.id}">Nicht gesendet</button>`:''}</span>`}</div>
     </article>`;
   }
 
@@ -193,11 +193,14 @@
     }
   }
 
-  function markHandedOff(id){
+  function markHandedOff(id,text,phone){
     const item=ensureData().find(x=>x.id===id);if(!item)return;
-    item.status='handed_off';item.handedOffAt=new Date().toISOString();resolveLinked(item);A.save();A.renderDashboardWorkflow?.();
+    item.status='handed_off';item.channel='whatsapp';item.messageText=String(text||'');item.recipientPhone=String(phone||'');item.handedOffAt=new Date().toISOString();resolveLinked(item);A.save();A.renderDashboardWorkflow?.();
     if($('#communicationCenterDialog')?.open)setTab($('#communicationCenterDialog').dataset.tab||'due');
   }
+
+  function confirmSent(id){const item=ensureData().find(x=>x.id===id);if(!item||item.status!=='handed_off')return;item.status='sent_confirmed';item.sentConfirmedAt=new Date().toISOString();A.save('Versand manuell bestätigt.');A.renderDashboardWorkflow?.();if($('#communicationCenterDialog')?.open)setTab('history');}
+  function notSent(id){const item=ensureData().find(x=>x.id===id);if(!item||item.status!=='handed_off')return;item.status='due';delete item.sentConfirmedAt;A.save('Nachricht bleibt offen.');A.renderDashboardWorkflow?.();if($('#communicationCenterDialog')?.open)setTab('due');}
 
   function skip(id){
     const item=ensureData().find(x=>x.id===id);if(!item)return;
@@ -216,6 +219,8 @@
       const center=event.target.closest('[data-open-communication-center]');if(center){const mobile=$('#mobileMoreDialog');if(mobile?.open)mobile.close();openCenter(center.dataset.communicationTabOpen||'due');return}
       const tab=event.target.closest('[data-communication-tab]');if(tab){setTab(tab.dataset.communicationTab);return}
       const open=event.target.closest('[data-open-communication]');if(open){openCommunication(open.dataset.openCommunication);return}
+      const confirmBtn=event.target.closest('[data-confirm-communication-sent]');if(confirmBtn){confirmSent(confirmBtn.dataset.confirmCommunicationSent);return}
+      const retryBtn=event.target.closest('[data-retry-communication]');if(retryBtn){notSent(retryBtn.dataset.retryCommunication);return}
       const skipBtn=event.target.closest('[data-skip-communication]');if(skipBtn){skip(skipBtn.dataset.skipCommunication);return}
       if(event.target.closest('[data-close-communication-center]'))ensureCenter().close();
     });
@@ -231,5 +236,5 @@
     }
   }
 
-  Object.assign(A,{initCommunication,syncCommunications,queueCommunication,queueAppointmentCommunication:communicationForAppointment,getDueCommunications:dueCommunications,openCommunicationCenter:openCenter,openCommunication,markCommunicationHandedOff:markHandedOff});
+  Object.assign(A,{initCommunication,syncCommunications,queueCommunication,queueAppointmentCommunication:communicationForAppointment,getDueCommunications:dueCommunications,openCommunicationCenter:openCenter,openCommunication,markCommunicationHandedOff:markHandedOff,confirmCommunicationSent:confirmSent,markCommunicationNotSent:notSent});
 })();
