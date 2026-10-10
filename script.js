@@ -149,7 +149,7 @@ function buildDates(){
     const inRange=d>today&&d<=limit;
     const free=inRange&&availability.availableSlots(iso,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)).length>0;
     const btn=document.createElement('button');btn.type='button';btn.className='date-option';btn.dataset.iso=iso;btn.dataset.label=formatDate(d);btn.disabled=!free;
-    btn.innerHTML=`<strong>${day}</strong>`;btn.setAttribute('aria-label',`${formatDate(d)} ${d.getFullYear()}${free?'': ' – nicht verfügbar'}`);
+    btn.innerHTML=`<strong>${day}</strong>`;btn.setAttribute('aria-label',`${formatDate(d)}${free?'': ' – nicht verfügbar'}`);
     btn.setAttribute('aria-pressed',String(free&&bookingState.date===iso));
     if(free){if(!first)first=btn;if(bookingState.date===iso)selected=btn;btn.addEventListener('click',()=>selectDate(btn))}
     dateScroller.appendChild(btn);
