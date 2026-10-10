@@ -134,7 +134,7 @@
     const url=`https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
     window.open(url,'_blank','noopener,noreferrer');
     if(cleanupAppointmentId){A.db.appointments=A.db.appointments.filter(item=>item.id!==cleanupAppointmentId);const dialog=$('#whatsappDialog');if(dialog)delete dialog.dataset.cleanupAppointmentId;}
-    if(communicationId)A.markCommunicationHandedOff?.(communicationId);
+    if(communicationId){A.markCommunicationHandedOff?.(communicationId,text,phone);setTimeout(()=>{if(!document.querySelector('#waSentConfirmDialog')?.open){const d=document.querySelector('#waSentConfirmDialog');if(d){d.dataset.communicationId=communicationId;d.showModal()}}},350)}
     $('#whatsappDialog')?.close();
   }
 
@@ -162,6 +162,10 @@
   function bind(){
     if(A.whatsappBound)return;A.whatsappBound=true;
     document.addEventListener('click',event=>{
+      const confirmDialog=$('#waSentConfirmDialog');
+      if(event.target.closest('[data-wa-confirm-sent]')){A.confirmCommunicationSent?.(confirmDialog?.dataset.communicationId);confirmDialog?.close();return}
+      if(event.target.closest('[data-wa-confirm-not-sent]')){A.markCommunicationNotSent?.(confirmDialog?.dataset.communicationId);confirmDialog?.close();return}
+      if(event.target.closest('[data-wa-confirm-close]')){confirmDialog?.close();return}
       const quick=event.target.closest('[data-whatsapp-appointment]');if(quick){event.preventDefault();openChooser(quick.dataset.whatsappAppointment);return}
       const customer=event.target.closest('[data-customer-whatsapp]');if(customer){event.preventDefault();event.stopPropagation();openChooser(customer.dataset.customerWhatsapp);return}
       const template=event.target.closest('[data-wa-template]');if(template){event.preventDefault();const dialog=$('#whatsappDialog');if(dialog){dialog.dataset.template=template.dataset.waTemplate;dialog._customText='';refreshPreview()}return}
@@ -173,6 +177,12 @@
     const detail=$('#customerDetailBody');if(detail)new MutationObserver(()=>queueMicrotask(decorateCustomerDetail)).observe(detail,{childList:true,subtree:true});
   }
 
-  function initWhatsApp(){ensureDialog();bind();decorateAppointments();decorateCustomerDetail();decorateSettings()}
+  function ensureSentConfirmDialog(){
+    if($('#waSentConfirmDialog'))return;
+    const dialog=document.createElement('dialog');dialog.id='waSentConfirmDialog';dialog.className='wa-dialog';
+    dialog.innerHTML='<div class="wa-dialog-card"><div class="wa-dialog-head"><div><span class="panel-kicker">WhatsApp</span><h3>Wurde die Nachricht gesendet?</h3></div><button type="button" class="wa-dialog-close" data-wa-confirm-close aria-label="Schließen">×</button></div><div class="wa-dialog-body"><p class="wa-hint">WhatsApp meldet uns keinen Versandstatus. Bitte erst bestätigen, nachdem du dort selbst auf Senden getippt hast.</p><button type="button" class="wa-open-button" data-wa-confirm-sent>Ja, gesendet</button><button type="button" class="wa-template-button" data-wa-confirm-not-sent>Nein, nicht gesendet</button><button type="button" class="wa-template-button" data-wa-confirm-close>Später entscheiden</button></div></div>';
+    document.body.appendChild(dialog);
+  }
+  function initWhatsApp(){ensureDialog();ensureSentConfirmDialog();bind();decorateAppointments();decorateCustomerDetail();decorateSettings()}
   Object.assign(A,{initWhatsApp,openWhatsAppChooser:openChooser,buildWhatsAppMessage:message});
 })();
