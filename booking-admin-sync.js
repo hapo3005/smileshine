@@ -84,7 +84,10 @@
   function service(db,key){return db.services?.find(s=>String(s.id)===String(key)||s.name===key)}
 
   function free(db,date,time,name){
-    if(!db||!date||!time)return true;
+    if(!db||!date||!time)return false;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(time))return false;
+    const now=new Date(),selected=new Date(`${date}T${time}:00`);
+    if(!Number.isFinite(selected.getTime())||selected<=now)return false;
     const s=service(db,name),duration=Number(s?.duration||30),day=new Date(`${date}T12:00:00`).getDay(),hours=db.workingHours?.[day];
     if(hours&&!hours.enabled)return false;
     const start=mins(time),end=start+duration+Number(db.buffer||0);
@@ -229,7 +232,7 @@
   function commit(panel,button){
     const db=load(),state=window.SmileShineBooking?.state,serviceKey=state?.serviceId||state?.service,serviceName=state?.service||$('#summaryService')?.textContent?.trim(),date=state?.date||$('.date-option.selected')?.dataset.iso,time=state?.time||$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm'),waitlist=Boolean(state?.waitlist);
     if(!serviceName||!form||(!waitlist&&(!date||!time)))return;
-    const s=service(db,serviceKey||serviceName);if(!s||s.active===false){message(panel,'Diese Leistung ist derzeit nicht online verfügbar.',true);return}
+    const s=service(db,serviceKey||serviceName);if(!isPublicBookable(s)){message(panel,'Diese Leistung ist derzeit nicht online verfügbar.',true);return}
     if(!waitlist&&!free(db,date,time,s.id)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
     const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),note=String(data.get('note')||'').trim(),contactPreference=String(state?.customer?.contactPreference||data.get('contactPreference')||'E-Mail'),reminderOptIn=Boolean(state?.customer?.reminderOptIn||data.get('reminderOptIn')==='on');
     let customer=(db.customers||[]).find(c=>(email&&c.email===email)||(phone&&c.phone===phone));
