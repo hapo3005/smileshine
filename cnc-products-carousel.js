@@ -92,9 +92,9 @@
       <div class="pickup-product-copy">
         <div class="pickup-product-meta"><span>${escapeHTML(item.category)}</span><span>${escapeHTML(item.size)}</span></div>
         <h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.description)}</p>
-        <div class="pickup-product-price"><strong>Preis im Studio</strong><small>Abholung vor Ort<br>keine Versandkosten</small></div>
+        <div class="pickup-product-price"><strong>Preis im Studio</strong></div>
         <button class="pickup-add" type="button" data-pickup-add="${item.id}">In den Warenkorb</button>
-        <span class="pickup-only-note">Kein Versand · Abholung im Studio</span>
+        
       </div>
     </article>`;
   }
