@@ -36,7 +36,7 @@
       followUpId:input.followUpId||'',waitlistId:input.waitlistId||'',dueDate:input.dueDate||today(),status:input.status||'due',
       title:input.title||'',note:input.note||'',slot:input.slot||null,createdAt:input.createdAt||new Date().toISOString()
     };
-    if(item){const previousStatus=item.status;Object.assign(item,base);if(['handed_off','done','sent_confirmed'].includes(previousStatus))item.status=previousStatus;return item}
+    if(item){const previousStatus=item.status;Object.assign(item,base);item.status=previousStatus;return item}
     item={id:uid('communication'),...base};A.db.communications.push(item);return item;
   }
 
