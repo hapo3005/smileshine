@@ -46,3 +46,25 @@ body:has(.admin-app){--sidebar:280px}
 @media(max-width:760px){.admin-app input,.admin-app select,.admin-app textarea{font-size:16px!important}}
 
 small{font-size:14px;line-height:1.5}
+
+/* Public-page spacing rhythm: consistent section and text transitions. */
+body.site-premium .section:not(.premium-about){padding-block:clamp(76px,7.2vw,112px)}
+body.site-premium .section-heading.split,
+body.site-premium .contact-experience-heading,
+body.site-premium .booking-heading{margin-bottom:clamp(32px,3.8vw,52px)}
+body.site-premium .section-heading .eyebrow,
+body.site-premium .contact-experience-heading .eyebrow,
+body.site-premium .booking-heading .eyebrow{margin-bottom:clamp(12px,1.4vw,20px)}
+body.site-premium .section-heading.split>p,
+body.site-premium .contact-experience-heading>p{line-height:1.65}
+body.site-premium .about-copy>p:last-child{margin-bottom:0}
+body.site-premium .contact-booking-flow{margin-bottom:24px}
+body.site-premium .contact-booking-cta{margin-top:0}
+body.site-premium .contact-reassurance{margin-top:16px}
+@media(max-width:700px){
+  body.site-premium .section:not(.premium-about){padding-block:clamp(54px,10vw,72px)}
+  body.site-premium .section-heading.split,
+  body.site-premium .contact-experience-heading,
+  body.site-premium .booking-heading{margin-bottom:30px}
+  body.site-premium .contact-booking-flow{margin-bottom:20px}
+}
