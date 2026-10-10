@@ -3,10 +3,11 @@ const PUBLIC_BUILD=document.querySelector('meta[name="smileshine-build"]')?.cont
 const toggle=document.querySelector('.menu-toggle');
 const nav=document.querySelector('.main-nav');
 if(toggle&&nav){
-  const setMenu=open=>{nav.classList.toggle('open',open);toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Menü schließen':'Menü öffnen');toggle.textContent=open?'×':'☰'};
+  const setMenu=open=>{const mobile=window.matchMedia('(max-width:1200px)').matches;open=Boolean(open&&mobile);document.documentElement.style.setProperty('--mobile-nav-top',`${document.querySelector('.site-header')?.getBoundingClientRect().bottom||88}px`);nav.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Menü schließen':'Menü öffnen');toggle.textContent=open?'×':'☰';if(open)nav.querySelector('a')?.focus()};
   toggle.addEventListener('click',()=>setMenu(!nav.classList.contains('open')));
   nav.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>setMenu(false)));
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&nav.classList.contains('open')){setMenu(false);toggle.focus()}});
+  window.addEventListener('resize',()=>{if(nav.classList.contains('open')){if(!window.matchMedia('(max-width:1200px)').matches)setMenu(false);else document.documentElement.style.setProperty('--mobile-nav-top',`${document.querySelector('.site-header')?.getBoundingClientRect().bottom||88}px`)}});
 }
 const year=document.querySelector('#year');if(year)year.textContent=new Date().getFullYear();
 
