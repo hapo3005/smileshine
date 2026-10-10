@@ -508,6 +508,10 @@
     if(!a.preparation)a.preparation={status:'open',consent:false,photos:false,note:'Vorbereitung vor dem Termin prüfen.'};
     const communication=A.queueAppointmentCommunication?.('confirm',a.id,today(),{title:'Terminbestätigung'});
     A.addActivity('booking',`${a.customerName}: Termin um ${a.time} Uhr bestätigt.`);
+    // A completed workflow action must release its modal before opening WhatsApp.
+    // Otherwise the workflow dialog remains modal and blocks the main navigation.
+    const workflowDialog=$('#workflowCenterDialog');
+    if(workflowDialog?.open)workflowDialog.close();
     A.save('Termin bestätigt.');
     A.renderDashboardWorkflow?.();
     queueMicrotask(()=>A.openWhatsAppChooser?.(a.id,{type:'confirm',communicationId:communication?.id||''}));
