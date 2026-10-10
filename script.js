@@ -74,7 +74,7 @@ function updateSummary(){
   Object.entries(values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value});
 }
 
-function formatDate(date){return new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long'}).format(date)}
+function formatDate(date){return new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(date)}
 
 function slotProfile(date,service){
   const day=date.getDay();
@@ -92,6 +92,10 @@ function slotProfile(date,service){
   if(slots.length>3)slots=slots.filter((_,i)=>((i+seed)%4)!==0);
   return slots.length?slots:['11:30'];
 }
+
+const calendarToday=()=>{const d=new Date();d.setHours(12,0,0,0);return d};
+const calendarISO=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+let calendarMonth=null;
 
 function buildDates(){
   if(!dateScroller)return;
@@ -111,25 +115,56 @@ function buildDates(){
     return;
   }
   buildDates.attempts=0;
-  const weekdays=['So','Mo','Di','Mi','Do','Fr','Sa'];
-  const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-  const start=new Date();
-  for(let offset=1;offset<=30;offset++){
-    const d=new Date(start);d.setHours(12,0,0,0);d.setDate(start.getDate()+offset);
-    const iso=d.toISOString().slice(0,10);
-    if(!availability.availableSlots(iso,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)).length)continue;
-    const btn=document.createElement('button');btn.type='button';btn.className='date-option';btn.dataset.iso=iso;btn.dataset.label=formatDate(d);
-    btn.innerHTML=`<small>${weekdays[d.getDay()]}</small><strong>${String(d.getDate()).padStart(2,'0')}</strong><span>${months[d.getMonth()]}</span>`;
-    btn.addEventListener('click',()=>selectDate(btn));dateScroller.appendChild(btn);
-    if(dateScroller.children.length>=7)break;
+  const today=calendarToday(),limit=new Date(today);limit.setFullYear(limit.getFullYear()+1);
+  const firstMonth=new Date(today.getFullYear(),today.getMonth(),1,12);
+  const lastMonth=new Date(limit.getFullYear(),limit.getMonth(),1,12);
+  if(!calendarMonth)calendarMonth=new Date(firstMonth);
+  if(calendarMonth<firstMonth)calendarMonth=new Date(firstMonth);
+  if(calendarMonth>lastMonth)calendarMonth=new Date(lastMonth);
+  let toolbar=document.querySelector('.booking-calendar-toolbar');
+  if(!toolbar){
+    toolbar=document.createElement('div');toolbar.className='booking-calendar-toolbar';
+    toolbar.innerHTML='<button type="button" data-calendar-prev aria-label="Vorheriger Monat">←</button><label>Monat auswählen<select aria-label="Monat auswählen"></select></label><button type="button" data-calendar-next aria-label="Nächster Monat">→</button>';
+    dateScroller.before(toolbar);
+    toolbar.querySelector('[data-calendar-prev]').addEventListener('click',()=>{calendarMonth.setMonth(calendarMonth.getMonth()-1);buildDates()});
+    toolbar.querySelector('[data-calendar-next]').addEventListener('click',()=>{calendarMonth.setMonth(calendarMonth.getMonth()+1);buildDates()});
+    toolbar.querySelector('select').addEventListener('change',event=>{const [year,month]=event.target.value.split('-').map(Number);calendarMonth=new Date(year,month-1,1,12);buildDates()});
+    const note=document.createElement('p');note.className='booking-calendar-note';note.textContent='Bis zu zwölf Monate im Voraus · Geschlossene oder belegte Tage sind nicht auswählbar.';dateScroller.after(note);
   }
-  const first=dateScroller.querySelector('.date-option');
-  if(first)selectDate(first);
-  else if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">In den nächsten 30 Tagen ist aktuell kein passender Termin frei.</div>';
+  const select=toolbar.querySelector('select');select.replaceChildren();
+  for(let month=new Date(firstMonth);month<=lastMonth;month.setMonth(month.getMonth()+1)){
+    const option=document.createElement('option');option.value=calendarISO(month).slice(0,7);option.textContent=new Intl.DateTimeFormat('de-DE',{month:'long',year:'numeric'}).format(month);option.selected=option.value===calendarISO(calendarMonth).slice(0,7);select.appendChild(option);
+  }
+  toolbar.querySelector('[data-calendar-prev]').disabled=calendarMonth<=firstMonth;
+  toolbar.querySelector('[data-calendar-next]').disabled=calendarMonth>=lastMonth;
+  dateScroller.classList.add('booking-month-grid');
+  dateScroller.setAttribute('aria-label',new Intl.DateTimeFormat('de-DE',{month:'long',year:'numeric'}).format(calendarMonth));
+  for(const day of ['Mo','Di','Mi','Do','Fr','Sa','So']){const label=document.createElement('span');label.className='booking-weekday';label.textContent=day;dateScroller.appendChild(label)}
+  const padding=(calendarMonth.getDay()+6)%7;
+  for(let i=0;i<padding;i++){const spacer=document.createElement('span');spacer.setAttribute('aria-hidden','true');dateScroller.appendChild(spacer)}
+  const days=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,0).getDate();
+  let first=null,selected=null;
+  for(let day=1;day<=days;day++){
+    const d=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth(),day,12),iso=calendarISO(d);
+    const inRange=d>today&&d<=limit;
+    const free=inRange&&availability.availableSlots(iso,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)).length>0;
+    const btn=document.createElement('button');btn.type='button';btn.className='date-option';btn.dataset.iso=iso;btn.dataset.label=formatDate(d);btn.disabled=!free;
+    btn.innerHTML=`<strong>${day}</strong>`;btn.setAttribute('aria-label',`${formatDate(d)} ${d.getFullYear()}${free?'': ' – nicht verfügbar'}`);
+    btn.setAttribute('aria-pressed',String(free&&bookingState.date===iso));
+    if(free){if(!first)first=btn;if(bookingState.date===iso)selected=btn;btn.addEventListener('click',()=>selectDate(btn))}
+    dateScroller.appendChild(btn);
+  }
+  if(selected||first)selectDate(selected||first);
+  else{
+    bookingState.date='';bookingState.dateLabel='';bookingState.time='';bookingState.waitlist=false;bookingState.waitlistDetails=null;
+    if(selectedDateLabel)selectedDateLabel.textContent='Datum auswählen';updateSummary();
+    if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">In diesem Monat ist kein passender Termin frei. Wähle einen anderen Monat oder nutze die Warteliste.</div>';
+  }
 }
 
 function selectDate(btn){
-  document.querySelectorAll('.date-option').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');
+  if(btn.disabled)return;
+  document.querySelectorAll('.date-option').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false')});btn.classList.add('selected');btn.setAttribute('aria-pressed','true');
   bookingState.waitlist=false;bookingState.waitlistDetails=null;
   bookingState.date=btn.dataset.iso;bookingState.dateLabel=btn.dataset.label;bookingState.time='';
   if(waitlistToggle){waitlistToggle.textContent='Warteliste';waitlistToggle.classList.remove('active')}
@@ -169,6 +204,7 @@ function buildPrecheck(){
 
 function selectServiceButton(btn){
   if(!btn)return;
+  calendarMonth=null;
   const service=String(btn.dataset.service||'').trim();
   const duration=String(btn.dataset.duration||'').trim();
   if(!service)return;
