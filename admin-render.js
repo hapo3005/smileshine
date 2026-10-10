@@ -30,11 +30,11 @@
     const followUps=(A.db.followUps||[]).filter(x=>x.status!=='done'&&x.status!=='cancelled'&&(!x.dueDate||x.dueDate<=todayISO));
     if($('#todaySubline'))$('#todaySubline').textContent=new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(today);
     const kpis=[
-      {icon:iconSVG('calendar'),label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
-      {icon:iconSVG('alert'),label:'Offene Anfragen',value:pending.length,foot:'zu prüfen',delta:pending.length?'Bestätigung ausstehend':'Alles bearbeitet'},
-      {icon:iconSVG('waitlist'),label:'Warteliste',value:waiting.length,foot:'Kundinnen',delta:waiting.length?'Lücken gezielt füllen':'Aktuell leer'},
-      {icon:iconSVG('followup'),label:'Wiedervorlagen',value:followUps.length,foot:'heute offen',delta:followUps.length?'Als Nächstes prüfen':'Alles erledigt'}];
-    if($('#kpiGrid'))$('#kpiGrid').innerHTML=kpis.map(k=>`<article class="kpi-card"><div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon">${k.icon}</span></div><strong class="kpi-value">${k.value}</strong><div class="kpi-foot"><span>${k.foot}</span><span class="delta">${k.delta}</span></div></article>`).join('');
+      {action:'calendar',icon:iconSVG('calendar'),label:'Heute',value:todays.length,foot:'Termine',delta:`${todays.filter(a=>a.status==='confirmed').length} bestätigt`},
+      {action:'appointments',icon:iconSVG('alert'),label:'Offene Anfragen',value:pending.length,foot:'zu prüfen',delta:pending.length?'Bestätigung ausstehend':'Alles bearbeitet'},
+      {action:'waitlist',icon:iconSVG('waitlist'),label:'Warteliste',value:waiting.length,foot:'Kundinnen',delta:waiting.length?'Lücken gezielt füllen':'Aktuell leer'},
+      {action:'followups',icon:iconSVG('followup'),label:'Wiedervorlagen',value:followUps.length,foot:'heute offen',delta:followUps.length?'Als Nächstes prüfen':'Alles erledigt'}];
+    if($('#kpiGrid'))$('#kpiGrid').innerHTML=kpis.map(k=>`<button type="button" class="kpi-card kpi-action" data-kpi-action="${k.action}" aria-label="${k.label} öffnen"><div class="kpi-top"><span class="kpi-label">${k.label}</span><span class="kpi-icon">${k.icon}</span></div><strong class="kpi-value">${k.value}</strong><div class="kpi-foot"><span>${k.foot}</span><span class="delta">${k.delta}</span></div></button>`).join('');
     if($('#todayList'))$('#todayList').innerHTML=todays.length?todays.map(a=>`<div class="appointment-row appointment-open-row" data-appointment-id="${a.id}" role="button" tabindex="0" aria-label="Termin von ${escapeHTML(a.customerName)} öffnen"><div class="appointment-time">${a.time}</div><div class="appointment-main"><strong>${escapeHTML(a.customerName)}</strong><small>${escapeHTML(a.service)} · ${a.duration} Min.</small></div><span class="appointment-status status-${a.status}">${STATUS_LABELS[a.status]||a.status}</span><span class="appointment-row-arrow" aria-hidden="true">→</span></div>`).join(''):`<div class="empty-state"><strong>Heute ist noch frei.</strong>Über „Termin“ kannst du direkt einen Termin eintragen.</div>`;
     renderWeekBars();renderActivities();
   }
