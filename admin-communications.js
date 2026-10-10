@@ -93,7 +93,7 @@
       }
       if(item.waitlistId){
         const entry=(A.db.waitlist||[]).find(x=>x.id===item.waitlistId);
-        if(!entry||entry.status!=='waiting')item.status='cancelled';
+        if(!entry||entry.status!=='waiting'||!item.slot||!A.isSlotFree(item.slot.date,item.slot.time,Number(serviceFor(entry.service)?.duration||30)))item.status='cancelled';
       }
       if(item.followUpId){
         const task=(A.db.followUps||[]).find(x=>x.id===item.followUpId);
@@ -143,7 +143,7 @@
     let dialog=$('#communicationCenterDialog');if(dialog)return dialog;
     dialog=document.createElement('dialog');dialog.id='communicationCenterDialog';dialog.className='modal communication-center-dialog';
     dialog.innerHTML=`<div class="modal-card communication-center-card">
-      <div class="modal-head"><div><span class="panel-kicker">Kommunikation</span><h3>Nachrichten</h3><p>Geplante und vorbereitete Kontakte im Überblick. Nach der WhatsApp-Übergabe den Versand hier selbst bestätigen. E-Mail-Synchronisation ist noch nicht aktiv.</p></div><button type="button" class="modal-close" data-close-communication-center>×</button></div>
+      <div class="modal-head"><div><span class="panel-kicker">Kommunikation</span><h3>Nachrichten</h3><p>Geplante und vorbereitete Kontakte im Überblick. Nach der WhatsApp-Übergabe den Versand hier selbst bestätigen. E-Mail-Synchronisation ist noch nicht aktiv.</p></div><button type="button" class="modal-close" data-close-communication-center aria-label="Schließen">×</button></div>
       <div class="communication-tabs"><button type="button" data-communication-tab="due">Fällig <span id="communicationDueCount">0</span></button><button type="button" data-communication-tab="planned">Geplant</button><button type="button" data-communication-tab="history">Erledigt</button></div>
       <div id="communicationCenterBody"></div>
     </div>`;
@@ -171,7 +171,8 @@
   function openCenter(tab='due',customerId=''){const dialog=ensureCenter();dialog.dataset.customerId=customerId;setTab(tab);if(!dialog.open)dialog.showModal()}
 
   function openCommunication(id){
-    const item=ensureData().find(x=>x.id===id);if(!item)return;
+    syncCommunications();
+    const item=ensureData().find(x=>x.id===id);if(!item||isHandled(item))return A.toast('Diese Nachricht ist nicht mehr aktuell.');
     const a=appointment(item.appointmentId);
     const options={type:item.type,communicationId:item.id,customText:messageText(item)};
     if(a){ensureCenter().close();A.openWhatsAppChooser?.(a.id,options);return}
