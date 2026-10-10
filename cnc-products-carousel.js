@@ -59,9 +59,9 @@
       .pickup-product-copy{display:flex;flex-direction:column;flex:1;padding:20px}
       .pickup-product-meta{display:flex;justify-content:space-between;gap:10px;color:var(--accent-dark);font-size:14px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
       .pickup-product-copy h3{font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.15;margin:9px 0}.pickup-product-copy p{margin:0;color:var(--muted);font-size:14px;line-height:1.62}
-      .pickup-product-price{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:auto;padding-top:17px}.pickup-product-price strong{font-size:14px}.pickup-product-price small{font-size:14px;color:var(--muted);text-align:right}
+      .pickup-product-price{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:auto;padding-top:17px}.pickup-product-price strong{font-size:14px}
       .pickup-add{width:100%;margin-top:12px;border:0;border-radius:10px;background:#3a3430;color:#fff;padding:11px 12px;font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.pickup-add:hover{background:#2f2926}
-      .pickup-only-note{display:flex;align-items:center;gap:6px;margin-top:9px;color:#6b7d6f;font-size:14px;font-weight:700}.pickup-only-note:before{content:"";width:6px;height:6px;border-radius:50%;background:#83a288}
+      
       .pickup-shop-footer{margin-top:20px;padding:16px 0;border-top:1px solid var(--line);border-radius:0;background:transparent;display:flex;align-items:center;justify-content:space-between;gap:20px}
       .pickup-shop-footer strong{font-size:14px}.pickup-shop-footer p{margin:3px 0 0;color:var(--muted);font-size:14px;line-height:1.5}.pickup-shop-footer span{font-size:14px;font-weight:800;color:#6c7e70;white-space:nowrap}
 
