@@ -217,6 +217,7 @@ function buildPrecheck(){
 
 function selectServiceButton(btn){
   if(!btn)return;
+  bookingState.submitted=false;
   calendarMonth=null;
   const service=String(btn.dataset.service||'').trim();
   const duration=String(btn.dataset.duration||'').trim();
