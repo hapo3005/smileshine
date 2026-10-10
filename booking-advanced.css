@@ -271,3 +271,5 @@ body.site-premium .booking-editorial .service-option.selected{
 
 .progress-step.skipped{opacity:.48}
 .progress-step.skipped span{opacity:.72}
+/* Long service categories must wrap inside narrow booking panels. */
+.service-group-title span{min-width:0;white-space:normal;overflow-wrap:anywhere}
