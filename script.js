@@ -77,10 +77,10 @@ function setStep(step){
 
 function updateSummary(){
   const values={
-    summaryService:bookingState.service||'Noch nicht gewählt',
-    summaryDuration:bookingState.duration?`${bookingState.duration} Min.`:'–',
-    summaryDate:bookingState.waitlist?(bookingState.waitlistDetails?.dateLabel||'Warteliste'):(bookingState.dateLabel||'–'),
-    summaryTime:bookingState.waitlist?(bookingState.waitlistDetails?.periodLabel||bookingState.waitlistDetails?.period||'Flexibel'):(bookingState.time||'–'),
+    summaryService:bookingState.service||'Behandlung auswählen',
+    summaryDuration:bookingState.duration?`${bookingState.duration} Min.`:'Noch offen',
+    summaryDate:bookingState.waitlist?(bookingState.waitlistDetails?.dateLabel||'Warteliste'):(bookingState.dateLabel||'Datum auswählen'),
+    summaryTime:bookingState.waitlist?(bookingState.waitlistDetails?.periodLabel||bookingState.waitlistDetails?.period||'Flexibel'):(bookingState.time||'Uhrzeit auswählen'),
     summaryPayment:bookingState.payment||'–'
   };
   Object.entries(values).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value});
