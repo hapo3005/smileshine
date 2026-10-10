@@ -110,7 +110,8 @@
 
   function bindActions(){
     ensureCustomerUI();
-    $$('[data-view]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.view)));
+    document.addEventListener('click',event=>{const tile=event.target.closest('[data-kpi-action]');if(!tile)return;const action=tile.dataset.kpiAction;if(action==='calendar'){A.showView('calendar')}else if(action==='appointments'){A.showView('appointments')}else if(action==='waitlist'){A.openWorkflowCenter?.('waitlist')}else if(action==='followups'){A.openWorkflowCenter?.('followups')}});
+    $('[data-view]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.view)));
     $$('[data-jump]').forEach(btn=>btn.addEventListener('click',()=>A.showView(btn.dataset.jump)));
     $$('[data-action="newAppointment"]').forEach(btn=>btn.addEventListener('click',()=>openModal()));
     $('#quickAdd')?.addEventListener('click',()=>openModal());
