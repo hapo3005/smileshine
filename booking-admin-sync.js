@@ -147,8 +147,7 @@
   function syncPublicServices(){
     const section=$('#behandlungen');if(!section)return;
     const services=publicServices(load());
-    const editorialIds=new Set([...section.querySelectorAll('.treatment-grid [data-booking-service],.treatment-consultation [data-booking-service]')].map(link=>link.dataset.bookingService));
-    const additionalServices=services.filter(service=>!editorialIds.has(service.id));
+    const additionalServices=services;
     let root=section.querySelector('.public-service-directory');
     root?.carouselEvents?.abort();
     if(!additionalServices.length){root?.remove();return}
@@ -156,9 +155,13 @@
       root=document.createElement('div');root.className='public-service-directory';
       section.querySelector('.treatment-consultation')?.insertAdjacentElement('afterend',root);
     }
-    root.innerHTML='<div class="public-service-directory-head"><span>Ergänzend zu deiner Behandlung</span><strong>Auffrischen. Nachbehandeln. Wohlfühlen.</strong><p>Entdecke die weiteren Leistungen – wische durch die Karten oder nutze die Pfeile.</p></div><div class="additional-carousel-nav"><span class="additional-carousel-status" aria-live="polite"></span><div><button type="button" data-carousel-prev aria-label="Vorherige Leistungen">←</button><button type="button" data-carousel-next aria-label="Weitere Leistungen">→</button></div></div><div class="additional-service-track" role="region" aria-label="Weitere Behandlungen" tabindex="0"></div><div class="additional-service-footer"><span>Deine Behandlung ausgewählt? Finde jetzt die passende Zeit.</span><a class="button primary brand-cta brand-cta-primary" href="#booking">Behandlung &amp; Termin wählen</a></div>';
+    root.innerHTML='<div class="public-service-directory-head"><span>Alle Leistungen</span><strong>Deine Behandlung im Überblick.</strong><p>Entdecke unseren vollständigen Leistungskatalog – wische durch die Karten oder nutze die Pfeile.</p></div><div class="additional-carousel-nav"><span class="additional-carousel-status" aria-live="polite"></span><div><button type="button" data-carousel-prev aria-label="Vorherige Leistungen">←</button><button type="button" data-carousel-next aria-label="Weitere Leistungen">→</button></div></div><div class="additional-service-track" role="region" aria-label="Alle Behandlungen" tabindex="0"></div><div class="additional-service-footer"><span>Deine Behandlung ausgewählt? Finde jetzt die passende Zeit.</span><a class="button primary brand-cta brand-cta-primary" href="#booking">Behandlung &amp; Termin wählen</a></div>';
     const track=root.querySelector('.additional-service-track');
     const additionalPhotos={
+      'consult':{id:29648640,position:'50% 35%'},
+      'brows-pmu':{id:29151227,position:'50% 35%'},
+      'lashline':{id:8064912,position:'50% 35%'},
+      'lip-pmu':{id:8990713,position:'50% 35%'},
       'brows-refresh':{id:6135632,position:'50% 100%'},
       'pmu-followup-brows':{id:33607397,position:'100% 35%'},
       'lashline-refresh':{id:31215869,position:'50% 40%'},
