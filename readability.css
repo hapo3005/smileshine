@@ -36,7 +36,7 @@ body.site-premium .site-footer{font-size:14px;line-height:1.6}
 body:has(.admin-app){--sidebar:280px}
 .admin-app p,.demo-login-copy p{font-size:16px;line-height:1.65}
 .admin-app label,.demo-login-card label{font-size:14px;line-height:1.5}
-.admin-app button:not(.nav-icon),.demo-login-card button{font-size:16px;line-height:1.4;min-height:44px;white-space:normal}
+.admin-app button:not(.nav-icon),.demo-login-card button{font-size:16px!important;line-height:1.4;min-height:44px;white-space:normal}
 .admin-app small,.demo-login-card small{font-size:14px;line-height:1.5}
 .admin-app th,.admin-app td{font-size:14px;line-height:1.5}
 .admin-brand-v73 .admin-brand-copy strong,.mobile-header .admin-brand-v73 .admin-brand-copy strong{font-size:14px!important;letter-spacing:.08em!important}
@@ -44,3 +44,5 @@ body:has(.admin-app){--sidebar:280px}
 .demo-login-brand-copy small{font-size:14px!important}
 .demo-login-access,.demo-login-access small{line-height:1.6}
 @media(max-width:760px){.admin-app input,.admin-app select,.admin-app textarea{font-size:16px!important}}
+
+small{font-size:14px;line-height:1.5}
