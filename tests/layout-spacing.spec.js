@@ -14,11 +14,15 @@ async function inspect(page,label,info){
    if(el.scrollWidth>el.clientWidth+3 && !['auto','scroll'].includes(s.overflowX) && !['INPUT','TEXTAREA','SELECT'].includes(el.tagName))out.push({type:'text-width',tag:el.tagName,cls:el.className,text:el.textContent.trim().slice(0,90),width:r.width,scroll:el.scrollWidth});
    if(el.scrollHeight>el.clientHeight+3 && ['hidden','clip'].includes(s.overflowY))out.push({type:'clipped-height',tag:el.tagName,cls:el.className,text:el.textContent.trim().slice(0,90),height:r.height,scroll:el.scrollHeight});
   }
-  return {overflow:document.documentElement.scrollWidth-innerWidth,issues:out};
+  const offenders=[...document.querySelectorAll('body *')].filter(el=>{
+   const r=el.getBoundingClientRect();
+   return r.width&&r.height&&r.right>innerWidth+2&&!el.closest('.additional-service-track,.booking-progress,.cnc-products-track,[class*=carousel-track]');
+  }).slice(0,15).map(el=>({tag:el.tagName,cls:el.className,id:el.id,right:Math.round(el.getBoundingClientRect().right),width:Math.round(el.getBoundingClientRect().width)}));
+  return {overflow:document.documentElement.scrollWidth-innerWidth,issues:out,offenders};
  });
  fs.writeFileSync(info.outputPath(label+'.json'),JSON.stringify(issues,null,2));
  await page.screenshot({path:info.outputPath(label+'.png'),fullPage:true});
- expect(issues.overflow,label+' page overflow').toBeLessThanOrEqual(2);
+ expect(issues.overflow,label+' page overflow '+JSON.stringify(issues.offenders)).toBeLessThanOrEqual(2);
 }
 for(const [name,width,height] of [['small',320,900],['phone',390,844],['tablet',820,1180],['laptop',1024,900],['desktop',1366,1000]]){
  test('Layout coverage '+name,async({page},info)=>{
