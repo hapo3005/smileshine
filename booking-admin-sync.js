@@ -158,11 +158,22 @@
     }
     root.innerHTML='<div class="public-service-directory-head"><span>Ergänzend zu deiner Behandlung</span><strong>Auffrischen. Nachbehandeln. Wohlfühlen.</strong><p>Entdecke die weiteren Leistungen – wische durch die Karten oder nutze die Pfeile.</p></div><div class="additional-carousel-nav"><span class="additional-carousel-status" aria-live="polite"></span><div><button type="button" data-carousel-prev aria-label="Vorherige Leistungen">←</button><button type="button" data-carousel-next aria-label="Weitere Leistungen">→</button></div></div><div class="additional-service-track" role="region" aria-label="Weitere Behandlungen" tabindex="0"></div><div class="additional-service-footer"><span>Deine Behandlung ausgewählt? Finde jetzt die passende Zeit.</span><a class="button primary brand-cta brand-cta-primary" href="#booking">Behandlung &amp; Termin wählen</a></div>';
     const track=root.querySelector('.additional-service-track');
+    const additionalPhotos={
+      'brows-refresh':{id:33580448,position:'50% 35%'},
+      'pmu-followup-brows':{id:33607397,position:'50% 35%'},
+      'lashline-refresh':{id:7479567,position:'50% 40%'},
+      'pmu-followup-lash':{id:15353405,position:'50% 45%'},
+      'lip-refresh':{id:3762445,position:'50% 40%'},
+      'pmu-followup-lips':{id:7479545,position:'50% 40%'}
+    };
     additionalServices.forEach(service=>{
       const display=publicDisplay(service),card=document.createElement('article');
-      const category=String(service.category||'')+' '+String(service.id||'');
-      const media=/brows|augenbrauen/i.test(category)?'brows':/lash|wimpern|augen/i.test(category)?'eyes':/lip|lippen/i.test(category)?'lips':'neutral';
-      card.className='treatment-card additional-service-card image-'+media;
+      card.className='treatment-card additional-service-card image-neutral';
+      const photo=additionalPhotos[service.id];
+      if(photo){
+        card.style.backgroundImage=`linear-gradient(180deg,rgba(10,10,10,.02) 25%,rgba(10,10,10,.82) 100%),url("https://images.pexels.com/photos/${photo.id}/pexels-photo-${photo.id}.jpeg?auto=compress&cs=tinysrgb&w=1000")`;
+        card.style.backgroundPosition=photo.position;
+      }
       card.innerHTML=`<div><span>${esc(display.category)} · ca. ${Number(service.duration||30)} Min.</span><h3>${esc(display.name)}</h3><p>${esc(display.description)}</p><a href="#booking" data-public-service-id="${esc(service.id)}">Behandlung auswählen <span aria-hidden="true">↗</span></a></div>`;
       track.appendChild(card);
     });
