@@ -434,10 +434,10 @@
 
     const photoStatus=last?(last.beforePhoto&&last.afterPhoto?'Vorher & Nachher vorhanden':last.beforePhoto||last.afterPhoto?'Foto teilweise dokumentiert':'Keine Fotos markiert'):'Noch keine Dokumentation';
     const aftercareStatus=nextTask?(`${nextTask.title} · ${safeDate(nextTask.dueDate)}`):'Keine Wiedervorlage geplant';
-    const communicationStatus=lastCommunication?(lastCommunication.status==='handed_off'?'An WhatsApp übergeben':lastCommunication.status==='done'?'Erledigt':lastCommunication.dueDate<=t?'Fällig':'Geplant'):'Noch kein Kontakt protokolliert';
+    const communicationStatus=lastCommunication?(lastCommunication.status==='sent_confirmed'?'Versand manuell bestätigt':lastCommunication.status==='handed_off'?'An WhatsApp übergeben':lastCommunication.status==='done'?'Ohne Versand erledigt':lastCommunication.dueDate<=t?'Fällig':'Geplant'):'Noch kein Kontakt protokolliert';
     const communicationTypeLabel=type=>({confirm:'Terminbestätigung',change:'Terminänderung',reminder:'Terminerinnerung',aftercare:'Nachpflege',healing:'Heilungsverlauf',waitlist:'Freier Termin'})[type]||'Nachricht';
     const communicationDate=item=>{
-      const value=item?.handedOffAt||item?.completedAt||item?.createdAt;
+      const value=item?.sentConfirmedAt||item?.handedOffAt||item?.completedAt||item?.createdAt;
       if(!value)return safeDate(item?.dueDate);
       try{return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(value))}catch{return safeDate(item?.dueDate)}
     };
@@ -469,8 +469,8 @@
       </div>`:''}
 
       <div class="customer-workfile-communications">
-        <div class="customer-workfile-section-head"><div><span class="panel-kicker">Kontaktverlauf</span><h5>Was wurde wann vorbereitet?</h5></div>${communications.length?'<span>'+communications.length+'</span>':''}</div>
-        <div class="customer-communication-history">${communications.length?communications.slice(0,4).map(item=>`<div><span class="customer-communication-type">${escapeHTML(communicationTypeLabel(item.type))}</span><strong>${escapeHTML(item.title||communicationTypeLabel(item.type))}</strong><small>${communicationDate(item)} · ${item.status==='handed_off'?'an WhatsApp übergeben':item.status==='done'?'erledigt':item.dueDate<=t?'fällig':'geplant'}</small></div>`).join(''):'<p>Noch keine Kommunikation protokolliert.</p>'}</div>
+        <div class="customer-workfile-section-head"><div><span class="panel-kicker">Kontaktverlauf</span><h5>Was wurde wann vorbereitet?</h5></div><button type="button" class="soft-button" data-open-communication-center data-communication-tab-open="history">Gesamten Verlauf öffnen</button>${communications.length?'<span>'+communications.length+'</span>':''}</div>
+        <div class="customer-communication-history">${communications.length?communications.slice(0,4).map(item=>`<div><span class="customer-communication-type">${escapeHTML(communicationTypeLabel(item.type))}</span><strong>${escapeHTML(item.title||communicationTypeLabel(item.type))}</strong><small>${communicationDate(item)} · ${item.status==='sent_confirmed'?'Versand manuell bestätigt':item.status==='handed_off'?'an WhatsApp übergeben':item.status==='done'?'ohne Versand erledigt':item.dueDate<=t?'fällig' :'geplant'}</small>${item.messageText?`<details class="customer-communication-message"><summary>Nachricht lesen</summary><p>${escapeHTML(item.messageText)}</p></details>`:''}</div>`).join(''):'<p>Noch keine Kommunikation protokolliert.</p>'}</div>
       </div>
     </section>`;
   }
