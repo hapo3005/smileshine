@@ -156,3 +156,6 @@
 .booking-month-grid .date-option:disabled{opacity:.35;cursor:default;box-shadow:none}
 .booking-month-grid .date-option.selected{border-color:var(--ink);background:var(--ink);color:#fff}
 .booking-calendar-note{font-size:14px;line-height:1.5;color:var(--muted);margin:8px 0 24px}
+
+/* Long treatment names and descriptions must fit narrow phones. */
+.service-info{min-width:0;overflow-wrap:anywhere}
