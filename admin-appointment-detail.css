@@ -35,3 +35,32 @@
 .appointment-precheck-item.is-attention{border-color:rgba(173,92,82,.38);background:rgba(173,92,82,.08)}
 .appointment-precheck-item.is-attention strong{color:#8b4038}
 @media(max-width:700px){.appointment-precheck-grid{grid-template-columns:1fr}}
+
+/* Desktop appointment editor: use screen width and keep primary actions visible. */
+@media(min-width:1100px){
+ .appointment-detail-card{width:min(1180px,calc(100vw - 64px));max-height:calc(100dvh - 48px);margin:24px auto}
+ .appointment-detail-body{padding:16px 20px;gap:12px}
+ .appointment-detail-hero{grid-template-columns:80px minmax(0,1fr) auto;padding:12px 16px}
+ .appointment-date-tile{height:76px}
+ .appointment-date-tile strong{font-size:29px}
+ .appointment-hero-main h4{font-size:23px}
+ .appointment-detail-section{padding:14px 16px}
+ .appointment-detail-form{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start;gap:12px}
+ .appointment-detail-form>.appointment-detail-section:first-child{grid-column:1}
+ .appointment-detail-form>.appointment-detail-section:nth-child(2){grid-column:2}
+ .appointment-detail-form>.appointment-payment-glance,.appointment-detail-form>.appointment-detail-footer{grid-column:1/-1}
+ .appointment-form-grid-main{grid-template-columns:1fr 1fr}
+ .appointment-form-grid-main>.appointment-field-wide{grid-column:1/-1}
+ .appointment-field textarea{min-height:76px}
+ .appointment-detail-footer{bottom:-16px;margin:0 -20px -16px;padding:12px 20px}
+}
+@media(max-width:1099px) and (min-width:761px){
+ .appointment-detail-card{width:min(940px,calc(100vw - 32px));max-height:calc(100dvh - 32px);margin:16px auto}
+ .appointment-detail-body{padding:14px}
+ .appointment-field textarea{min-height:82px}
+}
+@media(max-width:760px){
+ .appointment-detail-card{max-height:calc(100dvh - 18px);margin:9px auto}
+ .appointment-field textarea{min-height:88px}
+ .appointment-detail-footer{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+}
