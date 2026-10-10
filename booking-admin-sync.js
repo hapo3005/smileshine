@@ -146,40 +146,52 @@
 
   function syncPublicServices(){
     const section=$('#behandlungen');if(!section)return;
-    const db=load(),services=publicServices(db);
-    const editorialIds=new Set([...section.querySelectorAll('[data-booking-service]')].map(link=>link.dataset.bookingService));
+    const services=publicServices(load());
+    const editorialIds=new Set([...section.querySelectorAll('.treatment-grid [data-booking-service],.treatment-consultation [data-booking-service]')].map(link=>link.dataset.bookingService));
     const additionalServices=services.filter(service=>!editorialIds.has(service.id));
     let root=section.querySelector('.public-service-directory');
+    root?.carouselEvents?.abort();
     if(!additionalServices.length){root?.remove();return}
     if(!root){
-      root=document.createElement('div');
-      root.className='public-service-directory';
-      const consultation=section.querySelector('.treatment-consultation');
-      consultation?.insertAdjacentElement('afterend',root);
+      root=document.createElement('div');root.className='public-service-directory';
+      section.querySelector('.treatment-consultation')?.insertAdjacentElement('afterend',root);
     }
-    root.innerHTML='<div class="public-service-directory-head"><span>Ergänzend buchbar</span><strong>Weitere Leistungen</strong><p>Auffrischungen, Nachbehandlungen und weitere Angebote für deinen nächsten Besuch.</p></div><div class="public-service-directory-groups"></div>';
-    const groups=root.querySelector('.public-service-directory-groups');
-    const categories=[...new Set(additionalServices.map(service=>publicDisplay(service).category))];
-    categories.forEach(category=>{
-      const group=document.createElement('section');group.className='public-service-directory-group';
-      group.innerHTML=`<div class="public-service-directory-title">${esc(category)}</div><div class="public-service-directory-list"></div>`;
-      const list=group.querySelector('.public-service-directory-list');
-      additionalServices.filter(service=>publicDisplay(service).category===category).forEach(service=>{
-        const display=publicDisplay(service),row=document.createElement('article');
-        row.className='public-service-directory-item';
-        row.innerHTML=`<div><strong>${esc(display.name)}</strong><p>${esc(display.description)}</p></div><div class="public-service-directory-meta"><span>ca. ${Number(service.duration||30)} Min.</span><button type="button" data-public-service-id="${esc(service.id)}">Termin anfragen</button></div>`;
-        list.appendChild(row);
-      });
-      groups.appendChild(group);
+    root.innerHTML='<div class="public-service-directory-head"><span>Ergänzend zu deiner Behandlung</span><strong>Auffrischen. Nachbehandeln. Wohlfühlen.</strong><p>Entdecke die weiteren Leistungen – wische durch die Karten oder nutze die Pfeile.</p></div><div class="additional-carousel-nav"><span class="additional-carousel-status" aria-live="polite"></span><div><button type="button" data-carousel-prev aria-label="Vorherige Leistungen">←</button><button type="button" data-carousel-next aria-label="Weitere Leistungen">→</button></div></div><div class="additional-service-track" role="region" aria-label="Weitere Behandlungen" tabindex="0"></div><div class="additional-service-footer"><span>Deine Behandlung ausgewählt? Finde jetzt die passende Zeit.</span><a class="button primary brand-cta brand-cta-primary" href="#booking">Behandlung &amp; Termin wählen</a></div>';
+    const track=root.querySelector('.additional-service-track');
+    additionalServices.forEach(service=>{
+      const display=publicDisplay(service),card=document.createElement('article');
+      const category=String(service.category||'')+' '+String(service.id||'');
+      const media=/brows|augenbrauen/i.test(category)?'brows':/lash|wimpern|augen/i.test(category)?'eyes':/lip|lippen/i.test(category)?'lips':'neutral';
+      card.className='treatment-card additional-service-card image-'+media;
+      card.innerHTML=`<div><span>${esc(display.category)} · ca. ${Number(service.duration||30)} Min.</span><h3>${esc(display.name)}</h3><p>${esc(display.description)}</p><a href="#booking" data-public-service-id="${esc(service.id)}">Behandlung auswählen <span aria-hidden="true">↗</span></a></div>`;
+      track.appendChild(card);
     });
-    root.querySelectorAll('[data-public-service-id]').forEach(button=>button.addEventListener('click',()=>{
-      const serviceId=button.dataset.publicServiceId;
+    root.querySelectorAll('[data-public-service-id]').forEach(link=>link.addEventListener('click',event=>{
+      event.preventDefault();
+      const serviceId=link.dataset.publicServiceId;
       document.querySelector('#booking')?.scrollIntoView({behavior:'smooth',block:'start'});
-      requestAnimationFrame(()=>setTimeout(()=>{
-        const option=document.querySelector('.service-option[data-service-id="'+CSS.escape(serviceId)+'"]');
-        if(option)window.SmileShineBooking?.selectServiceButton?.(option);
-      },120));
+      const option=document.querySelector('.service-option[data-service-id="'+CSS.escape(serviceId)+'"]');
+      if(option)window.SmileShineBooking?.selectServiceButton?.(option);
     }));
+    const previous=root.querySelector('[data-carousel-prev]'),next=root.querySelector('[data-carousel-next]'),status=root.querySelector('.additional-carousel-status');
+    const update=()=>{
+      const cards=[...track.children],width=track.clientWidth;
+      const shown=cards.map((card,index)=>({index,left:card.getBoundingClientRect().left-track.getBoundingClientRect().left,width:card.offsetWidth})).filter(card=>card.left+card.width>1&&card.left<width-1);
+      status.textContent=shown.length?`${shown[0].index+1}–${shown[shown.length-1].index+1} von ${cards.length} Leistungen`:`${cards.length} Leistungen`;
+      previous.disabled=track.scrollLeft<=2;
+      next.disabled=track.scrollLeft+width>=track.scrollWidth-2;
+    };
+    const move=direction=>{
+      const card=track.firstElementChild;if(!card)return;
+      const step=card.getBoundingClientRect().width+parseFloat(getComputedStyle(track).gap||14);
+      track.scrollBy({left:direction*step,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+    };
+    previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
+    track.addEventListener('keydown',event=>{if(event.target!==track)return;if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();move(event.key==='ArrowRight'?1:-1)}});
+    track.addEventListener('scroll',update,{passive:true});
+    root.carouselEvents=new AbortController();
+    window.addEventListener('resize',update,{signal:root.carouselEvents.signal});
+    requestAnimationFrame(update);
   }
 
   function cleanCustomerCopy(){
