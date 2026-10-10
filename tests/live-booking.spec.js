@@ -2,7 +2,8 @@ const { test, expect } = require('@playwright/test');
 
 test.use({
   baseURL: process.env.QA_BASE_URL || 'https://hapo3005.github.io/smileshine/',
-  timezoneId: 'Europe/Berlin'
+  timezoneId: 'Europe/Berlin',
+  actionTimeout: 20000
 });
 
 test('published booking flow stays in sync with admin services', async ({ page }) => {
@@ -52,7 +53,7 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await expect(page.locator('.time-slot:visible')).not.toHaveCount(0, { timeout: 5000 });
   await expect(page.locator('.time-slot', { hasText: /^(09:00|09:30|10:00|10:30|11:00)$/ })).toHaveCount(0);
 
-  const secondDate = page.locator('.date-option').nth(1);
+  const secondDate = page.locator('.date-option:not([disabled])').nth(1);
   if (await secondDate.count()) await secondDate.click();
   await page.locator('.time-slot:visible').first().click();
   await expect(page.locator('.booking-panel[data-panel="3"]')).toHaveClass(/active/);

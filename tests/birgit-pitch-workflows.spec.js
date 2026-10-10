@@ -206,8 +206,10 @@ test('reset restores the realistic three-month studio simulation', async ({ page
     simulated.forEach(a => perCustomer.set(a.customerId, (perCustomer.get(a.customerId) || 0) + 1));
     const services = [...new Set(simulated.map(a => a.service))];
     const dates = simulated.map(a => a.date).sort();
-    const today = A.isoDate(new Date()), weekEnd = A.isoDate(A.addDays(new Date(), 6));
-    const weekApps = A.db.appointments.filter(a => a.status !== 'cancelled' && a.date >= today && a.date <= weekEnd);
+    const today = A.isoDate(new Date());
+    // The initial story day replaces regular simulation visits; audit the next full week.
+    const weekStart = A.isoDate(A.addDays(new Date(), 7)), weekEnd = A.isoDate(A.addDays(new Date(), 13));
+    const weekApps = A.db.appointments.filter(a => a.status !== 'cancelled' && a.date >= weekStart && a.date <= weekEnd);
     const refillByCustomer = new Map();
     simulated.filter(a => /Auffüllen/i.test(a.service) && a.status !== 'cancelled').forEach(a => {
       const list = refillByCustomer.get(a.customerId) || [];
