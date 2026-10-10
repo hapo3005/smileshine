@@ -70,6 +70,8 @@ function setStep(step){
     p.classList.toggle('active',i+1===step);
     p.classList.toggle('done',i+1<step&&!waitlistPayment);
     p.classList.toggle('skipped',waitlistPayment);
+    p.disabled=i+1>step||waitlistPayment;
+    if(i+1===step)p.setAttribute('aria-current','step');else p.removeAttribute('aria-current');
     const label=p.querySelector('strong');
     if(label&&i===4)label.textContent=waitlistPayment?'entfällt':'Zahlweise';
   });
@@ -218,6 +220,9 @@ function buildPrecheck(){
 function selectServiceButton(btn){
   if(!btn)return;
   bookingState.submitted=false;
+  const submit=document.querySelector('.booking-panel[data-panel="6"] .button.primary');
+  if(submit?.dataset.synced){submit.disabled=false;submit.textContent='Terminanfrage vormerken';}
+  document.querySelector('.sync-booking-message')?.remove();
   calendarMonth=null;
   const service=String(btn.dataset.service||'').trim();
   const duration=String(btn.dataset.duration||'').trim();
@@ -239,6 +244,10 @@ function selectServiceButton(btn){
 }
 
 renderServiceCatalog();
+
+progress.forEach((button,index)=>button.addEventListener('click',()=>{
+  if(!button.disabled)setStep(index+1);
+}));
 
 document.querySelectorAll('[data-booking-service]').forEach(link=>link.addEventListener('click',event=>{
   event.preventDefault();
