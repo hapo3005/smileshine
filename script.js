@@ -10,6 +10,18 @@ if(toggle&&nav){
 }
 const year=document.querySelector('#year');if(year)year.textContent=new Date().getFullYear();
 
+// A quiet return control for long pages; respects reduced motion.
+const scrollTopButton=document.querySelector('#scrollTopButton');
+if(scrollTopButton){
+  const updateScrollTop=()=>{scrollTopButton.hidden=window.scrollY<480};
+  window.addEventListener('scroll',updateScrollTop,{passive:true});
+  updateScrollTop();
+  scrollTopButton.addEventListener('click',()=>{
+    document.querySelector('.brand')?.focus({preventScroll:true});
+    window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  });
+}
+
 const bookingState={serviceId:'',service:'',duration:'',date:'',dateLabel:'',time:'',customer:null,payment:'Im Studio',waitlist:false,waitlistDetails:null,precheck:{}};
 const panels=[...document.querySelectorAll('.booking-panel')];
 const progress=[...document.querySelectorAll('.progress-step')];
