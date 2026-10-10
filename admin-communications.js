@@ -143,7 +143,7 @@
     let dialog=$('#communicationCenterDialog');if(dialog)return dialog;
     dialog=document.createElement('dialog');dialog.id='communicationCenterDialog';dialog.className='modal communication-center-dialog';
     dialog.innerHTML=`<div class="modal-card communication-center-card">
-      <div class="modal-head"><div><span class="panel-kicker">Kommunikation</span><h3>Nachrichten, wenn sie gebraucht werden.</h3><p>Das System merkt sich Anlass, Fälligkeit und Bearbeitungsstand.</p></div><button type="button" class="modal-close" data-close-communication-center>×</button></div>
+      <div class="modal-head"><div><span class="panel-kicker">Kommunikation</span><h3>Nachrichten</h3><p>Geplante und vorbereitete Kontakte im Überblick. „An WhatsApp übergeben“ bestätigt keinen tatsächlichen Versand. E-Mail-Synchronisation ist noch nicht aktiv.</p></div><button type="button" class="modal-close" data-close-communication-center>×</button></div>
       <div class="communication-tabs"><button type="button" data-communication-tab="due">Fällig <span id="communicationDueCount">0</span></button><button type="button" data-communication-tab="planned">Geplant</button><button type="button" data-communication-tab="history">Erledigt</button></div>
       <div id="communicationCenterBody"></div>
     </div>`;
@@ -213,7 +213,7 @@
   function bind(){
     if(A.communicationBound)return;A.communicationBound=true;
     document.addEventListener('click',event=>{
-      const center=event.target.closest('[data-open-communication-center]');if(center){openCenter(center.dataset.communicationTabOpen||'due');return}
+      const center=event.target.closest('[data-open-communication-center]');if(center){const mobile=$('#mobileMoreDialog');if(mobile?.open)mobile.close();openCenter(center.dataset.communicationTabOpen||'due');return}
       const tab=event.target.closest('[data-communication-tab]');if(tab){setTab(tab.dataset.communicationTab);return}
       const open=event.target.closest('[data-open-communication]');if(open){openCommunication(open.dataset.openCommunication);return}
       const skipBtn=event.target.closest('[data-skip-communication]');if(skipBtn){skip(skipBtn.dataset.skipCommunication);return}
