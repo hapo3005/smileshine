@@ -29,7 +29,7 @@ for(const [name,width,height] of [['small',320,900],['phone',390,844],['tablet',
   test.setTimeout(180000);
   await page.setViewportSize({width,height});
   await page.goto(base+'/index.html');
-  await expect(page.locator('.additional-service-card')).toHaveCount(10);
+  await expect(page.locator('.treatment-service-item')).toHaveCount(6);
   await inspect(page,name+'-public',info);
   for(const id of ['behandlungen','ueber','booking','shop','kontakt']){
    const el=page.locator('#'+id);
