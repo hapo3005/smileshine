@@ -413,3 +413,25 @@
   #workflowTodayPanel .workflow-layout{gap:18px}
   #workflowTodayPanel .workflow-mini-grid.communication-enabled button{min-height:110px;padding:15px}
 }
+
+/* Dashboard: consistent spacing and actionable information hierarchy. */
+@media(min-width:1060px){
+  [data-view-panel="dashboard"] #workflowTodayPanel.workflow-today{margin:0 0 18px;padding:24px}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-head{margin-bottom:18px;align-items:center}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-head h3{margin:5px 0 5px;font-size:26px;line-height:1.22}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-head p{font-size:14px;line-height:1.45}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-layout{grid-template-columns:minmax(0,1fr) minmax(355px,38%);gap:22px;align-items:start}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-action{min-height:64px;padding:10px 0;grid-template-columns:32px minmax(0,1fr) auto;gap:12px}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-action-copy strong{font-size:15px;line-height:1.4}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-action-copy small{font-size:13px;line-height:1.45;margin-top:3px;white-space:normal;overflow:visible;text-overflow:clip}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-action>button{min-height:40px;min-width:105px;padding:8px 12px}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled button{min-height:112px;padding:16px;gap:9px}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled button span{font-size:14px}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled button strong{font-size:27px}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled button small{font-size:13px}
+}
+@media(min-width:1060px) and (max-width:1300px){
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-layout{grid-template-columns:minmax(0,1fr)}
+  [data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
