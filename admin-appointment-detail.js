@@ -43,10 +43,13 @@
   }
 
   function isSlotFreeFor(a,date,time,duration){
-    if(!date||!time)return false;
-    const day=new Date(`${date}T12:00:00`).getDay(),hours=A.db.workingHours?.[day];
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!/^([01]\d|2[0-3]):[0-5]\d$/.test(String(time)))return false;
+    const parsed=new Date(`${date}T12:00:00`);
+    if(!Number.isFinite(parsed.getTime())||parsed.getFullYear()!==Number(date.slice(0,4))||parsed.getMonth()+1!==Number(date.slice(5,7))||parsed.getDate()!==Number(date.slice(8,10)))return false;
+    const hours=A.db.workingHours?.[parsed.getDay()];
     if(!hours?.enabled)return false;
-    const start=minutesOf(time),length=Number(duration||30),buffer=Number(A.db.buffer||0),end=start+length+buffer;
+    const start=minutesOf(time),length=Number(duration),buffer=Number(A.db.buffer||0),end=start+length+buffer;
+    if(!Number.isFinite(start)||!Number.isFinite(length)||length<=0||!Number.isFinite(end))return false;
     if(start<minutesOf(hours.start)||start+length>minutesOf(hours.end))return false;
     const clash=(A.db.appointments||[]).filter(other=>other.id!==a.id&&other.date===date&&other.status!=='cancelled').some(other=>{
       const otherStart=minutesOf(other.time),otherEnd=otherStart+Number(other.duration||30)+buffer;
