@@ -178,10 +178,14 @@ test('daily cockpit turns studio work into direct actions', async ({ page }) => 
   const pendingAction = page.locator('#todayList .today-context-action[data-appointment-id="qa_daily_pending"]');
   await expect(pendingAction).toHaveText('Bestätigen');
   await pendingAction.click();
-  await expect(page.locator('#whatsappDialog')).toBeVisible();
+  await expect(page.locator('#whatsappDialog')).not.toBeVisible();
   const pendingState = await page.evaluate(() => window.SSAdmin.db.appointments.find(a=>a.id==='qa_daily_pending')?.status || '');
   expect(pendingState).toBe('confirmed');
-  await page.locator('[data-close-whatsapp]').first().click();
+  // Confirmation should keep normal navigation usable, not open a blocking composer.
+  await page.locator('[data-view="calendar"]').first().click();
+  await expect(page.locator('[data-view-panel="calendar"]')).toHaveClass(/active/);
+  await page.locator('[data-view="dashboard"]').first().click();
+  await expect(page.locator('[data-view-panel="dashboard"]')).toHaveClass(/active/);
 
   const waitlistShortcut = page.locator('[data-open-workflow-center][data-workflow-tab="waitlist"]').first();
   await expect(waitlistShortcut).toBeVisible();
@@ -784,7 +788,7 @@ test('local demo login gates the studio and opens with Birgit PIN', async ({ pag
 
   await page.waitForFunction(() => Boolean(window.SSAdmin?.ready));
   await expect(page.locator('#demoLoginOverlay')).toHaveCount(0);
-  await expect(page.locator('.sync-pill')).toContainText('Präsentationsmodus');
+  await expect(page.locator('.demo-state')).toContainText('Präsentationsmodus');
 });
 
 test('IndexedDB demo store restores state from exported backup', async ({ page }) => {
