@@ -143,7 +143,7 @@
     let dialog=$('#communicationCenterDialog');if(dialog)return dialog;
     dialog=document.createElement('dialog');dialog.id='communicationCenterDialog';dialog.className='modal communication-center-dialog';
     dialog.innerHTML=`<div class="modal-card communication-center-card">
-      <div class="modal-head"><div><span class="panel-kicker">Kommunikation</span><h3>Nachrichten</h3><p>Geplante und vorbereitete Kontakte im Überblick. Nach der WhatsApp-Übergabe den Versand hier selbst bestätigen. E-Mail-Synchronisation ist noch nicht aktiv.</p></div><button type="button" class="modal-close" data-close-communication-center aria-label="Schließen">×</button></div>
+      <div class="modal-head"><div><span class="panel-kicker">Kommunikation</span><h3>Nachrichten</h3><p>Hier findest du fällige, geplante und erledigte Nachrichten. Nach der WhatsApp-Übergabe den Versand hier selbst bestätigen. E-Mail-Synchronisation ist noch nicht aktiv.</p></div><button type="button" class="modal-close" data-close-communication-center aria-label="Schließen">×</button></div>
       <div class="communication-tabs"><button type="button" data-communication-tab="due">Fällig <span id="communicationDueCount">0</span></button><button type="button" data-communication-tab="planned">Geplant</button><button type="button" data-communication-tab="history">Erledigt</button></div>
       <div id="communicationCenterBody"></div>
     </div>`;
@@ -176,7 +176,7 @@
     const a=appointment(item.appointmentId);
     const options={type:item.type,communicationId:item.id,customText:messageText(item)};
     if(a){ensureCenter().close();A.openWhatsAppChooser?.(a.id,options);return}
-    const c=customer(item.customerId);if(!c?.phone)return A.toast('Für diesen Kunden ist keine Telefonnummer hinterlegt.');
+    const c=customer(item.customerId);if(!c?.phone)return A.toast('Bitte hinterlege zuerst eine Telefonnummer in der Kundenakte.');
     const virtual={id:`communication_${item.id}`,customerId:c.id,customerName:c.name,phone:c.phone,email:c.email||'',date:item.slot?.date||today(),time:item.slot?.time||'',service:item.type==='waitlist'?'Warteliste':'Nachpflege',isCommunicationVirtual:true};
     A.db.appointments.push(virtual);
     ensureCenter().close();
