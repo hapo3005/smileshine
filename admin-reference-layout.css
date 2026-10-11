@@ -143,3 +143,14 @@ body .sidebar .side-nav{margin-top:0!important}
   overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.45!important;
  }
 }
+
+/* iPad Pro landscape: keep secondary calendar/customer text readable without ellipsis. */
+@media(min-width:761px) and (max-width:1440px){
+ body [data-view-panel="calendar"] small,
+ body [data-view-panel="customers"] small{
+  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+  overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.45!important;
+ }
+ body [data-view-panel="calendar"] .panel,
+ body [data-view-panel="customers"] .panel{min-width:0}
+}
