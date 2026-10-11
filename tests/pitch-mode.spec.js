@@ -19,8 +19,8 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
 
   await expect(page.locator('meta[name="smileshine-build"]')).toHaveAttribute('content', /.+/);
   await page.locator('#booking').scrollIntoViewIfNeeded();
-  await expect(page.locator('.booking-demo-badge')).toContainText('Persönlich vorbereitet');
-  await expect(page.locator('.summary-status')).toContainText('Präsentationsmodus');
+  await expect(page.locator('.booking-demo-badge')).toContainText('Behandlung · Termin · Kontakt · Prüfen');
+  await expect(page.locator('.summary-status')).toContainText('Demo');
 
   const seeded = await page.evaluate(() => {
     const db = JSON.parse(localStorage.getItem('smileshine_studio_v1') || 'null');
