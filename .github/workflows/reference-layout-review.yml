@@ -1,0 +1,42 @@
+name: Reference-layout review
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "admin.html"
+      - "admin-reference-layout.*"
+      - "admin.js"
+      - "tests/reference-layout.spec.js"
+      - ".github/workflows/reference-layout-review.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Run dashboard and calendar interaction tests
+        env:
+          QA_BASE_URL: http://127.0.0.1:4173/
+        run: |
+          mkdir -p artifacts
+          npx playwright test tests/reference-layout.spec.js --reporter=line --workers=1
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-layout-review-screenshots
+          path: |
+            artifacts/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
