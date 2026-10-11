@@ -506,15 +506,21 @@
     const a=appointmentFor(id);if(!a||a.status!=='pending')return;
     a.status='confirmed';
     if(!a.preparation)a.preparation={status:'open',consent:false,photos:false,note:'Vorbereitung vor dem Termin prüfen.'};
-    const communication=A.queueAppointmentCommunication?.('confirm',a.id,today(),{title:'Terminbestätigung'});
-    A.addActivity('booking',`${a.customerName}: Termin um ${a.time} Uhr bestätigt.`);
-    // A completed workflow action must release its modal before opening WhatsApp.
-    // Otherwise the workflow dialog remains modal and blocks the main navigation.
+    // Release the modal before anything that can fail or trigger a re-render.
+    // A failed optional message preparation must never block appointment confirmation.
     const workflowDialog=$('#workflowCenterDialog');
     if(workflowDialog?.open)workflowDialog.close();
+    A.addActivity('booking',`${a.customerName}: Termin um ${a.time} Uhr bestätigt.`);
     A.save('Termin bestätigt.');
-    A.renderDashboardWorkflow?.();
-    queueMicrotask(()=>A.openWhatsAppChooser?.(a.id,{type:'confirm',communicationId:communication?.id||''}));
+    let communication=null;
+    try{
+      communication=A.queueAppointmentCommunication?.('confirm',a.id,today(),{title:'Terminbestätigung'})||null;
+      A.renderDashboardWorkflow?.();
+    }catch(error){console.error('Bestätigungskommunikation konnte nicht vorbereitet werden',error)}
+    queueMicrotask(()=>{
+      try{A.openWhatsAppChooser?.(a.id,{type:'confirm',communicationId:communication?.id||''})}
+      catch(error){console.error('WhatsApp-Vorschau konnte nicht geöffnet werden',error)}
+    });
   }
 
   function completeTask(id){
