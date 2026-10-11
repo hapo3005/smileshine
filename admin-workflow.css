@@ -391,3 +391,25 @@
   .workflow-mini-grid.communication-enabled{grid-template-columns:1fr}
   .workflow-mini-grid.communication-enabled button{min-height:100px}
 }
+
+/* Dashboard visual rhythm: compact the daily brief and align supporting metrics. */
+@media(min-width:1251px){
+  #workflowTodayPanel.workflow-today{padding:24px 28px 26px;margin-bottom:20px}
+  #workflowTodayPanel .workflow-head{margin-bottom:20px;align-items:center}
+  #workflowTodayPanel .workflow-head h3{font-size:27px;line-height:1.25;margin:5px 0 7px}
+  #workflowTodayPanel .workflow-head p{font-size:15px;line-height:1.5}
+  #workflowTodayPanel .workflow-layout{grid-template-columns:minmax(0,1fr) minmax(390px,440px);gap:26px}
+  #workflowTodayPanel .workflow-action{min-height:68px;padding:11px 0;gap:14px}
+  #workflowTodayPanel .workflow-action-copy strong{font-size:15px;line-height:1.4}
+  #workflowTodayPanel .workflow-action-copy small{font-size:14px;line-height:1.4;white-space:normal;overflow:visible;text-overflow:clip;margin-top:3px}
+  #workflowTodayPanel .workflow-action>button{min-width:116px;min-height:42px;font-size:14px}
+  #workflowTodayPanel .workflow-mini-grid.communication-enabled{gap:12px;align-content:start}
+  #workflowTodayPanel .workflow-mini-grid.communication-enabled button{min-height:124px;padding:17px 18px;gap:8px 10px}
+  #workflowTodayPanel .workflow-mini-grid.communication-enabled button span{font-size:14px;line-height:1.45}
+  #workflowTodayPanel .workflow-mini-grid.communication-enabled button strong{font-size:29px}
+  #workflowTodayPanel .workflow-mini-grid.communication-enabled button small{font-size:14px;line-height:1.45}
+}
+@media(min-width:761px) and (max-width:1250px){
+  #workflowTodayPanel .workflow-layout{gap:18px}
+  #workflowTodayPanel .workflow-mini-grid.communication-enabled button{min-height:110px;padding:15px}
+}
