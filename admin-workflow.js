@@ -198,7 +198,7 @@
             <div><span>Startklar?</span><strong>${escapeHTML(focusInfo.prepText)}</strong><small>${escapeHTML(focusInfo.payText)}</small></div>
           </div>`:''}`
           :cockpit.closed
-            ?`<div class="day-cockpit-empty"><strong>Heute ist geschlossen.</strong><span>Für heute sind keine Öffnungszeiten hinterlegt. Der nächste Arbeitstag steht im Kalender bereit.</span></div>`
+            ?`<div class="day-cockpit-empty"><strong>Heute ist geschlossen.</strong><span>Nächster Arbeitstag im Kalender.</span></div>`
             :`<div class="day-cockpit-empty"><strong>Für heute sind keine Termine eingetragen.</strong><span>Du kannst einen Termin eintragen oder die Warteliste prüfen.</span></div>`}
         </div>
         <div class="day-cockpit-stats">
