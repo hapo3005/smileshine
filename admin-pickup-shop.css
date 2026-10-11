@@ -18,3 +18,30 @@
 .pickup-order-customer-tags em,.pickup-order-customer-tags b{display:inline-flex;padding:4px 6px;border-radius:999px;font-style:normal;font-size:14px;font-weight:700}
 .pickup-order-customer-tags em{background:#f2e9e5;color:#805a55}
 .pickup-order-customer-tags b{background:#edf3ee;color:#58705e}
+
+/* Prevent clipped order information at browser zoom and laptop widths. */
+body .view[data-view-panel="pickup"],body .view[data-view-panel="pickup"] .panel{min-width:0;max-width:100%}
+body .view[data-view-panel="pickup"] .pickup-orders-panel{overflow:visible;padding:20px;min-width:0}
+body .view[data-view-panel="pickup"] .pickup-orders-list{min-width:0;max-width:100%}
+body .view[data-view-panel="pickup"] .pickup-order-card{
+ display:grid;grid-template-columns:minmax(118px,.55fr) minmax(0,1.1fr);
+ gap:12px 18px;align-items:start;padding:19px 0;max-width:100%;min-width:0
+}
+body .view[data-view-panel="pickup"] .pickup-order-status{grid-column:1;grid-row:1;padding-top:4px}
+body .view[data-view-panel="pickup"] .pickup-order-customer{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere}
+body .view[data-view-panel="pickup"] .pickup-order-items{grid-column:2;grid-row:2;min-width:0}
+body .view[data-view-panel="pickup"] .pickup-order-actions{grid-column:2;grid-row:3;display:flex;flex-wrap:wrap;justify-content:flex-start;gap:9px;min-width:0}
+body .view[data-view-panel="pickup"] .pickup-order-actions button{width:auto;min-width:145px;min-height:42px;padding:9px 12px;white-space:normal}
+body .view[data-view-panel="pickup"] .pickup-order-location{grid-column:1/-1;grid-row:4;margin:0;min-width:0;border-radius:8px;overflow-wrap:anywhere}
+body .view[data-view-panel="pickup"] .pickup-order-items li{display:flex;align-items:flex-start;gap:8px;min-width:0}
+body .view[data-view-panel="pickup"] .pickup-order-items li span{white-space:normal;overflow-wrap:anywhere;overflow:visible;text-overflow:clip}
+body .view[data-view-panel="pickup"] .pickup-order-customer small{white-space:normal;overflow-wrap:anywhere;overflow:visible;text-overflow:clip}
+body .view[data-view-panel="pickup"] .pickup-orders-panel .panel-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+@media(max-width:760px){
+ body .view[data-view-panel="pickup"] .pickup-orders-panel{padding:14px}
+ body .view[data-view-panel="pickup"] .pickup-order-card{grid-template-columns:minmax(0,1fr);gap:10px}
+ body .view[data-view-panel="pickup"] .pickup-order-status,body .view[data-view-panel="pickup"] .pickup-order-customer,
+ body .view[data-view-panel="pickup"] .pickup-order-items,body .view[data-view-panel="pickup"] .pickup-order-actions,
+ body .view[data-view-panel="pickup"] .pickup-order-location{grid-column:1;grid-row:auto}
+ body .view[data-view-panel="pickup"] .pickup-order-actions button{flex:1 1 135px;min-width:0}
+}
