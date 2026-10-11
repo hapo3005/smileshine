@@ -2,6 +2,7 @@ const {test,expect,devices}=require('@playwright/test');
 
 const profile=process.env.BIRGIT_PROFILE||'desktop';
 const mobile=profile!=='desktop';
+const navigationCounts=new WeakMap();
 test.use({baseURL:process.env.QA_BASE_URL||'https://hapo3005.github.io/smileshine/',
   timezoneId:'Europe/Berlin',locale:'de-DE',actionTimeout:10000,
   trace:'retain-on-failure',screenshot:'only-on-failure',
@@ -25,6 +26,7 @@ async function navigate(page,view){
   }
   await expect(page.locator(`.view[data-view-panel="${view}"]`)).toHaveClass(/active/);
   await expect(page).toHaveURL(new RegExp(`#${view}$`));
+  navigationCounts.set(page,(navigationCounts.get(page)||0)+1);
 }
 
 async function setup(page,index){
@@ -166,6 +168,6 @@ for(let index=0;index<count;index++){
     await page.locator('#appointmentDetailForm button[type="submit"]').click();
     await navigate(page,'dashboard');
     expect(errors).toEqual([]);
-    await testInfo.attach('scenario-result',{body:JSON.stringify({profile,index:index+1,confirmed:true,cancelled:true,navigationRounds:3,realNavigationClicks:28,reload:true,errors}),contentType:'application/json'});
+    await testInfo.attach('scenario-result',{body:JSON.stringify({profile,index:index+1,confirmed:true,cancelled:true,navigationRounds:3,navigationTransitions:navigationCounts.get(page),reload:true,errors}),contentType:'application/json'});
   });
 }
