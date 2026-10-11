@@ -350,3 +350,25 @@ button,a{-webkit-tap-highlight-color:transparent}
 .kpi-action{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;appearance:none;-webkit-appearance:none}
 .kpi-action:hover{border-color:#9ca2a0;box-shadow:0 4px 16px rgba(23,25,26,.08)}
 .kpi-action:focus-visible{outline:3px solid #3e6266;outline-offset:3px}
+
+/* Unified desktop dashboard spacing system, scoped to the home view. */
+@media (min-width:1060px){
+  #dashboard.view{--dash-gap:20px;--dash-pad:24px}
+  #dashboard .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--dash-gap);margin:0 0 var(--dash-gap)}
+  #dashboard .kpi-card{min-width:0;min-height:156px;padding:var(--dash-pad);display:flex;flex-direction:column;justify-content:space-between;gap:14px}
+  #dashboard .kpi-card *{min-width:0}
+  #dashboard .dashboard-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(310px,.85fr);align-items:stretch;gap:var(--dash-gap);margin-bottom:var(--dash-gap)}
+  #dashboard .dashboard-grid>.panel{min-width:0;margin:0;padding:var(--dash-pad)}
+  #dashboard .panel-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}
+  #dashboard .panel-head h3{margin:5px 0 0;line-height:1.25}
+  #dashboard .panel-head .text-button{white-space:nowrap;flex:0 0 auto;min-height:40px;padding:9px 13px}
+  #dashboard .panel-head .panel-meta{white-space:nowrap}
+}
+@media (min-width:761px) and (max-width:1250px){
+  #dashboard .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  #dashboard .dashboard-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+}
+@media (max-width:760px){
+  #dashboard .panel-head{gap:12px}
+  #dashboard .panel-head .text-button{white-space:normal;flex-shrink:0}
+}
