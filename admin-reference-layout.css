@@ -94,29 +94,43 @@ body .reference-calendar .schedule-time{font-size:14px!important}
 body .reference-calendar .reference-mini-grid span,
 body .reference-calendar .reference-mini-grid button{font-size:14px!important}
 
-/* Birthday presentation polish — preserve the approved logo artwork and wording. */
+/* Sidebar corporate identity 7.3 — preserve exact S | S signet and wordmark. */
 body .sidebar .admin-brand.admin-brand-v73{
- display:flex;flex-direction:column;align-items:center;justify-content:center;
- gap:9px;padding:19px 10px 24px;text-align:center;min-height:145px;
+ display:flex;flex-direction:column;justify-content:center;align-items:center;
+ gap:9px;min-height:0;margin:0;padding:14px 7px 22px;text-align:center;
 }
 body .sidebar .admin-brand.admin-brand-v73 .admin-brand-mark{
- width:62px;height:62px;min-width:62px;min-height:62px;flex:0 0 62px;
- display:block;margin:0 auto;border:1px solid #e7ded9;
- background-color:#fffdfb;box-shadow:0 4px 15px rgba(69,49,43,.045);
+ display:grid!important;place-items:center!important;position:relative;
+ box-sizing:border-box;flex:0 0 52px!important;width:52px!important;height:52px!important;
+ min-width:52px!important;min-height:52px!important;
+ margin:0!important;padding:0!important;border:1px solid #d6d1cb!important;
+ border-radius:2px!important;background:transparent!important;box-shadow:none!important;
+ font-size:0!important;
+}
+body .sidebar .admin-brand.admin-brand-v73 .admin-brand-mark::before{
+ content:"S | S";display:block;position:static!important;transform:none!important;
+ margin:0!important;padding:0!important;width:auto!important;height:auto!important;
+ color:#4b4643!important;font-family:"Montserrat",system-ui,sans-serif;
+ font-size:16px!important;font-weight:300!important;line-height:1!important;
+ letter-spacing:.04em!important;white-space:nowrap!important;
 }
 body .sidebar .admin-brand.admin-brand-v73 .admin-brand-copy{
- display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;min-width:0;
+ display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+ gap:2px;width:100%;min-width:0;margin:0;padding:0;text-align:center;
 }
 body .sidebar .admin-brand.admin-brand-v73 .admin-brand-copy strong{
- color:#453935;font-size:15px;font-weight:600;line-height:1.3;
- letter-spacing:.13em;white-space:normal;text-align:center;
+ display:block;color:#423d3a;font-size:14px!important;font-weight:400!important;
+ letter-spacing:.16em!important;line-height:1.3!important;white-space:nowrap;
 }
 body .sidebar .admin-brand.admin-brand-v73 .admin-brand-copy small{
- color:#817772;font-size:12px;letter-spacing:.07em;line-height:1.4;
- white-space:normal;text-align:center;
+ display:block;color:#77716d!important;font-size:12px!important;font-weight:400!important;
+ letter-spacing:.105em!important;line-height:1.35!important;white-space:nowrap;
 }
-body .sidebar .side-nav{margin-top:5px}
+body .sidebar .side-nav{margin-top:3px}
 @media(max-width:760px){
- body .sidebar .admin-brand.admin-brand-v73{min-height:auto;padding:13px 10px 17px;gap:7px}
- body .sidebar .admin-brand.admin-brand-v73 .admin-brand-mark{width:54px;height:54px;min-width:54px;min-height:54px;flex-basis:54px}
+ body .sidebar .admin-brand.admin-brand-v73{padding:12px 7px 16px}
+ body .sidebar .admin-brand.admin-brand-v73 .admin-brand-mark{
+  flex-basis:48px!important;width:48px!important;height:48px!important;
+  min-width:48px!important;min-height:48px!important;
+ }
 }
