@@ -88,3 +88,29 @@
   .calendar-free-quick{left:5px;right:4px;padding-right:5px}
   .calendar-free-quick span{font-size:14px}
 }
+/* Calendar event metadata: restrained single-line labels, no stacked pills. */
+.schedule-event.calendar-workspace-event{padding-right:168px!important;min-width:0}
+.schedule-event.calendar-workspace-event .calendar-event-tags{
+ position:absolute;top:7px;right:8px;transform:none;display:flex;flex-direction:row;
+ align-items:center;justify-content:flex-end;gap:5px;max-width:calc(100% - 18px);
+ pointer-events:none;
+}
+.schedule-event.calendar-workspace-event .calendar-event-tags i,
+.schedule-event.calendar-workspace-event .calendar-event-tags em{
+ display:inline-block;font-size:12px!important;font-weight:500!important;
+ line-height:1.3!important;white-space:nowrap;padding:2px 5px!important;
+ border-radius:3px!important;background:rgba(255,255,255,.75)!important;
+ color:#655b57!important;box-shadow:none!important;
+}
+.schedule-event.calendar-workspace-event .calendar-event-tags em{
+ background:transparent!important;color:#756c67!important;
+}
+@media(max-width:1180px){
+ .schedule-event.calendar-workspace-event{padding-right:92px!important}
+ .schedule-event.calendar-workspace-event .calendar-event-tags{top:5px;right:5px}
+ .schedule-event.calendar-workspace-event .calendar-event-tags em{display:none!important}
+}
+@media(max-width:760px){
+ .schedule-event.calendar-workspace-event{padding-right:75px!important}
+ .schedule-event.calendar-workspace-event .calendar-event-tags i{font-size:12px!important;padding:2px 3px!important}
+}
