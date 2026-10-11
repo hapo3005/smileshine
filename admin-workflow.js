@@ -156,7 +156,7 @@
     });
     communications.forEach(item=>{
       const a=appointmentFor(item.appointmentId),c=customerFor(item.customerId),label=({confirm:'Bestätigung',change:'Terminänderung',reminder:'Erinnerung',aftercare:'Nachpflege',healing:'Heilungsverlauf',waitlist:'Freier Termin'})[item.type]||'Nachricht';
-      items.push({key:'communication-'+item.id,priority:item.type==='change'||item.type==='reminder'?1:2,kind:'communication',communicationId:item.id,appointmentId:item.appointmentId||'',customerId:item.customerId||'',title:`${label} · ${a?.customerName||c?.name||'Kunde'}`,detail:item.note||'Nachricht ist fällig.',action:'Nachricht'});
+      items.push({key:'communication-'+item.id,priority:item.type==='change'||item.type==='reminder'?1:2,kind:'communication',communicationId:item.id,appointmentId:item.appointmentId||'',customerId:item.customerId||'',title:item.type==='reminder'?(a?.customerName||c?.name||'Kunde'):`${label} · ${a?.customerName||c?.name||'Kunde'}`,detail:item.note||'Nachricht ist fällig.',action:'Nachricht'});
     });
     return items.sort((a,b)=>a.priority-b.priority||a.title.localeCompare(b.title,'de'));
   }
