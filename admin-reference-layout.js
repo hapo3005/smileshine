@@ -45,6 +45,11 @@
     A.registerRenderHook?.('reference-calendar-summary',renderReferenceCalendar,45);
     A.registerViewHook?.('reference-calendar-summary',name=>{if(name==='calendar')renderReferenceCalendar()},45);
     document.addEventListener('click',event=>{
+      if(event.target.closest('[data-reference-new]')){
+        event.preventDefault();
+        A.openModal?.({date:iso(A.calendarCursor)});
+        return;
+      }
       const date=event.target.closest('[data-reference-date]');
       if(date){const [year,month,day]=date.dataset.referenceDate.split('-').map(Number);monthOffset=0;A.calendarCursor=new Date(year,month-1,day,12);A.calendarMode='day';A.renderCalendar();A.refreshCalendarWorkspace?.();renderReferenceCalendar();return}
       if(event.target.closest('[data-reference-next-month]')){monthOffset=(monthOffset+1)%12;renderReferenceCalendar()}
