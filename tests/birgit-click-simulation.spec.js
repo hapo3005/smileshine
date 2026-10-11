@@ -47,7 +47,7 @@ async function confirm(page,data,index){
   await navigate(page,'appointments');
   await page.locator('#appointmentSearch').fill(data.name);
   const row=page.locator(`.appointment-card[data-id="${data.id}"]`);
-  if(index%2===0){
+  if(index%2===0 && await row.locator('[data-status-id]').isVisible()){
     await row.locator('[data-status-id]').selectOption('confirmed');
   }else{
     await row.locator('[data-open-appointment]').click();
