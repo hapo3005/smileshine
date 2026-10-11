@@ -48,6 +48,9 @@
     const details=$('#dashboardDetails'),button=$('#dashboardDetailsToggle');if(!details||!button)return;
     const open=typeof force==='boolean'?force:!details.classList.contains('is-open');
     details.classList.toggle('is-open',open);button.setAttribute('aria-expanded',String(open));
+    // On narrow screens, the mobile disclosure must also reveal its nested
+    // studio actions; otherwise visible navigation leads to hidden controls.
+    if(open){const nested=details.querySelector('.dashboard-more-panel');if(nested)nested.open=true;}
     const state=$('b',button);if(state)state.textContent=open?'ausblenden':'anzeigen';
   }
   function focusBlockForm(){
