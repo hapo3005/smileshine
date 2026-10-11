@@ -191,7 +191,7 @@ test('daily cockpit turns studio work into direct actions', async ({ page }) => 
   await page.locator('[data-view="dashboard"]').first().click();
   await expect(page.locator('[data-view-panel="dashboard"]')).toHaveClass(/active/);
 
-  const waitlistShortcut = page.locator('[data-open-workflow-center][data-workflow-tab="waitlist"]').first();
+  const waitlistShortcut = page.locator('.quick-grid [data-open-workflow-center][data-workflow-tab="waitlist"]');
   await expect(waitlistShortcut).toBeVisible();
   await waitlistShortcut.click();
   await expect(page.locator('#workflowCenterDialog')).toBeVisible();
