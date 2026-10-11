@@ -34,7 +34,7 @@
     if(!unit||!Number.isFinite(item.quantity)||item.quantity<=0)throw new Error('Fehlende Füllmenge für '+item.id);
     return eur(item.price*1000/item.quantity)+'/'+unit;
   }
-  const basePriceHTML=item=>'<small class="pickup-base-price">Grundpreis: '+basePrice(item)+'</small>';
+  const basePriceHTML=(item,compact=false)=>'<small class="pickup-base-price">'+(compact?'('+basePrice(item)+')':'Grundpreis: '+basePrice(item))+'</small>';
   const cartTotal=()=>cart.reduce((sum,row)=>sum+(product(row.id)?.price||0)*Number(row.qty||0),0);
   function loadCart(){try{const parsed=JSON.parse(localStorage.getItem(CART_KEY)||'[]');return Array.isArray(parsed)?parsed.filter(item=>item&&product(item.id)&&Number.isInteger(Number(item.qty))&&Number(item.qty)>0).map(item=>({id:item.id,qty:Math.min(20,Number(item.qty))})):[]}catch{return []}}
   function saveCart(){localStorage.setItem(CART_KEY,JSON.stringify(cart));renderCartState()}
@@ -65,7 +65,7 @@
       .pickup-product-copy{display:flex;flex-direction:column;flex:1;padding:20px}
       .pickup-product-meta{display:flex;justify-content:space-between;gap:10px;color:var(--accent-dark);font-size:14px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
       .pickup-product-copy h3{font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.15;margin:9px 0}.pickup-product-copy p{margin:0;color:var(--muted);font-size:14px;line-height:1.62}
-      .pickup-product-pricing{margin-top:auto;padding-top:17px}.pickup-product-price{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.pickup-base-price{display:block;margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.5}.pickup-price-notice{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.6}.pickup-product-price strong{font-size:14px}
+      .pickup-product-pricing{margin-top:auto;padding-top:17px}.pickup-product-price{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}.pickup-base-price{display:block;margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.5}.pickup-price-notice{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.6}.pickup-product-price .pickup-product-amount{font-size:18px;line-height:1.4;font-weight:600;white-space:nowrap}.pickup-product-price .pickup-base-price{margin:0;color:#62676a;font-size:14px;line-height:1.5;white-space:nowrap}
       .pickup-add{width:100%;margin-top:12px;border:0;border-radius:10px;background:#3a3430;color:#fff;padding:11px 12px;font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.pickup-add:hover{background:#2f2926}
       
       .pickup-shop-footer{margin-top:20px;padding:16px 0;border-top:1px solid var(--line);border-radius:0;background:transparent;display:flex;align-items:center;justify-content:space-between;gap:20px}
@@ -100,7 +100,7 @@
       <div class="pickup-product-copy">
         <div class="pickup-product-meta"><span>${escapeHTML(item.category)}</span><span>${escapeHTML(item.size)}</span></div>
         <h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.description)}</p>
-        <div class="pickup-product-pricing"><div class="pickup-product-price"><strong>Gesamtpreis</strong><strong class="pickup-product-amount">${eur(item.price)}</strong></div>${basePriceHTML(item)}</div>
+        <div class="pickup-product-pricing"><div class="pickup-product-price"><strong class="pickup-product-amount" aria-label="Gesamtpreis ${eur(item.price)}">${eur(item.price)}</strong>${basePriceHTML(item,true)}</div></div>
         <button class="pickup-add" type="button" data-pickup-add="${item.id}">In den Warenkorb</button>
         
       </div>

@@ -26,8 +26,8 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
   };
   for(const [id,price] of Object.entries(expectedBasePrices)){
     const card=page.locator('[data-pickup-product="'+id+'"]');
-    await expect(card.locator('.pickup-base-price')).toHaveText('Grundpreis: '+price);
-    await expect(card.locator('.pickup-product-price')).toContainText('Gesamtpreis');
+    await expect(card.locator('.pickup-base-price')).toHaveText('('+price+')');
+    await expect(card.locator('.pickup-product-amount')).toHaveAttribute('aria-label',/^Gesamtpreis /);
   }
 
   await expect(page.locator('.pickup-product-card').first()).toContainText('14,90');
