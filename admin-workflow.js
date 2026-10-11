@@ -517,10 +517,9 @@
       communication=A.queueAppointmentCommunication?.('confirm',a.id,today(),{title:'Terminbestätigung'})||null;
       A.renderDashboardWorkflow?.();
     }catch(error){console.error('Bestätigungskommunikation konnte nicht vorbereitet werden',error)}
-    queueMicrotask(()=>{
-      try{A.openWhatsAppChooser?.(a.id,{type:'confirm',communicationId:communication?.id||''})}
-      catch(error){console.error('WhatsApp-Vorschau konnte nicht geöffnet werden',error)}
-    });
+    // Do not open another blocking dialog automatically after confirmation.
+    // The prepared message remains available in the communication center.
+    if(communication)A.toast?.('Termin bestätigt. Nachricht unter „Nachrichten“ vorbereitet.');
   }
 
   function completeTask(id){
