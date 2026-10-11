@@ -104,7 +104,7 @@
       hero:{
         status:'temporary',
         requiredForLive:true,
-        url:'https://images.pexels.com/photos/6899542/pexels-photo-6899542.jpeg?auto=compress&cs=tinysrgb&w=3200&h=2200&fit=crop&q=95',
+        url:'https://images.pexels.com/photos/6899542/pexels-photo-6899542.jpeg?auto=compress&cs=tinysrgb&w=3200&q=95',
         alt:'Heller, moderner Beauty-Behandlungsraum in warmen neutralen Tönen',
         shotBrief:'Breiter moderner Behandlungsraum, warm-neutrale Architektur, ruhige helle Fläche links für Text, Behandlungsliege und Interior rechts.'
       },
