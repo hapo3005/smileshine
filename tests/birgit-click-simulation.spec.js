@@ -64,7 +64,11 @@ async function studioTask(page,data,kind){
   await page.locator('#appointmentSearch').fill(data.name);
   const row=page.locator(`.appointment-card[data-id="${data.id}"]`);
   if(kind===0){
-    await row.locator('[data-payment-id]').click();
+    if(await row.locator('[data-payment-id]').isVisible())await row.locator('[data-payment-id]').click();
+    else{
+      await row.locator('[data-open-appointment]').click();
+      await page.locator('[data-appointment-payment]').click();
+    }
     await page.locator('#paymentEntryForm input[name="amount"]').fill('5');
     await page.locator('#paymentEntryForm button[type="submit"]').click();
     await expect(page.locator('.payment-open strong')).toHaveText('15,00 €');
@@ -94,7 +98,8 @@ async function studioTask(page,data,kind){
     await expect(order).toContainText('Abgeholt');
   }else{
     await navigate(page,'dashboard');
-    await page.locator('[data-open-workflow-center][data-workflow-tab="waitlist"]').click();
+    await page.locator('.workflow-head [data-open-workflow-center]').click();
+    await page.locator('[data-workflow-tab-button="waitlist"]').click();
     await page.locator(`[data-book-waitlist="${data.id}_wait"]`).click();
     await page.locator('#appointmentForm button[type="submit"]').click();
     await expect(page.locator('#whatsappDialog')).toBeVisible();
@@ -117,6 +122,19 @@ for(let index=0;index<count;index++){
     const data=await setup(page,index);
     await confirm(page,data,index);
     if(mobile||index>=10)await studioTask(page,data,index%5);
+    if(mobile||index>=10){
+      const slot=await page.evaluate(()=>window.SSAdmin.findNextFreeSlot(30));
+      expect(slot).toBeTruthy();
+      await navigate(page,'appointments');
+      await page.locator('#appointmentSearch').fill(data.name);
+      await page.locator(`.appointment-card[data-id="${data.id}"] [data-open-appointment]`).click();
+      await page.locator('#appointmentDetailForm input[name="date"]').fill(slot.date);
+      await page.locator('#appointmentDetailForm input[name="time"]').fill(slot.time);
+      await expect(page.locator('#appointmentAvailabilityHint')).toHaveClass(/is-free/);
+      await page.locator('#appointmentDetailForm textarea[name="note"]').fill('Automatisch verschoben – Demo.');
+      await page.locator('#appointmentDetailForm button[type="submit"]').click();
+      expect(await page.evaluate(id=>{const a=window.SSAdmin.db.appointments.find(x=>x.id===id);return {date:a.date,time:a.time}},data.id)).toEqual(slot);
+    }
     for(let round=0;round<3;round++){
       await navigate(page,'appointments');
       const destinations=['calendar','customers','services','availability','pickup','settings','dashboard'];
