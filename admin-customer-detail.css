@@ -150,3 +150,19 @@
   }
   .view[data-view-panel="customers"] .customer-card-arrow{display:none}
 }
+
+/* iPhone audit: service names and follow-up labels must never be ellipsized. */
+@media(max-width:760px){
+ .customer-next-main>div:nth-child(2)>strong,
+ .customer-next-main>div:nth-child(2)>small,
+ .customer-contact-action small,
+ .customer-profile-copy>strong,
+ .customer-detail-stats strong,
+ .customer-detail-stats small{
+  white-space:normal!important;text-overflow:clip!important;overflow:visible!important;
+  overflow-wrap:anywhere;word-break:normal;max-width:100%;line-height:1.45;
+ }
+ .customer-next-main>div:nth-child(2),.customer-contact-action,.customer-profile-copy{
+  min-width:0;max-width:100%;
+ }
+}
