@@ -402,18 +402,19 @@ button,a{-webkit-tap-highlight-color:transparent}
   margin-top:18px;
   border:1px solid var(--line);
   border-radius:3px;
-  background:#fff;
-  color:var(--ink);
+  background:#f6eae7;
+  border-color:#dfc5bf;
+  color:#653f3b;
   font-size:14px;
-  font-weight:600;
+  font-weight:700;
   line-height:1.4;
   text-decoration:none;
   text-align:center;
   transition:background-color .18s ease,border-color .18s ease;
 }
 .sidebar-footer .customer-site-link:hover{
-  background:#efeee9;
-  border-color:#bfc2c3;
+  background:#eed9d4;
+  border-color:#c8a49c;
   text-decoration:none;
 }
 .sidebar-footer .customer-site-link:focus-visible{
