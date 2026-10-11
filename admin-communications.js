@@ -156,7 +156,7 @@
     return `<article class="communication-row ${item.status==='handed_off'?'is-done':''}">
       <span class="communication-icon">${TYPE_ICONS[item.type]||'•'}</span>
       <div class="communication-copy"><div><span>${escapeHTML(label)}</span><strong>${escapeHTML(name)}</strong></div><small>${escapeHTML(meta)}</small><em>fällig ${dateShort(item.dueDate)}</em>${item.messageText?`<details class="communication-message"><summary>Nachrichtentext ansehen</summary><p>${escapeHTML(item.messageText)}</p></details>`:''}</div>
-      <div class="communication-actions">${!isHandled(item)?`<button type="button" class="primary-action" data-open-communication="${item.id}">Nachricht vorbereiten</button><button type="button" class="text-button" data-skip-communication="${item.id}">Nicht nötig</button>`:`<span class="communication-state">${item.status==='sent_confirmed'?'Versand manuell bestätigt':item.status==='handed_off'?'An WhatsApp übergeben':'Ohne Versand erledigt'}</span>${item.status==='handed_off'?`<button type="button" class="soft-button" data-confirm-communication-sent="${item.id}">Versand bestätigen</button><button type="button" class="text-button" data-retry-communication="${item.id}">Nicht gesendet</button>`:''}`}</div>
+      <div class="communication-actions">${!isHandled(item)?`<button type="button" class="primary-action" data-open-communication="${item.id}">Nachricht schreiben</button><button type="button" class="text-button" data-skip-communication="${item.id}">Nicht nötig</button>`:`<span class="communication-state">${item.status==='sent_confirmed'?'Versand manuell bestätigt':item.status==='handed_off'?'An WhatsApp übergeben':'Ohne Versand erledigt'}</span>${item.status==='handed_off'?`<button type="button" class="soft-button" data-confirm-communication-sent="${item.id}">Versand bestätigen</button><button type="button" class="text-button" data-retry-communication="${item.id}">Nicht gesendet</button>`:''}`}</div>
     </article>`;
   }
 
@@ -200,12 +200,12 @@
     if($('#communicationCenterDialog')?.open)setTab($('#communicationCenterDialog').dataset.tab||'due');
   }
 
-  function confirmSent(id){const item=ensureData().find(x=>x.id===id);if(!item||item.status!=='handed_off')return;item.status='sent_confirmed';item.sentConfirmedAt=new Date().toISOString();A.save('Versand manuell bestätigt.');A.renderDashboardWorkflow?.();if($('#communicationCenterDialog')?.open)setTab('history');}
-  function notSent(id){const item=ensureData().find(x=>x.id===id);if(!item||item.status!=='handed_off')return;item.status='due';delete item.sentConfirmedAt;A.save('Nachricht bleibt offen.');A.renderDashboardWorkflow?.();if($('#communicationCenterDialog')?.open)setTab('due');}
+  function confirmSent(id){const item=ensureData().find(x=>x.id===id);if(!item||item.status!=='handed_off')return;item.status='sent_confirmed';item.sentConfirmedAt=new Date().toISOString();A.save('Nachricht als gesendet vermerkt.');A.renderDashboardWorkflow?.();if($('#communicationCenterDialog')?.open)setTab('history');}
+  function notSent(id){const item=ensureData().find(x=>x.id===id);if(!item||item.status!=='handed_off')return;item.status='due';delete item.sentConfirmedAt;A.save('Nachricht wurde nicht gesendet und bleibt offen.');A.renderDashboardWorkflow?.();if($('#communicationCenterDialog')?.open)setTab('due');}
 
   function skip(id){
     const item=ensureData().find(x=>x.id===id);if(!item)return;
-    item.status='done';item.completedAt=new Date().toISOString();resolveLinked(item);A.save('Nachricht als nicht nötig markiert.');A.renderDashboardWorkflow?.();setTab($('#communicationCenterDialog')?.dataset.tab||'due');
+    item.status='done';item.completedAt=new Date().toISOString();resolveLinked(item);A.save('Nachricht wurde als nicht erforderlich markiert.');A.renderDashboardWorkflow?.();setTab($('#communicationCenterDialog')?.dataset.tab||'due');
   }
 
   function communicationForAppointment(type,appointmentId,dueDate=today(),extra={}){
