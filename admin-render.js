@@ -14,7 +14,7 @@
     if(!views.includes(name))name='dashboard';
     $$('.view').forEach(v=>v.classList.toggle('active',v.dataset.viewPanel===name));
     $$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
-    const hour=new Date().getHours(),greeting=`${hour<12?'Guten Morgen':hour<18?'Guten Tag':'Guten Abend'}, ${OWNER_FIRST}.`;
+    const hour=new Date().getHours(),greeting=`${hour<12?'Schönen guten Morgen':hour<18?'Schön, dass du da bist':'Schönen guten Abend'}, ${OWNER_FIRST}!`;
     const titles={dashboard:greeting,calendar:'Kalender',appointments:'Termine',customers:'Kunden',services:'Leistungen',availability:'Verfügbarkeit',pickup:'Abholshop',settings:'Einstellungen'};
     if($('#pageTitle'))$('#pageTitle').textContent=titles[name];
     if(location.hash!==`#${name}`)history.replaceState(null,'',`#${name}`);
