@@ -395,3 +395,5 @@ body.site-premium .booking-editorial .booking-summary .summary-status span{backg
 .site-premium .treatment-service-item>a:hover{background:#202425;color:#fff}
 .site-premium .treatment-service-item>a:focus-visible{outline:2px solid #17191a;outline-offset:3px}
 @media(max-width:700px){.site-premium .treatment-service-list{grid-template-columns:1fr}.site-premium .treatment-service-item{padding:22px 0}}
+
+.site-premium #leistungskatalog{scroll-margin-top:110px}
