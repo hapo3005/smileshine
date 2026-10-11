@@ -115,3 +115,6 @@ body .dashboard-more-panel>summary span{color:var(--studio-secondary);font-size:
 body .dashboard-more-panel>.dashboard-grid{padding:0 16px 16px;margin:0}
 body .dashboard-more-panel>.dashboard-grid+.dashboard-grid{padding-top:0}
 @media(max-width:760px){body .dashboard-more-panel>summary{padding:15px}body .dashboard-more-panel>.dashboard-grid{padding:0 10px 10px}}
+
+/* Readability: operational labels must remain legible on every viewport. */
+body [data-view-panel="dashboard"] small,body [data-view-panel="dashboard"] .delta{font-size:14px!important;line-height:1.4}
