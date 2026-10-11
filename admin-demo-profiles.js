@@ -121,14 +121,17 @@
     db.customers=Array.isArray(db.customers)?db.customers:[];
     allProfiles.forEach((row,index)=>{
       const name=row[0],email=index<5?null:`testkunde${String(index+1).padStart(2,'0')}@example.de`;
-      let customer=db.customers.find(c=>c.name===name)||(email?db.customers.find(c=>c.email===email):null);
+      let customer=db.customers.find(c=>c.demoProfileIndex===index+1||c.id===`demo_customer_${String(index+1).padStart(2,'0')}`)||db.customers.find(c=>c.name===name)||(email?db.customers.find(c=>c.email===email):null);
+      const alreadyInitialized=Boolean(customer?.isDemoProfile&&customer.demoProfileIndex===index+1);
       if(!customer){
         const parts=fullNameParts(name);
         customer={id:`demo_customer_${String(index+1).padStart(2,'0')}`,name,firstName:parts.firstName,lastName:parts.lastName,email,phone:`0157 0000 ${String(1000+index).slice(-4)}`,created:`2026-${String((index%8)+1).padStart(2,'0')}-${String((index%24)+1).padStart(2,'0')}`};
         db.customers.push(customer);
       }
-      if(index>=5){customer.email=email;customer.phone=`0157 0000 ${String(1000+index).slice(-4)}`}
-      applyProfile(customer,row,index);
+      if(!alreadyInitialized){
+        if(index>=5){customer.email=email;customer.phone=`0157 0000 ${String(1000+index).slice(-4)}`}
+        applyProfile(customer,row,index);
+      }
     });
     A.ensureCustomerNumbers?.(db);
   }
