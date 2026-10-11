@@ -107,3 +107,17 @@ body.site-premium .skip-link:focus-visible{transform:translateY(0);outline:3px s
    font-size:12px;letter-spacing:.1em;color:#666967;
  }
 }
+
+/* Keep important mobile action labels readable without mid-word breaks. */
+@media (max-width: 620px) {
+  body.site-premium .booking-panel-head h3,
+  body.site-premium .booking-summary h3,
+  body.site-premium .service-option,
+  body.site-premium .booking-actions button,
+  body.admin-premium .primary-action,
+  body.admin-premium .soft-button {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: manual;
+  }
+}
