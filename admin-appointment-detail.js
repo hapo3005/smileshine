@@ -194,6 +194,7 @@
     $('[data-appointment-payment]',body).addEventListener('click',()=>{dialog.close();A.openPaymentModal?.(a.id)});
     $('[data-appointment-messages]',body).addEventListener('click',()=>{dialog.close();A.openCommunicationCenter?.('due')});
     $('[data-appointment-customer]',body)?.addEventListener('click',()=>{if(!customer)return;dialog.close();A.renderCustomerDetail?.(customer.id)});
+    renderFreeTimes(a);
     renderAvailability(a);
   }
 
