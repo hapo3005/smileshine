@@ -136,8 +136,8 @@ function buildDates(){
       if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">Einen Moment – der Studiokalender wird vorbereitet.</div>';
       clearTimeout(buildDates.retryTimer);buildDates.retryTimer=setTimeout(buildDates,180);
     }else{
-      dateScroller.innerHTML='<div class="time-placeholder">Die Online-Verfügbarkeit konnte gerade nicht geladen werden.</div>';
-      if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">Bitte versuche es erneut oder kontaktiere das Studio direkt.</div>';
+      dateScroller.innerHTML='<div class="time-placeholder">Freie Termine können gerade nicht angezeigt werden.</div>';
+      if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">Bitte versuche es später erneut oder kontaktiere uns direkt.</div>';
     }
     return;
   }
@@ -185,7 +185,7 @@ function buildDates(){
   else{
     resetReview();bookingState.date='';bookingState.dateLabel='';bookingState.time='';document.getElementById('bookingTimeContinue')?.setAttribute('disabled','');bookingState.waitlist=false;bookingState.waitlistDetails=null;
     if(selectedDateLabel)selectedDateLabel.textContent='Datum auswählen';updateSummary();
-    if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">In diesem Monat ist kein passender Termin frei. Wähle einen anderen Monat oder nutze die Warteliste.</div>';
+    if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">In diesem Monat ist kein passender Termin frei. Wähle einen anderen Monat oder frage nach der Warteliste.</div>';
   }
 }
 
