@@ -32,9 +32,6 @@ const dateScroller=document.querySelector('#dateScroller');
 const timeSlots=document.querySelector('#timeSlots');
 const selectedDateLabel=document.querySelector('#selectedDateLabel');
 const bookingForm=document.querySelector('#bookingForm');
-const precheckForm=document.querySelector('#precheckForm');
-const precheckQuestions=document.querySelector('#precheckQuestions');
-const precheckService=document.querySelector('#precheckService');
 const waitlistToggle=document.querySelector('#waitlistToggle');
 const waitlistForm=document.querySelector('#waitlistForm');
 
@@ -63,19 +60,34 @@ function renderServiceCatalog(){
   serviceOptionsRoot.innerHTML=html;
 }
 
+const bookingSteps=[1,2,4,6];
+let furthestStep=1;
 function setStep(step){
+  if(!bookingSteps.includes(step))return;
+  if(step!==1&&!bookingState.serviceId)return;
+  if((step===4||step===6)&&!bookingState.waitlist&&(!bookingState.date||!bookingState.time))return;
+  if(step===6&&!bookingState.customer)return;
+  furthestStep=Math.max(furthestStep,bookingSteps.indexOf(step)+1);
   panels.forEach(p=>p.classList.toggle('active',Number(p.dataset.panel)===step));
   progress.forEach((p,i)=>{
-    const waitlistPayment=bookingState.waitlist&&i===4&&step>=6;
-    p.classList.toggle('active',i+1===step);
-    p.classList.toggle('done',i+1<step&&!waitlistPayment);
-    p.classList.toggle('skipped',waitlistPayment);
-    p.disabled=i+1>step||waitlistPayment;
-    if(i+1===step)p.setAttribute('aria-current','step');else p.removeAttribute('aria-current');
-    const label=p.querySelector('strong');
-    if(label&&i===4)label.textContent=waitlistPayment?'entfällt':'Zahlweise';
+    const id=Number(p.dataset.progress);
+    p.classList.toggle('active',id===step);
+    p.classList.toggle('done',i<bookingSteps.indexOf(step));
+    p.disabled=i+1>furthestStep;
+    if(id===step)p.setAttribute('aria-current','step');else p.removeAttribute('aria-current');
   });
-  document.querySelector('#booking')?.scrollIntoView({behavior:'smooth',block:'start'});
+  const heading=document.querySelector('.booking-panel.active h3');
+  heading?.setAttribute('tabindex','-1');
+  heading?.focus({preventScroll:true});
+  document.querySelector('#booking')?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+}
+function resetReview(){
+  furthestStep=Math.min(furthestStep,2);
+  bookingState.submitted=false;
+  const submit=document.querySelector('.booking-panel[data-panel="6"] .button.primary');
+  if(submit?.dataset.synced){submit.disabled=false;submit.textContent='Terminanfrage vormerken';}
+  document.querySelector('.sync-booking-message')?.remove();
+  progress.forEach((p,i)=>{p.disabled=i+1>furthestStep;});
 }
 
 function updateSummary(){
@@ -171,7 +183,7 @@ function buildDates(){
   }
   if(selected||first)selectDate(selected||first);
   else{
-    bookingState.date='';bookingState.dateLabel='';bookingState.time='';bookingState.waitlist=false;bookingState.waitlistDetails=null;
+    resetReview();bookingState.date='';bookingState.dateLabel='';bookingState.time='';document.getElementById('bookingTimeContinue')?.setAttribute('disabled','');bookingState.waitlist=false;bookingState.waitlistDetails=null;
     if(selectedDateLabel)selectedDateLabel.textContent='Datum auswählen';updateSummary();
     if(timeSlots)timeSlots.innerHTML='<div class="time-placeholder">In diesem Monat ist kein passender Termin frei. Wähle einen anderen Monat oder nutze die Warteliste.</div>';
   }
@@ -180,10 +192,12 @@ function buildDates(){
 function selectDate(btn){
   if(btn.disabled)return;
   document.querySelectorAll('.date-option').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false')});btn.classList.add('selected');btn.setAttribute('aria-pressed','true');
+  const previousTime=bookingState.date===btn.dataset.iso?bookingState.time:'';
+  resetReview();
   bookingState.waitlist=false;bookingState.waitlistDetails=null;
-  bookingState.date=btn.dataset.iso;bookingState.dateLabel=btn.dataset.label;bookingState.time='';
+  bookingState.date=btn.dataset.iso;bookingState.dateLabel=btn.dataset.label;bookingState.time=previousTime;
   if(waitlistToggle){waitlistToggle.textContent='Warteliste';waitlistToggle.classList.remove('active')}
-  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Weiter zur Zahlweise';
+  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Anfrage prüfen';
   if(selectedDateLabel)selectedDateLabel.textContent=bookingState.dateLabel;
   updateSummary();buildTimes();
 }
@@ -194,28 +208,21 @@ function buildTimes(){
   const availability=window.SmileShineBookingData;
   const slots=availability?.availableSlots?availability.availableSlots(bookingState.date,bookingState.serviceId||bookingState.service,Number(bookingState.duration||30)):[];
   timeSlots.innerHTML='';
+  if(!slots.includes(bookingState.time))bookingState.time='';
+  const timeContinue=document.getElementById('bookingTimeContinue');if(timeContinue)timeContinue.disabled=!bookingState.time;
+  updateSummary();
   if(!slots.length){timeSlots.innerHTML='<div class="time-placeholder">An diesem Tag ist aktuell keine passende Zeit frei.</div>';return;}
   slots.forEach(time=>{
-    const btn=document.createElement('button');btn.type='button';btn.className='time-slot';btn.textContent=time;
+    const btn=document.createElement('button');btn.type='button';btn.className='time-slot';btn.textContent=time;btn.classList.toggle('selected',bookingState.time===time);btn.setAttribute('aria-pressed',String(bookingState.time===time));
     btn.addEventListener('click',()=>{
-      document.querySelectorAll('.time-slot').forEach(b=>b.classList.remove('selected'));
-      btn.classList.add('selected');bookingState.time=time;updateSummary();
-      setTimeout(()=>{buildPrecheck();setStep(3)},180);
+      resetReview();document.querySelectorAll('.time-slot').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false')});
+      btn.classList.add('selected');btn.setAttribute('aria-pressed','true');bookingState.time=time;updateSummary();
+      if(timeContinue)timeContinue.disabled=false;
     });
     timeSlots.appendChild(btn);
   });
 }
 
-function buildPrecheck(){
-  if(!precheckQuestions)return;
-  if(precheckService)precheckService.textContent=bookingState.service;
-  const isConsult=bookingState.service.toLowerCase().includes('beratung');
-  if(isConsult){
-    precheckQuestions.innerHTML=`<label><span>Was möchtest du besprechen?</span><textarea name="goal" rows="3" required placeholder="Kurze Beschreibung deines Wunsches"></textarea></label><label class="choice-block"><span>Gab es bereits eine frühere Behandlung in diesem Bereich?</span><div class="choice-row"><label><input type="radio" name="previous" value="Ja" required> Ja</label><label><input type="radio" name="previous" value="Nein"> Nein</label></div></label>`;
-    return;
-  }
-  precheckQuestions.innerHTML=`<label class="choice-block"><span>Wurde der Bereich bereits früher pigmentiert?</span><div class="choice-row"><label><input type="radio" name="previous" value="Ja" required> Ja</label><label><input type="radio" name="previous" value="Nein"> Nein</label></div></label><label class="choice-block"><span>Bestehen Allergien oder bekannte Unverträglichkeiten, die für die Behandlung relevant sein könnten?</span><div class="choice-row"><label><input type="radio" name="allergy" value="Ja" required> Ja</label><label><input type="radio" name="allergy" value="Nein"> Nein</label></div></label><label class="choice-block"><span>Nimmst du Medikamente ein, die für eine kosmetische Behandlung relevant sein könnten?</span><div class="choice-row"><label><input type="radio" name="medication" value="Ja" required> Ja</label><label><input type="radio" name="medication" value="Nein"> Nein</label></div></label><label><span>Zusätzliche Information <small>optional</small></span><textarea name="precheckNote" rows="3" placeholder="Falls du etwas vorab mitteilen möchtest"></textarea></label>`;
-}
 
 function selectServiceButton(btn){
   if(!btn)return;
@@ -223,6 +230,7 @@ function selectServiceButton(btn){
   const submit=document.querySelector('.booking-panel[data-panel="6"] .button.primary');
   if(submit?.dataset.synced){submit.disabled=false;submit.textContent='Terminanfrage vormerken';}
   document.querySelector('.sync-booking-message')?.remove();
+  resetReview();furthestStep=1;
   calendarMonth=null;
   const service=String(btn.dataset.service||'').trim();
   const duration=String(btn.dataset.duration||'').trim();
@@ -236,7 +244,7 @@ function selectServiceButton(btn){
   bookingState.waitlist=false;bookingState.waitlistDetails=null;bookingState.payment='Im Studio';
   if(waitlistForm)waitlistForm.hidden=true;
   if(waitlistToggle){waitlistToggle.textContent='Warteliste';waitlistToggle.classList.remove('active')}
-  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Weiter zur Zahlweise';
+  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Anfrage prüfen';
   paymentButtons.forEach(button=>{const studio=button.dataset.payment==='Im Studio';button.classList.toggle('selected',studio);const check=button.querySelector('.payment-check');if(check)check.textContent=studio?'✓':'○'});
   updateSummary();
   buildDates();
@@ -246,7 +254,7 @@ function selectServiceButton(btn){
 renderServiceCatalog();
 
 progress.forEach((button,index)=>button.addEventListener('click',()=>{
-  if(!button.disabled)setStep(index+1);
+  if(!button.disabled){const target=Number(button.dataset.progress);if(target===6){if(!bookingForm?.reportValidity())return;bookingState.customer=Object.fromEntries(new FormData(bookingForm).entries());fillConfirmation();}setStep(target);}
 }));
 
 document.querySelectorAll('[data-booking-service]').forEach(link=>link.addEventListener('click',event=>{
@@ -271,12 +279,6 @@ if(serviceOptionsRoot){
 
 document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>setStep(Number(btn.dataset.back))));
 
-if(precheckForm){
-  precheckForm.addEventListener('submit',e=>{
-    e.preventDefault();if(!precheckForm.reportValidity())return;
-    const data=new FormData(precheckForm);bookingState.precheck=Object.fromEntries(data.entries());setStep(4);
-  });
-}
 
 function fillConfirmation(){
   const wait=bookingState.waitlist;
@@ -291,12 +293,11 @@ function fillConfirmation(){
     ? `Warteliste · ${details.dateLabel?details.dateLabel+' · ':''}${details.periodLabel||details.period||'Flexibel'} · ${details.flex||'flexibel'}`
     : `${bookingState.dateLabel} · ${bookingState.time} Uhr · ca. ${bookingState.duration} Min.`;
   if(customer)customer.textContent=bookingState.customer?`${bookingState.customer.firstName} ${bookingState.customer.lastName} · ${bookingState.customer.email}`:'–';
-  if(payment)payment.textContent=wait?'Zahlung: erst bei bestätigtem Termin':`Zahlung: ${bookingState.payment}`;
+  if(payment)payment.textContent='Preis und mögliche Anzahlung werden mit Birgit geklärt.';
   if(waitlist)waitlist.textContent=wait?`Aktiv · ${details.periodLabel||details.period||'Flexibel'} · ${details.flex||'flexibel'}`:'Nicht aktiviert';
   const finalButton=document.querySelector('.booking-panel[data-panel="6"] .button.primary');
   if(finalButton)finalButton.textContent=wait?'Wartelistenwunsch speichern':'Terminanfrage vormerken';
-  const backButton=document.querySelector('.booking-panel[data-panel="6"] [data-back]');
-  if(backButton)backButton.dataset.back=wait?'4':'5';
+
 }
 
 if(bookingForm){
@@ -304,12 +305,8 @@ if(bookingForm){
     e.preventDefault();if(!bookingForm.reportValidity())return;
     const data=new FormData(bookingForm);
     bookingState.customer={firstName:data.get('firstName'),lastName:data.get('lastName'),email:data.get('email'),phone:data.get('phone'),note:data.get('note'),contactPreference:String(data.get('contactPreference')||'E-Mail'),reminderOptIn:data.get('reminderOptIn')==='on'};
-    if(bookingState.waitlist){
-      bookingState.payment='Noch nicht erforderlich';
-      updateSummary();fillConfirmation();setStep(6);
-    }else{
-      setStep(5);
-    }
+    bookingState.payment='Noch zu klären';
+    updateSummary();fillConfirmation();setStep(6);
   });
 }
 
@@ -327,8 +324,10 @@ if(waitlistToggle&&waitlistForm){
   waitlistToggle.addEventListener('click',()=>{waitlistForm.hidden=!waitlistForm.hidden;waitlistToggle.textContent=waitlistForm.hidden?'Warteliste':'Schließen'});
   waitlistForm.elements.flex?.addEventListener('change',()=>waitlistForm.elements.flex.setCustomValidity(''));
   waitlistForm.addEventListener('submit',e=>{e.preventDefault();const data=new FormData(waitlistForm),periodRaw=String(data.get('period')||'Flexibel'),flex=String(data.get('flex')||'Diese Woche'),flexField=waitlistForm.elements.flex,periodMap={Vormittags:'Vormittag',Mittags:'Mittag',Nachmittags:'Nachmittag',Abends:'Abend',Flexibel:'Flexibel'};if(flex==='Nur gewählter Tag'&&!bookingState.date){flexField?.setCustomValidity('Bitte wähle zuerst einen konkreten Tag oder einen flexibleren Zeitraum.');flexField?.reportValidity();return}flexField?.setCustomValidity('');bookingState.waitlist=true;bookingState.waitlistDetails={period:periodMap[periodRaw]||periodRaw,periodLabel:periodRaw,flex,date:bookingState.date,dateLabel:bookingState.dateLabel};
-  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Wartelistenwunsch prüfen';bookingState.date='';bookingState.dateLabel='';bookingState.time='';waitlistForm.hidden=true;waitlistToggle.textContent='✓ Warteliste gewählt';waitlistToggle.classList.add('active');updateSummary();buildPrecheck();setStep(3)});
+  const contactContinue=document.getElementById('bookingContactContinue');if(contactContinue)contactContinue.textContent='Wartelistenwunsch prüfen';bookingState.date='';bookingState.dateLabel='';bookingState.time='';waitlistForm.hidden=true;waitlistToggle.textContent='✓ Warteliste gewählt';waitlistToggle.classList.add('active');resetReview();bookingState.payment='Noch zu klären';updateSummary();setStep(4)});
 }
+
+document.getElementById('bookingTimeContinue')?.addEventListener('click',()=>{if(bookingState.date&&bookingState.time)setStep(4)});
 
 window.SmileShineBooking={state:bookingState,updateSummary,buildDates,buildTimes,setStep,selectServiceButton};
 updateSummary();

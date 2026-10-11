@@ -212,17 +212,17 @@
   }
 
   function cleanCustomerCopy(){
-    const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Persönlich vorbereitet · in wenigen Schritten';
+    const badge=$('.booking-demo-badge');if(badge)badge.innerHTML='<span></span>Behandlung · Termin · Kontakt · Prüfen';
     const categoryLabel=$('.service-category-label');if(categoryLabel)categoryLabel.remove();
     const heads=$$('.booking-panel-head>p');
-    const replacements=['Wähle die Behandlung, die zu deinem Wunsch passt.','Wähle einen freien Termin. Die verfügbaren Zeiten werden automatisch aktualisiert.','Mit ein paar Angaben können wir deinen Termin gut vorbereiten.','Deine Kontaktdaten benötigen wir für Bestätigung und Rückfragen.','Wähle die gewünschte Zahlungsart.','Prüfe deine Angaben noch einmal in Ruhe.'];
+    const replacements=['Wähle die Behandlung, die zu deinem Wunsch passt.','Wähle Tag und Uhrzeit. Mit Weiter bestätigst du deine Auswahl.','Deine Kontaktdaten benötigen wir für Bestätigung und Rückfragen.','Prüfe deine Angaben. Der Termin ist erst nach Birgits Bestätigung verbindlich.'];
     heads.forEach((el,i)=>{if(replacements[i])el.textContent=replacements[i]});
     const pre=$('.precheck-intro p');if(pre)pre.textContent='Bitte beantworte die Fragen so vollständig wie möglich.';
     const consent=$('#precheckForm .consent-row span');if(consent)consent.textContent='Ich bestätige, dass meine Angaben vollständig und korrekt sind.';
     const dataConsent=$('#bookingForm .consent-row span');if(dataConsent)dataConsent.textContent='Ich stimme der Verarbeitung meiner Angaben zur Terminorganisation zu.';
     const waitNote=$('.waitlist-actions>span');if(waitNote)waitNote.textContent='Wähle Zeitraum und Flexibilität. Deine Kontaktdaten folgen im nächsten Schritt.';
-    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML=`<strong>Alles auf einen Blick.</strong><span>Im Präsentationsmodus wird deine Anfrage lokal gespeichert und erscheint direkt in ${OWNER_FIRST}s Studioansicht.</span>`;
-    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Präsentationsmodus · lokal gespeichert';
+    const finalNote=$('.booking-final-note');if(finalNote)finalNote.innerHTML=`<strong>Deine Anfrage ist noch keine Terminbestätigung.</strong><span>Demo: Deine Anfrage wird nur auf diesem Gerät gespeichert. Es wird keine Nachricht versendet.</span>`;
+    const status=$('.summary-status');if(status)status.innerHTML='<span></span>Demo · kein Nachrichtenversand';
   }
 
   function refreshDeposit(){const db=load(),state=window.SmileShineBooking?.state,name=state?.serviceId||state?.service||$('#summaryService')?.textContent?.trim(),s=service(db,name),card=$('.deposit-card');if(!card||!s)return;const strong=$('strong',card),copy=$('p',card),online=$('.payment-option[data-payment="Online-Anzahlung"]'),panel=$('.booking-panel[data-panel="5"]'),head=$('.booking-panel-head h3',panel),intro=$('.booking-panel-head p',panel);const publicPriceConfirmed=s.verification==='studio'||s.priceConfirmed===true;const hasDeposit=publicPriceConfirmed&&Number(s.deposit||0)>0;if(online)online.hidden=!hasDeposit;if(!hasDeposit&&state){state.payment='Im Studio';$$('.payment-option',panel).forEach(btn=>{const selected=btn.dataset.payment==='Im Studio';btn.classList.toggle('selected',selected);const check=$('.payment-check',btn);if(check)check.textContent=selected?'✓':'○'});window.SmileShineBooking?.updateSummary?.()}if(head)head.textContent=hasDeposit?'Wie möchtest du bezahlen?':'Bezahlung beim Termin.';if(intro)intro.textContent=hasDeposit?'Wähle die gewünschte Zahlungsart.':'Für diese Leistung ist aktuell die Bezahlung im Studio vorgesehen.';if(strong)strong.textContent=hasDeposit?money(s.deposit)+' für diese Leistung':'Keine Anzahlung erforderlich';if(copy)copy.textContent=hasDeposit?'Dieser Betrag wird bei Online-Zahlung vorab fällig. Der Restbetrag bleibt für den Termin offen.':`${OWNER_FIRST}s tatsächliche Preise werden vor dem Livegang final bestätigt.`}
@@ -231,7 +231,8 @@
 
   function commit(panel,button){
     const db=load(),state=window.SmileShineBooking?.state,serviceKey=state?.serviceId||state?.service,serviceName=state?.service||$('#summaryService')?.textContent?.trim(),date=state?.date||$('.date-option.selected')?.dataset.iso,time=state?.time||$('#summaryTime')?.textContent?.trim(),form=$('#bookingForm'),waitlist=Boolean(state?.waitlist);
-    if(!serviceName||!form||(!waitlist&&(!date||!time)))return;
+    if(!serviceName||!form||button.disabled||(!waitlist&&(!date||!time)))return;
+    if(!form.reportValidity()){window.SmileShineBooking?.setStep?.(4);return;}
     const s=service(db,serviceKey||serviceName);if(!isPublicBookable(s)){message(panel,'Diese Leistung ist derzeit nicht online verfügbar.',true);return}
     if(!waitlist&&!free(db,date,time,s.id)){message(panel,'Dieser Termin ist inzwischen nicht mehr frei.',true);return}
     const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim(),note=String(data.get('note')||'').trim(),contactPreference=String(state?.customer?.contactPreference||data.get('contactPreference')||'E-Mail'),reminderOptIn=Boolean(state?.customer?.reminderOptIn||data.get('reminderOptIn')==='on');
@@ -251,7 +252,7 @@
       if(existing)Object.assign(existing,payload);
       else db.waitlist.push({id:uid('wait'),...payload,createdAt:new Date().toISOString()});
       db.activity=db.activity||[];db.activity.unshift({id:uid('activity'),type:'booking',text:`${existing?'Wartelisten-Anfrage aktualisiert':'Neue Wartelisten-Anfrage'}: ${name}, ${serviceName}.`,date:new Date().toISOString()});
-      save(db);button.disabled=true;button.textContent=existing?'✓ Wartelistenwunsch aktualisiert':'✓ Wartelistenwunsch gespeichert';message(panel,existing?`Der Wartelistenwunsch wurde aktualisiert und ist in ${OWNER_FIRST}s Studioansicht verfügbar.`:`Der Wartelistenwunsch ist lokal gespeichert und erscheint direkt in ${OWNER_FIRST}s Studioansicht.`,false,existing?'Warteliste aktualisiert':'Warteliste gespeichert');return;
+      if(state)state.submitted=true;save(db);button.disabled=true;button.textContent=existing?'✓ Wartelistenwunsch aktualisiert':'✓ Wartelistenwunsch gespeichert';message(panel,existing?`Der Wartelistenwunsch wurde aktualisiert und ist in ${OWNER_FIRST}s Studioansicht verfügbar.`:`Der Wartelistenwunsch ist lokal gespeichert und erscheint direkt in ${OWNER_FIRST}s Studioansicht.`,false,existing?'Warteliste aktualisiert':'Warteliste gespeichert');return;
     }
 
     const payment=state?.payment||'Im Studio',price=Number(s.price||0),depositExpected=String(payment).includes('Anzahlung')?Number(s.deposit||0):0;
