@@ -58,7 +58,7 @@
   function saveCustomer(form){
     const data=new FormData(form),first=String(data.get('firstName')||'').trim(),last=String(data.get('lastName')||'').trim(),name=`${first} ${last}`.trim(),phone=String(data.get('phone')||'').trim(),email=String(data.get('email')||'').trim(),birthday=String(data.get('birthday')||'').trim(),notes=String(data.get('notes')||'').trim();
     if(!name)return A.toast('Bitte Vor- und Nachname eingeben.');
-    if(!phone&&!email)return A.toast('Bitte Telefon oder E-Mail angeben.');
+    if(!phone&&!email)return A.toast('Bitte gib eine Telefonnummer oder E-Mail-Adresse ein.');
     const duplicate=A.db.customers.find(c=>(email&&String(c.email||'').toLowerCase()===email.toLowerCase())||(phone&&String(c.phone||'').replace(/\s/g,'')===phone.replace(/\s/g,'')));
     if(duplicate)return A.toast(`${duplicate.name} ist bereits in der Kundenkartei.`);
     A.db.customers.push({id:uid('customer'),name,firstName:first,lastName:last,phone,email,birthday,notes,created:isoDate(new Date())});
@@ -67,7 +67,7 @@
 
   function saveAppointment(form){
     const data=new FormData(form),service=A.db.services.find(s=>s.name===data.get('service'));if(!service)return A.toast('Bitte eine Leistung wählen.');
-    const date=data.get('date'),time=data.get('time');if(!A.isSlotFree(date,time,service.duration))return A.toast('Diese Zeit ist bereits belegt oder gesperrt.');
+    const date=data.get('date'),time=data.get('time');if(!A.isSlotFree(date,time,service.duration))return A.toast('Diese Uhrzeit ist nicht frei. Bitte wähle eine andere Zeit.');
     const name=String(data.get('customerName')||'').trim(),email=String(data.get('email')||'').trim(),phone=String(data.get('phone')||'').trim();
     let customer=A.db.customers.find(c=>(email&&c.email===email)||(phone&&c.phone===phone)||c.name.toLowerCase()===name.toLowerCase());
     if(!customer){customer={id:uid('customer'),name,email,phone,created:isoDate(new Date())};A.db.customers.push(customer);A.addActivity('customer',`Neue Kundin / neuer Kunde: ${name}.`)}
