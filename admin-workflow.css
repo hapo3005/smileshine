@@ -435,3 +435,17 @@
   [data-view-panel="dashboard"] #workflowTodayPanel .workflow-layout{grid-template-columns:minmax(0,1fr)}
   [data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+
+/* Approved neutral dashboard: single hierarchy for tasks and utility counters. */
+[data-view-panel="dashboard"] #workflowTodayPanel{border-radius:6px;border-color:#e7e3df;box-shadow:0 3px 16px rgba(40,32,29,.035)}
+[data-view-panel="dashboard"] #workflowTodayPanel .workflow-head h3{font-weight:300;letter-spacing:-.025em}
+[data-view-panel="dashboard"] #workflowTodayPanel .workflow-action{border-bottom-color:#efedeb}
+[data-view-panel="dashboard"] #workflowTodayPanel .workflow-order{background:#f3f1ef;color:#625c58;border-radius:5px}
+[data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled button{background:#fff;border-color:#e7e3df;border-radius:6px}
+[data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled button:hover{background:#faf7f5;border-color:#d5bcb5}
+[data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled button strong{color:#242322}
+[data-view-panel="dashboard"] #workflowTodayPanel .workflow-action>button{border-radius:5px}
+@media(min-width:1251px){
+ [data-view-panel="dashboard"] #workflowTodayPanel .workflow-layout{gap:22px}
+ [data-view-panel="dashboard"] #workflowTodayPanel .workflow-mini-grid.communication-enabled{gap:12px}
+}
