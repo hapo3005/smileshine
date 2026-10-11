@@ -487,85 +487,85 @@ button,a{-webkit-tap-highlight-color:transparent}
 }
 
 /* Studio-wide design system · approved neutral styling across every admin view. */
-body.admin-premium{
+body{
   --studio-ui-border:#e7e3df;
   --studio-ui-hover:#faf7f5;
   --studio-ui-accent:#b78c85;
 }
-body.admin-premium .view .panel,
-body.admin-premium .view .service-card-admin,
-body.admin-premium .modal-card,
-body.admin-premium .workflow-center-card,
-body.admin-premium .communication-center-card,
-body.admin-premium .appointment-detail-card{
+body .view .panel,
+body .view .service-card-admin,
+body .modal-card,
+body .workflow-center-card,
+body .communication-center-card,
+body .appointment-detail-card{
   border-color:var(--studio-ui-border);
   border-radius:6px;
   box-shadow:0 3px 16px rgba(40,32,29,.035);
 }
-body.admin-premium .view .view-heading,
-body.admin-premium .view .welcome-row{gap:20px;margin-bottom:22px}
-body.admin-premium .view .view-heading h2{font-size:clamp(28px,2.3vw,36px);font-weight:300;line-height:1.18;letter-spacing:-.035em}
-body.admin-premium .view .panel-head{gap:16px;margin-bottom:20px}
-body.admin-premium .view .panel-head h3{font-size:22px;line-height:1.25;letter-spacing:-.025em}
-body.admin-premium .view .panel-kicker,
-body.admin-premium .view .eyebrow{color:#77716e;letter-spacing:.15em}
-body.admin-premium .view .soft-button,
-body.admin-premium .view .text-button,
-body.admin-premium .modal .soft-button,
-body.admin-premium .view .row-menu button{
+body .view .view-heading,
+body .view .welcome-row{gap:20px;margin-bottom:22px}
+body .view .view-heading h2{font-size:clamp(28px,2.3vw,36px);font-weight:300;line-height:1.18;letter-spacing:-.035em}
+body .view .panel-head{gap:16px;margin-bottom:20px}
+body .view .panel-head h3{font-size:22px;line-height:1.25;letter-spacing:-.025em}
+body .view .panel-kicker,
+body .view .eyebrow{color:#77716e;letter-spacing:.15em}
+body .view .soft-button,
+body .view .text-button,
+body .modal .soft-button,
+body .view .row-menu button{
   border-radius:5px;
 }
-body.admin-premium .view .soft-button:hover,
-body.admin-premium .view .row-menu button:hover{background:var(--studio-ui-hover);border-color:#d5bcb5}
-body.admin-premium .view .primary-action,
-body.admin-premium .modal .primary-action{border-radius:5px}
-body.admin-premium .view input,
-body.admin-premium .view select,
-body.admin-premium .view textarea,
-body.admin-premium .modal input,
-body.admin-premium .modal select,
-body.admin-premium .modal textarea{
+body .view .soft-button:hover,
+body .view .row-menu button:hover{background:var(--studio-ui-hover);border-color:#d5bcb5}
+body .view .primary-action,
+body .modal .primary-action{border-radius:5px}
+body .view input,
+body .view select,
+body .view textarea,
+body .modal input,
+body .modal select,
+body .modal textarea{
   border-color:var(--studio-ui-border);
   border-radius:5px;
 }
-body.admin-premium .view input:focus-visible,
-body.admin-premium .view select:focus-visible,
-body.admin-premium .view textarea:focus-visible,
-body.admin-premium .modal input:focus-visible,
-body.admin-premium .modal select:focus-visible,
-body.admin-premium .modal textarea:focus-visible{
+body .view input:focus-visible,
+body .view select:focus-visible,
+body .view textarea:focus-visible,
+body .modal input:focus-visible,
+body .modal select:focus-visible,
+body .modal textarea:focus-visible{
   outline:2px solid #b78c85;
   outline-offset:1px;
 }
-body.admin-premium [data-view-panel="customers"] .customer-card,
-body.admin-premium [data-view-panel="appointments"] .appointment-card,
-body.admin-premium [data-view-panel="services"] .service-card-admin,
-body.admin-premium [data-view-panel="availability"] .hours-row{
+body [data-view-panel="customers"] .customer-card,
+body [data-view-panel="appointments"] .appointment-card,
+body [data-view-panel="services"] .service-card-admin,
+body [data-view-panel="availability"] .hours-row{
   border-color:var(--studio-ui-border);
 }
-body.admin-premium [data-view-panel="services"] .services-grid,
-body.admin-premium [data-view-panel="availability"] .availability-grid,
-body.admin-premium [data-view-panel="settings"] .settings-grid{gap:18px}
-body.admin-premium [data-view-panel="services"] .service-card-admin,
-body.admin-premium [data-view-panel="settings"] .setting-card,
-body.admin-premium [data-view-panel="availability"] .availability-grid>.panel{padding:24px}
-body.admin-premium [data-view-panel="services"] .service-card-admin h3{font-weight:400;line-height:1.3}
-body.admin-premium .quick-grid button,
-body.admin-premium .workflow-mini-grid button{border-radius:6px;border-color:var(--studio-ui-border)}
-body.admin-premium .quick-grid button:hover,
-body.admin-premium .workflow-mini-grid button:hover{background:var(--studio-ui-hover);border-color:#d5bcb5}
-body.admin-premium .sidebar .nav-item{border-radius:5px}
-body.admin-premium .sidebar .nav-item.active{background:#242323}
+body [data-view-panel="services"] .services-grid,
+body [data-view-panel="availability"] .availability-grid,
+body [data-view-panel="settings"] .settings-grid{gap:18px}
+body [data-view-panel="services"] .service-card-admin,
+body [data-view-panel="settings"] .setting-card,
+body [data-view-panel="availability"] .availability-grid>.panel{padding:24px}
+body [data-view-panel="services"] .service-card-admin h3{font-weight:400;line-height:1.3}
+body .quick-grid button,
+body .workflow-mini-grid button{border-radius:6px;border-color:var(--studio-ui-border)}
+body .quick-grid button:hover,
+body .workflow-mini-grid button:hover{background:var(--studio-ui-hover);border-color:#d5bcb5}
+body .sidebar .nav-item{border-radius:5px}
+body .sidebar .nav-item.active{background:#242323}
 @media(min-width:761px){
-  body.admin-premium [data-view-panel="customers"] .list-panel,
-  body.admin-premium [data-view-panel="appointments"] .list-panel{padding:24px}
+  body [data-view-panel="customers"] .list-panel,
+  body [data-view-panel="appointments"] .list-panel{padding:24px}
 }
 @media(max-width:760px){
-  body.admin-premium .view .panel,
-  body.admin-premium .modal-card,
-  body.admin-premium .appointment-detail-card{border-radius:5px}
-  body.admin-premium [data-view-panel="services"] .service-card-admin,
-  body.admin-premium [data-view-panel="settings"] .setting-card,
-  body.admin-premium [data-view-panel="availability"] .availability-grid>.panel{padding:16px}
-  body.admin-premium .view .view-heading h2{font-size:29px}
+  body .view .panel,
+  body .modal-card,
+  body .appointment-detail-card{border-radius:5px}
+  body [data-view-panel="services"] .service-card-admin,
+  body [data-view-panel="settings"] .setting-card,
+  body [data-view-panel="availability"] .availability-grid>.panel{padding:16px}
+  body .view .view-heading h2{font-size:29px}
 }
