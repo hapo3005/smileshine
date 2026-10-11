@@ -69,3 +69,21 @@ body .reference-calendar .view-heading .eyebrow{margin-bottom:6px}
 body .reference-calendar .calendar-panel{box-shadow:0 6px 24px rgba(66,43,38,.04)}
 body .reference-calendar .reference-calendar-aside>.panel{box-shadow:0 6px 24px rgba(66,43,38,.045)}
 @media(max-width:760px){body .reference-dashboard .day-cockpit-focus .day-cockpit-empty strong{font-size:16px}}
+
+/* Refinements grounded in actual Playwright desktop/tablet/phone screenshots. */
+body .sidebar .admin-brand{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:0 6px 20px;text-align:center}
+body .sidebar .admin-brand .admin-brand-copy strong{letter-spacing:.20em}
+body .sidebar .admin-brand .admin-brand-copy small{letter-spacing:.16em;font-size:12px}
+body .sidebar .admin-brand .admin-brand-mark{flex:0 0 auto}
+body .reference-dashboard #kpiGrid .kpi-card .kpi-foot{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;width:100%;gap:2px;line-height:1.35}
+body .reference-dashboard #kpiGrid .kpi-card .kpi-foot .delta{display:block;max-width:100%;text-align:left!important;font-size:14px!important;line-height:1.4;white-space:normal}
+body .reference-calendar .calendar-workspace-add,
+body .reference-calendar [data-calendar-workspace-new].primary-action{background:#b5807a!important;color:#fff!important;border-color:#b5807a!important;border-radius:8px!important}
+body .reference-calendar .calendar-workspace-add:hover{background:#94615b!important;border-color:#94615b!important}
+@media(max-width:760px){
+ body .reference-dashboard #kpiGrid .kpi-card .kpi-label{font-size:14px;line-height:1.25}
+ body .reference-dashboard #kpiGrid .kpi-card .kpi-value{font-size:29px;line-height:1.1}
+ body .reference-dashboard #kpiGrid .kpi-card{min-height:145px}
+ body .reference-dashboard .reference-welcome h2{font-size:22px}
+ body .reference-calendar .reference-summary-number{font-size:14px}
+}
