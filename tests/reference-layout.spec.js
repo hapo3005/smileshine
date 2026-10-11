@@ -17,6 +17,9 @@ for(const size of sizes){
    await expect(page.locator('#referenceMiniMonth button[data-reference-date]')).toHaveCount(31);
    await expect(page.locator('#referenceDaySummary .reference-summary-item')).toHaveCount(3);
    await page.screenshot({path:'artifacts/reference-calendar-'+size.name+'.png',fullPage:true});
+   await page.locator('[data-reference-new]').click();
+   await expect(page.locator('#appointmentModal')).toBeVisible();
+   await page.locator('#appointmentModal [data-close-modal]').first().click();
    await page.locator('[data-reference-date]').first().click();
    await expect(page.locator('[data-calendar-mode="day"]')).toHaveAttribute('aria-pressed','true');
    await page.locator('[data-calendar-mode="week"]').click();
