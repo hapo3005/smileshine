@@ -353,22 +353,40 @@ button,a{-webkit-tap-highlight-color:transparent}
 
 /* Unified desktop dashboard spacing system, scoped to the home view. */
 @media (min-width:1060px){
-  #dashboard.view{--dash-gap:20px;--dash-pad:24px}
-  #dashboard .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--dash-gap);margin:0 0 var(--dash-gap)}
-  #dashboard .kpi-card{min-width:0;min-height:156px;padding:var(--dash-pad);display:flex;flex-direction:column;justify-content:space-between;gap:14px}
-  #dashboard .kpi-card *{min-width:0}
-  #dashboard .dashboard-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(310px,.85fr);align-items:stretch;gap:var(--dash-gap);margin-bottom:var(--dash-gap)}
-  #dashboard .dashboard-grid>.panel{min-width:0;margin:0;padding:var(--dash-pad)}
-  #dashboard .panel-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}
-  #dashboard .panel-head h3{margin:5px 0 0;line-height:1.25}
-  #dashboard .panel-head .text-button{white-space:nowrap;flex:0 0 auto;min-height:40px;padding:9px 13px}
-  #dashboard .panel-head .panel-meta{white-space:nowrap}
+  [data-view-panel="dashboard"].view{--dash-gap:20px;--dash-pad:24px}
+  [data-view-panel="dashboard"] .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--dash-gap);margin:0 0 var(--dash-gap)}
+  [data-view-panel="dashboard"] .kpi-card{min-width:0;min-height:156px;padding:var(--dash-pad);display:flex;flex-direction:column;justify-content:space-between;gap:14px}
+  [data-view-panel="dashboard"] .kpi-card *{min-width:0}
+  [data-view-panel="dashboard"] .dashboard-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(310px,.85fr);align-items:stretch;gap:var(--dash-gap);margin-bottom:var(--dash-gap)}
+  [data-view-panel="dashboard"] .dashboard-grid>.panel{min-width:0;margin:0;padding:var(--dash-pad)}
+  [data-view-panel="dashboard"] .panel-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}
+  [data-view-panel="dashboard"] .panel-head h3{margin:5px 0 0;line-height:1.25}
+  [data-view-panel="dashboard"] .panel-head .text-button{white-space:nowrap;flex:0 0 auto;min-height:40px;padding:9px 13px}
+  [data-view-panel="dashboard"] .panel-head .panel-meta{white-space:nowrap}
 }
 @media (min-width:761px) and (max-width:1250px){
-  #dashboard .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-  #dashboard .dashboard-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+  [data-view-panel="dashboard"] .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  [data-view-panel="dashboard"] .dashboard-grid{grid-template-columns:minmax(0,1fr);gap:14px}
 }
 @media (max-width:760px){
-  #dashboard .panel-head{gap:12px}
-  #dashboard .panel-head .text-button{white-space:normal;flex-shrink:0}
+  [data-view-panel="dashboard"] .panel-head{gap:12px}
+  [data-view-panel="dashboard"] .panel-head .text-button{white-space:normal;flex-shrink:0}
+}
+
+/* Cohesive dashboard sizing. Applied to the existing view, not an absent #dashboard id. */
+@media(min-width:1060px){
+  [data-view-panel="dashboard"]{--dash-gap:18px;--dash-pad:22px}
+  [data-view-panel="dashboard"] .welcome-row{margin-bottom:20px}
+  [data-view-panel="dashboard"] .day-focus-mount{margin-bottom:18px}
+  [data-view-panel="dashboard"] .kpi-grid{gap:18px;margin-bottom:18px}
+  [data-view-panel="dashboard"] .kpi-card{min-height:142px;padding:20px 21px;gap:10px;justify-content:flex-start}
+  [data-view-panel="dashboard"] .kpi-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  [data-view-panel="dashboard"] .kpi-value{font-size:32px;line-height:1.15;margin:6px 0 0}
+  [data-view-panel="dashboard"] .kpi-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px;margin-top:auto;line-height:1.35}
+  [data-view-panel="dashboard"] .kpi-foot .delta{max-width:100%;font-size:13px;line-height:1.35;white-space:normal;text-align:left;padding:4px 7px}
+  [data-view-panel="dashboard"] .dashboard-grid{gap:18px;margin-bottom:18px;align-items:stretch}
+  [data-view-panel="dashboard"] .dashboard-grid>.panel{padding:24px}
+  [data-view-panel="dashboard"] .panel-head{margin-bottom:20px}
+  [data-view-panel="dashboard"] .panel-head .text-button{border:1px solid var(--line);background:#fff;box-shadow:none;text-decoration:none;border-radius:2px}
+  [data-view-panel="dashboard"] .today-panel,.dashboard-grid .week-panel{min-height:300px}
 }
