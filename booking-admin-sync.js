@@ -147,115 +147,32 @@
     });
   }
 
-  const treatmentFilters={area:'all',kind:'all'};
-  const treatmentKinds={first:'Erstbehandlung',followup:'Nachbehandlung',refresh:'Auffrischung',consult:'Beratung',other:'Weitere Leistung'};
-  const treatmentAreas={brows:'Augenbrauen',eyes:'Lid & Wimpernkranz',lips:'Lippen',consult:'Beratung',other:'Weitere Bereiche'};
-  function treatmentMeta(service){
-    const known={
-      'consult':['consult','consult'],'brows-pmu':['brows','first'],'brows-refresh':['brows','refresh'],'pmu-followup-brows':['brows','followup'],
-      'lashline':['eyes','first'],'lashline-refresh':['eyes','refresh'],'pmu-followup-lash':['eyes','followup'],
-      'lip-pmu':['lips','first'],'lip-refresh':['lips','refresh'],'pmu-followup-lips':['lips','followup']
-    };
-    const [area,kind]=known[service.id]||['other','other'];
-    return {area,kind};
-  }
   function syncPublicServices(){
     const section=$('#behandlungen');if(!section)return;
     const services=publicServices(load());
-    const additionalServices=services;
+    const featuredIds=['brows-pmu','lashline','lip-pmu','consult'];
+    const additionalServices=services.filter(service=>!featuredIds.includes(service.id));
     let root=section.querySelector('.public-service-directory');
-    root?.carouselEvents?.abort();
     if(!additionalServices.length){root?.remove();return}
     if(!root){
       root=document.createElement('div');root.className='public-service-directory';
       section.querySelector('.treatment-consultation')?.insertAdjacentElement('afterend',root);
     }
     root.id='leistungskatalog';
-    const filterButtons=(values,attribute)=>values.map(([key,label])=>`<button type="button" ${attribute}="${key}" aria-pressed="false" aria-controls="treatmentResults">${label}</button>`).join('');
-    root.innerHTML=`<div class="public-service-directory-head"><span>Deine passende Leistung</span><h3 id="treatmentCatalogTitle" tabindex="-1">Ein Bereich. Alle Möglichkeiten.</h3><p>Wähle den Bereich und den Anlass für deinen Termin.</p></div>
-      <div class="treatment-guide" aria-label="Behandlungsarten erklärt">
-        <div><strong>Erstbehandlung</strong><p>Du möchtest eine neue Pigmentierung. Form und Farbe werden gemeinsam geplant.</p></div>
-        <div><strong>Nachbehandlung</strong><p>Kontrolle und gezielte Ergänzung im Anschluss an deine Erstbehandlung.</p></div>
-        <div><strong>Auffrischung</strong><p>Du möchtest eine bestehende, verblasste Pigmentierung auffrischen lassen.</p></div>
-      </div>
-      <div class="treatment-filter-group" role="group" aria-label="Behandlungsbereich"><span>Bereich</span><div>${filterButtons([['all','Alle Bereiche'],...Object.entries(treatmentAreas).filter(([key])=>services.some(s=>treatmentMeta(s).area===key))],'data-treatment-filter-area')}</div></div>
-      <div class="treatment-filter-group" role="group" aria-label="Behandlungsart"><span>Anlass</span><div>${filterButtons([['all','Alle Anlässe'],...Object.entries(treatmentKinds).filter(([key])=>services.some(s=>treatmentMeta(s).kind===key))],'data-treatment-filter-kind')}</div></div>
-      <div class="additional-carousel-nav"><span class="additional-carousel-status" aria-live="polite" aria-atomic="true"></span><div><button type="button" data-carousel-prev aria-label="Vorherige Leistungen">←</button><button type="button" data-carousel-next aria-label="Weitere Leistungen">→</button></div></div>
-      <div class="additional-service-track" id="treatmentResults" role="region" aria-label="Passende Behandlungen" tabindex="0"></div>
-      <p class="treatment-empty" hidden>Für diese Auswahl ist aktuell keine Leistung online anfragbar. Wähle einen anderen Anlass oder frage eine Beratung an.</p>
-      <div class="additional-service-footer"><span>Noch unsicher, was zu dir passt? Kläre deine Wünsche mit Birgit.</span><a class="button primary brand-cta brand-cta-primary" href="#booking" data-catalog-consult>Beratung anfragen</a></div>`;
-
-    const track=root.querySelector('.additional-service-track');
-    const additionalPhotos={
-      'consult':{id:29648640,position:'50% 35%'},
-      'brows-pmu':{id:29151227,position:'50% 35%'},
-      'lashline':{id:8064912,position:'50% 35%'},
-      'lip-pmu':{id:8990713,position:'50% 35%'},
-      'brows-refresh':{id:6135632,position:'50% 100%'},
-      'pmu-followup-brows':{id:33607397,position:'100% 35%'},
-      'lashline-refresh':{id:31215869,position:'50% 40%'},
-      'pmu-followup-lash':{id:15353405,position:'50% 45%'},
-      'lip-refresh':{id:3762445,position:'50% 40%'},
-      'pmu-followup-lips':{id:7479545,position:'50% 40%'}
-    };
+    root.innerHTML=`<div class="public-service-directory-head"><span>Weitere Leistungen</span><h3>Deine weiteren Möglichkeiten.</h3><p>Eine Nachbehandlung ergänzt die Erstbehandlung. Eine Auffrischung erneuert eine verblasste Pigmentierung. Hier findest du diese und weitere Leistungen.</p></div><div class="treatment-service-list" role="region" aria-label="Weitere Behandlungen"></div>`;
+    const list=root.querySelector('.treatment-service-list');
     additionalServices.forEach(service=>{
-      const display=publicDisplay(service),card=document.createElement('article'),meta=treatmentMeta(service);
-      card.dataset.treatmentArea=meta.area;card.dataset.treatmentKind=meta.kind;
-      card.className='treatment-card additional-service-card image-neutral';
-      const photo=additionalPhotos[service.id];
-      if(photo){
-        card.style.backgroundImage=`linear-gradient(180deg,rgba(10,10,10,.02) 25%,rgba(10,10,10,.82) 100%),url("https://images.pexels.com/photos/${photo.id}/pexels-photo-${photo.id}.jpeg?auto=compress&cs=tinysrgb&w=1000")`;
-        card.style.backgroundPosition=photo.position;
-      }
-      card.innerHTML=`<div><span>${esc(treatmentKinds[meta.kind])} · ca. ${Number(service.duration||30)} Min.</span><h3>${esc(meta.area==='other'?display.name:treatmentAreas[meta.area])}</h3><p>${esc(display.description)}</p><a href="#booking" data-public-service-id="${esc(service.id)}">Behandlung auswählen</a></div>`;
-      track.appendChild(card);
+      const display=publicDisplay(service),card=document.createElement('article');
+      card.className='treatment-service-item';
+      card.innerHTML=`<div><h3>${esc(display.name)}</h3><p>${esc(display.description)}</p><span class="treatment-service-duration">ca. ${Number(service.duration||30)} Min.</span></div><a href="#booking" data-public-service-id="${esc(service.id)}" aria-label="${esc(display.name)} – Termin anfragen">Termin anfragen</a>`;
+      list.appendChild(card);
     });
     root.querySelectorAll('[data-public-service-id]').forEach(link=>link.addEventListener('click',event=>{
       event.preventDefault();
-      const serviceId=link.dataset.publicServiceId;
-      document.querySelector('#booking')?.scrollIntoView({behavior:'smooth',block:'start'});
-      const option=document.querySelector('.service-option[data-service-id="'+CSS.escape(serviceId)+'"]');
+      document.querySelector('#booking')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+      const option=document.querySelector('.service-option[data-service-id="'+CSS.escape(link.dataset.publicServiceId)+'"]');
       if(option)window.SmileShineBooking?.selectServiceButton?.(option);
     }));
-    const previous=root.querySelector('[data-carousel-prev]'),next=root.querySelector('[data-carousel-next]'),status=root.querySelector('.additional-carousel-status');
-    const update=()=>{
-      const cards=[...track.children].filter(card=>!card.hidden),width=track.clientWidth;
-      const shown=cards.map((card,index)=>({index,left:card.getBoundingClientRect().left-track.getBoundingClientRect().left,width:card.offsetWidth})).filter(card=>card.left+card.width>1&&card.left<width-1);
-      status.textContent=shown.length?`${shown[0].index+1}–${shown[shown.length-1].index+1} von ${cards.length} Leistungen`:`${cards.length} Leistungen`;
-      previous.disabled=track.scrollLeft<=2;
-      next.disabled=track.scrollLeft+width>=track.scrollWidth-2;
-    };
-    const move=direction=>{
-      const card=[...track.children].find(card=>!card.hidden);if(!card)return;
-      const step=card.getBoundingClientRect().width+parseFloat(getComputedStyle(track).gap||14);
-      track.scrollBy({left:direction*step,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
-    };
-    previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
-    track.addEventListener('keydown',event=>{if(event.target!==track)return;if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();move(event.key==='ArrowRight'?1:-1)}});
-    track.addEventListener('scroll',update,{passive:true});
-    root.carouselEvents=new AbortController();
-    window.addEventListener('resize',update,{signal:root.carouselEvents.signal});
-    const applyFilters=()=>{
-      if(treatmentFilters.area!=='all'&&!services.some(s=>treatmentMeta(s).area===treatmentFilters.area))treatmentFilters.area='all';
-      if(treatmentFilters.kind!=='all'&&!services.some(s=>treatmentMeta(s).kind===treatmentFilters.kind))treatmentFilters.kind='all';
-      for(const card of track.children)card.hidden=(treatmentFilters.area!=='all'&&card.dataset.treatmentArea!==treatmentFilters.area)||(treatmentFilters.kind!=='all'&&card.dataset.treatmentKind!==treatmentFilters.kind);
-      root.querySelectorAll('[data-treatment-filter-area]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.treatmentFilterArea===treatmentFilters.area)));
-      root.querySelectorAll('[data-treatment-filter-kind]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.treatmentFilterKind===treatmentFilters.kind)));
-      root.querySelector('.treatment-empty').hidden=[...track.children].some(card=>!card.hidden);
-      track.scrollLeft=0;requestAnimationFrame(update);
-    };
-    root.querySelectorAll('[data-treatment-filter-area]').forEach(btn=>btn.addEventListener('click',()=>{treatmentFilters.area=btn.dataset.treatmentFilterArea;applyFilters()}));
-    root.querySelectorAll('[data-treatment-filter-kind]').forEach(btn=>btn.addEventListener('click',()=>{treatmentFilters.kind=btn.dataset.treatmentFilterKind;applyFilters()}));
-    section.querySelectorAll('a[data-treatment-area]').forEach(link=>link.addEventListener('click',event=>{
-      event.preventDefault();treatmentFilters.area=link.dataset.treatmentArea;treatmentFilters.kind='all';applyFilters();
-      root.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
-      root.querySelector('#treatmentCatalogTitle')?.focus({preventScroll:true});
-    },{signal:root.carouselEvents.signal}));
-    root.querySelector('[data-catalog-consult]').addEventListener('click',event=>{
-      const option=document.querySelector('.service-option[data-service-id="consult"]');
-      if(option){event.preventDefault();window.SmileShineBooking?.selectServiceButton?.(option);}
-    });
-    applyFilters();
   }
 
   function cleanCustomerCopy(){
