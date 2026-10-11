@@ -14,14 +14,14 @@
   const SHOP_HEADLINE=CONFIG.content?.shop?.headline||'Online auswählen. Im Studio abholen.';
   const SHOP_INTRO=CONFIG.content?.shop?.intro||`Ausgewählte Pflegeprodukte können online in den Warenkorb gelegt und anschließend bei ${STUDIO_NAME} in ${LOCATION} abgeholt werden.`;
   const products=[
-    {id:'clearing-foam',name:'aesthetic world Clearing Foam',size:'50 ml',price:14.90,category:'Reinigung',description:'Sanfter Reinigungsschaum für Make-up und Alltagsschmutz – gründlich, ohne die Haut unnötig auszutrocknen.',image:'https://shop.cnc-cosmetic.de/media/e1/d4/f9/1752582541/ac757d7728904503c4160f249f47c2dc.jpg?ts=1752582541'},
-    {id:'facial-tonic',name:'aesthetic world Facial Tonic',size:'200 ml',price:25.90,category:'Tonic',description:'Alkoholfreies Gesichtstonic mit Aloe Vera, Hyaluronsäure und Panthenol für ein frisches, geklärtes Hautgefühl.',image:'https://shop.cnc-cosmetic.de/media/29/6b/4e/1752582641/b258d9424c8efcac1cd344d8396082b0.jpg?ts=1752582641'},
-    {id:'hyaluron-serum',name:'aesthetic world Hyaluron Forte Serum',size:'30 ml',price:68.00,category:'Serum',description:'Hochkonzentriertes Hyaluronserum für intensive Feuchtigkeit und einen sichtbar frischeren, aufgepolsterten Look.',image:'https://shop.cnc-cosmetic.de/media/d0/b3/45/1752582944/7418d586e18a0c0eaf3b308831c46eec.jpg?ts=1752582944'},
-    {id:'hyaluron-creme',name:'classic Hyaluron Creme',size:'50 ml',price:33.90,category:'Feuchtigkeit',description:'Leichte Hyaluron-Pflege für jeden Tag – spendet Feuchtigkeit und unterstützt ein entspanntes, strahlendes Hautbild.',image:'https://shop.cnc-cosmetic.de/media/48/a3/88/1753793107/0384840ddb52334cf655a3e0dce20006.jpg?ts=1753793107'},
-    {id:'eye-cream',name:'PREMIUM EYE CREAM',size:'15 ml',price:89.00,category:'Augenpflege',description:'Intensive Premium-Pflege für die empfindliche Augenpartie mit Feuchtigkeit und glättendem Pflegefokus.',image:'https://shop.cnc-cosmetic.de/media/b5/21/f5/1745929985/bc43f3a8a91b764dbfd27b075cdaa6b9.jpg?ts=1745929985'},
-    {id:'uv-protect',name:'aesthetic world Anti-Aging UV Protect SPF 50',size:'30 ml',price:44.00,category:'UV-Schutz',description:'Leichter Gesichtsschutz mit SPF 50, Hyaluron und Ectoin – ideal als täglicher Abschluss der Pflegeroutine.',image:'https://shop.cnc-cosmetic.de/media/c1/7e/7e/1752582952/991a126fc5c9c0e9b1875be4a288f95d.jpg?ts=1752582952'},
-    {id:'lipcare',name:'SUN Lipcare SPF 30',size:'4,6 g',price:7.50,category:'Lippenpflege',description:'Pflegender Lippenstift mit SPF 30 für trockene, spröde Lippen – besonders passend rund um Lippenpflege und PMU.',image:'https://shop.cnc-cosmetic.de/media/73/c9/1f/1742990972/904e42c39b1a771e972b58497c7db8a5.jpg?ts=1742990972'},
-    {id:'edition-4',name:'edition 4.0',size:'50 ml',price:109.00,category:'Premium Anti-Aging',description:'Next-Generation Gesichtspflege mit Lift-&-Repair-Fokus, Hyaluronsäure und regenerationsorientierter Pflegeformel.',image:'https://shop.cnc-cosmetic.de/media/37/79/e8/1768321649/6e3583a86a3b85e6a696bbc48f10bff6.jpg?ts=1768321649'}
+    {id:'clearing-foam',quantity:50,quantityUnit:'ml',name:'aesthetic world Clearing Foam',size:'50 ml',price:14.90,category:'Reinigung',description:'Sanfter Reinigungsschaum für Make-up und Alltagsschmutz – gründlich, ohne die Haut unnötig auszutrocknen.',image:'https://shop.cnc-cosmetic.de/media/e1/d4/f9/1752582541/ac757d7728904503c4160f249f47c2dc.jpg?ts=1752582541'},
+    {id:'facial-tonic',quantity:200,quantityUnit:'ml',name:'aesthetic world Facial Tonic',size:'200 ml',price:25.90,category:'Tonic',description:'Alkoholfreies Gesichtstonic mit Aloe Vera, Hyaluronsäure und Panthenol für ein frisches, geklärtes Hautgefühl.',image:'https://shop.cnc-cosmetic.de/media/29/6b/4e/1752582641/b258d9424c8efcac1cd344d8396082b0.jpg?ts=1752582641'},
+    {id:'hyaluron-serum',quantity:30,quantityUnit:'ml',name:'aesthetic world Hyaluron Forte Serum',size:'30 ml',price:68.00,category:'Serum',description:'Hochkonzentriertes Hyaluronserum für intensive Feuchtigkeit und einen sichtbar frischeren, aufgepolsterten Look.',image:'https://shop.cnc-cosmetic.de/media/d0/b3/45/1752582944/7418d586e18a0c0eaf3b308831c46eec.jpg?ts=1752582944'},
+    {id:'hyaluron-creme',quantity:50,quantityUnit:'ml',name:'classic Hyaluron Creme',size:'50 ml',price:33.90,category:'Feuchtigkeit',description:'Leichte Hyaluron-Pflege für jeden Tag – spendet Feuchtigkeit und unterstützt ein entspanntes, strahlendes Hautbild.',image:'https://shop.cnc-cosmetic.de/media/48/a3/88/1753793107/0384840ddb52334cf655a3e0dce20006.jpg?ts=1753793107'},
+    {id:'eye-cream',quantity:15,quantityUnit:'ml',name:'PREMIUM EYE CREAM',size:'15 ml',price:89.00,category:'Augenpflege',description:'Intensive Premium-Pflege für die empfindliche Augenpartie mit Feuchtigkeit und glättendem Pflegefokus.',image:'https://shop.cnc-cosmetic.de/media/b5/21/f5/1745929985/bc43f3a8a91b764dbfd27b075cdaa6b9.jpg?ts=1745929985'},
+    {id:'uv-protect',quantity:30,quantityUnit:'ml',name:'aesthetic world Anti-Aging UV Protect SPF 50',size:'30 ml',price:44.00,category:'UV-Schutz',description:'Leichter Gesichtsschutz mit SPF 50, Hyaluron und Ectoin – ideal als täglicher Abschluss der Pflegeroutine.',image:'https://shop.cnc-cosmetic.de/media/c1/7e/7e/1752582952/991a126fc5c9c0e9b1875be4a288f95d.jpg?ts=1752582952'},
+    {id:'lipcare',quantity:4.6,quantityUnit:'g',name:'SUN Lipcare SPF 30',size:'4,6 g',price:7.50,category:'Lippenpflege',description:'Pflegender Lippenstift mit SPF 30 für trockene, spröde Lippen – besonders passend rund um Lippenpflege und PMU.',image:'https://shop.cnc-cosmetic.de/media/73/c9/1f/1742990972/904e42c39b1a771e972b58497c7db8a5.jpg?ts=1742990972'},
+    {id:'edition-4',quantity:50,quantityUnit:'ml',name:'edition 4.0',size:'50 ml',price:109.00,category:'Premium Anti-Aging',description:'Next-Generation Gesichtspflege mit Lift-&-Repair-Fokus, Hyaluronsäure und regenerationsorientierter Pflegeformel.',image:'https://shop.cnc-cosmetic.de/media/37/79/e8/1768321649/6e3583a86a3b85e6a696bbc48f10bff6.jpg?ts=1768321649'}
   ];
 
   let cart=loadCart();
@@ -29,6 +29,12 @@
   function escapeHTML(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]))}
   function product(id){return products.find(item=>item.id===id)}
   const eur=value=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(value);
+  function basePrice(item){
+    const unit=item.quantityUnit==='ml'?'l':item.quantityUnit==='g'?'kg':null;
+    if(!unit||!Number.isFinite(item.quantity)||item.quantity<=0)throw new Error('Fehlende Füllmenge für '+item.id);
+    return eur(item.price*1000/item.quantity)+'/'+unit;
+  }
+  const basePriceHTML=item=>'<small class="pickup-base-price">Grundpreis: '+basePrice(item)+'</small>';
   const cartTotal=()=>cart.reduce((sum,row)=>sum+(product(row.id)?.price||0)*Number(row.qty||0),0);
   function loadCart(){try{const parsed=JSON.parse(localStorage.getItem(CART_KEY)||'[]');return Array.isArray(parsed)?parsed.filter(item=>item&&product(item.id)&&Number.isInteger(Number(item.qty))&&Number(item.qty)>0).map(item=>({id:item.id,qty:Math.min(20,Number(item.qty))})):[]}catch{return []}}
   function saveCart(){localStorage.setItem(CART_KEY,JSON.stringify(cart));renderCartState()}
@@ -59,7 +65,7 @@
       .pickup-product-copy{display:flex;flex-direction:column;flex:1;padding:20px}
       .pickup-product-meta{display:flex;justify-content:space-between;gap:10px;color:var(--accent-dark);font-size:14px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
       .pickup-product-copy h3{font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.15;margin:9px 0}.pickup-product-copy p{margin:0;color:var(--muted);font-size:14px;line-height:1.62}
-      .pickup-product-price{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:auto;padding-top:17px}.pickup-product-price strong{font-size:14px}
+      .pickup-product-pricing{margin-top:auto;padding-top:17px}.pickup-product-price{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.pickup-base-price{display:block;margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.5}.pickup-price-notice{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.6}.pickup-product-price strong{font-size:14px}
       .pickup-add{width:100%;margin-top:12px;border:0;border-radius:10px;background:#3a3430;color:#fff;padding:11px 12px;font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.pickup-add:hover{background:#2f2926}
       
       .pickup-shop-footer{margin-top:20px;padding:16px 0;border-top:1px solid var(--line);border-radius:0;background:transparent;display:flex;align-items:center;justify-content:space-between;gap:20px}
@@ -94,7 +100,7 @@
       <div class="pickup-product-copy">
         <div class="pickup-product-meta"><span>${escapeHTML(item.category)}</span><span>${escapeHTML(item.size)}</span></div>
         <h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.description)}</p>
-        <div class="pickup-product-price"><strong>Preis</strong><strong class="pickup-product-amount">${eur(item.price)}</strong></div>
+        <div class="pickup-product-pricing"><div class="pickup-product-price"><strong>Gesamtpreis</strong><strong class="pickup-product-amount">${eur(item.price)}</strong></div>${basePriceHTML(item)}</div>
         <button class="pickup-add" type="button" data-pickup-add="${item.id}">In den Warenkorb</button>
         
       </div>
@@ -111,7 +117,7 @@
 
   function cartItemsHTML(){
     if(!cart.length)return '<div class="pickup-empty"><strong>Dein Warenkorb ist leer.</strong><span>Wähle ein Produkt aus der Boutique aus. Versand gibt es bewusst nicht.</span></div>';
-    return `<div class="pickup-cart-items">${cart.map(row=>{const item=product(row.id);return `<div class="pickup-cart-item"><img class="pickup-cart-thumb" src="${item.image}" alt=""><div><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.size)} · ${eur(item.price)} pro Stück</small></div><div class="pickup-qty"><button type="button" data-pickup-minus="${item.id}" aria-label="Menge verringern">−</button><span>${row.qty}</span><button type="button" data-pickup-plus="${item.id}" aria-label="Menge erhöhen">＋</button></div></div>`}).join('')}</div>`;
+    return `<div class="pickup-cart-items">${cart.map(row=>{const item=product(row.id);return `<div class="pickup-cart-item"><img class="pickup-cart-thumb" src="${item.image}" alt=""><div><strong>${escapeHTML(item.name)}</strong><small>${escapeHTML(item.size)} · ${eur(item.price)} pro Stück</small>${basePriceHTML(item)}</div><div class="pickup-qty"><button type="button" data-pickup-minus="${item.id}" aria-label="Menge verringern">−</button><span>${row.qty}</span><button type="button" data-pickup-plus="${item.id}" aria-label="Menge erhöhen">＋</button></div></div>`}).join('')}</div>`;
   }
 
   function normalizePhone(value){return String(value||'').replace(/[^0-9+]/g,'')}
@@ -200,7 +206,7 @@
     section.innerHTML=`<div class="section-heading split boutique-heading"><div><p class="eyebrow">Pflege für zu Hause · CNC Cosmetic</p><h2>${escapeHTML(SHOP_HEADLINE)}</h2></div><div class="boutique-intro"><p>${escapeHTML(SHOP_INTRO)}</p><span class="shop-status">Nur Abholung · kein Versand</span></div></div>
       <div class="pickup-promise" aria-label="So funktioniert der Abholshop"><div><span>♡</span><div><strong>Produkt auswählen</strong><small>Online in den Warenkorb oder direkt im Studio kaufen.</small></div></div><div><span>€</span><div><strong>Im Studio bezahlen</strong><small>Preis und Zahlung werden bei der Abholung geklärt.</small></div></div><div><span>⌖</span><div><strong>Im Studio abholen</strong><small>${escapeHTML(ADDRESS_DISPLAY)}.</small></div></div></div>
       <div class="pickup-shop-toolbar"><p>Ausgewählte Produkte für Reinigung, Feuchtigkeit, Schutz und Pflege.</p><button class="pickup-cart-button" type="button" data-pickup-cart>Warenkorb <span class="pickup-cart-count" data-pickup-count>0</span></button></div>
-      <div class="pickup-product-grid">${products.map(productCard).join('')}</div>
+      <p class="pickup-price-notice">Alle angegebenen Preise sind Endpreise. Nur Abholung im Studio · keine Versandkosten.</p><div class="pickup-product-grid">${products.map(productCard).join('')}</div>
       <div class="pickup-shop-footer"><div><strong>Abholung bei ${escapeHTML(STUDIO_NAME)}.</strong><p>Abholung online vormerken und nach Bereitmeldung im Studio mitnehmen.</p></div><span>${escapeHTML(ADDRESS_DISPLAY)}</span></div>`;
 
     section.querySelectorAll('.pickup-product-visual img').forEach(img=>img.addEventListener('error',()=>{img.style.display='none'},{once:true}));

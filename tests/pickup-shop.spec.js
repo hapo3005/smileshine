@@ -18,6 +18,18 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
 
   await expect(page.locator('#shop .shop-status')).toHaveText(/Nur Abholung/);
   await expect(page.locator('.pickup-product-card')).toHaveCount(8);
+  const expectedBasePrices={
+    'clearing-foam':'298,00 €/l','facial-tonic':'129,50 €/l',
+    'hyaluron-serum':'2.266,67 €/l','hyaluron-creme':'678,00 €/l',
+    'eye-cream':'5.933,33 €/l','uv-protect':'1.466,67 €/l',
+    'lipcare':'1.630,43 €/kg','edition-4':'2.180,00 €/l'
+  };
+  for(const [id,price] of Object.entries(expectedBasePrices)){
+    const card=page.locator('[data-pickup-product="'+id+'"]');
+    await expect(card.locator('.pickup-base-price')).toHaveText('Grundpreis: '+price);
+    await expect(card.locator('.pickup-product-price')).toContainText('Gesamtpreis');
+  }
+
   await expect(page.locator('.pickup-product-card').first()).toContainText('14,90');
   await expect(page.locator('[data-pickup-add]').first()).toHaveText('In den Warenkorb');
   await expect(page.locator('[data-pickup-cart]')).toContainText('Warenkorb');
@@ -33,6 +45,8 @@ test('pickup shop keeps every online order local to the studio', async ({ page }
 
   await page.locator('[data-pickup-plus]').first().click();
   await expect(page.locator('[data-pickup-count]').first()).toHaveText('2');
+  await expect(page.locator('.pickup-cart-item .pickup-base-price').first()).toContainText('298,00');
+  await expect(page.locator('.pickup-cart-item .pickup-base-price').first()).toContainText('€/l');
 
   await page.locator('[data-pickup-payment="Bei Abholung bezahlen"]').click();
   await expect(page.locator('[data-pickup-payment="Bei Abholung bezahlen"]')).toHaveClass(/active/);
