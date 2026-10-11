@@ -22,14 +22,14 @@ jobs:
           node-version: "24"
       - name: Install Playwright
         run: |
-          npm install --no-save @playwright/test
+          npm install --no-save @playwright/test http-server
           npx playwright install --with-deps chromium
       - name: Run dashboard and calendar interaction tests
         env:
           QA_BASE_URL: http://127.0.0.1:4173/
         run: |
           mkdir -p artifacts
-          npx playwright test tests/reference-layout.spec.js --reporter=line --workers=1
+          npx playwright test tests/reference-layout.spec.js --config=playwright.config.cjs --reporter=line --workers=1
       - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4
