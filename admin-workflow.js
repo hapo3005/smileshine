@@ -211,7 +211,7 @@
         </button>`:''}
       </div>
       <div class="workflow-head">
-        <div><span class="panel-kicker">Heute wichtig</span><h3>${actions.length?'Deine nächsten Schritte.':'Alles vorbereitet.'}</h3><p>${actions.length?`${visibleActions} priorisiert${moreActions?` · ${moreActions} weitere unter Organisation`:''}.`:'Für heute gibt es keine offenen Hinweise.'}</p></div>
+        <div><span class="panel-kicker">Heute wichtig</span><h3>${actions.length?'Deine nächsten Aufgaben':'Alles vorbereitet.'}</h3><p>${actions.length?`${visibleActions} wichtige Aufgaben angezeigt${moreActions?` · ${moreActions} weitere über „Aufgaben öffnen“`:''}.`:'Für heute gibt es keine offenen Hinweise.'}</p></div>
         <button type="button" class="soft-button" data-open-workflow-center>Aufgaben öffnen</button>
       </div>
       <div class="workflow-layout">
