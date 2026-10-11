@@ -74,11 +74,17 @@ async function studioTask(page,data,kind){
     await expect(page.locator('.payment-open strong')).toHaveText('15,00 €');
     await page.locator('[data-close-payment]').click();
   }else if(kind===1){
-    await row.locator('[data-whatsapp-appointment]').click();
+    if(await row.locator('[data-whatsapp-appointment]').isVisible())await row.locator('[data-whatsapp-appointment]').click();
+    else{
+      await row.locator('[data-open-appointment]').click();
+      await page.locator('[data-appointment-messages]').click();
+      await page.locator('#communicationCenterBody .communication-row').filter({hasText:data.name}).first().locator('[data-open-communication]').click();
+    }
     await page.locator('[data-wa-tone="short"]').click();
     await expect(page.locator('#waOpenButton')).toBeDisabled();
     await expect(page.locator('#waMessagePreview')).toHaveValue(/Smile & Shine/);
     await page.locator('[data-close-whatsapp]').click();
+    if(await page.locator('#communicationCenterDialog').isVisible())await page.locator('[data-close-communication-center]').click();
   }else if(kind===2){
     await row.locator('[data-open-appointment]').click();
     await page.locator('[data-appointment-customer]').click();
@@ -98,8 +104,13 @@ async function studioTask(page,data,kind){
     await expect(order).toContainText('Abgeholt');
   }else{
     await navigate(page,'dashboard');
-    await page.locator('.workflow-head [data-open-workflow-center]').click();
-    await page.locator('[data-workflow-tab-button="waitlist"]').click();
+    if(await page.locator('.workflow-head [data-open-workflow-center]').isVisible()){
+      await page.locator('.workflow-head [data-open-workflow-center]').click();
+      await page.locator('[data-workflow-tab-button="waitlist"]').click();
+    }else{
+      await page.locator('#dashboardDetailsToggle').click();
+      await page.locator('.quick-grid [data-open-workflow-center][data-workflow-tab="waitlist"]').click();
+    }
     await page.locator(`[data-book-waitlist="${data.id}_wait"]`).click();
     await page.locator('#appointmentForm button[type="submit"]').click();
     await expect(page.locator('#whatsappDialog')).toBeVisible();
