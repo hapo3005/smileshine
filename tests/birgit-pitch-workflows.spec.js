@@ -142,6 +142,10 @@ test('daily cockpit turns studio work into direct actions', async ({ page }) => 
   await expect(page.locator('.day-cockpit-brief')).toContainText('Wunsch');
   await expect(page.locator('.day-cockpit-brief')).toContainText('Zuletzt');
   await expect(page.locator('.day-cockpit-brief')).toContainText('Startklar?');
+  // Secondary day agenda is intentionally collapsed in the reference dashboard.
+  const studioDetails=page.locator('.dashboard-more-panel');
+  await studioDetails.locator('summary').click();
+  await expect(studioDetails).toHaveAttribute('open', '');
   const contextActions = page.locator('#todayList .today-context-action');
   await expect(contextActions.first()).toBeVisible();
   expect(await contextActions.count()).toBe(4);
@@ -187,7 +191,7 @@ test('daily cockpit turns studio work into direct actions', async ({ page }) => 
   await page.locator('[data-view="dashboard"]').first().click();
   await expect(page.locator('[data-view-panel="dashboard"]')).toHaveClass(/active/);
 
-  const waitlistShortcut = page.locator('[data-open-workflow-center][data-workflow-tab="waitlist"]').first();
+  const waitlistShortcut = page.locator('.quick-grid [data-open-workflow-center][data-workflow-tab="waitlist"]');
   await expect(waitlistShortcut).toBeVisible();
   await waitlistShortcut.click();
   await expect(page.locator('#workflowCenterDialog')).toBeVisible();

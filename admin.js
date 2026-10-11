@@ -86,11 +86,11 @@
   api.buildId=BUILD_ID;
   api.assetUrl=path=>`${path}${path.includes('?')?'&':'?'}v=${encodeURIComponent(BUILD_ID)}`;
   const coreModules=["./admin-render.js","./admin-actions.js"];
-  const featureModules=["./admin-calendar-views.js","./admin-calendar-workspace.js","./admin-customer-detail.js","./admin-payments.js","./admin-appointment-detail.js","./admin-services-manager.js","./admin-customer-numbers.js","./admin-pickup-shop.js","./admin-demo-profiles.js","./admin-whatsapp.js","./admin-recurring-blocks.js","./admin-communications.js","./admin-workflow.js","./admin-completion.js","./admin-media.js"];
+  const featureModules=["./admin-calendar-views.js","./admin-calendar-workspace.js","./admin-reference-layout.js","./admin-customer-detail.js","./admin-payments.js","./admin-appointment-detail.js","./admin-services-manager.js","./admin-customer-numbers.js","./admin-pickup-shop.js","./admin-demo-profiles.js","./admin-whatsapp.js","./admin-recurring-blocks.js","./admin-communications.js","./admin-workflow.js","./admin-completion.js","./admin-media.js"];
   try{
     for(const url of coreModules)await importWithRetry(api.assetUrl(url));
     await Promise.all(featureModules.map(url=>importWithRetry(api.assetUrl(url))));
-    api.initDemoProfiles?.();api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.initCalendarWorkspace?.();api.initRecurringBlocks?.();api.initPickupShop?.();api.initCommunication?.();api.initWorkflowHub?.();api.renderAll();api.refreshPaymentUI?.();api.initWhatsApp?.();api.initCompletion?.();api.initCustomerMedia?.();api.bindCustomerDetailRows?.();await window.SmileShineDemoApp?.init?.(api);api.showView(location.hash.replace('#','')||'dashboard');
+    api.initDemoProfiles?.();api.initCustomerNumbers?.();api.bindActions();api.initServiceManager?.();api.initCalendarViews();api.initCalendarWorkspace?.();api.initReferenceLayout?.();api.initRecurringBlocks?.();api.initPickupShop?.();api.initCommunication?.();api.initWorkflowHub?.();api.renderAll();api.refreshPaymentUI?.();api.initWhatsApp?.();api.initCompletion?.();api.initCustomerMedia?.();api.bindCustomerDetailRows?.();await window.SmileShineDemoApp?.init?.(api);api.showView(location.hash.replace('#','')||'dashboard');
     api.ready=true;document.documentElement.dataset.adminReady='true';
   }catch(error){
     api.initError=String(error?.stack||error||'Unbekannter Initialisierungsfehler');console.error(error);api.toast('Die Studioversion konnte nicht vollständig geladen werden.');
