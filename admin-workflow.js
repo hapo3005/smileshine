@@ -199,7 +199,7 @@
           </div>`:''}`
           :cockpit.closed
             ?`<div class="day-cockpit-empty"><strong>Heute ist geschlossen.</strong><span>Für heute sind keine Öffnungszeiten hinterlegt. Der nächste Arbeitstag steht im Kalender bereit.</span></div>`
-            :`<div class="day-cockpit-empty"><strong>Heute ist noch frei.</strong><span>Neue Termine oder Wartelistenplätze kannst du direkt eintragen.</span></div>`}
+            :`<div class="day-cockpit-empty"><strong>Für heute sind keine Termine eingetragen.</strong><span>Du kannst einen Termin eintragen oder die Warteliste prüfen.</span></div>`}
         </div>
         <div class="day-cockpit-stats">
           <div><span>Erledigt</span><strong>${cockpit.completed}</strong><small>von ${cockpit.todays.length} Terminen</small></div>
@@ -221,7 +221,7 @@
               <span class="workflow-order">${String(index+1).padStart(2,'0')}</span>
               <div class="workflow-action-copy"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></div>
               <button type="button" data-workflow-action="${escapeHTML(item.kind)}" data-task-id="${escapeHTML(item.taskId||'')}" data-communication-id="${escapeHTML(item.communicationId||'')}" data-appointment-id="${escapeHTML(item.appointmentId||'')}" data-customer-id="${escapeHTML(item.customerId||'')}">${escapeHTML(item.action)}</button>
-            </article>`).join(''):`<div class="workflow-clear"><span>✓</span><div><strong>Der Studiotag ist vorbereitet.</strong><small>Neue Anfragen, Termine und Wiedervorlagen erscheinen automatisch hier.</small></div></div>`}
+            </article>`).join(''):`<div class="workflow-clear"><span>✓</span><div><strong>Keine dringenden Aufgaben.</strong><small>Neue Anfragen und fällige Aufgaben erscheinen hier.</small></div></div>`}
         </div>
         <div class="workflow-mini-grid communication-enabled">
           <button type="button" data-open-workflow-center data-workflow-tab="waitlist"><span>Warteliste</span><strong>${waiting}</strong><small>Kundinnen warten</small></button>
@@ -272,7 +272,7 @@
   function renderFollowUps(filter='all'){
     const list=(A.db.followUps||[]).filter(x=>x.status!=='done'&&(filter==='all'||x.type==='aftercare')).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
     return `<section class="workflow-center-section">
-      <div class="workflow-center-title"><div><span class="panel-kicker">${filter==='aftercare'?'Nachpflege':'Wiedervorlagen'}</span><h4>${filter==='aftercare'?'Nachbehandlungen im Blick':'Nichts mehr im Kopf behalten'}</h4></div><button type="button" class="soft-button" data-new-followup>＋ Aufgabe</button></div>
+      <div class="workflow-center-title"><div><span class="panel-kicker">${filter==='aftercare'?'Nachpflege':'Wiedervorlagen'}</span><h4>${filter==='aftercare'?'Nachbehandlungen im Blick':'Offene Aufgaben im Überblick'}</h4></div><button type="button" class="soft-button" data-new-followup>＋ Aufgabe</button></div>
       <div class="workflow-center-list">${list.length?list.map(x=>{const c=customerFor(x.customerId);return `<article><div><strong>${escapeHTML(x.title)}</strong><small>${escapeHTML(c?.name||'Ohne Kundenbezug')} · ${safeDate(x.dueDate)}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}</div><div class="workflow-row-actions">${c?`<button type="button" class="soft-button" data-open-workflow-customer="${c.id}">Kundenakte</button>`:''}<button type="button" class="primary-action" data-complete-followup="${x.id}">Erledigt</button></div></article>`}).join(''):'<div class="workflow-empty">Keine offenen Wiedervorlagen.</div>'}</div>
     </section>`;
   }
@@ -307,7 +307,7 @@
       return {x,c,slot,fitsGap,intake,intakeAttention};
     }).sort((a,b)=>Number(b.fitsGap)-Number(a.fitsGap)||String(a.c?.name||'').localeCompare(String(b.c?.name||''),'de'));
     return `<section class="workflow-center-section">
-      <div class="workflow-center-title"><div><span class="panel-kicker">Warteliste</span><h4>${gap?`Lücke ab ${escapeHTML(gap.start)} Uhr gezielt besetzen`:'Freie Zeiten schneller nachbesetzen'}</h4>${gap?`<p class="waitlist-gap-intro">${gap.minutes} Minuten frei · passende Kundinnen stehen zuerst.</p>`:''}</div><button type="button" class="soft-button" data-new-waitlist>＋ Eintrag</button></div>
+      <div class="workflow-center-title"><div><span class="panel-kicker">Warteliste</span><h4>${gap?`Lücke ab ${escapeHTML(gap.start)} Uhr gezielt besetzen`:'Passende Termine für die Warteliste finden'}</h4>${gap?`<p class="waitlist-gap-intro">${gap.minutes} Minuten frei · passende Kundinnen stehen zuerst.</p>`:''}</div><button type="button" class="soft-button" data-new-waitlist>＋ Eintrag</button></div>
       <div class="workflow-center-list waitlist-list">${rows.length?rows.map(({x,c,slot,fitsGap,intake,intakeAttention})=>`<article class="${fitsGap?'is-gap-match':''}"><div><strong>${escapeHTML(c?.name||'Kunde')} · ${escapeHTML(x.service)}</strong><small>${x.latest&&x.latest!==x.earliest?`${safeDate(x.earliest)}–${safeDate(x.latest)}`:`ab ${safeDate(x.earliest)}`} · ${escapeHTML(x.daypartLabel||x.daypart||'Flexibel')}${x.flex?` · ${escapeHTML(x.flex)}`:''}</small>${x.note?`<p>${escapeHTML(x.note)}</p>`:''}${intake.length?`<p class="waitlist-intake ${intakeAttention?'is-attention':''}"><strong>Vorab:</strong> ${intake.map(escapeHTML).join(' · ')}</p>`:''}${fitsGap?'<em class="waitlist-gap-badge">Passt in die aktuelle Lücke</em>':''}</div><div class="waitlist-match">${slot?`<span>${fitsGap?'Freie Lücke':'Nächster Slot'}<br><strong>${safeDate(slot.date)} · ${slot.time}</strong></span><button type="button" class="primary-action" data-book-waitlist="${x.id}" data-slot-date="${slot.date}" data-slot-time="${slot.time}">${fitsGap?'Lücke besetzen':'Termin übernehmen'}</button>`:'<span>Aktuell kein freier Slot</span>'}</div></article>`).join(''):'<div class="workflow-empty">Die Warteliste ist leer.</div>'}</div>
     </section>`;
   }
@@ -419,9 +419,9 @@
     let nextAction={kind:'none',title:'Aktuell nichts offen',detail:'Keine fällige Nachricht, Wiedervorlage oder Zahlung.',label:'Alles im Blick'};
     if(dueCommunications[0]){
       const item=dueCommunications[0];
-      nextAction={kind:'communication',communicationId:item.id,title:'Nachricht ist fällig',detail:(item.title||'Kundenkontakt')+' · '+safeDate(item.dueDate),label:'Nachricht vorbereiten'};
+      nextAction={kind:'communication',communicationId:item.id,title:'Nachricht ist fällig',detail:(item.title||'Kundenkontakt')+' · '+safeDate(item.dueDate),label:'Nachricht schreiben'};
     }else if(nextTask&&nextTask.dueDate<=t){
-      nextAction={kind:'followup',title:nextTask.title,detail:'Wiedervorlage · fällig '+safeDate(nextTask.dueDate),label:'Wiedervorlagen öffnen'};
+      nextAction={kind:'followup',title:nextTask.title,detail:'Wiedervorlage · fällig '+safeDate(nextTask.dueDate),label:'Aufgaben öffnen'};
     }else if(unpaidCompleted){
       nextAction={kind:'payment',appointmentId:unpaidCompleted.a.id,title:'Zahlung noch offen',detail:money(unpaidCompleted.f.open)+' · '+unpaidCompleted.a.service,label:'Zahlung öffnen'};
     }else if(pending){
@@ -429,7 +429,7 @@
     }else if(nextAppointment){
       nextAction={kind:'appointment',appointmentId:nextAppointment.id,title:'Nächster Termin vorbereitet halten',detail:safeDate(nextAppointment.date)+' · '+nextAppointment.time+' Uhr · '+nextAppointment.service,label:'Termin öffnen'};
     }else if(nextTask){
-      nextAction={kind:'followup',title:'Nächste Wiedervorlage',detail:nextTask.title+' · '+safeDate(nextTask.dueDate),label:'Wiedervorlagen öffnen'};
+      nextAction={kind:'followup',title:'Nächste Wiedervorlage',detail:nextTask.title+' · '+safeDate(nextTask.dueDate),label:'Aufgaben öffnen'};
     }
 
     const photoStatus=last?(last.beforePhoto&&last.afterPhoto?'Vorher & Nachher vorhanden':last.beforePhoto||last.afterPhoto?'Foto teilweise dokumentiert':'Keine Fotos markiert'):'Noch keine Dokumentation';
