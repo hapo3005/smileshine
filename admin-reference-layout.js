@@ -32,6 +32,16 @@
     }
   }
   function initReferenceLayout(){
+    const start=A.calendarCursor||new Date();
+    const onToday=iso(start)===iso(new Date());
+    const working=A.db?.workingHours?.[start.getDay()];
+    const hasSpecial=A.activeAppointments?.().some(a=>a.date===iso(start)&&a.specialOpening);
+    if(onToday&&!working?.enabled&&!hasSpecial){
+      for(let days=1;days<=7;days++){
+        const next=new Date(start);next.setDate(next.getDate()+days);next.setHours(12,0,0,0);
+        if(A.db?.workingHours?.[next.getDay()]?.enabled){A.calendarCursor=next;A.renderCalendar?.();break}
+      }
+    }
     A.registerRenderHook?.('reference-calendar-summary',renderReferenceCalendar,45);
     A.registerViewHook?.('reference-calendar-summary',name=>{if(name==='calendar')renderReferenceCalendar()},45);
     document.addEventListener('click',event=>{
