@@ -197,13 +197,15 @@
     section.innerHTML=`<div class="section-heading split boutique-heading"><div><p class="eyebrow">Pflege für zu Hause · CNC Cosmetic</p><h2>${escapeHTML(SHOP_HEADLINE)}</h2></div><div class="boutique-intro"><p>${escapeHTML(SHOP_INTRO)}</p><span class="shop-status">Nur Abholung · kein Versand</span></div></div>
       <div class="pickup-promise" aria-label="So funktioniert der Abholshop"><div><span>♡</span><div><strong>Produkt auswählen</strong><small>Online in den Warenkorb oder direkt im Studio kaufen.</small></div></div><div><span>€</span><div><strong>Im Studio bezahlen</strong><small>Preis und Zahlung werden bei der Abholung geklärt.</small></div></div><div><span>⌖</span><div><strong>Im Studio abholen</strong><small>${escapeHTML(ADDRESS_DISPLAY)}.</small></div></div></div>
       <div class="pickup-shop-toolbar"><p>Ausgewählte Produkte für Reinigung, Feuchtigkeit, Schutz und Pflege.</p><button class="pickup-cart-button" type="button" data-pickup-cart>Warenkorb <span class="pickup-cart-count" data-pickup-count>0</span></button></div>
-      <p class="pickup-price-notice">Alle angegebenen Preise sind Endpreise. Nur Abholung im Studio · keine Versandkosten.</p><div class="pickup-product-grid">${products.map(productCard).join('')}</div>
+      <p class="pickup-price-notice">Alle angegebenen Preise sind Endpreise. Nur Abholung im Studio · keine Versandkosten.</p><div class="pickup-product-grid">${products.filter(p=>p.active!==false).map(productCard).join('')}</div>
       <div class="pickup-shop-footer"><div><strong>Abholung bei ${escapeHTML(STUDIO_NAME)}.</strong><p>Abholung online vormerken und nach Bereitmeldung im Studio mitnehmen.</p></div><span>${escapeHTML(ADDRESS_DISPLAY)}</span></div>`;
 
     section.querySelectorAll('.pickup-product-visual img').forEach(img=>img.addEventListener('error',()=>{img.style.display='none'},{once:true}));
     renderCartState();
   }
 
+  window.addEventListener('storage',event=>{if(event.key===window.SmileShineCatalog?.KEY){products=window.SmileShineCatalog.list();cart=cart.filter(row=>product(row.id)?.active!==false);render()}});
+  window.addEventListener('smileshine:products-changed',()=>{products=window.SmileShineCatalog.list();render()});
   document.addEventListener('click',event=>{
     const addButton=event.target.closest('[data-pickup-add]');if(addButton){add(addButton.dataset.pickupAdd);return}
     if(event.target.closest('[data-pickup-cart]')){openCart();return}
