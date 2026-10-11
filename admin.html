@@ -62,69 +62,60 @@
         <a class="mobile-brand admin-brand-v73" href="#dashboard" aria-label="Smile & Shine Start"><span class="admin-brand-mark" aria-hidden="true"></span><span class="admin-brand-copy"><strong data-studio-text="studio.name">SMILE &amp; SHINE</strong><small>DENTIST · COSMETIC</small></span></a>
       </div>
 
-      <section class="view active" data-view-panel="dashboard">
-        <div class="welcome-row">
-          <div>
-            <p class="eyebrow">Heute im Studio</p>
-            <h2 id="todayHeading">Das ist heute wichtig.</h2>
-            <p class="muted" id="todaySubline"></p>
-          </div>
-          <button class="soft-button" type="button" data-jump="calendar">Tageskalender öffnen</button>
+      <section class="view active reference-dashboard" data-view-panel="dashboard">
+        <div class="welcome-row reference-welcome">
+          <div><p class="eyebrow">Dein Studio auf einen Blick</p><h2 id="todayHeading">Heute im Studio</h2><p class="muted" id="todaySubline"></p></div>
         </div>
-
         <div id="dayFocusMount" class="day-focus-mount" aria-live="polite"></div>
         <div class="kpi-grid" id="kpiGrid" aria-label="Studio auf einen Blick"></div>
         <section id="workflowTodayPanel" class="workflow-today panel" aria-live="polite"></section>
-
         <button class="mobile-dashboard-toggle" id="dashboardDetailsToggle" type="button" aria-expanded="false" aria-controls="dashboardDetails">
-          <span><strong>Weitere Tagesinformationen</strong><small>Termine, Auslastung und Aktivitäten</small></span><b>anzeigen</b>
+          <span><strong>Weitere Tagesinformationen</strong><small>Termine und Studioaktivitäten</small></span><b>anzeigen</b>
         </button>
         <div class="dashboard-details" id="dashboardDetails">
-
-        <div class="dashboard-grid">
-          <article class="panel today-panel">
-            <div class="panel-head"><div><span class="panel-kicker">Tagesplan</span><h3>Heutige Termine</h3></div><button class="text-button" type="button" data-jump="appointments">Alle Termine</button></div>
-            <div class="today-list" id="todayList"></div>
-          </article>
-
-          <article class="panel week-panel">
-            <div class="panel-head"><div><span class="panel-kicker">Auslastung</span><h3>Diese Woche</h3></div><span class="panel-meta" id="weekMeta"></span></div>
-            <div class="week-bars" id="weekBars"></div>
-            <div class="next-free" id="nextFree"></div>
-          </article>
-        </div>
-
-        <details class="dashboard-more-panel">
-          <summary>Weitere Studioinformationen <span>Auslastung, Schnellzugriff und Aktivitäten</span></summary>
-        <div class="dashboard-grid secondary-grid">
-          <article class="panel quick-panel">
-            <div class="panel-head"><div><span class="panel-kicker">Schnellzugriff</span><h3>Was möchtest du tun?</h3></div></div>
-            <div class="quick-grid">
-              <button type="button" data-action="newAppointment"><span>＋</span><strong>Termin eintragen</strong><small>Termin manuell eintragen</small></button>
-              <button type="button" data-open-workflow-center data-workflow-tab="waitlist"><span>↔</span><strong>Warteliste</strong><small>Freie Lücken besetzen</small></button>
-              <button type="button" data-jump="customers"><span>○</span><strong>Kunden öffnen</strong><small>Kontaktdaten & Historie</small></button>
-              <button type="button" data-jump="availability"><span>◷</span><strong>Zeit blockieren</strong><small>Pause, Urlaub, privat</small></button>
+          <details class="dashboard-more-panel">
+            <summary>Mehr aus dem Studio <span>Tagesplan, Auslastung und Schnellzugriff</span></summary>
+            <div class="dashboard-grid">
+              <article class="panel today-panel">
+                <div class="panel-head"><div><span class="panel-kicker">Tagesplan</span><h3>Heutige Termine</h3></div><button class="text-button" type="button" data-jump="appointments">Alle Termine</button></div>
+                <div class="today-list" id="todayList"></div>
+              </article>
+              <article class="panel week-panel">
+                <div class="panel-head"><div><span class="panel-kicker">Auslastung</span><h3>Diese Woche</h3></div><span class="panel-meta" id="weekMeta"></span></div>
+                <div class="week-bars" id="weekBars"></div><div class="next-free" id="nextFree"></div>
+              </article>
             </div>
-          </article>
-
-          <article class="panel activity-panel">
-            <div class="panel-head"><div><span class="panel-kicker">Neu</span><h3>Letzte Aktivitäten</h3></div></div>
-            <div id="activityList" class="activity-list"></div>
-          </article>
-        </div>
-        </details>
+            <div class="dashboard-grid secondary-grid">
+              <article class="panel quick-panel"><div class="panel-head"><div><span class="panel-kicker">Schnellzugriff</span><h3>Was möchtest du tun?</h3></div></div>
+                <div class="quick-grid">
+                  <button type="button" data-action="newAppointment"><span>＋</span><strong>Termin eintragen</strong><small>Direkt im Studio anlegen</small></button>
+                  <button type="button" data-open-workflow-center data-workflow-tab="waitlist"><span>↔</span><strong>Warteliste</strong><small>Freie Zeiten vergeben</small></button>
+                  <button type="button" data-jump="customers"><span>○</span><strong>Kunden öffnen</strong><small>Kartei und Historie</small></button>
+                  <button type="button" data-jump="availability"><span>◷</span><strong>Zeit blockieren</strong><small>Pause oder Urlaub</small></button>
+                </div>
+              </article>
+              <article class="panel activity-panel"><div class="panel-head"><div><span class="panel-kicker">Rückblick</span><h3>Letzte Aktivitäten</h3></div></div><div id="activityList" class="activity-list"></div></article>
+            </div>
+          </details>
         </div>
       </section>
 
-      <section class="view" data-view-panel="calendar">
+      <section class="view reference-calendar" data-view-panel="calendar">
         <div class="view-heading">
-          <div><p class="eyebrow">Kalender</p><h2>Termine und freie Zeiten.</h2><p class="muted">Termine, Pausen und Sperrzeiten in einer Tagesansicht.</p></div>
+          <div><p class="eyebrow">Terminplanung</p><h2>Kalender</h2><p class="muted">Termine verwalten, verschieben und neue Zeiten eintragen.</p></div>
           <div class="date-controls"><button id="prevDay" type="button" aria-label="Vorheriger Tag">←</button><button id="calendarToday" type="button">Heute</button><button id="nextDay" type="button" aria-label="Nächster Tag">→</button></div>
         </div>
-        <article class="panel calendar-panel">
-          <div class="calendar-date-head"><div><span id="calendarWeekday">Montag</span><strong id="calendarDate">14. September</strong></div><div class="calendar-legend"><span><i class="legend-booking"></i> Termin</span><span><i class="legend-block"></i> Gesperrt</span></div></div>
-          <div class="day-schedule" id="daySchedule"></div>
-        </article>
+        <div class="reference-calendar-layout">
+          <article class="panel calendar-panel">
+            <div class="calendar-date-head"><div><span id="calendarWeekday">Montag</span><strong id="calendarDate">14. September</strong></div><div class="calendar-legend"><span><i class="legend-booking"></i> Termin</span><span><i class="legend-block"></i> Gesperrt</span></div></div>
+            <div class="day-schedule" id="daySchedule"></div>
+          </article>
+          <aside class="reference-calendar-aside" aria-label="Kalenderübersicht">
+            <section class="panel reference-mini-month"><div class="reference-aside-title"><h3 id="referenceMonthTitle">Monat</h3><button type="button" data-reference-next-month aria-label="Nächster Monat">›</button></div><div id="referenceMiniMonth"></div></section>
+            <section class="panel reference-day-summary"><h3>Tagesübersicht</h3><div id="referenceDaySummary" aria-live="polite"></div></section>
+            <section class="panel reference-calendar-quick"><h3>Schnellaktionen</h3><button type="button" data-calendar-workspace-new>Neuer Termin</button><button type="button" data-calendar-open-availability>Zeit blockieren</button><button type="button" data-calendar-open-availability>Öffnungszeiten</button></section>
+          </aside>
+        </div>
       </section>
 
       <section class="view" data-view-panel="appointments">
