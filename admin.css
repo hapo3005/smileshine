@@ -390,3 +390,33 @@ button,a{-webkit-tap-highlight-color:transparent}
   [data-view-panel="dashboard"] .panel-head .text-button{border:1px solid var(--line);background:#fff;box-shadow:none;text-decoration:none;border-radius:2px}
   [data-view-panel="dashboard"] .today-panel,.dashboard-grid .week-panel{min-height:300px}
 }
+
+/* Polished, quiet navigation action in the sidebar footer. */
+.sidebar-footer .customer-site-link{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:44px;
+  padding:11px 14px;
+  margin-top:18px;
+  border:1px solid var(--line);
+  border-radius:3px;
+  background:#fff;
+  color:var(--ink);
+  font-size:14px;
+  font-weight:600;
+  line-height:1.4;
+  text-decoration:none;
+  text-align:center;
+  transition:background-color .18s ease,border-color .18s ease;
+}
+.sidebar-footer .customer-site-link:hover{
+  background:#efeee9;
+  border-color:#bfc2c3;
+  text-decoration:none;
+}
+.sidebar-footer .customer-site-link:focus-visible{
+  outline:2px solid #3e6266;
+  outline-offset:3px;
+}
