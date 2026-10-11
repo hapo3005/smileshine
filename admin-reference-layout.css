@@ -87,3 +87,9 @@ body .reference-calendar .calendar-workspace-add:hover{background:#94615b!import
  body .reference-dashboard .reference-welcome h2{font-size:22px}
  body .reference-calendar .reference-summary-number{font-size:14px}
 }
+
+/* Accessibility QA: operational labels are never smaller than 14px. */
+body .reference-dashboard .day-cockpit-label{font-size:14px!important}
+body .reference-calendar .schedule-time{font-size:14px!important}
+body .reference-calendar .reference-mini-grid span,
+body .reference-calendar .reference-mini-grid button{font-size:14px!important}
