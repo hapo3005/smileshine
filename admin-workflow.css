@@ -331,3 +331,63 @@
  .workflow-action>button{grid-column:auto;justify-self:end;padding:8px 9px}
  .workflow-action-copy small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 }
+
+/* Keep the dashboard action counters legible on wide and intermediate screens. */
+.workflow-layout{
+  grid-template-columns:minmax(0,1fr) minmax(355px,390px);
+  align-items:start;
+}
+.workflow-mini-grid.communication-enabled{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  min-width:0;
+}
+.workflow-mini-grid.communication-enabled button{
+  min-width:0;
+  min-height:155px;
+  padding:18px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:auto 1fr;
+  align-items:start;
+  gap:12px 8px;
+  box-sizing:border-box;
+}
+.workflow-mini-grid.communication-enabled button span{
+  min-width:0;
+  overflow-wrap:break-word;
+  font-size:15px;
+  line-height:1.35;
+}
+.workflow-mini-grid.communication-enabled button strong{
+  grid-column:2;
+  grid-row:1;
+  align-self:start;
+  font-size:30px;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.workflow-mini-grid.communication-enabled button small{
+  grid-column:1/-1;
+  grid-row:2;
+  align-self:end;
+  font-size:14px;
+  line-height:1.45;
+  overflow-wrap:break-word;
+}
+@media(max-width:1250px){
+  .workflow-layout{grid-template-columns:minmax(0,1fr)}
+  .workflow-mini-grid.communication-enabled{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .workflow-mini-grid.communication-enabled button{min-height:125px}
+}
+@media(max-width:760px){
+  .workflow-mini-grid.communication-enabled{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .workflow-mini-grid.communication-enabled button{min-height:135px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto 1fr;padding:14px}
+  .workflow-mini-grid.communication-enabled button strong{grid-column:2;grid-row:1;margin:0;font-size:27px}
+  .workflow-mini-grid.communication-enabled button small{grid-column:1/-1;grid-row:2}
+}
+@media(max-width:390px){
+  .workflow-mini-grid.communication-enabled{grid-template-columns:1fr}
+  .workflow-mini-grid.communication-enabled button{min-height:100px}
+}
