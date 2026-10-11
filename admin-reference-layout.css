@@ -135,3 +135,11 @@ body .sidebar .side-nav{margin-top:0!important}
 @media(max-width:760px){
  body .sidebar .admin-brand.admin-brand-v73{padding:10px 4px 14px!important}
 }
+
+/* QA: Never truncate service names in mobile customer cards and history. */
+@media(max-width:760px){
+ body [data-view-panel="customers"] small{
+  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+  overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.45!important;
+ }
+}
