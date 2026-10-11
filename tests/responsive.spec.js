@@ -84,16 +84,9 @@ async function completeBooking(page, tag) {
   await expect(firstSlot).toBeVisible();
   await firstSlot.click();
 
-  await expect(page.locator('.booking-panel[data-panel="3"]')).toHaveClass(/active/);
-  await page.locator('#precheckForm textarea[required]').evaluateAll(nodes => nodes.forEach((node, i) => node.value = `Responsive QA ${i + 1}`));
-  const requiredRadioNames = await page.locator('#precheckForm input[type="radio"][required]').evaluateAll(nodes => [...new Set(nodes.map(n => n.name))]);
-  for (const name of requiredRadioNames) {
-    await page.locator(`#precheckForm input[type="radio"][name="${name}"]`).first().check();
-  }
-  const requiredChecks = page.locator('#precheckForm input[type="checkbox"][required]');
-  for (let i = 0; i < await requiredChecks.count(); i++) await requiredChecks.nth(i).check();
-  await assertNoRootOverflow(page, `${tag} booking step 3`);
-  await page.locator('#precheckForm button[type="submit"]').click();
+  await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
+  await expect(page.locator('#bookingTimeContinue')).toBeEnabled();
+  await page.locator('#bookingTimeContinue').click();
 
   await expect(page.locator('.booking-panel[data-panel="4"]')).toHaveClass(/active/);
   await page.locator('#bookingForm input[name="firstName"]').fill('Responsive');
@@ -101,20 +94,16 @@ async function completeBooking(page, tag) {
   await page.locator('#bookingForm input[name="email"]').fill('responsive@example.invalid');
   await page.locator('#bookingForm input[name="phone"]').fill('0123456789');
   await page.locator('#bookingForm input[type="checkbox"][required]').check();
-  await assertNoRootOverflow(page, `${tag} booking step 4`);
+  await assertNoRootOverflow(page, `${tag} booking step 3`);
   await page.locator('#bookingForm button[type="submit"]').click();
-
-  await expect(page.locator('.booking-panel[data-panel="5"]')).toHaveClass(/active/);
-  await assertNoRootOverflow(page, `${tag} booking step 5`);
-  await page.locator('#paymentContinue').click();
 
   await expect(page.locator('.booking-panel[data-panel="6"]')).toHaveClass(/active/);
   await expect(page.locator('#confirmService')).not.toHaveText('–');
-  await assertNoRootOverflow(page, `${tag} booking step 6`);
+  await assertNoRootOverflow(page, `${tag} booking step 4`);
 }
 
 for (const viewport of viewports) {
-  test(`public site + six-step booking are responsive at ${viewport.name}px`, async ({ page }) => {
+  test(`public site + four-step booking are responsive at ${viewport.name}px`, async ({ page }) => {
     test.setTimeout(90000);
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto(`index.html?responsive=${viewport.name}-${Date.now()}`, { waitUntil: 'networkidle' });

@@ -160,7 +160,9 @@ test(`public storefront cross-platform smoke — ${label}`, async ({ page }, tes
   const firstSlot = page.locator('.time-slot:visible').first();
   await expect(firstSlot).toBeVisible({ timeout: 10000 });
   await firstSlot.click();
-  await expect(page.locator('.booking-panel[data-panel="3"]')).toHaveClass(/active/);
+  await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
+  await page.locator('#bookingTimeContinue').click();
+  await expect(page.locator('.booking-panel[data-panel="4"]')).toHaveClass(/active/);
   await assertNoUnexpectedOverflow(page, `${label} booking interaction`);
 
   await page.locator('#shop').scrollIntoViewIfNeeded();

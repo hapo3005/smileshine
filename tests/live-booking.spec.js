@@ -56,16 +56,22 @@ test('published booking flow stays in sync with admin services', async ({ page }
   const secondDate = page.locator('.date-option:not([disabled])').nth(1);
   if (await secondDate.count()) await secondDate.click();
   await page.locator('.time-slot:visible').first().click();
-  await expect(page.locator('.booking-panel[data-panel="3"]')).toHaveClass(/active/);
+  await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
+  await expect(page.locator('#bookingTimeContinue')).toBeEnabled();
+  await page.locator('#bookingTimeContinue').click();
+  await expect(page.locator('.booking-panel[data-panel="4"]')).toHaveClass(/active/);
 
-  await page.locator('.booking-panel[data-panel="3"] [data-back="2"]').click();
+  await page.locator('.booking-panel[data-panel="4"] [data-back="2"]').click();
   await page.locator('.booking-panel[data-panel="2"] [data-back="1"]').click();
   await choose('.service-option[data-service-id="consult"]', 'Beratung', 30);
 
   await page.locator('.date-option.selected').click();
   await page.locator('.time-slot:visible').first().click();
-  await expect(page.locator('.booking-panel[data-panel="3"]')).toHaveClass(/active/);
-  await page.locator('.booking-panel[data-panel="3"] [data-back="2"]').click();
+  await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
+  await expect(page.locator('#bookingTimeContinue')).toBeEnabled();
+  await page.locator('#bookingTimeContinue').click();
+  await expect(page.locator('.booking-panel[data-panel="4"]')).toHaveClass(/active/);
+  await page.locator('.booking-panel[data-panel="4"] [data-back="2"]').click();
   await page.locator('.booking-panel[data-panel="2"] [data-back="1"]').click();
 
   await page.goto(`admin.html?e2e=${Date.now()}#services`, { waitUntil: 'networkidle' });
@@ -102,24 +108,16 @@ test('published booking flow stays in sync with admin services', async ({ page }
   await expect(page.locator('.date-option.selected')).toHaveCount(1);
   await expect(page.locator('.time-slot:visible')).not.toHaveCount(0);
   await page.locator('.time-slot:visible').first().click();
-  await expect(page.locator('.booking-panel[data-panel="3"]')).toHaveClass(/active/);
-  console.log('BOOKING_STAGE: preparation');
-  for (const name of ['previous', 'allergy', 'medication']) {
-    await page.locator(`#precheckForm input[name="${name}"][value="Nein"]`).check();
-  }
-  await page.locator('#precheckForm input[type="checkbox"][required]').check();
-  await page.locator('#precheckForm button[type="submit"]').click();
+  await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
+  await expect(page.locator('#bookingTimeContinue')).toBeEnabled();
+  await page.locator('#bookingTimeContinue').click();
   await expect(page.locator('.booking-panel[data-panel="4"]')).toHaveClass(/active/);
-
   await page.locator('#bookingForm input[name="firstName"]').fill('Live');
   await page.locator('#bookingForm input[name="lastName"]').fill('Test');
   await page.locator('#bookingForm input[name="email"]').fill('live-test@example.invalid');
   await page.locator('#bookingForm input[name="phone"]').fill('0123456789');
   await page.locator('#bookingForm input[type="checkbox"][required]').check();
   await page.locator('#bookingForm button[type="submit"]').click();
-  await expect(page.locator('.booking-panel[data-panel="5"]')).toHaveClass(/active/);
-
-  await page.locator('#paymentContinue').click();
   await expect(page.locator('.booking-panel[data-panel="6"]')).toHaveClass(/active/);
   await page.locator('.booking-panel[data-panel="6"] .button.primary').click();
   await expect(page.locator('.sync-booking-message')).toContainText('Anfrage gespeichert');
