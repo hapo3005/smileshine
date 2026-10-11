@@ -74,6 +74,32 @@
     hint.innerHTML=ok?'<strong>✓ Zeit ist frei</strong><span>Dieser Termin kann so gespeichert werden.</span>':'<strong>Uhrzeit nicht frei</strong><span>Bitte eine andere Uhrzeit oder einen anderen Tag wählen.</span>';
   }
 
+  function renderFreeTimes(a){
+    const form=$('#appointmentDetailForm'),container=$('#appointmentFreeTimes');
+    if(!form||!container)return;
+    const date=String(form.elements.date?.value||'');
+    const service=A.db.services.find(s=>s.name===form.elements.service?.value);
+    const duration=Number(service?.duration||a.duration||30);
+    const day=new Date(date+'T12:00:00');
+    const hours=A.db.workingHours?.[day.getDay()];
+    if(!date||!Number.isFinite(day.getTime())||!hours?.enabled){
+      container.innerHTML='<p class="appointment-free-empty">An diesem Tag ist das Studio geschlossen. Wähle einen geöffneten Tag.</p>';
+      return;
+    }
+    const interval=Math.max(5,Number(A.db.slotInterval||15));
+    const slots=[];
+    for(let minute=Math.ceil(minutesOf(hours.start)/interval)*interval;minute+duration<=minutesOf(hours.end);minute+=interval){
+      const time=A.timeOf(minute);
+      if(isSlotFreeFor(a,date,time,duration))slots.push(time);
+    }
+    if(!slots.length){
+      container.innerHTML='<p class="appointment-free-empty">An diesem Tag ist für diese Behandlung kein freier Termin verfügbar. Bitte wähle einen anderen Tag.</p>';
+      return;
+    }
+    const current=form.elements.time.value;
+    container.innerHTML='<div class="appointment-free-times" role="group" aria-label="Freie Uhrzeiten">'+slots.map(time=>`<button type="button" class="appointment-free-time ${time===current?'selected':''}" data-free-appointment-time="${time}" aria-pressed="${time===current?'true':'false'}">${time} Uhr</button>`).join('')+'</div>';
+  }
+
   function renderAppointment(a){
     const dialog=ensureModal(),body=$('#appointmentDetailBody'),customer=linkedCustomer(a),f=financials(a),selectedStatus=a.status||'pending';
     const precheck=a.precheck&&typeof a.precheck==='object'?a.precheck:{};
@@ -120,6 +146,7 @@
             <label class="appointment-field"><span>Datum</span><input name="date" type="date" value="${escapeHTML(a.date)}" required></label>
             <label class="appointment-field"><span>Uhrzeit</span><input name="time" type="time" value="${escapeHTML(a.time)}" required></label>
           </div>
+          <div class="appointment-free-heading"><strong>Freie Uhrzeiten</strong><small>Wähle eine verfügbare Uhrzeit für diesen Tag.</small></div><div id="appointmentFreeTimes" class="appointment-free-times-wrap"></div>
           <div id="appointmentAvailabilityHint" class="appointment-availability"></div>
         </section>
 
@@ -153,7 +180,14 @@
     }));
 
     const form=$('#appointmentDetailForm');
-    ['change','input'].forEach(type=>form.addEventListener(type,event=>{if(['service','date','time'].includes(event.target.name))renderAvailability(a)}));
+    form.addEventListener('click',event=>{
+      const timeButton=event.target.closest('[data-free-appointment-time]');
+      if(!timeButton)return;
+      form.elements.time.value=timeButton.dataset.freeAppointmentTime;
+      renderFreeTimes(a);renderAvailability(a);
+    });
+
+    ['change','input'].forEach(type=>form.addEventListener(type,event=>{if(['service','date','time'].includes(event.target.name)){renderFreeTimes(a);renderAvailability(a)}}));
     form.addEventListener('submit',event=>{event.preventDefault();saveAppointment(a.id,form,dialog)});
     $('[data-delete-appointment-detail]',body).addEventListener('click',()=>deleteAppointment(a.id,dialog));
     $('[data-appointment-calendar]',body).addEventListener('click',()=>{dialog.close();A.calendarCursor=new Date(`${a.date}T12:00:00`);A.calendarMode='day';A.showView('calendar')});
