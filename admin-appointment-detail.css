@@ -64,3 +64,16 @@
  .appointment-field textarea{min-height:88px}
  .appointment-detail-footer{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
 }
+
+/* Direct appointment rescheduling: available, selectable time slots. */
+.appointment-free-heading{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin:14px 0 9px}
+.appointment-free-heading strong{font-size:15px;font-weight:650;color:var(--ink)}
+.appointment-free-heading small{font-size:13px;line-height:1.45;color:var(--muted)}
+.appointment-free-times-wrap{min-width:0}
+.appointment-free-times{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;max-height:184px;overflow-y:auto;padding:2px}
+.appointment-free-time{min-height:42px;padding:8px 10px;border:1px solid var(--line);border-radius:3px;background:#fff;color:var(--ink);font-size:14px;font-weight:600;line-height:1.35;cursor:pointer}
+.appointment-free-time:hover{border-color:#777;color:#17191a;background:#f8f7f5}
+.appointment-free-time.selected{background:#17191a;color:#fff;border-color:#17191a}
+.appointment-free-time:focus-visible{outline:3px solid #52757c;outline-offset:2px}
+.appointment-free-empty{margin:0;padding:13px 14px;border:1px solid var(--line);background:#faf8f6;color:var(--muted);font-size:14px;line-height:1.5}
+@media(max-width:420px){.appointment-free-times{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.appointment-free-time{padding:7px 5px}}
