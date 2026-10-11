@@ -93,3 +93,30 @@ body .reference-dashboard .day-cockpit-label{font-size:14px!important}
 body .reference-calendar .schedule-time{font-size:14px!important}
 body .reference-calendar .reference-mini-grid span,
 body .reference-calendar .reference-mini-grid button{font-size:14px!important}
+
+/* Birthday presentation polish — preserve the approved logo artwork and wording. */
+body .sidebar .admin-brand.admin-brand-v73{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:9px;padding:19px 10px 24px;text-align:center;min-height:145px;
+}
+body .sidebar .admin-brand.admin-brand-v73 .admin-brand-mark{
+ width:62px;height:62px;min-width:62px;min-height:62px;flex:0 0 62px;
+ display:block;margin:0 auto;border:1px solid #e7ded9;
+ background-color:#fffdfb;box-shadow:0 4px 15px rgba(69,49,43,.045);
+}
+body .sidebar .admin-brand.admin-brand-v73 .admin-brand-copy{
+ display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;min-width:0;
+}
+body .sidebar .admin-brand.admin-brand-v73 .admin-brand-copy strong{
+ color:#453935;font-size:15px;font-weight:600;line-height:1.3;
+ letter-spacing:.13em;white-space:normal;text-align:center;
+}
+body .sidebar .admin-brand.admin-brand-v73 .admin-brand-copy small{
+ color:#817772;font-size:12px;letter-spacing:.07em;line-height:1.4;
+ white-space:normal;text-align:center;
+}
+body .sidebar .side-nav{margin-top:5px}
+@media(max-width:760px){
+ body .sidebar .admin-brand.admin-brand-v73{min-height:auto;padding:13px 10px 17px;gap:7px}
+ body .sidebar .admin-brand.admin-brand-v73 .admin-brand-mark{width:54px;height:54px;min-width:54px;min-height:54px;flex-basis:54px}
+}
