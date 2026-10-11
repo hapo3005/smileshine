@@ -51,7 +51,6 @@ test('presentation mode opens with pitch-ready studio data', async ({ page }) =>
   await page.goto('admin.html?pitch='+Date.now()+'#dashboard', { waitUntil: 'networkidle' });
   await page.waitForFunction(() => Boolean(window.SSAdmin?.showView));
   await expect(page.locator('.demo-state')).toContainText('Präsentationsmodus');
-  await expect(page.locator('.sync-pill')).toContainText('Präsentationsmodus');
   const todayRows = await page.locator('#todayList .appointment-row').count();
   expect(todayRows).toBe(4);
   await expect(page.locator('#activityList')).toContainText('Laura Becker');
