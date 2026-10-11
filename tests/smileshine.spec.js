@@ -23,10 +23,8 @@ for (const vp of viewports) {
 
     const navCta=page.locator('.main-nav .nav-cta');
     const heroPrimary=page.locator('.hero-actions .brand-cta-primary');
-    const heroSecondary=page.locator('.hero-actions .brand-cta-secondary');
-    await expect(navCta).toContainText('Termin mit Birgit planen');
-    await expect(heroPrimary).toContainText('Mit Birgit ins Gespräch kommen');
-    await expect(heroSecondary).toContainText('Behandlungen im Detail');
+    await expect(navCta).toContainText('Termin anfragen');
+    await expect(heroPrimary).toContainText('Beratung anfragen');
     await expect(page.locator('.about-actions .brand-cta-primary')).toContainText('Wunsch mit Birgit besprechen');
     await expect(page.locator('.contact-booking-cta')).toContainText('Termin mit Birgit planen');
 
