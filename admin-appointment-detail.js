@@ -71,7 +71,7 @@
     const data=new FormData(form),service=A.db.services.find(s=>s.name===data.get('service'))||{duration:a.duration};
     const ok=isSlotFreeFor(a,String(data.get('date')||''),String(data.get('time')||''),Number(service.duration||a.duration||30));
     hint.className=`appointment-availability ${ok?'is-free':'is-busy'}`;
-    hint.innerHTML=ok?'<strong>✓ Zeit ist frei</strong><span>Dieser Termin kann so gespeichert werden.</span>':'<strong>Zeit nicht verfügbar</strong><span>Bitte eine andere Uhrzeit oder einen anderen Tag wählen.</span>';
+    hint.innerHTML=ok?'<strong>✓ Zeit ist frei</strong><span>Dieser Termin kann so gespeichert werden.</span>':'<strong>Uhrzeit nicht frei</strong><span>Bitte eine andere Uhrzeit oder einen anderen Tag wählen.</span>';
   }
 
   function renderAppointment(a){
@@ -104,7 +104,7 @@
       </section>
 
       <section class="appointment-detail-section">
-        <div class="appointment-section-head"><div><span class="panel-kicker">Status</span><h4>Wo steht dieser Termin?</h4></div><small>${selectedStatus==='completed'?'Der Termin wurde über den Abschluss-Workflow abgeschlossen.':'„Abgeschlossen“ wird ausschließlich über „Termin abschließen“ gesetzt.'}</small></div>
+        <div class="appointment-section-head"><div><span class="panel-kicker">Status</span><h4>Terminstatus</h4></div><small>${selectedStatus==='completed'?'Der Termin wurde über den Abschluss-Workflow abgeschlossen.':'„Abgeschlossen“ wird ausschließlich über „Termin abschließen“ gesetzt.'}</small></div>
         <div class="appointment-status-grid" role="group" aria-label="Terminstatus">
           ${statusChoices.map(status=>`<button type="button" class="appointment-status-choice status-${status} ${status===selectedStatus?'active':''}" data-appointment-status-value="${status}" aria-pressed="${status===selectedStatus?'true':'false'}"><span></span>${escapeHTML(statusLabel(status))}</button>`).join('')}
         </div>
@@ -124,7 +124,7 @@
         </section>
 
         <section class="appointment-detail-section">
-          <div class="appointment-section-head"><div><span class="panel-kicker">Kontakt</span><h4>Kundendaten & interne Notiz</h4></div><small>${customer?'Änderungen an Kontaktangaben werden in die Kundenakte übernommen.':'Dieser Termin ist keiner Kundenakte fest zugeordnet.'}</small></div>
+          <div class="appointment-section-head"><div><span class="panel-kicker">Kontakt</span><h4>Kontakt und Notizen</h4></div><small>${customer?'Änderungen an Kontaktangaben werden in die Kundenakte übernommen.':'Dieser Termin ist keiner Kundenakte fest zugeordnet.'}</small></div>
           <div class="appointment-form-grid">
             <label class="appointment-field appointment-field-wide"><span>Name</span><input name="customerName" value="${escapeHTML(a.customerName||'')}" autocomplete="name" required></label>
             <label class="appointment-field"><span>Telefon</span><input name="phone" type="tel" value="${escapeHTML(a.phone||'')}" autocomplete="tel"></label>
