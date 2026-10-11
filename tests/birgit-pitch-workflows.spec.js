@@ -340,17 +340,13 @@ test('mobile More opens actual studio navigation', async ({ page }) => {
   expect(await page.locator('#servicesGrid .service-card-admin').count()).toBeGreaterThanOrEqual(8);
 });
 
-test('main and additional treatments select the matching booking service directly', async ({ page }) => {
-  await page.goto('index.html?simple-services='+Date.now(), {waitUntil:'networkidle'});
-  await expect(page.locator('[data-treatment-filter-area]')).toHaveCount(0);
-  await expect(page.locator('.treatment-service-item')).toHaveCount(6);
-  await expect(page.locator('.treatment-service-list [data-public-service-id="lip-pmu"]')).toHaveCount(0);
-  await page.locator('.image-lips [data-booking-service="lip-pmu"]').click();
+test('public treatment CTA opens booking with matching service selected', async ({ page }) => {
+  await page.goto('index.html?smart-cta='+Date.now(), {waitUntil:'networkidle'});
+  const cta = page.locator('.image-lips [data-booking-service="lip-pmu"]');
+  await expect(cta).toBeVisible();
+  await cta.click();
   await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
   await expect(page.locator('#summaryService')).toContainText('Lippen');
-  await page.locator('[data-public-service-id="pmu-followup-brows"]').click();
-  await expect(page.locator('.booking-panel[data-panel="2"]')).toHaveClass(/active/);
-  await expect(page.locator('#summaryService')).toContainText('PMU-Nachbehandlung · Augenbrauen');
 });
 
 

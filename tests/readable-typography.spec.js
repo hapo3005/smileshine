@@ -6,7 +6,7 @@ for(const [name,width,height] of [['desktop',1366,1000],['iphone',390,844],['ipa
   await page.setViewportSize({width,height});
   for(const path of ['index.html','admin.html','impressum.html','datenschutz.html']){
    await page.goto(base+'/'+path);
-   if(path==='index.html')await expect(page.locator('.treatment-service-item')).toHaveCount(6);
+   if(path==='index.html')await expect(page.locator('.additional-service-card')).toHaveCount(10);
    if(path==='admin.html')await page.waitForFunction(()=>document.documentElement.dataset.adminReady==='true');
    await page.evaluate(()=>document.fonts.ready);
    const small=await page.locator('body *').evaluateAll(els=>els.filter(el=>!['STYLE','SCRIPT','NOSCRIPT'].includes(el.tagName)&&[...el.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())&&parseFloat(getComputedStyle(el).fontSize)<14).map(el=>({tag:el.tagName,class:el.className,text:el.textContent.trim().slice(0,70),size:getComputedStyle(el).fontSize})));

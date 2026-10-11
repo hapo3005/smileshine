@@ -150,29 +150,65 @@
   function syncPublicServices(){
     const section=$('#behandlungen');if(!section)return;
     const services=publicServices(load());
-    const featuredIds=['brows-pmu','lashline','lip-pmu','consult'];
-    const additionalServices=services.filter(service=>!featuredIds.includes(service.id));
+    const additionalServices=services;
     let root=section.querySelector('.public-service-directory');
+    root?.carouselEvents?.abort();
     if(!additionalServices.length){root?.remove();return}
     if(!root){
       root=document.createElement('div');root.className='public-service-directory';
       section.querySelector('.treatment-consultation')?.insertAdjacentElement('afterend',root);
     }
-    root.id='leistungskatalog';
-    root.innerHTML=`<div class="public-service-directory-head"><span>Weitere Leistungen</span><h3>Deine weiteren Möglichkeiten.</h3><p>Eine Nachbehandlung ergänzt die Erstbehandlung. Eine Auffrischung erneuert eine verblasste Pigmentierung. Hier findest du diese und weitere Leistungen.</p></div><div class="treatment-service-list" role="region" aria-label="Weitere Behandlungen"></div>`;
-    const list=root.querySelector('.treatment-service-list');
+    root.innerHTML='<div class="public-service-directory-head"><span>Alle Leistungen</span><strong>Deine Behandlung im Überblick.</strong><p>Entdecke unseren vollständigen Leistungskatalog – wische durch die Karten oder nutze die Pfeile.</p></div><div class="additional-carousel-nav"><span class="additional-carousel-status" aria-live="polite"></span><div><button type="button" data-carousel-prev aria-label="Vorherige Leistungen">←</button><button type="button" data-carousel-next aria-label="Weitere Leistungen">→</button></div></div><div class="additional-service-track" role="region" aria-label="Alle Behandlungen" tabindex="0"></div><div class="additional-service-footer"><span>Deine Behandlung ausgewählt? Finde jetzt die passende Zeit.</span><a class="button primary brand-cta brand-cta-primary" href="#booking">Behandlung &amp; Termin wählen</a></div>';
+    const track=root.querySelector('.additional-service-track');
+    const additionalPhotos={
+      'consult':{id:29648640,position:'50% 35%'},
+      'brows-pmu':{id:29151227,position:'50% 35%'},
+      'lashline':{id:8064912,position:'50% 35%'},
+      'lip-pmu':{id:8990713,position:'50% 35%'},
+      'brows-refresh':{id:6135632,position:'50% 100%'},
+      'pmu-followup-brows':{id:33607397,position:'100% 35%'},
+      'lashline-refresh':{id:31215869,position:'50% 40%'},
+      'pmu-followup-lash':{id:15353405,position:'50% 45%'},
+      'lip-refresh':{id:3762445,position:'50% 40%'},
+      'pmu-followup-lips':{id:7479545,position:'50% 40%'}
+    };
     additionalServices.forEach(service=>{
       const display=publicDisplay(service),card=document.createElement('article');
-      card.className='treatment-service-item';
-      card.innerHTML=`<div><h3>${esc(display.name)}</h3><p>${esc(display.description)}</p><span class="treatment-service-duration">ca. ${Number(service.duration||30)} Min.</span></div><a href="#booking" data-public-service-id="${esc(service.id)}" aria-label="${esc(display.name)} – Termin anfragen">Termin anfragen</a>`;
-      list.appendChild(card);
+      card.className='treatment-card additional-service-card image-neutral';
+      const photo=additionalPhotos[service.id];
+      if(photo){
+        card.style.backgroundImage=`linear-gradient(180deg,rgba(10,10,10,.02) 25%,rgba(10,10,10,.82) 100%),url("https://images.pexels.com/photos/${photo.id}/pexels-photo-${photo.id}.jpeg?auto=compress&cs=tinysrgb&w=1000")`;
+        card.style.backgroundPosition=photo.position;
+      }
+      card.innerHTML=`<div><span>${esc(display.category)} · ca. ${Number(service.duration||30)} Min.</span><h3>${esc(display.name)}</h3><p>${esc(display.description)}</p><a href="#booking" data-public-service-id="${esc(service.id)}">Behandlung auswählen</a></div>`;
+      track.appendChild(card);
     });
     root.querySelectorAll('[data-public-service-id]').forEach(link=>link.addEventListener('click',event=>{
       event.preventDefault();
-      document.querySelector('#booking')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
-      const option=document.querySelector('.service-option[data-service-id="'+CSS.escape(link.dataset.publicServiceId)+'"]');
+      const serviceId=link.dataset.publicServiceId;
+      document.querySelector('#booking')?.scrollIntoView({behavior:'smooth',block:'start'});
+      const option=document.querySelector('.service-option[data-service-id="'+CSS.escape(serviceId)+'"]');
       if(option)window.SmileShineBooking?.selectServiceButton?.(option);
     }));
+    const previous=root.querySelector('[data-carousel-prev]'),next=root.querySelector('[data-carousel-next]'),status=root.querySelector('.additional-carousel-status');
+    const update=()=>{
+      const cards=[...track.children],width=track.clientWidth;
+      const shown=cards.map((card,index)=>({index,left:card.getBoundingClientRect().left-track.getBoundingClientRect().left,width:card.offsetWidth})).filter(card=>card.left+card.width>1&&card.left<width-1);
+      status.textContent=shown.length?`${shown[0].index+1}–${shown[shown.length-1].index+1} von ${cards.length} Leistungen`:`${cards.length} Leistungen`;
+      previous.disabled=track.scrollLeft<=2;
+      next.disabled=track.scrollLeft+width>=track.scrollWidth-2;
+    };
+    const move=direction=>{
+      const card=track.firstElementChild;if(!card)return;
+      const step=card.getBoundingClientRect().width+parseFloat(getComputedStyle(track).gap||14);
+      track.scrollBy({left:direction*step,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+    };
+    previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
+    track.addEventListener('keydown',event=>{if(event.target!==track)return;if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();move(event.key==='ArrowRight'?1:-1)}});
+    track.addEventListener('scroll',update,{passive:true});
+    root.carouselEvents=new AbortController();
+    window.addEventListener('resize',update,{signal:root.carouselEvents.signal});
+    requestAnimationFrame(update);
   }
 
   function cleanCustomerCopy(){

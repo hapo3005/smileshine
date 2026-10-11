@@ -381,19 +381,3 @@ body.site-premium .booking-editorial .booking-summary .summary-status span{backg
 @media(max-width:620px){body.site-premium .booking-editorial .booking-summary{margin:0 16px 16px;padding:24px 20px;column-gap:16px}body.site-premium .booking-editorial .booking-summary h3{font-size:23px}}
 /* The pickup address can exceed a narrow phone viewport on one line. */
 .site-premium .pickup-shop-footer>span{white-space:normal;overflow-wrap:anywhere}
-
-
-/* A compact, complete list complements the three main treatment cards. */
-.site-premium .public-service-directory-head h3{margin:0;font-size:clamp(25px,3vw,32px);line-height:1.25;font-weight:400}
-.site-premium .public-service-directory-head>p{font-size:16px;line-height:1.65;color:#62676a}
-.site-premium .treatment-service-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px}
-.site-premium .treatment-service-item{min-width:0;padding:24px 0;border-top:1px solid var(--ss-line);display:flex;flex-direction:column;align-items:flex-start;gap:18px}
-.site-premium .treatment-service-item h3{margin:0;font-size:20px;line-height:1.4;font-weight:500;overflow-wrap:break-word}
-.site-premium .treatment-service-item p{margin:8px 0;font-size:16px;line-height:1.65;color:#62676a}
-.site-premium .treatment-service-duration{font-size:15px;line-height:1.5;color:#62676a}
-.site-premium .treatment-service-item>a{display:inline-flex;align-items:center;min-height:48px;margin-top:auto;padding:10px 16px;border:1px solid #a7abab;color:#202425;text-decoration:none;font-size:15px;line-height:1.5;font-weight:500}
-.site-premium .treatment-service-item>a:hover{background:#202425;color:#fff}
-.site-premium .treatment-service-item>a:focus-visible{outline:2px solid #17191a;outline-offset:3px}
-@media(max-width:700px){.site-premium .treatment-service-list{grid-template-columns:1fr}.site-premium .treatment-service-item{padding:22px 0}}
-
-.site-premium #leistungskatalog{scroll-margin-top:110px}
