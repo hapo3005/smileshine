@@ -49,3 +49,23 @@ body .reference-calendar .calendar-view-switch .active{background:#b5807a;color:
 @media(max-width:1280px){body .reference-calendar .reference-calendar-layout{grid-template-columns:minmax(0,1fr) 230px}}
 @media(max-width:1050px){body .reference-calendar .reference-calendar-layout{grid-template-columns:minmax(0,1fr)}body .reference-calendar .reference-calendar-aside{grid-template-columns:repeat(2,minmax(0,1fr))}body .reference-calendar .reference-calendar-quick{grid-column:1/-1}body .reference-calendar .reference-calendar-quick button{display:inline-flex;width:auto;margin:4px 6px 4px 0}body .reference-dashboard #kpiGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){body .reference-dashboard #kpiGrid{gap:10px}body .reference-dashboard #kpiGrid .kpi-card{min-height:130px;padding:13px}body .reference-dashboard #kpiGrid .kpi-value{font-size:28px}body .reference-dashboard .dashboard-more-panel .dashboard-grid{grid-template-columns:minmax(0,1fr)}body .reference-calendar .reference-calendar-aside{grid-template-columns:minmax(0,1fr)}body .reference-calendar .view-heading{display:block}body .reference-calendar .reference-calendar-quick{grid-column:auto}}
+
+/* Visual review corrections: the reference has one dominant day-status band. */
+body .reference-dashboard .day-cockpit{display:block}
+body .reference-dashboard .day-cockpit-stats{display:none}
+body .reference-dashboard .day-cockpit-focus{width:100%;min-height:64px}
+body .reference-dashboard .day-cockpit-focus.closed{background:#fcf8f5;border-color:#ebe0da}
+body .reference-dashboard .day-cockpit-focus .day-cockpit-empty{padding:5px 0}
+body .reference-dashboard .day-cockpit-focus .day-cockpit-empty strong{font-size:18px;font-weight:500}
+body .reference-dashboard .day-cockpit-focus .day-cockpit-label{font-size:13px}
+body .reference-dashboard #kpiGrid .kpi-top{flex-direction:row;align-items:center}
+body .reference-dashboard #kpiGrid .kpi-label{font-size:14px}
+body .reference-dashboard #kpiGrid .kpi-value{margin-top:3px}
+body .topbar .primary-action,body #quickAdd{background:#b5807a!important;border-color:#b5807a!important;color:white!important;border-radius:8px!important}
+body .topbar .primary-action:hover,body #quickAdd:hover{background:#94615b!important;border-color:#94615b!important}
+body:has(.reference-calendar.active) .topbar{display:none}
+body .reference-calendar .view-heading h2{font-size:33px;line-height:1.14}
+body .reference-calendar .view-heading .eyebrow{margin-bottom:6px}
+body .reference-calendar .calendar-panel{box-shadow:0 6px 24px rgba(66,43,38,.04)}
+body .reference-calendar .reference-calendar-aside>.panel{box-shadow:0 6px 24px rgba(66,43,38,.045)}
+@media(max-width:760px){body .reference-dashboard .day-cockpit-focus .day-cockpit-empty strong{font-size:16px}}
