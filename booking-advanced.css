@@ -273,3 +273,13 @@ body.site-premium .booking-editorial .service-option.selected{
 .progress-step.skipped span{opacity:.72}
 /* Long service categories must wrap inside narrow booking panels. */
 .service-group-title span{min-width:0;white-space:normal;overflow-wrap:anywhere}
+
+/* Four-step request: compact contact choices and a clear final action. */
+.booking-form .choice-row label{white-space:nowrap;flex:0 0 auto}
+.booking-form .choice-row input[type="radio"]{width:18px;height:18px;flex:0 0 18px;margin:0;padding:0}
+.booking-panel[data-panel="6"] .booking-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.booking-panel[data-panel="6"] .booking-actions .booking-back{padding:12px 8px;text-align:center;line-height:1.5}
+.booking-panel[data-panel="6"] .booking-actions .button.primary{grid-column:1/-1;justify-self:stretch;text-align:center}
+@media(max-width:620px){
+ .booking-panel[data-panel="6"] .booking-actions{grid-template-columns:1fr}
+}
