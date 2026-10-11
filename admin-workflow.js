@@ -212,7 +212,7 @@
       </div>
       <div class="workflow-head">
         <div><span class="panel-kicker">Heute wichtig</span><h3>${actions.length?'Deine nächsten Schritte.':'Alles vorbereitet.'}</h3><p>${actions.length?`${visibleActions} priorisiert${moreActions?` · ${moreActions} weitere unter Organisation`:''}.`:'Für heute gibt es keine offenen Hinweise.'}</p></div>
-        <button type="button" class="soft-button" data-open-workflow-center>Organisation öffnen</button>
+        <button type="button" class="soft-button" data-open-workflow-center>Aufgaben öffnen</button>
       </div>
       <div class="workflow-layout">
         <div class="workflow-action-list">
@@ -221,7 +221,7 @@
               <span class="workflow-order">${String(index+1).padStart(2,'0')}</span>
               <div class="workflow-action-copy"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></div>
               <button type="button" data-workflow-action="${escapeHTML(item.kind)}" data-task-id="${escapeHTML(item.taskId||'')}" data-communication-id="${escapeHTML(item.communicationId||'')}" data-appointment-id="${escapeHTML(item.appointmentId||'')}" data-customer-id="${escapeHTML(item.customerId||'')}">${escapeHTML(item.action)}</button>
-            </article>`).join(''):`<div class="workflow-clear"><span>✓</span><div><strong>Keine dringenden Aufgaben.</strong><small>Neue Anfragen und fällige Aufgaben erscheinen hier.</small></div></div>`}
+            </article>`).join(''):`<div class="workflow-clear"><span>✓</span><div><strong>Keine dringenden Aufgaben.</strong><small>Neue Anfragen und fällige Aufgaben siehst du hier.</small></div></div>`}
         </div>
         <div class="workflow-mini-grid communication-enabled">
           <button type="button" data-open-workflow-center data-workflow-tab="waitlist"><span>Warteliste</span><strong>${waiting}</strong><small>Kundinnen warten</small></button>
@@ -256,7 +256,7 @@
     let dialog=$('#workflowCenterDialog');if(dialog)return dialog;
     dialog=document.createElement('dialog');dialog.id='workflowCenterDialog';dialog.className='modal workflow-center-dialog';
     dialog.innerHTML=`<div class="modal-card workflow-center-card">
-      <div class="modal-head"><div><span class="panel-kicker">Arbeitsorganisation</span><h3>Alles an einem Ort.</h3></div><button type="button" class="modal-close" data-close-workflow aria-label="Schließen">×</button></div>
+      <div class="modal-head"><div><span class="panel-kicker">Arbeitsorganisation</span><h3>Deine Aufgaben</h3></div><button type="button" class="modal-close" data-close-workflow aria-label="Schließen">×</button></div>
       <div class="workflow-tabs" role="tablist">
         <button type="button" data-workflow-tab-button="followups">Wiedervorlagen</button>
         <button type="button" data-workflow-tab-button="waitlist">Warteliste</button>
